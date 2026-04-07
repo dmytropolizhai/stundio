@@ -1,1 +1,0 @@
- /home/dmytro/Projects/stundio/mobile_application/build/cea57f294a7b861efa1e7138f5254ab6/dart_build_result.json: 
