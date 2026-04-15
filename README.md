@@ -53,12 +53,12 @@ The interface is _minimalistic_ to avoid distractions and keep the focus on the 
 
 **Stundio** is built around a few simple ideas:
 
-* _Edupage is a s**t because it is not mobile-friendly, doesn't save your settings, and is generally slow_
-* _Uses existing services to fetch data from the institution_
-* _Keep things simple_
-* _Make it fast_
-* _Avoid unnecessary complexity_
-* _No user data is stored and used for analytics_
+* _Edupage is s**t because it is not mobile-friendly, doesn't save your settings, and is generally slow_;
+* _Uses existing services to fetch data from the institution_;
+* _Keep things simple_;
+* _Make it fast_;
+* _Avoid unnecessary complexity_;
+* _No user data is stored and used for analytics_.
 
 The goal is to provide a **reliable** timetable tool without clutter or external dependencies.
 
