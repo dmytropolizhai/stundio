@@ -20,20 +20,18 @@
 
 # About
 
-**Stundio** is a _simple_ web application for viewing a school timetable. For schedule it takes data from the official website of the institution ([link](https://pikcrvt.edupage.org/timetable/)). 
+**Stundio** is a _simple_ web application for viewing a school timetable. To acquire a schedule, it takes data from the official website of the institution ([link](https://pikcrvt.edupage.org/timetable/)). It does not use any other data other than what is required.
 
-It is built with a focus on **clarity**, **speed**, and **usability**. This app works by _just_ fetching data from the institution's website.
-
-You can use it on both **desktop** and **mobile** devices.
+It is available on both **desktop** and **mobile**, rendering it an easy-to-use tool, no matter what device the user is on. Stundio was built with a focus on **clarity**, **speed**, and **usability**; prioritising user experience as well as functionality.
 
 # Features
 
-* **Clean** and minimal interface
-* **Fast** and responsive performance
-* Works **fully offline**
-* No third-party services or tracking
-* Easy to use and navigate
-* **Cross-platform** support ([web](https://flutter.dev/multi-platform/web) and [mobile](https://flutter.dev/multi-platform/mobile))
+* **Clean** and minimal interface;
+* **Fast** and responsive performance;
+* Works **fully offline**;
+* No third-party services or tracking;
+* Easy to use and navigate;
+* **Cross-platform** support ([web](https://flutter.dev/multi-platform/web) and [mobile](https://flutter.dev/multi-platform/mobile)).
 
 # Design
 
@@ -58,7 +56,7 @@ The interface is _minimalistic_ to avoid distractions and keep the focus on the 
 * _Keep things simple_;
 * _Make it fast_;
 * _Avoid unnecessary complexity_;
-* _No user data is stored and used for analytics_.
+* _Do not store any user data or use it for analytics._
 
 The goal is to provide a **reliable** timetable tool without clutter or external dependencies.
 
@@ -66,7 +64,7 @@ The goal is to provide a **reliable** timetable tool without clutter or external
 
 Feedback is important for improving the project.
 
-If you have suggestions, ideas, or find any issues, please create a report in the repository's [**Issues**](../../issues) section. All feedback is **welcome**.
+If you have any suggestions, ideas, or find any issues, please create a report in the repository's [**Issues**](../../issues) section. All feedback is **welcome**.
 
 # License
 
