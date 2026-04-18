@@ -125,15 +125,9 @@ UI → State Management → Use Case → Repository → Data Source → API
 
 ## Philosophy
 
-**Make from students for students.**
+**Made from students for students.**
 
 Stundio exists to eliminate frustration caused by outdated educational systems and replace them with fast, intuitive tools.
-
----
-
-## About Founder
-
-Founded by **Dmytro Polizhai**, Software Development student at Rigas Valsts Tehnikums (RVT), driven by the need to improve real student workflows.
 
 ---
 
