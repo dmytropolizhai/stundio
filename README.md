@@ -1,75 +1,156 @@
-<div align="center" style="margin-bottom: 16px;">
-    <img src="./assets/Preview_4K.png" alt="Preview" width=100%"/>
-</div>
+# Stundio
+
+![Preview](./assets/Preview_4K.png)
 
 <p align="center">
-    <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white" alt="Flutter Badge"/></a>
-    <a href="https://dart.dev"><img src="https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white" alt="Dart Badge"/></a>
-    <img src="https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg?style=for-the-badge" alt="Open Source"/>
+    <a href="https://flutter.dev">
+        <img src="https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white"/>
+    </a>
+    <a href="https://dart.dev">
+        <img src="https://img.shields.io/badge/Dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white"/>
+    </a>
+    <img src="https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg?style=for-the-badge"/>
 </p>
 
-# Table of Contents
+---
 
-* [About](#about)
-* [Features](#features)
-* [Design](#design)
-* [Technology](#technology)
-* [Philosophy](#philosophy)
-* [Feedback](#feedback)
-* [License](#license)
+## Introduction
 
-# About
+**Stundio** (ˈstuːndio, like "stundu" in Latvian) is a next-generation mobile and web experience for EduPage, engineered for students who demand performance, usability, and modern design. We transform the often rigid and outdated educational interface into a fluid, high-performance tool that works seamlessly across all devices.
 
-**Stundio** is a _simple_ web application for viewing a school timetable. To acquire a schedule, it takes data from the official website of the institution ([link](https://pikcrvt.edupage.org/timetable/)). It does not use any other data other than what is required.
+---
 
-It is available on both **desktop** and **mobile**, rendering it an easy-to-use tool, no matter what device the user is on. Stundio was built with a focus on **clarity**, **speed**, and **usability**; prioritising user experience as well as functionality.
+## Problem
 
-# Features
+EduPage has significant UX issues that impact daily student usage:
 
-* **Clean** and minimal interface;
-* **Fast** and responsive performance;
-* Works **fully offline**;
-* No third-party services or tracking;
-* Easy to use and navigate;
-* **Cross-platform** support ([web](https://flutter.dev/multi-platform/web) and [mobile](https://flutter.dev/multi-platform/mobile)).
+- Lack of persistence: selected groups and settings are often lost
+- Outdated UI: not optimized for modern mobile devices
+- Performance issues: slow loading and weak responsiveness
+- Cluttered interface: unnecessary complexity for simple tasks
 
-# Design
+---
 
-The design of **Stundio** is inspired by _liquid design principles_. It focuses on smooth shapes, soft layouts, and a natural visual flow.
+## Solution
 
-The interface is _minimalistic_ to avoid distractions and keep the focus on the **timetable itself**. Every element has a clear purpose.
+Stundio introduces a student-first approach:
 
-# Technology
+- Persistent state (your group and settings are always saved)
+- Liquid UI with smooth and modern animations
+- High performance with optimized rendering
+- Full local processing (no tracking, no analytics)
 
-* Built using **[Flutter](https://flutter.dev/)**
-* Powered by **[Dart](https://dart.dev/)**
-* Runs as a [web application](https://flutter.dev/multi-platform/web) and [mobile application](https://flutter.dev/multi-platform/mobile)
-* Optimized for both desktop and mobile devices
-* Fully _local_ data handling
+---
 
-# Philosophy
+## Features
 
-**Stundio** is built around a few simple ideas:
+- Smooth animations and transitions
+- Fast client-side rendering
+- Cross-platform support (Android, iOS, Web)
+- Minimal and student-focused interface
 
-* _Edupage is s**t because it is not mobile-friendly, doesn't save your settings, and is generally slow_;
-* _Uses existing services to fetch data from the institution_;
-* _Keep things simple_;
-* _Make it fast_;
-* _Avoid unnecessary complexity_;
-* _Do not store any user data or use it for analytics._
+---
 
-The goal is to provide a **reliable** timetable tool without clutter or external dependencies.
+## Architecture
 
-# Feedback
+Stundio is built using a scalable **feature-first clean architecture** with **Flutter**, designed for long-term maintainability and cross-platform support.
 
-Feedback is important for improving the project.
+The architecture follows strict **SOLID principles**, ensuring modularity, testability, and clean separation of concerns.
 
-If you have any suggestions, ideas, or find any issues, please create a report in the repository's [**Issues**](../../issues) section. All feedback is **welcome**.
+---
 
-# License
+### High-Level Architecture
+Presentation → Domain → Data
 
-This project is fully open-source. Feel free to use, modify, and contribute.
+Each feature is fully independent and self-contained.
 
+---
 
-### Post Scriptum
-_Thanks to teacher **Monta** for inspiring me to create this project._
+## Core Layer
+
+Contains shared logic used across the application.
+
+- DI (Dependency Injection)
+- Networking (API client, interceptors, endpoints)
+- Routing (navigation system)
+- Theme (colors, typography, design system)
+- Error handling (exceptions, failures)
+- Utilities (validators, helpers)
+- Shared widgets (buttons, inputs, loaders)
+
+---
+
+## Feature Layer
+
+Each feature follows the same structure:
+feature/
+data/
+domain/
+presentation/
+
+---
+
+### Data Layer
+- API models (DTOs)
+- Remote and local data sources
+- Repository implementations
+
+### Domain Layer
+- Entities (pure Dart objects)
+- Repository interfaces
+- Use cases (business logic)
+
+### Presentation Layer
+- UI screens
+- State management (Bloc/Cubit)
+- Feature-specific widgets
+
+---
+
+## Data Flow
+UI → State Management → Use Case → Repository → Data Source → API
+
+---
+
+## Architecture Principles
+
+- Strict separation of concerns
+- Dependency inversion
+- Feature isolation
+- Reusable components
+- Testable domain layer
+- No business logic in UI
+
+---
+
+## Philosophy
+
+**Make from students for students.**
+
+Stundio exists to eliminate frustration caused by outdated educational systems and replace them with fast, intuitive tools.
+
+---
+
+## About Founder
+
+Founded by **Dmytro Polizhai**, Software Development student at Rigas Valsts Tehnikums (RVT), driven by the need to improve real student workflows.
+
+---
+
+## Contribution
+
+- Issues → bug reports and suggestions
+- Discussions → general ideas
+- Pull Requests → open for contributions
+
+---
+
+## License
+
+Open-source project. Free to use, modify, and contribute.
+
+---
+
+## Post Scriptum
+
+Special thanks to teacher **Monta** for inspiration.
