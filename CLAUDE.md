@@ -8,9 +8,10 @@ Class-based (no per-student login). Audience: portfolio + personal + schoolmates
 
 ## Status
 
-Research phase done. No app scaffold yet. Next steps and full roadmap: **`PLAN.md`**.
-Data/API contract: **`MODEL.md`**. Canonical types: **`contract.ts`** (moves to
-`src/lib/edupage/types.ts` in Phase 0).
+Phase 0 done: Vite + React 19 + TS (strict) scaffold, Tailwind v4, Vitest/happy-dom, ESLint,
+Prettier, GitLab CI, Capacitor Android project added. On-device launch not yet verified (no JDK /
+Android SDK on this machine). Phase 1 (the TS scraper + parser) is next — full roadmap: **`PLAN.md`**.
+Data/API contract: **`MODEL.md`**. Canonical types: **`src/lib/edupage/types.ts`**.
 
 ## Fixed constraints
 
@@ -27,10 +28,12 @@ Data/API contract: **`MODEL.md`**. Canonical types: **`contract.ts`** (moves to
 |---|---|
 | `MODEL.md` | EduPage endpoints, payloads, table shapes, join recipe, substitution HTML grammar, merge algo |
 | `PLAN.md` | Phased action plan (0–5 + widget spike), decisions needed, risks |
-| `contract.ts` | Canonical TS data model (`Timetable`, `Substitution`, `ResolvedDay`, …) |
-| `probe_edupage.py` | Working timetable scraper — regenerates `data/` fixtures, re-derives the API |
-| `probe_substitution.py` | Working substitutions scraper + HTML parser (stdlib only) |
-| `data/` | Raw + normalized fixtures (2026-09-09). Become test fixtures + parser oracle. |
+| `src/lib/edupage/types.ts` | Canonical TS data model (`Timetable`, `Substitution`, `ResolvedDay`, …) |
+| `src/lib/edupage/__tests__/fixtures/` | Copies of `data/` used by the parser tests |
+| `reference/probe_edupage.py` | Working timetable scraper — regenerates `data/` fixtures, re-derives the API |
+| `reference/probe_substitution.py` | Working substitutions scraper + HTML parser (stdlib only) |
+| `data/` | Raw + normalized fixtures (2026-09-09). Source of truth for the copies under `__tests__/fixtures/`. |
+| `android/` | Capacitor Android project (generated; the Kotlin widget lands here) |
 
 Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single Vite app (no monorepo) for v1.
 
@@ -69,9 +72,18 @@ Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single
 ## Commands
 
 ```bash
+npm run dev          # Vite dev server (web preview; EduPage fetches will CORS-fail here)
+npm test             # Vitest (happy-dom)
+npm run typecheck    # tsc -b --noEmit
+npm run lint         # eslint
+npm run format       # prettier --write (markdown is intentionally excluded)
+npm run build        # tsc -b && vite build → dist/
+npm run android      # build + cap sync + cap run android  (needs JDK 21 + Android SDK)
+
 # Re-derive the API / regenerate fixtures (needs python3 + requests):
-python3 probe_edupage.py                    # timetable → data/
-python3 probe_substitution.py 2026-09-09    # substitutions → data/
+python3 reference/probe_edupage.py                    # timetable → data/
+python3 reference/probe_substitution.py 2026-09-09    # substitutions → data/
+# then re-copy data/* into src/lib/edupage/__tests__/fixtures/
 ```
 
-App build/test commands land here in Phase 0.
+CI (`.gitlab-ci.yml`): `lint + format:check → typecheck → test → build`.

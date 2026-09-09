@@ -1,0 +1,49 @@
+{
+  "r": {
+    "allow_my_items": {},
+    "defaults": {
+      "showColors": true,
+      "timeMode": false,
+      "swapAxis": false
+    },
+    "current": {
+      "allow": false
+    },
+    "regular": {
+      "default_num": "1175",
+      "timetables": [
+        {
+          "tt_num": "1169",
+          "year": 2026,
+          "text": "TIC 01.09.2026. (01. 09. - 04. 09. 2026)",
+          "datefrom": "2026-09-01",
+          "hidden": false
+        },
+        {
+          "tt_num": "1172",
+          "year": 2026,
+          "text": "Galvenā ēka 01.09.2026. (01. 09. - 04. 09. 2026)",
+          "datefrom": "2026-09-01",
+          "hidden": false
+        },
+        {
+          "tt_num": "1174",
+          "year": 2026,
+          "text": "TIC 07.09.2026. (07. 09. - 11. 09. 2026)",
+          "datefrom": "2026-09-07",
+          "hidden": false
+        },
+        {
+          "tt_num": "1175",
+          "year": 2026,
+          "text": "Galvenā ēka 07.09.2026. (07. 09. - 11. 09. 2026)",
+          "datefrom": "2026-09-07",
+          "hidden": false
+        }
+      ]
+    },
+    "_changeEvents": {
+      "dbi:global_settings": 5028118
+    }
+  }
+}

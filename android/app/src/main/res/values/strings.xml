@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">RVT Stunda</string>
+    <string name="title_activity_main">RVT Stunda</string>
+    <string name="package_name">site.polizhai.rvtstunda</string>
+    <string name="custom_url_scheme">site.polizhai.rvtstunda</string>
+</resources>

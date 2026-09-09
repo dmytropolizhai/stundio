@@ -2,7 +2,8 @@
 
 Target: `https://pikcrvt.edupage.org` — **Rīgas Valsts tehnikums** (Riga, LV).
 Verified 2026-09-09. Everything below is **public — no login, no cookies**.
-Canonical types: [`contract.ts`](./contract.ts). Scrapers: `probe_edupage.py`, `probe_substitution.py`.
+Canonical types: [`src/lib/edupage/types.ts`](./src/lib/edupage/types.ts).
+Scrapers: `reference/probe_edupage.py`, `reference/probe_substitution.py`.
 
 ---
 

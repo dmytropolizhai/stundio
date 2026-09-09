@@ -61,7 +61,7 @@ MODE = sys.argv[3] if len(sys.argv) > 3 else "classes"
 BASE = f"https://{SUBDOMAIN}.edupage.org"
 YEAR = int(DAY[:4])
 GSH = "00000000"
-OUT = Path(__file__).parent / "data"
+OUT = Path(__file__).resolve().parent.parent / "data"  # repo-root data/, not reference/data/
 OUT.mkdir(exist_ok=True)
 
 ARROW = "\u2794"  # ➔

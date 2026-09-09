@@ -1,0 +1,42 @@
+default:
+  image: node:20
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+
+stages: [check, build]
+
+.node:
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+
+lint:
+  stage: check
+  extends: .node
+  script:
+    - npm run lint
+    - npm run format:check
+
+typecheck:
+  stage: check
+  extends: .node
+  script:
+    - npm run typecheck
+
+test:
+  stage: check
+  extends: .node
+  script:
+    - npm test
+
+build:
+  stage: build
+  extends: .node
+  script:
+    - npm run build
+  artifacts:
+    paths: [dist]
+    expire_in: 1 week

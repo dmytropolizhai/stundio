@@ -1,6 +1,7 @@
 # EduPage timetable app — action plan
 
-Status: data-access research done (`MODEL.md`, `contract.ts`, `probe_*.py`, `data/` fixtures).
+Status: Phase 0 done (scaffold + tooling + Capacitor). Research artefacts: `MODEL.md`,
+`src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1.
 
 ## Guiding constraints (fixed)
@@ -59,16 +60,19 @@ the TS output matches the Python output for the same fixture.
 
 **Goal:** runnable Vite+React+TS app on device, tooling in place, types moved in.
 
-- [ ] `npm create vite@latest` (react-ts), Node 20, strict `tsconfig` (`noUncheckedIndexedAccess` on).
-- [ ] Add Tailwind, Zustand, `idb`, `date-fns` (or Temporal polyfill), `framer-motion`.
-- [ ] Dev tooling: Vitest + `happy-dom` environment, ESLint (typescript-eslint), Prettier, `tsc --noEmit` in CI.
-- [ ] GitLab CI: `lint → typecheck → test → build`.
-- [ ] Capacitor: `@capacitor/core @capacitor/cli @capacitor/android`, `npx cap add android`, verify `npx cap run android` shows the app on a device/emulator.
-- [ ] Move `contract.ts` → `src/lib/edupage/types.ts`; delete root copy; fix `MODEL.md` link.
-- [ ] Copy `data/*.json` + `data/*.html` → `src/lib/edupage/__tests__/fixtures/`.
-- [ ] Move `probe_*.py` → `reference/`.
+- [x] `npm create vite@latest` (react-ts), Node 20, strict `tsconfig` (`noUncheckedIndexedAccess` on).
+- [x] Add Tailwind, Zustand, `idb`, `date-fns` (or Temporal polyfill), `framer-motion`.
+- [x] Dev tooling: Vitest + `happy-dom` environment, ESLint (typescript-eslint), Prettier, `tsc --noEmit` in CI.
+- [x] GitLab CI: `lint → typecheck → test → build`.
+- [x] Capacitor: `@capacitor/core @capacitor/cli @capacitor/android`, `npx cap add android`.
+- [ ] Verify `npx cap run android` shows the app on a device/emulator — **blocked**: needs a JDK 21
+      and the Android SDK, neither installed yet (`java` not on PATH, no `ANDROID_HOME`).
+- [x] Move `contract.ts` → `src/lib/edupage/types.ts`; delete root copy; fix `MODEL.md` link.
+- [x] Copy `data/*.json` + `data/*.html` → `src/lib/edupage/__tests__/fixtures/`.
+- [x] Move `probe_*.py` → `reference/`.
 
-**Exit:** blank themed app launches on Android; `npm test` and CI are green with 0 tests.
+**Exit:** blank themed app launches on Android; `npm test` and CI are green.
+Currently: web build + lint + typecheck + 3 fixture smoke tests green; on-device launch pending the SDK.
 
 ---
 

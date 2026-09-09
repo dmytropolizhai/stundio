@@ -50,7 +50,7 @@ SUBDOMAIN = sys.argv[1] if len(sys.argv) > 1 else "pikcrvt"
 FORCE_TT = sys.argv[2] if len(sys.argv) > 2 else None
 BASE = f"https://{SUBDOMAIN}.edupage.org"
 GSH = "00000000"  # anonymous hash; real one only needed for logged-in scopes
-OUT = Path(__file__).parent / "data"
+OUT = Path(__file__).resolve().parent.parent / "data"  # repo-root data/, not reference/data/
 OUT.mkdir(exist_ok=True)
 
 s = requests.Session()
