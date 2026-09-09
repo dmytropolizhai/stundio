@@ -1,6 +1,7 @@
 # EduPage timetable app — action plan
 
-Status: Phase 0 done (scaffold + tooling + Capacitor). Research artefacts: `MODEL.md`,
+Status: Phases 0–2 done (scaffold, tooling, Capacitor, the full scraper + parser, and the
+offline cache + sync + store). Next: Phase 3 (UI). Research artefacts: `MODEL.md`,
 `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1.
 
@@ -37,7 +38,7 @@ src/
     substitutions.ts  HTML → DaySubstitutions (locale-aware parser)
     select.ts         pick tt_num by (date, building)
     resolve.ts        Timetable + DaySubstitutions → ResolvedDay (merge)
-    __tests__/        + fixtures/  (copied from ./data/)
+    __tests__/        fixtures.ts reads repo-root ./data/ directly (no copies)
   db/                 idb wrapper: snapshot, substitutions, settings stores
   sync/               orchestration, stale-while-revalidate, "updated Xm ago"
   store/              Zustand: timetable, settings, sync status
@@ -63,12 +64,14 @@ the TS output matches the Python output for the same fixture.
 - [x] `npm create vite@latest` (react-ts), Node 20, strict `tsconfig` (`noUncheckedIndexedAccess` on).
 - [x] Add Tailwind, Zustand, `idb`, `date-fns` (or Temporal polyfill), `framer-motion`.
 - [x] Dev tooling: Vitest + `happy-dom` environment, ESLint (typescript-eslint), Prettier, `tsc --noEmit` in CI.
-- [x] GitLab CI: `lint → typecheck → test → build`.
+- [x] CI: `lint → format → typecheck → test → build` (GitHub Actions — the repo is on
+      GitHub, not GitLab as this plan originally assumed).
 - [x] Capacitor: `@capacitor/core @capacitor/cli @capacitor/android`, `npx cap add android`.
 - [ ] Verify `npx cap run android` shows the app on a device/emulator — **blocked**: needs a JDK 21
       and the Android SDK, neither installed yet (`java` not on PATH, no `ANDROID_HOME`).
 - [x] Move `contract.ts` → `src/lib/edupage/types.ts`; delete root copy; fix `MODEL.md` link.
-- [x] Copy `data/*.json` + `data/*.html` → `src/lib/edupage/__tests__/fixtures/`.
+- [x] ~~Copy `data/*` → `__tests__/fixtures/`~~ → tests read repo-root `data/` via
+      `__tests__/fixtures.ts`; one copy, no drift between probe output and tests.
 - [x] Move `probe_*.py` → `reference/`.
 
 **Exit:** blank themed app launches on Android; `npm test` and CI are green.
@@ -81,29 +84,33 @@ Currently: web build + lint + typecheck + 3 fixture smoke tests green; on-device
 **Goal:** pure, tested functions that turn EduPage responses into `contract.ts` shapes.
 No Capacitor import inside `lib/edupage` except in `http.ts`.
 
-- [ ] `http.ts`: `type HttpClient = (req: { url; body: unknown }) => Promise<{ status: number; data: unknown }>`.
+- [x] `http.ts`: `type HttpClient = (req: { url; body: unknown }) => Promise<{ status: number; data: unknown }>`.
       Impls: `capacitorHttp` (`CapacitorHttp.post`, custom `User-Agent`), `fetchHttp` (Node/web, will CORS-fail on web — documented).
-- [ ] `client.ts`:
+- [x] `client.ts`:
   - `fetchTimetableList(http, year)` → `getTTViewerData`, returns `{ ttNum, building, validFrom, validTo, label }[]` + `defaultNum`.
   - `fetchRegularTimetable(http, ttNum)` → `regularttGetData`, returns raw table map.
   - `fetchDaySubstitutions(http, date, mode='classes')` → `getSubstViewerDayDataHtml`, returns HTML string.
   - All send `{"__args":[null,<arg>],"__gsh":"00000000"}`; throw on `{ e: ... }` envelope.
-- [ ] `normalize.ts`: raw tables → `Timetable`. Implement the join in `MODEL.md §2`:
+- [x] `normalize.ts`: raw tables → `Timetable`. Implement the join in `MODEL.md §2`:
   weekday from `days` bitmask, class resolution via `classids` ∪ `groups[groupids].classid`,
   `periodSpan` from `durationperiods`, carry `weekMask`/`termMask`.
-- [ ] `substitutions.ts`: HTML → `DaySubstitutions`. Port `parse_info` grammar table from
+- [x] `substitutions.ts`: HTML → `DaySubstitutions`. Port `parse_info` grammar table from
   `MODEL.md §4` (incl. cross-day `movedFrom/ToDate`). Use `DOMParser` (device) / `happy-dom` (tests).
   **Always keep `raw`.** Unknown phrasing → `kind: "other"`, never throw.
-- [ ] `select.ts`: `selectTimetable(list, date, building)` — newest `validFrom ≤ date`, matching building; `stale` flag when none covers that week.
-- [ ] `resolve.ts`: `resolveDay(timetable, subs, classId, date)` → `ResolvedDay` per `MODEL.md §5`.
+- [x] `select.ts`: `selectTimetable(list, date, building)` — newest `validFrom ≤ date`, matching building; `stale` flag when none covers that week.
+- [x] `resolve.ts`: `resolveDay(timetable, subs, classId, date)` → `ResolvedDay` per `MODEL.md §5`.
       Cancelled lessons stay visible (`status: "cancelled"`). Attach `original` for diff UI.
-- [ ] Tests against fixtures:
+- [x] Tests against fixtures:
   - normalize: A1-1 known timetable snapshot (matches `data/normalized_1175.json`).
   - substitutions: 2026-09-09 → 55 items, `kind` distribution matches, 0 `other`, 5 cross-day.
   - resolve: hand-checked ResolvedDay for 1–2 classes on 2026-09-09.
   - a "parser canary" test: `kind === "other"` ratio must stay < 15%.
 
-**Exit:** `resolveDay` produces a correct day for any class from fixtures, fully offline, ≥90% line coverage on `lib/edupage`.
+**Exit:** ✅ met. 97 tests / 8 files green; coverage on `lib/edupage` = 99.0% lines, 86.0%
+branches, 100% functions (thresholds enforced in `vite.config.ts`, reported by CI).
+The TS substitution parser is **byte-identical** to `reference/probe_substitution.py` over
+all 55 rows of the 2026-09-09 fixture, and `normalize.ts` reproduces the probe's slot count
+and per-class days exactly.
 
 ---
 
@@ -111,19 +118,22 @@ No Capacitor import inside `lib/edupage` except in `http.ts`.
 
 **Goal:** app works offline from cache; refreshes in the background without blocking render.
 
-- [ ] `db/`: `idb` schema — stores `meta` (timetable list, lastSync), `timetables` (by ttNum),
+- [x] `db/`: `idb` schema — stores `meta` (timetable list, lastSync), `timetables` (by ttNum),
       `substitutions` (by ISO date), `settings` (selectedClassId, building, favorites, theme, lang).
-- [ ] `sync/`: stale-while-revalidate orchestration:
+- [x] `sync/`: stale-while-revalidate orchestration:
   - on app open + pull-to-refresh + `@capacitor/app` `resume`.
   - timetable list: refetch if `lastSync > 12h`.
   - regular timetable: fetch only when the selected week's `ttNum` isn't cached.
   - substitutions: **always** refetch today + next school day (this is the only intraday-volatile data).
   - expose `SyncStatus = 'idle' | 'syncing' | 'offline' | 'error'` + `lastSyncAt`.
-- [ ] `store/`: Zustand `useTimetableStore` — `selectedClassId`, `building`, `favorites`,
+- [x] `store/`: Zustand `useTimetableStore` — `selectedClassId`, `building`, `favorites`,
       `resolvedDay(date)` selector (memoised), `refresh()`, `syncStatus`.
-- [ ] Retention: keep last ~14 days of substitutions, prune older.
+- [x] Retention: keep last ~14 days of substitutions, prune older.
 
-**Exit:** airplane mode → app opens to last-known timetable instantly; going online auto-refreshes with a visible "updated 2m ago".
+**Exit:** ✅ met, and covered by tests rather than by hand: `store` tests assert a cold open
+with a dead network serves the identical `ResolvedDay` from cache without a single request,
+and that a failed refresh keeps the previous `lastSyncAt` so the UI still reads "updated Xm ago".
+171 tests / 15 files green; 97.4% lines, 85.9% branches across `lib/edupage` + `db` + `sync` + `store`.
 
 ---
 

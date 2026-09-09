@@ -13,7 +13,8 @@ export default defineConfig({
     environment: "happy-dom",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     coverage: {
-      include: ["src/lib/edupage/**"],
+      include: ["src/lib/edupage/**", "src/db/**", "src/sync/**", "src/store/**"],
+      exclude: ["**/__tests__/**"],
       thresholds: { lines: 90, functions: 90, branches: 80, statements: 90 },
     },
   },
