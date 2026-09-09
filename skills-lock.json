@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "tailwind-design-system": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/frontend-mobile-development/skills/tailwind-design-system/SKILL.md",
+      "computedHash": "cd61afd28f594e8b6712b61749209cbb4466e3eec4e4223793bbd97fc85c1b63"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "3219a1944e404ffc14d1d9d6aef6dd2e3855b81387ee0a044ccbfe14d34c2357"
+    },
+    "vite-react-best-practices": {
+      "source": "claudiocebpaz/vite-react-best-practices",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "c383dacdd55b97e7c36641e7d0ac0c094266ef22458dea31c5000cb3e29e3d49"
+    }
+  }
+}
