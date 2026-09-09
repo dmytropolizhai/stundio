@@ -14,6 +14,7 @@ A senior-level guide for building production-ready React Single Page Application
 ## When to Apply
 
 Reference these guidelines when:
+
 - Setting up a new Vite + React project
 - Configuring build pipelines and CI/CD for SPAs
 - Troubleshooting production build or caching issues

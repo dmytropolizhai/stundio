@@ -128,7 +128,8 @@ export type DaySubstitutions = {
  * (client-side merge of Timetable + DaySubstitutions; not a source shape)
  * ------------------------------------------------------------------ */
 
-export type ResolvedStatus = "normal" | "cancelled" | "moved" | "substituted" | "room_change" | "added";
+export type ResolvedStatus =
+  "normal" | "cancelled" | "moved" | "substituted" | "room_change" | "added";
 
 export type ResolvedLesson = {
   period: string;

@@ -7,7 +7,7 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "useDefineForClassFields": true,
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals", "node"],
 
     /* strictness — see CLAUDE.md */
     "strict": true,

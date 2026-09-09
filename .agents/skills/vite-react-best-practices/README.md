@@ -7,18 +7,21 @@ This repository contains the `vite-react-best-practices` skill, a comprehensive 
 This skill provides a collection of rules and guidelines organized into the following categories:
 
 ### 1. Vite SPA Deployment (CRITICAL)
+
 - **Static Rewrites**: Mandatory for client-side routing.
 - **Caching Strategy**: Immutable assets, no-cache index.html.
 - **Build Validation**: Preview before push.
 - **Environment Variables**: `VITE_` prefix and security.
 
 ### 2. React Core Performance
+
 - **Route Splitting**: Lazy load pages.
 - **Server State**: Use React Query/SWR.
 - **Memoization**: When to use useMemo/useCallback.
 - **Image Optimization**: CLS prevention.
 
 ### 3. Architecture & Cleanup
+
 - **Colocation**: Feature-based structure.
 - **Anti-Patterns: Import from Dist**: Avoid bundling twice.
 - **Troubleshooting**: Common Vite fixes.
@@ -39,9 +42,9 @@ This command will install the skill for all supported AI agents found on your sy
 
 Once installed, your AI coding assistant will automatically use this skill when you ask for help with tasks related to Vite and React. For example, you can ask it to:
 
--   "Review my Vite project for performance issues."
--   "Help me set up route splitting in my React application."
--   "What are the best practices for caching in a Vite SPA?"
+- "Review my Vite project for performance issues."
+- "Help me set up route splitting in my React application."
+- "What are the best practices for caching in a Vite SPA?"
 
 ## Contributing
 
