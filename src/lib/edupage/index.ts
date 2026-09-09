@@ -1,0 +1,29 @@
+/**
+ * The EduPage layer's public surface. UI and store code imports from here only —
+ * never from a sibling module, and never fetches or parses EduPage itself (CLAUDE.md).
+ */
+export * from "./types.ts";
+export {
+  type HttpClient,
+  type HttpRequest,
+  type HttpResponse,
+  capacitorHttp,
+  fetchHttp,
+  USER_AGENT,
+} from "./http.ts";
+export {
+  EdupageError,
+  fetchDaySubstitutionsHtml,
+  fetchRegularTimetable,
+  fetchTimetableList,
+  type RawTimetableListEntry,
+} from "./client.ts";
+export {
+  normalizeTimetable,
+  parseTimetableLabel,
+  toTimetableMeta,
+  type NormalizeResult,
+} from "./normalize.ts";
+export { listBuildings, selectTimetable, type TimetableSelection } from "./select.ts";
+export { otherRatio, parseDaySubstitutions } from "./substitutions.ts";
+export { resolveDay, weekdayOf, type ResolveOptions } from "./resolve.ts";

@@ -16,7 +16,8 @@
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "android": "npm run build && cap sync android && cap run android"
+    "android": "npm run build && cap sync android && cap run android",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",
@@ -34,13 +35,17 @@
     "@capacitor/cli": "^7.0.0",
     "@eslint/js": "^9.0.0",
     "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/coverage-v8": "^5.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.0",
+    "fake-indexeddb": "^6.2.5",
     "globals": "^16.0.0",
     "happy-dom": "^20.14.0",
     "prettier": "^3.0.0",
