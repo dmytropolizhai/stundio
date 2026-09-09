@@ -8,9 +8,12 @@ Class-based (no per-student login). Audience: portfolio + personal + schoolmates
 
 ## Status
 
-Phase 0 done: Vite + React 19 + TS (strict) scaffold, Tailwind v4, Vitest/happy-dom, ESLint,
-Prettier, GitLab CI, Capacitor Android project added. On-device launch not yet verified (no JDK /
-Android SDK on this machine). Phase 1 (the TS scraper + parser) is next — full roadmap: **`PLAN.md`**.
+Phases 0–2 done. Scaffold (Vite + React 19 + TS strict, Tailwind v4, Vitest/happy-dom, ESLint,
+Prettier, GitHub Actions CI, Capacitor Android project), the complete EduPage layer in
+`src/lib/edupage/` (fetch → normalize → parse → select → resolve), and the offline layer:
+`src/db/` (idb cache) + `src/sync/` (stale-while-revalidate) + `src/store/` (Zustand).
+171 tests, 97% line coverage. On-device launch still unverified (no JDK / Android SDK here).
+Next: **Phase 3** — the UI screens. Full roadmap: **`PLAN.md`**.
 Data/API contract: **`MODEL.md`**. Canonical types: **`src/lib/edupage/types.ts`**.
 
 ## Fixed constraints
@@ -28,11 +31,21 @@ Data/API contract: **`MODEL.md`**. Canonical types: **`src/lib/edupage/types.ts`
 |---|---|
 | `MODEL.md` | EduPage endpoints, payloads, table shapes, join recipe, substitution HTML grammar, merge algo |
 | `PLAN.md` | Phased action plan (0–5 + widget spike), decisions needed, risks |
+| `src/lib/edupage/` | The whole EduPage layer — import it via its `index.ts` barrel, never a sibling file |
 | `src/lib/edupage/types.ts` | Canonical TS data model (`Timetable`, `Substitution`, `ResolvedDay`, …) |
-| `src/lib/edupage/__tests__/fixtures/` | Copies of `data/` used by the parser tests |
+| `src/lib/edupage/http.ts` | `HttpClient` + the **only** Capacitor import in the layer (ESLint-enforced) |
+| `src/lib/edupage/client.ts` | The three endpoint calls; the single place the `{ e }` envelope is checked |
+| `src/lib/edupage/normalize.ts` | Raw aSc tables → `Timetable` (the cards→lessons→groups join) |
+| `src/lib/edupage/substitutions.ts` | Latvian HTML → `DaySubstitutions`; never throws, always keeps `raw` |
+| `src/lib/edupage/select.ts` | Pick `tt_num` by (date, building); sets `stale` |
+| `src/lib/edupage/resolve.ts` | `Timetable` + `DaySubstitutions` → `ResolvedDay` |
+| `src/db/` | `AppCache` port + idb and in-memory implementations (one shared contract test) |
+| `src/sync/` | Refresh policy (12h list / cached week / always-substitutions), retention, resume listener |
+| `src/store/` | Zustand store (vanilla + context), memoised `resolvedDay(date)`, `boot.ts` wiring |
+| `src/lib/edupage/__tests__/fixtures.ts` | Fixture reader — tests read repo-root `data/` directly, never a copy |
 | `reference/probe_edupage.py` | Working timetable scraper — regenerates `data/` fixtures, re-derives the API |
 | `reference/probe_substitution.py` | Working substitutions scraper + HTML parser (stdlib only) |
-| `data/` | Raw + normalized fixtures (2026-09-09). Source of truth for the copies under `__tests__/fixtures/`. |
+| `data/` | Raw + normalized fixtures (2026-09-09). The single copy — parser tests read it directly. |
 | `android/` | Capacitor Android project (generated; the Kotlin widget lands here) |
 
 Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single Vite app (no monorepo) for v1.
@@ -56,6 +69,9 @@ Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single
 - **The parser never throws.** Unknown substitution phrasing → `kind: "other"`, keep `raw`.
   `raw` (the full localized `.info` string) is always preserved — it's the only lossless field.
 - **Cancelled lessons stay visible** in `ResolvedDay` with `status: "cancelled"`.
+- **Tests never touch the network.** `src/sync/__tests__/fakeServer.ts` replays the `data/`
+  fixtures; inject a `Boot`/`HttpClient` rather than letting a component reach the real school.
+- **UI reads the cache, never the network.** `store` → `sync` → `lib/edupage`, one direction.
 - Parser changes must keep the fixture tests green, including the "canary" (`other` ratio < 15%).
 - `probe_*.py` stay in the repo as the **cross-check oracle** for the TS parser. Update them
   and the fixtures together when the API shifts.
@@ -83,7 +99,7 @@ npm run android      # build + cap sync + cap run android  (needs JDK 21 + Andro
 # Re-derive the API / regenerate fixtures (needs python3 + requests):
 python3 reference/probe_edupage.py                    # timetable → data/
 python3 reference/probe_substitution.py 2026-09-09    # substitutions → data/
-# then re-copy data/* into src/lib/edupage/__tests__/fixtures/
 ```
 
-CI (`.gitlab-ci.yml`): `lint + format:check → typecheck → test → build`.
+CI (`.github/workflows/ci.yml`): `lint → format:check → typecheck → test:coverage → build`,
+on push to `main`, on PRs, and manually. Coverage thresholds live in `vite.config.ts`.

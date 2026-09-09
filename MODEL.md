@@ -45,25 +45,38 @@ Fields used by the scraper:
 - **teachers**: `{id, short, color}` — ⚠️ only `short` populated here (`"Surname Name"`), no `firstname`/`lastname`.
 - **subjects**: `{id, name, short, color}` — `name` and `short` are often identical (full LV title).
 - **classrooms**: `{id, name, short}` — `short` like `"501 (32)P"`.
-- **groups**: `{id, classid, ...}` — used to resolve class membership for divided lessons.
-- **lessons**: `{id, subjectid, teacherids[], classids[], groupids[], durationperiods, count, terms, weeksdefid, termsdefid}`.
-  ~94 % (1041/1110) carry `classids` directly; the rest resolve class via `groupids → groups[].classid`.
-- **cards**: `{id, lessonid, period, days, weeks, terms, classroomids[], locked}`.
-  One card = one placed slot. `days` / `weeks` / `terms` are **bitmask strings**:
+- **groups**: `{id, classid, name, entireclass, ascttdivision, divisionid}` — resolves class
+  membership for divided lessons. ⚠️ The group **label** is `name` (`"1"`, `"2"`, `"1.grupa"`,
+  `"Zēni"`); `ascttdivision` is only the *division index* (which split scheme), so it is NOT a
+  label. The substitution feed prints the `name`, which is what `Lesson.groups` must carry —
+  `lessons.groupnames[]` already holds it directly.
+- **lessons**: `{id, subjectid, teacherids[], classids[], groupids[], groupnames[], durationperiods, count, terms, weeksdefid, termsdefid}`.
+  1041/1110 carry `classids`; the same 1041 also carry `groupids`. ⚠️ The remaining **69 have
+  neither** — they cannot be attributed to a class at all, and 64 of their cards are placed,
+  so ~2 % of placed cards are unattributable and get dropped. Resolving via
+  `groups[groupids].classid` adds **zero** classes beyond `classids` in this dataset; keep the
+  union anyway (it is free and other schools may differ), but do not rely on it as a fallback.
+- **cards**: `{id, lessonid, period, days, weeks, classroomids[], locked}`.
+  One card = one placed slot. `days` / `weeks` are **bitmask strings**:
   `days = "00100"` → Wednesday (positions = Mon..Fri, length 5).
   `weeks = "1"` here (would be `"10"` / `"01"` for A/B-week schools).
+  ⚠️ Cards have **no `terms` field** — `terms` lives on the *lesson*. 568 of 3336 cards have an
+  empty `days`/`weeks`: those are **unplaced** and must be skipped (2768 remain).
 
 ### Join recipe (→ `Lesson` in the contract)
 
 ```
 for card in cards:
+    day    = weekday_from_bitmask(card.days)          # first "1"; None → unplaced, skip
+    if day is None: continue
     lesson = lessons[card.lessonid]
-    day    = weekday_from_bitmask(card.days)          # first "1"
     classIds = set(lesson.classids) | { groups[g].classid for g in lesson.groupids }
+    if not classIds: continue                         # 64 placed cards die here
     → Lesson{ id: card.id, classIds, subjectId: lesson.subjectid,
               teacherIds: lesson.teacherids, roomIds: card.classroomids,
+              groups: lesson.groupnames or [groups[g].name for g in lesson.groupids],
               day, period: card.period, periodSpan: lesson.durationperiods,
-              weekMask: card.weeks, termMask: card.terms }
+              weekMask: card.weeks, termMask: lesson.terms }   # terms: LESSON, not card
 ```
 
 ---
@@ -102,6 +115,13 @@ div[data-date]
 - `period` in **parentheses** = the original slot being vacated → `isOriginalSlot = true`.
 - Range `"7 - 8"` → `periods: [7, 8]`.
 - Row css class (`change`/`add`/`remove`) is a coarse hint only; real `kind` comes from `.info`.
+- In the 2026-09-09 sample `isOriginalSlot` correlates **exactly** with `kind`:
+  `true` ⟺ `cancelled | moved_out` (the slot is vacated), `false` ⟺
+  `moved_in | added | substitution | room_change`. `resolve.ts` relies on the *kind*, not the
+  parens, so a future divergence degrades gracefully rather than misplacing lessons.
+- ⚠️ The "Skolotāji, kuri nepiedalās: …" (absent teachers) line is a bare
+  `div[style="text-align:center"]`, **not** `.subst_note`, so it is not captured in `notes`.
+  Add a selector for it if the UI ever wants to show it.
 
 ### `.info` grammar (Latvian — **locale-dependent**, `raw` is the only lossless field)
 
