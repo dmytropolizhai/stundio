@@ -7,7 +7,7 @@ export type SyncState = "synced" | "syncing" | "offline" | "failed";
 /**
  * Icon and colour per state. The text is *not* here.
  *
- * The published component hardcodes English ("Up to date", "Offline copy"). Studio's chrome is
+ * The published component hardcodes English ("Up to date", "Offline copy"). Stundio's chrome is
  * translated — LV is the source dictionary — so the caller passes `label`, and this keeps only the
  * glyph and the reserved status colour, which are the parts the DS actually specifies.
  */

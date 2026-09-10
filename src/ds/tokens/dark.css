@@ -1,7 +1,7 @@
 /*
  * Dark theme — AUTHORED HERE, NOT PART OF THE DESIGN SYSTEM.
  *
- * The Studio DS is light-only: it defines no dark values for any token. Studio ships dark mode as
+ * The Studio DS is light-only: it defines no dark values for any token. Stundio ships dark mode as
  * a user *setting* (see `useTheme`), so the semantic aliases are re-pointed under `.dark` while the
  * base palette (blue-*, ink-*, accent-*) stays exactly as the DS defines it. Only aliases are
  * overridden — never a base step — so if the DS later publishes its own dark layer this file is
