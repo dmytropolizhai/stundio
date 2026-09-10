@@ -1,0 +1,25 @@
+/* Verbatim from Studio Design System — tokens/spacing.css. Do not hand-edit; re-pull instead. */
+:root {
+  /* 4px base, but the product leans on the larger steps */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* layout */
+  --gutter-screen: 20px; /* phone side padding */
+  --gap-card: 12px; /* between stacked cards */
+  --gap-section: 28px; /* between screen sections */
+  --nav-height: 64px; /* floating bottom nav */
+  --nav-inset: 16px; /* nav distance from screen edge */
+  --topbar-height: 56px;
+  --tap-min: 44px; /* minimum hit target */
+  --screen-max: 420px; /* phone design width */
+}

@@ -1,10 +1,13 @@
 /// <reference types="vitest/config" />
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // shadcn convention: "@/…" is the src root. Mirrored in tsconfig.app.json paths.
+  resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   // Capacitor copies dist/ into the Android assets bundle.
   build: { outDir: "dist", sourcemap: true },
   server: {

@@ -1,64 +1,353 @@
 @import "tailwindcss";
 
+/* Studio Design System — raw token layer. `dark.css` is authored here, the rest is verbatim. */
+@import "./ds/tokens/fonts.css";
+@import "./ds/tokens/colors.css";
+@import "./ds/tokens/typography.css";
+@import "./ds/tokens/spacing.css";
+@import "./ds/tokens/surfaces.css";
+@import "./ds/tokens/motion.css";
+@import "./ds/tokens/dark.css";
+
 /*
  * Dark mode is a *setting*, not just a media query: the user can force light or dark from
  * Settings, so the variant keys off a `.dark` class that `useTheme` puts on <html>.
  */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+/*
+ * DS tokens → Tailwind utilities.
+ *
+ * `inline` is load-bearing: the generated utilities emit `var(--brand)` rather than baking in the
+ * literal, so `dark.css` re-pointing an alias re-themes every utility without regenerating a thing.
+ *
+ * Naming note — Tailwind owns `--text-*` for font sizes, and the DS uses `--text-*` for text
+ * colours. The sizes win the namespace (`text-title`, `text-body`); the colours are exposed as
+ * `--color-fg`, `--color-muted`, `--color-strong` (→ `text-muted`, `text-strong`). The DS's
+ * `--radius-*`, `--shadow-*` and `--font-*` names already match Tailwind's namespaces exactly and
+ * are passed straight through.
+ */
+@theme inline {
+  /* ——— Type families ——— */
+  --font-display: var(--font-display);
+  --font-text: var(--font-text);
+  --font-data: var(--font-data);
+  --font-wordmark: var(--font-wordmark);
 
-  /* One accent, used for "now", the active tab and primary actions. */
-  --color-accent-50: oklch(0.97 0.02 255);
-  --color-accent-100: oklch(0.93 0.05 255);
-  --color-accent-400: oklch(0.72 0.15 255);
-  --color-accent-500: oklch(0.62 0.18 255);
-  --color-accent-600: oklch(0.54 0.19 255);
+  /* ——— Type scale (size / line-height / tracking / weight) ——— */
+  --text-hero: var(--size-hero);
+  --text-hero--line-height: var(--lh-hero);
+  --text-hero--letter-spacing: var(--track-hero);
+  --text-hero--font-weight: var(--fw-black);
 
-  /* Surfaces, so screens never hand-pick slate shades one by one. */
-  --color-surface: oklch(1 0 0);
-  --color-surface-sunken: oklch(0.97 0.005 255);
-  --color-surface-raised: oklch(1 0 0);
+  --text-display-1: var(--size-display-1);
+  --text-display-1--line-height: var(--lh-display-1);
+  --text-display-1--letter-spacing: var(--track-display);
+  --text-display-1--font-weight: var(--fw-black);
 
+  --text-display-2: var(--size-display-2);
+  --text-display-2--line-height: var(--lh-display-2);
+  --text-display-2--letter-spacing: var(--track-display);
+  --text-display-2--font-weight: var(--fw-bold);
+
+  --text-title: var(--size-title);
+  --text-title--line-height: var(--lh-title);
+  --text-title--letter-spacing: var(--track-display);
+  --text-title--font-weight: var(--fw-bold);
+
+  --text-body-lg: var(--size-body-lg);
+  --text-body-lg--line-height: var(--lh-body-lg);
+  --text-body-lg--font-weight: var(--fw-medium);
+
+  --text-body: var(--size-body);
+  --text-body--line-height: var(--lh-body);
+  --text-body--font-weight: var(--fw-medium);
+
+  --text-caption: var(--size-caption);
+  --text-caption--line-height: var(--lh-caption);
+  --text-caption--font-weight: var(--fw-medium);
+
+  --text-micro: var(--size-micro);
+  --text-micro--line-height: var(--lh-micro);
+  --text-micro--font-weight: var(--fw-bold);
+
+  --text-time: var(--size-time);
+  --text-time--line-height: 1.3;
+  --text-time--letter-spacing: var(--track-time);
+  --text-time--font-weight: var(--fw-medium);
+
+  --tracking-label: var(--track-label);
+  --tracking-display: var(--track-display);
+  --tracking-hero: var(--track-hero);
+
+  --font-weight-light: var(--fw-light);
+  --font-weight-regular: var(--fw-regular);
+  --font-weight-medium: var(--fw-medium);
+  --font-weight-semibold: var(--fw-semibold);
+  --font-weight-bold: var(--fw-bold);
+  --font-weight-black: var(--fw-black);
+
+  /* ——— Colour: base palette ——— */
+  --color-white: var(--white);
+  --color-blue-050: var(--blue-050);
+  --color-blue-100: var(--blue-100);
+  --color-blue-200: var(--blue-200);
+  --color-blue-300: var(--blue-300);
+  --color-blue-400: var(--blue-400);
+  --color-blue-500: var(--blue-500);
+  --color-blue-600: var(--blue-600);
+  --color-blue-700: var(--blue-700);
+  --color-blue-800: var(--blue-800);
+  --color-blue-900: var(--blue-900);
+  --color-ink-050: var(--ink-050);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-300: var(--ink-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-700: var(--ink-700);
+  --color-ink-900: var(--ink-900);
+
+  /* ——— Colour: semantic aliases ——— */
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-tint: var(--brand-tint);
+  --color-app: var(--bg-app);
+  --color-inverse: var(--bg-inverse);
+  --color-card: var(--surface-card);
+  --color-sunken: var(--surface-sunken);
+  --color-overlay: var(--surface-overlay);
+  --color-glass: var(--surface-glass);
+  --color-fg: var(--text-body);
+  --color-strong: var(--text-strong);
+  --color-muted: var(--text-muted);
+  --color-on-brand: var(--text-on-brand);
+  --color-on-inverse: var(--text-on-inverse);
+  --color-link: var(--text-link);
+  --color-link-hover: var(--text-link-hover);
+  --color-hairline: var(--border-hairline);
+  --color-strong-border: var(--border-strong);
+  --color-on-brand-border: var(--border-on-brand);
+  --color-focus: var(--focus-ring);
+
+  /* ——— Colour: status ——— */
+  --color-success: var(--status-success);
+  --color-warning: var(--status-warning);
+  --color-danger: var(--status-danger);
+  --color-offline: var(--status-offline);
+
+  /* ——— Colour: the six subject accents, each with its ink pair ——— */
+  --color-amber: var(--accent-amber);
+  --color-amber-ink: var(--accent-amber-ink);
+  --color-sky: var(--accent-sky);
+  --color-sky-ink: var(--accent-sky-ink);
+  --color-lilac: var(--accent-lilac);
+  --color-lilac-ink: var(--accent-lilac-ink);
+  --color-pink: var(--accent-pink);
+  --color-pink-ink: var(--accent-pink-ink);
+  --color-mint: var(--accent-mint);
+  --color-mint-ink: var(--accent-mint-ink);
+  --color-lime: var(--accent-lime);
+  --color-lime-ink: var(--accent-lime-ink);
+
+  /* ——— Radii (DS names already match Tailwind's namespace) ——— */
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-pill: var(--radius-pill);
+  --radius-squircle: var(--radius-squircle);
+
+  /* ——— Elevation ——— */
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+  --shadow-nav: var(--shadow-nav);
+  --shadow-brand: var(--shadow-brand);
+  --shadow-hairline: var(--shadow-inset-hairline);
+
+  /*
+   * Layout. The DS 4px base matches Tailwind's default spacing step, so `p-5` is the 20px
+   * gutter, `gap-3` the 12px card gap and `gap-7` the 28px section gap. These name the ones
+   * worth naming.
+   */
+  --spacing-gutter: var(--gutter-screen);
+  --spacing-section: var(--gap-section);
+  --spacing-nav-height: var(--nav-height);
+  --spacing-nav-inset: var(--nav-inset);
+  --spacing-topbar: var(--topbar-height);
+  --spacing-tap: var(--tap-min);
   --spacing-safe-top: env(safe-area-inset-top, 0px);
   --spacing-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --container-screen: var(--screen-max);
+
+  /* ——— Motion ——— */
+  --ease-standard: var(--ease-standard);
+  --ease-spring: var(--ease-spring);
+  --blur-glass: var(--blur-glass);
+  --blur-scrim: var(--blur-scrim);
+
+  /*
+   * The DS rule is that a fade is always paired with a small translate, never a fade alone, and
+   * that nothing bounces except the sheet entrance and the nav's active pill — hence `--ease-spring`
+   * on exactly those two and `--ease-standard` everywhere else.
+   */
+  --animate-shimmer: studio-shimmer 1.2s linear infinite;
+  --animate-sheet-in: studio-sheet-in var(--dur-base) var(--ease-spring);
+  --animate-scrim-in: studio-scrim-in var(--dur-fast) var(--ease-standard);
 }
 
-/* The app runs full-bleed inside the Capacitor WebView. */
-:root {
-  --app-inset-top: env(safe-area-inset-top, 0px);
-  --app-inset-bottom: env(safe-area-inset-bottom, 0px);
-  color-scheme: light;
+@keyframes studio-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -40% 0;
+  }
 }
 
-:root.dark {
-  color-scheme: dark;
+@keyframes studio-sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0.6;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 
-html,
-body,
-#root {
-  height: 100%;
+@keyframes studio-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-body {
-  /* No browser pull-to-refresh; the day screen implements its own. */
-  overscroll-behavior-y: none;
-  -webkit-tap-highlight-color: transparent;
-  /* A long-press on a lesson card should not start a text selection on Android. */
-  -webkit-user-select: none;
-  user-select: none;
+/* ——— DS base layer (tokens/base.css), plus the bits Capacitor needs ——— */
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  /* The app runs full-bleed inside the Capacitor WebView. */
+  :root {
+    --app-inset-top: env(safe-area-inset-top, 0px);
+    --app-inset-bottom: env(safe-area-inset-bottom, 0px);
+    color-scheme: light;
+  }
+  :root.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg-app);
+    color: var(--text-body);
+    font: var(--type-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* No browser pull-to-refresh; the day screen implements its own. */
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    /* A long-press on a lesson card should not start a text selection on Android. */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--track-display);
+    line-height: 0.95;
+    color: var(--text-strong);
+    text-wrap: balance;
+  }
+  h1 {
+    font-size: var(--size-display-1);
+  }
+  h2 {
+    font-size: var(--size-display-2);
+  }
+  h3 {
+    font-size: var(--size-title);
+  }
+  h4 {
+    font-size: var(--size-body-lg);
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  a {
+    color: var(--text-link);
+    text-decoration: none;
+    font-weight: var(--fw-bold);
+  }
+  a:hover {
+    color: var(--text-link-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  :where(button, a, [role="button"], input, select):focus-visible {
+    outline: var(--border-width-strong) solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* ——— DS utility classes (tokens/base.css) ——— */
+@utility u-eyebrow {
+  font: var(--type-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+@utility u-data {
+  font: var(--type-data);
+  font-variant-numeric: tabular-nums;
+}
+@utility u-hero {
+  font: var(--type-hero);
+  letter-spacing: var(--track-hero);
+}
+@utility u-wordmark {
+  font: var(--type-wordmark);
+  font-family: var(--font-wordmark);
+  font-weight: 900;
+  letter-spacing: 0.005em;
 }
 
 /* The week pager and the class list scroll horizontally; the bar itself is noise on mobile. */
-.no-scrollbar {
+@utility no-scrollbar {
   scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
+/*
+ * The DS collapses its own duration tokens under `prefers-reduced-motion` (tokens/motion.css).
+ * This is the blanket backstop for anything animating outside those tokens.
+ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

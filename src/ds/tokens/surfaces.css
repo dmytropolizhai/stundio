@@ -1,0 +1,28 @@
+/* Verbatim from Studio Design System — tokens/surfaces.css. Do not hand-edit; re-pull instead. */
+:root {
+  /* radii — generously round, never sharp */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 28px; /* standard card */
+  --radius-2xl: 36px; /* hero card / bottom sheet */
+  --radius-pill: 999px;
+  --radius-squircle: 30%; /* app-icon style tiles */
+
+  /* borders */
+  --border-width: 1px;
+  --border-width-strong: 2px;
+
+  /* elevation — soft, low-contrast, blue-tinted; never grey-black drop shadows */
+  --shadow-none: none;
+  --shadow-card: 0 2px 6px rgba(6, 11, 61, 0.05), 0 12px 28px -12px rgba(6, 11, 61, 0.12);
+  --shadow-raised: 0 4px 10px rgba(6, 11, 61, 0.06), 0 24px 48px -20px rgba(6, 11, 61, 0.2);
+  --shadow-nav: 0 8px 24px rgba(6, 11, 61, 0.24);
+  --shadow-brand: 0 12px 32px -12px rgba(30, 58, 255, 0.55);
+  --shadow-inset-hairline: inset 0 0 0 1px var(--border-hairline);
+
+  /* blur / glass — only over the blue hero, never over white */
+  --blur-glass: 18px;
+  --blur-scrim: 8px;
+}

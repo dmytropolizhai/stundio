@@ -1,0 +1,29 @@
+/*
+ * Self-hosted replacement for the design system's `tokens/fonts.css`.
+ *
+ * The DS file `@import`s Manrope and JetBrains Mono from Google Fonts. Studio is local-first and
+ * runs inside a Capacitor WebView with no guaranteed network, so the faces are bundled instead —
+ * same families, same weights, resolved at build time. The `latin-ext` subset that @fontsource
+ * ships is not optional here: EduPage prints subject names in Latvian (Programmēšana, Angļu
+ * valoda) and the diacritics must not fall back.
+ */
+@import "@fontsource/manrope/400.css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/700.css";
+
+/*
+ * Moho Condensed (Latinotype) — licensed webfont, shipped with the app only. Of the six weights
+ * the DS carries, only Black is ever rendered: it sets the `studio.` wordmark and nothing else.
+ */
+@font-face {
+  font-family: "Moho Condensed";
+  src: url("../assets/fonts/moho-condensed-black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
