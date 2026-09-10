@@ -7,7 +7,7 @@
  * labelled with `lesson.fromSchool`.
  */
 export const lv = {
-  "app.title": "Studio",
+  "app.title": "Stundio",
 
   "nav.day": "Diena",
   "nav.week": "Nedēļa",

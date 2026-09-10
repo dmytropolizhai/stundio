@@ -34,10 +34,10 @@ import {
 import { cn } from "../../lib/utils.ts";
 
 /**
- * The design system's icon wrapper — the one file that knows which icon set Studio uses.
+ * The design system's icon wrapper — the one file that knows which icon set Stundio uses.
  *
  * Deviation from the DS, deliberately: the published `Icon.jsx` fetches Lucide SVG source from
- * the jsDelivr CDN at runtime. Studio is local-first and runs in a Capacitor WebView with no
+ * the jsDelivr CDN at runtime. Stundio is local-first and runs in a Capacitor WebView with no
  * guaranteed network, so the glyphs are imported from `lucide-react` and bundled instead. The DS
  * readme sanctions exactly this for offline builds. Same set, same 2px stroke, same 24px grid.
  *

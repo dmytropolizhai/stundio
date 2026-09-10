@@ -8,7 +8,7 @@
  * Source of truth: the "Studio Design System" Claude Design project. Tokens under `ds/tokens/` are
  * verbatim copies — regenerate them rather than editing. Two files are deliberate local
  * deviations, both documented in place: `tokens/dark.css` (the DS is light-only) and
- * `tokens/fonts.css` (self-hosted rather than Google Fonts, because Studio is offline-first).
+ * `tokens/fonts.css` (self-hosted rather than Google Fonts, because Stundio is offline-first).
  */
 
 export { cn } from "./lib/utils.ts";

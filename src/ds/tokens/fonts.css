@@ -1,7 +1,7 @@
 /*
  * Self-hosted replacement for the design system's `tokens/fonts.css`.
  *
- * The DS file `@import`s Manrope and JetBrains Mono from Google Fonts. Studio is local-first and
+ * The DS file `@import`s Manrope and JetBrains Mono from Google Fonts. Stundio is local-first and
  * runs inside a Capacitor WebView with no guaranteed network, so the faces are bundled instead —
  * same families, same weights, resolved at build time. The `latin-ext` subset that @fontsource
  * ships is not optional here: EduPage prints subject names in Latvian (Programmēšana, Angļu
