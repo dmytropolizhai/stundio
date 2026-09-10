@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { Icon } from "./icon.tsx";
-import { cn } from "../../lib/utils.ts";
+import { cn, pressable } from "../../lib/utils.ts";
 
 /** The six subject accents plus brand. A subject keeps its tone everywhere in the app. */
 export type LessonTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime" | "brand";
@@ -100,8 +100,7 @@ export const LessonCard = ({
 
   return (
     <div
-      onClick={onClick}
-      {...(interactive ? { role: "button", tabIndex: 0 } : {})}
+      {...pressable(onClick)}
       className={cn(
         lessonCardVariants({ filled, tone, cancelled, interactive }),
         status === "now" && !filled && "inset-ring-2 inset-ring-brand",

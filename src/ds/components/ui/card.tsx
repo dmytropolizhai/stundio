@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentPropsWithoutRef } from "react";
-import { cn } from "../../lib/utils.ts";
+import { cn, pressable } from "../../lib/utils.ts";
 
 /*
  * Cards are white, 28px, unbordered, with a blue-tinted shadow. The six subject-accent tones get
@@ -51,8 +51,7 @@ export const Card = ({
   const tinted = TINTED.some((t) => t === tone);
   return (
     <div
-      onClick={onClick}
-      {...(interactive ? { role: "button", tabIndex: 0 } : {})}
+      {...pressable(onClick)}
       className={cn(
         cardVariants({
           tone,

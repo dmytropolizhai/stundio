@@ -23,6 +23,7 @@ import {
   Search,
   Settings,
   Share2,
+  Star,
   Sun,
   TriangleAlert,
   UserRound,
@@ -72,11 +73,14 @@ const ICONS = {
   "wifi-off": WifiOff,
   x: X,
   /*
-   * Beyond the DS working set: Settings offers a light / dark / system theme choice, which needs
-   * a partner for `moon`. Same set, same weight — nothing else is added here.
+   * Beyond the DS working set, and only where the DS's own rules demand a glyph:
+   *  - sun / monitor: Settings offers light / dark / system, so `moon` needs partners.
+   *  - star: favourite classes. The DS bans emoji and unicode-as-icon ("no ✓, ★, → in text —
+   *    use the Lucide glyph"), which is exactly what this is.
    */
   sun: Sun,
   monitor: Monitor,
+  star: Star,
 } as const;
 
 export type IconName = keyof typeof ICONS;

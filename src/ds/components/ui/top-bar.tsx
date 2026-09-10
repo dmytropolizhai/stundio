@@ -54,7 +54,14 @@ export const TopBar = ({
             {eyebrow}
           </div>
         )}
-        <div className="font-display text-display-2 leading-none tracking-display">{title}</div>
+        {/*
+          An `<h1>`, not the `<div>` the published component uses: this is the screen's title, and
+          without it a screen reader's heading list is empty. The DS type is unchanged — the
+          utilities override the base-layer `h1` size.
+        */}
+        <h1 className="font-display text-display-2 leading-none tracking-display text-current">
+          {title}
+        </h1>
       </div>
       {actions !== undefined && <div className="flex gap-2">{actions}</div>}
     </header>

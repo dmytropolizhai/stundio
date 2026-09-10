@@ -5,6 +5,7 @@ export const en: Dict = {
 
   "nav.day": "Day",
   "nav.week": "Week",
+  "nav.subjects": "Subjects",
   "nav.settings": "Settings",
 
   "onboarding.title": "Pick your class",
@@ -36,6 +37,7 @@ export const en: Dict = {
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",
   "lesson.period": "Period",
+  "lesson.ordinal": "{n}. lesson",
   "lesson.group": "Group",
   "lesson.building": "Building",
   "lesson.was": "Was",
@@ -60,6 +62,12 @@ export const en: Dict = {
   "time.inMinutes": "in {n} min",
   "time.minutesLeft": "{n} min left",
   "time.startsNow": "starting now",
+
+  "subjects.title": "Subjects",
+  "subjects.perWeek": "{n}× a week",
+  "subjects.teachers": "Teachers",
+  "subjects.empty": "No subjects",
+  "subjects.emptyHint": "Subjects appear once the timetable is downloaded.",
 
   "settings.title": "Settings",
   "settings.class": "My class",

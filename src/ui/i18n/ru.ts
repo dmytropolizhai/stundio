@@ -5,6 +5,7 @@ export const ru: Dict = {
 
   "nav.day": "День",
   "nav.week": "Неделя",
+  "nav.subjects": "Предметы",
   "nav.settings": "Настройки",
 
   "onboarding.title": "Выбери свой класс",
@@ -36,6 +37,7 @@ export const ru: Dict = {
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",
   "lesson.period": "Урок",
+  "lesson.ordinal": "{n}. урок",
   "lesson.group": "Группа",
   "lesson.building": "Корпус",
   "lesson.was": "Было",
@@ -60,6 +62,12 @@ export const ru: Dict = {
   "time.inMinutes": "через {n} мин",
   "time.minutesLeft": "осталось {n} мин",
   "time.startsNow": "начинается",
+
+  "subjects.title": "Предметы",
+  "subjects.perWeek": "{n}× в неделю",
+  "subjects.teachers": "Учителя",
+  "subjects.empty": "Нет предметов",
+  "subjects.emptyHint": "Предметы появятся после загрузки расписания.",
 
   "settings.title": "Настройки",
   "settings.class": "Мой класс",

@@ -35,7 +35,13 @@ describe("DayView", () => {
     const harness = await bootHarness();
     renderDay(harness);
 
-    const rows = screen.getAllByRole("listitem").filter((li) => li.querySelector("button"));
+    /*
+     * The design system's lesson card is a `div role="button"` — it nests a heading and its own
+     * badges, which a real `<button>` may not contain — so rows are found by role, not by tag.
+     */
+    const rows = screen
+      .getAllByRole("listitem")
+      .filter((li) => li.querySelector('[role="button"]'));
     expect(rows.length).toBeGreaterThan(0);
     // The header says "Today" because the fake clock is on the fixture date.
     expect(screen.getByText("Šodien")).toBeDefined();
@@ -50,7 +56,7 @@ describe("DayView", () => {
     expect(badge).toBeDefined();
 
     // Opening it shows the raw Latvian note under a "from school" label, untranslated.
-    fireEvent.click(badge!.closest("button")!);
+    fireEvent.click(badge!.closest('[role="button"]')!);
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).getByText("No skolas")).toBeDefined();
   });

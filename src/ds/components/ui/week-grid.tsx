@@ -2,8 +2,10 @@ import type { LessonTone } from "./lesson-card.tsx";
 import { cn } from "../../lib/utils.ts";
 
 export type WeekGridCell = {
-  /** Fixed 3-letter subject code. The DS allows abbreviation here and nowhere else. */
+  /** Short subject code. The DS allows abbreviation here and nowhere else. */
   short: string;
+  /** Unabbreviated subject name. Not drawn — it is what assistive tech announces. */
+  name?: string;
   tone?: LessonTone;
   cancelled?: boolean;
 };
@@ -24,6 +26,14 @@ export type WeekGridProps<K extends string = string> = {
   days: readonly WeekGridDay<K>[];
   periods: readonly WeekGridPeriod<K>[];
   onSelect?: (cell: WeekGridCell, day: K, period: number) => void;
+  /**
+   * Makes the weekday headers tappable — a shortcut from the week overview into one day.
+   *
+   * Beyond the published DS component, which renders the headers as inert text. The affordance
+   * predates the design system in this app and dropping it would be a regression, so it is opt-in
+   * rather than assumed: with no handler the headers stay plain text, exactly as designed.
+   */
+  onSelectDay?: (day: K) => void;
   className?: string;
   /** Accessible label for each cell, so a 3-letter code is not the only thing announced. */
   cellLabel?: (cell: WeekGridCell, day: WeekGridDay<K>, period: number) => string;
@@ -50,6 +60,7 @@ export const WeekGrid = <K extends string>({
   days,
   periods,
   onSelect,
+  onSelectDay,
   className,
   cellLabel,
 }: WeekGridProps<K>) => (
@@ -58,17 +69,28 @@ export const WeekGrid = <K extends string>({
     style={{ gridTemplateColumns: `36px repeat(${String(days.length)}, minmax(0,1fr))` }}
   >
     <span />
-    {days.map((day) => (
-      <span
-        key={day.key}
-        className={cn(
-          "text-center font-text text-micro font-bold tracking-label uppercase",
-          day.today === true ? "text-brand-strong" : "text-muted",
-        )}
-      >
-        {day.weekday}
-      </span>
-    ))}
+    {days.map((day) => {
+      const heading = cn(
+        "rounded-sm text-center font-text text-micro font-bold tracking-label uppercase",
+        day.today === true ? "text-brand-strong" : "text-muted",
+      );
+      return onSelectDay === undefined ? (
+        <span key={day.key} className={heading}>
+          {day.weekday}
+        </span>
+      ) : (
+        <button
+          key={day.key}
+          type="button"
+          onClick={() => {
+            onSelectDay(day.key);
+          }}
+          className={cn(heading, "cursor-pointer border-0 bg-transparent py-1 hover:bg-sunken")}
+        >
+          {day.weekday}
+        </button>
+      );
+    })}
 
     {periods.map((period) => (
       <div key={period.period} className="contents">
@@ -82,13 +104,13 @@ export const WeekGrid = <K extends string>({
             <button
               key={day.key}
               type="button"
-              aria-label={cellLabel?.(cell, day, period.period) ?? cell.short}
+              aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
               onClick={() => {
                 onSelect?.(cell, day.key, period.period);
               }}
               className={cn(
-                "h-10 overflow-hidden rounded-sm border-0 px-1.5",
-                "font-text text-caption font-bold text-ink-900 text-ellipsis whitespace-nowrap",
+                "h-10 truncate rounded-sm border-0 px-1.5",
+                "font-text text-caption font-bold text-ink-900",
                 TONE_BG[cell.tone ?? "sky"],
                 cell.cancelled === true && "opacity-40 line-through",
                 onSelect === undefined ? "cursor-default" : "cursor-pointer",
