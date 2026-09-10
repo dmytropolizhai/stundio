@@ -41,7 +41,7 @@ export const minutesOf = (time: HHMM): number | null => {
 export type LessonWindow = { lesson: ResolvedLesson; start: number; end: number };
 
 /**
- * Lessons that actually take place, in time order. Cancelled ones stay visible in the list
+ * Lessons that actually take place, in time order. Cancel  led ones stay visible in the list
  * (CLAUDE.md) but must never be reported as "current" or "next" — nobody attends them.
  */
 export const timedLessons = (lessons: readonly ResolvedLesson[]): LessonWindow[] => {

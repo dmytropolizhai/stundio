@@ -5,10 +5,12 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   ANON_GSH,
+  EDUPAGE_PROXY_PREFIX,
   EdupageError,
   fetchDaySubstitutionsHtml,
   fetchRegularTimetable,
   fetchTimetableList,
+  schoolBaseUrl,
 } from "../client.ts";
 import { parseLooseJson } from "../http.ts";
 import type { HttpClient } from "../http.ts";
@@ -115,5 +117,23 @@ describe("parseLooseJson", () => {
 
   it("returns the raw text when it is not JSON", () => {
     expect(parseLooseJson("not json")).toBe("not json");
+  });
+});
+
+describe("request target vs Referer", () => {
+  it("sends to the school and keeps the Referer on the school's own origin", async () => {
+    // Under Vitest MODE is "test", so no proxy prefix: the fake server answers directly.
+    const http = vi.fn().mockResolvedValue({ status: 200, data: { r: { regular: {} } } });
+    await fetchTimetableList(http, 2026);
+
+    const req = http.mock.calls[0]?.[0] as { url: string; headers?: Record<string, string> };
+    expect(req.url.startsWith(schoolBaseUrl("pikcrvt"))).toBe(true);
+    expect(req.headers?.["Referer"]).toBe("https://pikcrvt.edupage.org/timetable/");
+  });
+
+  it("keeps the proxy prefix and the school origin as separate concerns", () => {
+    // The dev proxy may only ever change where the request GOES, never what it claims to be.
+    expect(EDUPAGE_PROXY_PREFIX.startsWith("/")).toBe(true);
+    expect(schoolBaseUrl("pikcrvt")).toBe("https://pikcrvt.edupage.org");
   });
 });

@@ -11,7 +11,24 @@ import type { ISODate } from "./types.ts";
 /** The anonymous hash. Not a placeholder — see CLAUDE.md. */
 export const ANON_GSH = "00000000";
 
+/** The school's real origin. Always used for `Referer`, whatever the request goes through. */
 export const schoolBaseUrl = (subdomain: string): string => `https://${subdomain}.edupage.org`;
+
+/** The dev-server proxy prefix; the target and rewrite live in `vite.config.ts`. */
+export const EDUPAGE_PROXY_PREFIX = "/api-edupage";
+
+/**
+ * Where requests are actually sent.
+ *
+ * In `npm run dev` the app is a page on localhost, and EduPage sends no CORS headers
+ * (CLAUDE.md), so calls go through Vite's `/api-edupage` proxy. In every other mode — the
+ * production bundle Capacitor ships, where `CapacitorHttp` is not bound by CORS, and under
+ * Vitest, where the fake server answers — they go straight to the school. This is the only
+ * place that choice is made; the proxy must never leak into a device build, which has no
+ * dev server to proxy through.
+ */
+export const apiBaseUrl = (subdomain: string): string =>
+  import.meta.env.MODE === "development" ? EDUPAGE_PROXY_PREFIX : schoolBaseUrl(subdomain);
 
 export class EdupageError extends Error {
   readonly func: string;
@@ -97,13 +114,14 @@ export const fetchTimetableList = async (
   year: number,
   subdomain = "pikcrvt",
 ): Promise<{ entries: RawTimetableListEntry[]; defaultNum: string | null }> => {
-  const base = schoolBaseUrl(subdomain);
+  const base = apiBaseUrl(subdomain);
+  const referer = schoolBaseUrl(subdomain);
   const r = await callEdupage<RawTimetableList>(
     http,
     `${base}/timetable/server/ttviewer.js?__func=getTTViewerData`,
     "getTTViewerData",
     year,
-    `${base}/timetable/`,
+    `${referer}/timetable/`,
   );
   return {
     entries: (r.regular?.timetables ?? []).filter((t) => !t.hidden),
@@ -117,13 +135,14 @@ export const fetchRegularTimetable = async (
   ttNum: string,
   subdomain = "pikcrvt",
 ): Promise<Record<string, Record<string, unknown>[]>> => {
-  const base = schoolBaseUrl(subdomain);
+  const base = apiBaseUrl(subdomain);
+  const referer = schoolBaseUrl(subdomain);
   const r = await callEdupage<RawRegularTimetable>(
     http,
     `${base}/timetable/server/regulartt.js?__func=regularttGetData`,
     "regularttGetData",
     String(ttNum),
-    `${base}/timetable/`,
+    `${referer}/timetable/`,
   );
   return Object.fromEntries((r.dbiAccessorRes?.tables ?? []).map((t) => [t.id, t.data_rows ?? []]));
 };
@@ -135,13 +154,14 @@ export const fetchDaySubstitutionsHtml = async (
   mode: "classes" | "teachers" | "classrooms" = "classes",
   subdomain = "pikcrvt",
 ): Promise<string> => {
-  const base = schoolBaseUrl(subdomain);
+  const base = apiBaseUrl(subdomain);
+  const referer = schoolBaseUrl(subdomain);
   const r = await callEdupage<unknown>(
     http,
     `${base}/substitution/server/viewer.js?__func=getSubstViewerDayDataHtml`,
     "getSubstViewerDayDataHtml",
     { date, mode },
-    `${base}/substitution/`,
+    `${referer}/substitution/`,
   );
   if (typeof r !== "string") {
     throw new EdupageError("getSubstViewerDayDataHtml", "expected an HTML string", r);

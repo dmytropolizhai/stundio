@@ -12,7 +12,10 @@ export {
   USER_AGENT,
 } from "./http.ts";
 export {
+  EDUPAGE_PROXY_PREFIX,
   EdupageError,
+  apiBaseUrl,
+  schoolBaseUrl,
   fetchDaySubstitutionsHtml,
   fetchRegularTimetable,
   fetchTimetableList,
