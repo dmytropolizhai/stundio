@@ -3,6 +3,7 @@
  * hook reads live state. Boot wiring (real cache + Capacitor http) is exercised on device;
  * here an injected store keeps it deterministic.
  */
+import { StrictMode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { act, render, screen } from "@testing-library/react";
 import { AppStoreProvider } from "../provider.tsx";
@@ -85,5 +86,75 @@ describe("AppStoreProvider", () => {
 
   it("throws a useful error when the hook is used outside the provider", () => {
     expect(() => render(<Status />)).toThrow(/inside <AppStoreProvider>/);
+  });
+});
+
+describe("AppStoreProvider under StrictMode", () => {
+  it("still installs the store when the boot effect is double-invoked", async () => {
+    // Regression: a "boot only once" ref guard made the second (StrictMode) effect run bail
+    // out while the first run's cleanup had already flagged its own resolution cancelled —
+    // so `setStore` never fired and the app sat on the splash forever, silently.
+    const store = makeStore();
+    render(
+      <StrictMode>
+        <AppStoreProvider boot={() => Promise.resolve({ store })} fallback={<span>loading</span>}>
+          <Status />
+        </AppStoreProvider>
+      </StrictMode>,
+    );
+    expect(await screen.findByText("status:idle")).toBeDefined();
+  });
+
+  it("registers and disposes the resume listener in lockstep with the mount", async () => {
+    const store = makeStore();
+    let live = 0;
+    const boot = () => {
+      live += 1;
+      return Promise.resolve({
+        store,
+        dispose: () => {
+          live -= 1;
+        },
+      });
+    };
+
+    const { unmount } = render(
+      <StrictMode>
+        <AppStoreProvider boot={boot}>
+          <Status />
+        </AppStoreProvider>
+      </StrictMode>,
+    );
+    await screen.findByText("status:idle");
+
+    unmount();
+    // Whatever StrictMode did in between, nothing may be left listening.
+    expect(live).toBe(0);
+  });
+});
+
+describe("AppStoreProvider when boot fails", () => {
+  it("surfaces the error instead of showing the splash forever", async () => {
+    const boot = () => Promise.reject(new Error("IndexedDB is unavailable"));
+    render(
+      <AppStoreProvider
+        boot={boot}
+        fallback={<span>loading</span>}
+        errorFallback={(err) => <span>failed:{err.message}</span>}
+      >
+        <Status />
+      </AppStoreProvider>,
+    );
+    expect(await screen.findByText("failed:IndexedDB is unavailable")).toBeDefined();
+  });
+
+  it("falls back to the plain fallback when no error view is given", async () => {
+    const boot = () => Promise.reject(new Error("nope"));
+    render(
+      <AppStoreProvider boot={boot} fallback={<span>loading</span>}>
+        <Status />
+      </AppStoreProvider>,
+    );
+    expect(await screen.findByText("loading")).toBeDefined();
   });
 });
