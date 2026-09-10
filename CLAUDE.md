@@ -69,6 +69,11 @@ Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single
 
 ## Conventions
 
+- **One place decides the request origin: `apiBaseUrl()` in `client.ts`.** `npm run dev` routes
+  through Vite's `/api-edupage` proxy (no CORS headers from EduPage); every other mode — the
+  production bundle Capacitor ships, and Vitest — goes straight to the school. Never hardcode the
+  proxy prefix elsewhere: a device build has no dev server to proxy through. `Referer` always
+  names the real school origin, whatever the request goes through.
 - **All EduPage logic lives in `src/lib/edupage/`.** No Capacitor import there except `http.ts`.
   UI/store never fetches or parses EduPage directly.
 - **The parser never throws.** Unknown substitution phrasing → `kind: "other"`, keep `raw`.
@@ -97,7 +102,7 @@ Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single
 ## Commands
 
 ```bash
-npm run dev          # Vite dev server (web preview; EduPage fetches will CORS-fail here)
+npm run dev          # Vite dev server; EduPage calls go through the /api-edupage proxy
 npm test             # Vitest (happy-dom)
 npm run typecheck    # tsc -b --noEmit
 npm run lint         # eslint
