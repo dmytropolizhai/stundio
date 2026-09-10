@@ -1,0 +1,79 @@
+import type { Dict } from "./lv.ts";
+
+export const ru: Dict = {
+  "app.title": "Studio",
+
+  "nav.day": "День",
+  "nav.week": "Неделя",
+  "nav.settings": "Настройки",
+
+  "onboarding.title": "Выбери свой класс",
+  "onboarding.subtitle": "Расписание и замены — даже без интернета.",
+
+  "class.search": "Поиск класса…",
+  "class.none": "Классы не найдены",
+  "class.favorites": "Избранное",
+  "class.all": "Все классы",
+  "class.loading": "Загружаем список классов…",
+  "class.favorite.add": "Добавить в избранное",
+  "class.favorite.remove": "Убрать из избранного",
+
+  "day.today": "Сегодня",
+  "day.jumpToday": "К сегодня",
+  "day.prev": "Предыдущий день",
+  "day.next": "Следующий день",
+  "day.empty": "Уроков нет",
+  "day.emptyHint": "Выходной или праздник?",
+  "day.noClass": "Сначала выбери класс",
+  "day.noData": "Нет сохранённых данных",
+  "day.noDataHint": "Подключись к интернету, чтобы скачать расписание.",
+  "day.stale": "Расписание на эту неделю ещё не опубликовано — показываем прошлое.",
+  "day.notes": "Объявления",
+  "day.free": "Окно",
+  "day.finished": "Уроки закончились",
+  "day.now": "Сейчас",
+
+  "lesson.teacher": "Преподаватель",
+  "lesson.room": "Кабинет",
+  "lesson.period": "Урок",
+  "lesson.group": "Группа",
+  "lesson.building": "Корпус",
+  "lesson.was": "Было",
+  "lesson.fromSchool": "От школы",
+  "lesson.close": "Закрыть",
+
+  "status.cancelled": "Отменён",
+  "status.moved": "Перенесён",
+  "status.substituted": "Замена",
+  "status.room_change": "Другой кабинет",
+  "status.added": "Дополнительный урок",
+
+  "sync.syncing": "Обновляем…",
+  "sync.offline": "Офлайн",
+  "sync.error": "Не удалось обновить",
+  "sync.never": "Ещё не обновлялось",
+  "sync.updated": "Обновлено {time}",
+  "sync.refresh": "Обновить",
+  "sync.pull": "Потяни, чтобы обновить",
+  "sync.release": "Отпусти, чтобы обновить",
+
+  "time.inMinutes": "через {n} мин",
+  "time.minutesLeft": "осталось {n} мин",
+  "time.startsNow": "начинается",
+
+  "settings.title": "Настройки",
+  "settings.class": "Мой класс",
+  "settings.change": "Изменить",
+  "settings.building": "Корпус",
+  "settings.buildingAuto": "Автоматически",
+  "settings.theme": "Оформление",
+  "settings.language": "Язык",
+  "settings.data": "Данные",
+  "settings.about": "О приложении",
+  "settings.aboutText":
+    "Неофициальное приложение. Данные берутся из публичного расписания pikcrvt.edupage.org и принадлежат школе.",
+
+  "theme.system": "Как в системе",
+  "theme.light": "Светлое",
+  "theme.dark": "Тёмное",
+};

@@ -11,9 +11,17 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "happy-dom",
+    setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     coverage: {
-      include: ["src/lib/edupage/**", "src/db/**", "src/sync/**", "src/store/**"],
+      include: [
+        "src/lib/edupage/**",
+        "src/lib/schedule/**",
+        "src/db/**",
+        "src/sync/**",
+        "src/store/**",
+        "src/ui/**",
+      ],
       exclude: ["**/__tests__/**"],
       thresholds: { lines: 90, functions: 90, branches: 80, statements: 90 },
     },

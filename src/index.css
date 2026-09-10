@@ -1,13 +1,39 @@
 @import "tailwindcss";
 
+/*
+ * Dark mode is a *setting*, not just a media query: the user can force light or dark from
+ * Settings, so the variant keys off a `.dark` class that `useTheme` puts on <html>.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* One accent, used for "now", the active tab and primary actions. */
+  --color-accent-50: oklch(0.97 0.02 255);
+  --color-accent-100: oklch(0.93 0.05 255);
+  --color-accent-400: oklch(0.72 0.15 255);
+  --color-accent-500: oklch(0.62 0.18 255);
+  --color-accent-600: oklch(0.54 0.19 255);
+
+  /* Surfaces, so screens never hand-pick slate shades one by one. */
+  --color-surface: oklch(1 0 0);
+  --color-surface-sunken: oklch(0.97 0.005 255);
+  --color-surface-raised: oklch(1 0 0);
+
+  --spacing-safe-top: env(safe-area-inset-top, 0px);
+  --spacing-safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Safe areas: the app runs full-bleed inside the Capacitor WebView. */
+/* The app runs full-bleed inside the Capacitor WebView. */
 :root {
   --app-inset-top: env(safe-area-inset-top, 0px);
   --app-inset-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
 }
 
 html,
@@ -17,7 +43,27 @@ body,
 }
 
 body {
-  /* No pull-to-refresh from the browser; Phase 3 implements its own. */
+  /* No browser pull-to-refresh; the day screen implements its own. */
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
+  /* A long-press on a lesson card should not start a text selection on Android. */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* The week pager and the class list scroll horizontally; the bar itself is noise on mobile. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

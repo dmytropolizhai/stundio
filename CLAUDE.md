@@ -8,12 +8,14 @@ Class-based (no per-student login). Audience: portfolio + personal + schoolmates
 
 ## Status
 
-Phases 0–2 done. Scaffold (Vite + React 19 + TS strict, Tailwind v4, Vitest/happy-dom, ESLint,
+Phases 0–3 done. Scaffold (Vite + React 19 + TS strict, Tailwind v4, Vitest/happy-dom, ESLint,
 Prettier, GitHub Actions CI, Capacitor Android project), the complete EduPage layer in
-`src/lib/edupage/` (fetch → normalize → parse → select → resolve), and the offline layer:
-`src/db/` (idb cache) + `src/sync/` (stale-while-revalidate) + `src/store/` (Zustand).
-171 tests, 97% line coverage. On-device launch still unverified (no JDK / Android SDK here).
-Next: **Phase 3** — the UI screens. Full roadmap: **`PLAN.md`**.
+`src/lib/edupage/` (fetch → normalize → parse → select → resolve), the offline layer
+(`src/db/` idb cache + `src/sync/` stale-while-revalidate + `src/store/` Zustand), and the UI
+in `src/ui/` (ClassPicker · DayView · WeekView · LessonSheet · Settings, LV/EN/RU, dark mode).
+233 tests, 96% line coverage. On-device launch still unverified (no JDK / Android SDK here).
+Next: **Phase 4** — Android packaging + local notifications; the widget spike is unblocked.
+Full roadmap: **`PLAN.md`**.
 Data/API contract: **`MODEL.md`**. Canonical types: **`src/lib/edupage/types.ts`**.
 
 ## Fixed constraints
@@ -42,6 +44,9 @@ Data/API contract: **`MODEL.md`**. Canonical types: **`src/lib/edupage/types.ts`
 | `src/db/` | `AppCache` port + idb and in-memory implementations (one shared contract test) |
 | `src/sync/` | Refresh policy (12h list / cached week / always-substitutions), retention, resume listener |
 | `src/store/` | Zustand store (vanilla + context), memoised `resolvedDay(date)`, `boot.ts` wiring |
+| `src/lib/schedule/` | Pure "what's on now / next" + week arithmetic. **No React, no Capacitor** — the Kotlin widget is written against these rules and tests |
+| `src/ui/` | The screens. `screens/` · `components/` · `hooks/` · `i18n/` (LV source dict, EN/RU typed against it) · `theme/` (tokens, dark-mode hook, status colours) |
+| `src/ui/__tests__/harness.tsx` | Boots a real store over the `data/` fixtures for screen tests; no network |
 | `src/lib/edupage/__tests__/fixtures.ts` | Fixture reader — tests read repo-root `data/` directly, never a copy |
 | `reference/probe_edupage.py` | Working timetable scraper — regenerates `data/` fixtures, re-derives the API |
 | `reference/probe_substitution.py` | Working substitutions scraper + HTML parser (stdlib only) |
@@ -72,6 +77,10 @@ Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single
 - **Tests never touch the network.** `src/sync/__tests__/fakeServer.ts` replays the `data/`
   fixtures; inject a `Boot`/`HttpClient` rather than letting a component reach the real school.
 - **UI reads the cache, never the network.** `store` → `sync` → `lib/edupage`, one direction.
+  The only user-initiated fetch is pull-to-refresh, and it goes through `refresh({ force: true })`.
+- **Chrome is translated; the school's text is not.** New user-facing strings go in
+  `src/ui/i18n/lv.ts` first (it types the other two). Weekday/date names come from `Intl`.
+- **"Now / next" logic lives in `src/lib/schedule/`, not in a component** — the widget shares it.
 - Parser changes must keep the fixture tests green, including the "canary" (`other` ratio < 15%).
 - `probe_*.py` stay in the repo as the **cross-check oracle** for the TS parser. Update them
   and the fixtures together when the API shifts.

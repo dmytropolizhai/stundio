@@ -1,7 +1,9 @@
 # EduPage timetable app — action plan
 
-Status: Phases 0–2 done (scaffold, tooling, Capacitor, the full scraper + parser, and the
-offline cache + sync + store). Next: Phase 3 (UI). Research artefacts: `MODEL.md`,
+Status: Phases 0–3 done (scaffold, tooling, Capacitor, the full scraper + parser, the offline
+cache + sync + store, and the UI). Next: Phase 4 (Android packaging + notifications), and the
+widget spike is now unblocked — `src/lib/schedule/` is the logic it shares with the app.
+Research artefacts: `MODEL.md`,
 `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1.
 
@@ -141,28 +143,39 @@ and that a failed refresh keeps the previous `lastSyncAt` so the UI still reads 
 
 **Goal:** fast, clean, glanceable. Ship the screens; animation is polish, not blocker.
 
-- [ ] **Theme/design system:** Tailwind tokens, dark mode (default = system), subject colours
-      from `subject.color`, typography scale. One accent, generous spacing.
-- [ ] **i18n:** LV + EN + RU chrome (reuse your i18n setup). Server-side substitution text
-      (`raw`) passes through untranslated — label it as "from school".
-- [ ] **ClassPicker** (onboarding + settings): searchable list of 122 classes, remembers choice,
-      supports multiple favorites, building hint per class.
-- [ ] **DayView** (home, defaults to today):
-  - vertical lesson list; **current lesson highlighted**, a live "now" time marker.
-  - free periods shown as gaps; cancelled struck-through with reason; substitutions badged
-    (teacher/room diff inline).
-  - header: weekday + date, prev/next day, "jump to today".
-  - states: skeleton, empty ("no lessons — holiday?"), offline-no-cache error, stale-week banner.
-- [ ] **WeekView:** horizontal pager Mon–Fri, compact grid, tap a cell → LessonSheet.
-- [ ] **LessonSheet:** bottom sheet — full subject name, teacher(s), room, period time,
-      change diff (`original` vs current), building.
-- [ ] **Settings:** class + favorites, building override, theme, language, "refresh now" + last sync,
-      about/ToS note.
-- [ ] **"Next lesson" logic** (shared with widget): from `periods` + wall clock compute
-      `currentLesson` / `nextLesson` / `minutesUntil`. Unit-tested, timezone `Europe/Riga`.
-- [ ] Animation pass: Framer Motion day transitions + shared-layout lesson cards. Keep < 16ms.
+- [x] **Theme/design system:** Tailwind v4 `@theme` tokens + one accent, class-based dark mode
+      (`@custom-variant dark`, so "system / light / dark" is a real setting), subject colours from
+      `subject.color` as a 4px rail, one status→colour table shared by all three screens
+      (`src/ui/theme/`).
+- [x] **i18n:** LV + EN + RU chrome in `src/ui/i18n/`; LV is the typed source dictionary, the other
+      two are `Dict`-checked so a missing key fails the build. Weekday/date names come from `Intl`,
+      not hand-written tables. Server text (`raw`) passes through untranslated under "no skolas".
+- [x] **ClassPicker** (onboarding + settings): filtered list of all cached classes, favourites
+      pinned on top, building hint per class, choice persisted through the store.
+- [x] **DayView** (home, defaults to today):
+  - vertical lesson list; **current lesson highlighted** with a progress bar, a live "now" marker
+    that only appears on today.
+  - free periods ≥ 20 min shown as gaps; cancelled struck-through and kept; substitutions badged.
+  - header: weekday + date, prev/next day, "jump to today", sync badge.
+  - states: skeleton, no-class, empty day, offline-no-cache, stale-week banner, school notes.
+  - pull-to-refresh (hand-rolled — the browser gesture is disabled inside the WebView).
+- [x] **WeekView:** Mon–Fri **grid** (periods down, days across), tap a cell → LessonSheet, tap a
+      weekday header → that day. Chose a grid over the planned horizontal pager: the point of the
+      screen is comparing days, which a pager hides.
+- [x] **LessonSheet:** bottom sheet — full subject name, teacher(s), room, period time, group,
+      building, the `original` → current diff, and EduPage's own sentence under "from school".
+- [x] **Settings:** class + favourites, building override (only when >1 building is cached), theme,
+      language, "refresh now" + last sync, about note.
+- [x] **"Next lesson" logic** (shared with widget): `src/lib/schedule/` — pure, React-free and
+      Capacitor-free so the Kotlin widget can be written against the same tests. `rigaClock` reads
+      the school's wall clock whatever the device is set to; cancelled lessons are never "current".
+- [x] Animation pass: Framer Motion for the sheet (drag-to-dismiss), the tab indicator, the day
+      header swap and lesson-row layout; `prefers-reduced-motion` respected in CSS.
+      Frame timing on a real device is still **unverified** (same SDK gap as Phase 0).
 
-**Exit:** a schoolmate can pick their class and read today/this week correctly, online and offline, in their language.
+**Exit:** met in the test harness — 233 tests / 21 files green, 96.3% lines over `lib` + `db` +
+`sync` + `store` + `ui`, screens exercised against the real `data/` fixtures with no network.
+Still unverified on a physical device (no JDK/Android SDK here).
 
 ---
 
