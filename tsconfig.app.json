@@ -9,6 +9,10 @@
     "useDefineForClassFields": true,
     "types": ["vitest/globals", "node"],
 
+    /* shadcn convention: "@/…" is the src root. Mirrored in vite.config.ts resolve.alias. */
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] },
+
     /* strictness — see CLAUDE.md */
     "strict": true,
     "noUncheckedIndexedAccess": true,

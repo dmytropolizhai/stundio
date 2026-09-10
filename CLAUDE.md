@@ -12,8 +12,9 @@ Phases 0–3 done. Scaffold (Vite + React 19 + TS strict, Tailwind v4, Vitest/ha
 Prettier, GitHub Actions CI, Capacitor Android project), the complete EduPage layer in
 `src/lib/edupage/` (fetch → normalize → parse → select → resolve), the offline layer
 (`src/db/` idb cache + `src/sync/` stale-while-revalidate + `src/store/` Zustand), and the UI
-in `src/ui/` (ClassPicker · DayView · WeekView · LessonSheet · Settings, LV/EN/RU, dark mode).
-233 tests, 96% line coverage. On-device launch still unverified (no JDK / Android SDK here).
+in `src/ui/` (ClassPicker · DayView · WeekView · Subjects · LessonSheet · Settings, LV/EN/RU,
+dark mode). The **Studio Design System** is vendored into `src/ds/` and every screen is built on
+it. 247 tests, 96% line coverage. On-device launch still unverified (no JDK / Android SDK here).
 Next: **Phase 4** — Android packaging + local notifications; the widget spike is unblocked.
 Full roadmap: **`PLAN.md`**.
 Data/API contract: **`MODEL.md`**. Canonical types: **`src/lib/edupage/types.ts`**.
@@ -45,7 +46,9 @@ Data/API contract: **`MODEL.md`**. Canonical types: **`src/lib/edupage/types.ts`
 | `src/sync/` | Refresh policy (12h list / cached week / always-substitutions), retention, resume listener |
 | `src/store/` | Zustand store (vanilla + context), memoised `resolvedDay(date)`, `boot.ts` wiring |
 | `src/lib/schedule/` | Pure "what's on now / next" + week arithmetic. **No React, no Capacitor** — the Kotlin widget is written against these rules and tests |
-| `src/ui/` | The screens. `screens/` · `components/` · `hooks/` · `i18n/` (LV source dict, EN/RU typed against it) · `theme/` (tokens, dark-mode hook, status colours) |
+| `src/ds/` | **Studio Design System**, vendored from Claude Design. `tokens/` · `components/ui/` (shadcn-shaped: `cn()`/CVA/Radix) · `lib/utils.ts`. Import via the `index.ts` barrel, never a component file |
+| `src/ds/tokens/` | Verbatim copies of the DS token files — **do not hand-edit, re-pull.** `dark.css` and `fonts.css` are the two authored-here exceptions, documented in place |
+| `src/ui/` | The screens. `screens/` · `components/` (thin adapters over `src/ds/`) · `hooks/` · `i18n/` (LV source dict, EN/RU typed against it) · `theme/` (dark-mode hook, subject→accent mapping, status→tone tables) |
 | `src/ui/__tests__/harness.tsx` | Boots a real store over the `data/` fixtures for screen tests; no network |
 | `src/lib/edupage/__tests__/fixtures.ts` | Fixture reader — tests read repo-root `data/` directly, never a copy |
 | `reference/probe_edupage.py` | Working timetable scraper — regenerates `data/` fixtures, re-derives the API |
@@ -83,8 +86,16 @@ Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single
   fixtures; inject a `Boot`/`HttpClient` rather than letting a component reach the real school.
 - **UI reads the cache, never the network.** `store` → `sync` → `lib/edupage`, one direction.
   The only user-initiated fetch is pull-to-refresh, and it goes through `refresh({ force: true })`.
+- **All visual decisions come from `src/ds/`.** No raw hex, no ad-hoc px, no stock Tailwind palette
+  colours (`slate-500`, `amber-100`) anywhere in `src/ui/` — use the DS tokens through their
+  utilities (`bg-card`, `text-muted`, `rounded-xl`, `shadow-card`). `index.css` maps every DS
+  variable to a utility with `@theme inline`, so dark mode follows without a `dark:` override.
+- **A subject's colour is one of the DS's six accents**, assigned by `subjectTone()` from a hash of
+  the subject code — *not* EduPage's own hex, which carries no contrast guarantee. Same subject,
+  same colour, on every screen and every device.
 - **Chrome is translated; the school's text is not.** New user-facing strings go in
   `src/ui/i18n/lv.ts` first (it types the other two). Weekday/date names come from `Intl`.
+  DS components take their strings as props rather than hardcoding the DS's English.
 - **"Now / next" logic lives in `src/lib/schedule/`, not in a component** — the widget shares it.
 - Parser changes must keep the fixture tests green, including the "canary" (`other` ratio < 15%).
 - `probe_*.py` stay in the repo as the **cross-check oracle** for the TS parser. Update them
@@ -95,6 +106,9 @@ Planned app layout is in `PLAN.md` → "Architecture snapshot". Keep it a single
 
 - Don't add a backend / proxy / server to v1 (breaks local-first; folds into the deferred bot later).
 - Don't scrape from UI or store code — go through `src/lib/edupage/`.
+- Don't hand-edit `src/ds/tokens/*.css` (except `dark.css`) — they are verbatim copies, and the
+  next design-system pull silently reverts the edit. Change the design system instead.
+- Don't put emoji or unicode-as-icon in the UI (`★`, `✓`, `→`) — the DS bans it; use `<Icon>`.
 - Don't translate server-provided substitution text; show it as "from school".
 - Don't poll. Cache-first; refresh on app open/resume + pull-to-refresh; custom `User-Agent`.
 - Don't build the login flow until the anonymous `gsechash` actually stops working.

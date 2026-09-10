@@ -61,7 +61,7 @@ export const PullToRefresh = ({
         animate={{ y: refreshing ? 12 : pull - 8, opacity: refreshing || pull > 8 ? 1 : 0 }}
         transition={{ duration: 0.12 }}
       >
-        <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-500 shadow dark:bg-slate-800 dark:text-slate-400">
+        <span className="rounded-pill bg-card px-3 py-1 font-text text-caption font-bold text-muted shadow-card">
           {refreshing ? "…" : armed ? releaseLabel : label}
         </span>
       </motion.div>

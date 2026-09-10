@@ -1,57 +1,36 @@
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useAppStore } from "../../store/index.ts";
 import { listBuildings } from "../../lib/edupage/index.ts";
 import type { Settings } from "../../db/index.ts";
+import { Button, Card, Icon, SegmentedTabs, TopBar } from "../../ds/index.ts";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { LANGS, LANG_NAMES, useT } from "../i18n/index.ts";
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <section className="px-4 py-3">
-    <h2 className="pb-1 text-xs font-medium tracking-wide text-slate-400 uppercase">{title}</h2>
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+const Section = ({ title, children }: { title: string; children: ReactNode }) => (
+  <section className="mb-7">
+    <h2 className="u-eyebrow pb-2">{title}</h2>
+    <Card radius="lg" className="p-0">
       {children}
-    </div>
+    </Card>
   </section>
 );
 
-/** Segmented control — used for theme and language, both small closed sets. */
-const Segmented = <T extends string>({
-  value,
-  options,
-  onChange,
-  label,
-}: {
-  value: T;
-  options: { id: T; label: string }[];
-  onChange: (value: T) => void;
-  label: string;
-}) => (
-  <div className="flex gap-1 p-2" role="radiogroup" aria-label={label}>
-    {options.map((option) => (
-      <button
-        key={option.id}
-        type="button"
-        role="radio"
-        aria-checked={option.id === value}
-        onClick={() => {
-          onChange(option.id);
-        }}
-        className={`flex-1 rounded-lg py-2 text-sm ${
-          option.id === value
-            ? "bg-accent-500 font-medium text-white"
-            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-        }`}
-      >
-        {option.label}
-      </button>
-    ))}
+/** A row inside a section card. Rows after the first carry the hairline. */
+const Row = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
+  <div className={`px-4 py-3.5 not-first:border-t not-first:border-hairline ${className}`}>
+    {children}
   </div>
 );
 
 /**
- * Settings. Every control writes straight through the store to the cache, so a change
- * survives a cold start without a save button.
+ * Settings — the DS UI kit's "Me" screen.
+ *
+ * Every control writes straight through the store to the cache, so a change survives a cold
+ * start without a save button.
+ *
+ * Theme, language and building are all small closed sets, so all three use the DS segmented
+ * control rather than three different shapes of picker.
  */
 export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const t = useT();
@@ -66,94 +45,97 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
 
   const buildings = useMemo(() => listBuildings(metas), [metas]);
 
-  const themes: { id: Settings["theme"]; label: string }[] = [
-    { id: "system", label: t("theme.system") },
-    { id: "light", label: t("theme.light") },
-    { id: "dark", label: t("theme.dark") },
+  const themes: { key: Settings["theme"]; label: string }[] = [
+    { key: "system", label: t("theme.system") },
+    { key: "light", label: t("theme.light") },
+    { key: "dark", label: t("theme.dark") },
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <header className="shrink-0 border-b border-slate-200 px-4 pt-[var(--app-inset-top)] pb-2 text-center dark:border-slate-800">
-        <h1 className="pt-2 font-semibold text-slate-900 dark:text-slate-100">
-          {t("settings.title")}
-        </h1>
-      </header>
+    <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px]">
+        <TopBar eyebrow={selectedClass?.short ?? t("app.title")} title={t("settings.title")} />
 
-      <div className="min-h-0 flex-1 overflow-y-auto pb-6">
         <Section title={t("settings.class")}>
           <button
             type="button"
             onClick={onPickClass}
-            className="flex w-full items-center justify-between px-3 py-3 text-left"
+            className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent px-4 py-3.5 text-left"
           >
-            <span className="font-medium text-slate-900 dark:text-slate-100">
+            <span className="font-text text-body font-bold text-strong">
               {selectedClass?.short ?? t("day.noClass")}
             </span>
-            <span className="text-sm text-accent-600 dark:text-accent-400">
+            <span className="inline-flex items-center gap-1 font-text text-caption font-bold text-link">
               {t("settings.change")}
+              <Icon name="chevron-right" size={16} />
             </span>
           </button>
         </Section>
 
         {buildings.length > 1 && (
           <Section title={t("settings.building")}>
-            <Segmented
-              label={t("settings.building")}
-              value={settings.building ?? ""}
-              options={[
-                { id: "", label: t("settings.buildingAuto") },
-                ...buildings.map((b) => ({ id: b, label: b })),
-              ]}
-              onChange={(value) => {
-                void setBuilding(value === "" ? null : value);
-              }}
-            />
+            <Row>
+              <SegmentedTabs
+                label={t("settings.building")}
+                value={settings.building ?? ""}
+                items={[
+                  { key: "", label: t("settings.buildingAuto") },
+                  ...buildings.map((b) => ({ key: b, label: b })),
+                ]}
+                onChange={(value) => {
+                  void setBuilding(value === "" ? null : value);
+                }}
+              />
+            </Row>
           </Section>
         )}
 
         <Section title={t("settings.theme")}>
-          <Segmented
-            label={t("settings.theme")}
-            value={settings.theme}
-            options={themes}
-            onChange={(value) => {
-              void setTheme(value);
-            }}
-          />
+          <Row>
+            <SegmentedTabs
+              label={t("settings.theme")}
+              value={settings.theme}
+              items={themes}
+              onChange={(value) => {
+                void setTheme(value);
+              }}
+            />
+          </Row>
         </Section>
 
         <Section title={t("settings.language")}>
-          <Segmented
-            label={t("settings.language")}
-            value={settings.lang}
-            options={LANGS.map((id) => ({ id, label: LANG_NAMES[id] }))}
-            onChange={(value) => {
-              void setLang(value);
-            }}
-          />
+          <Row>
+            <SegmentedTabs
+              label={t("settings.language")}
+              value={settings.lang}
+              items={LANGS.map((key) => ({ key, label: LANG_NAMES[key] }))}
+              onChange={(value) => {
+                void setLang(value);
+              }}
+            />
+          </Row>
         </Section>
 
         <Section title={t("settings.data")}>
-          <div className="flex items-center justify-between px-3 py-3">
+          <Row className="flex flex-wrap items-center justify-between gap-3">
             <SyncBadge />
-            <button
-              type="button"
+            <Button
+              size="sm"
               disabled={syncStatus === "syncing"}
+              icon="refresh-cw"
               onClick={() => {
                 void refresh({ force: true });
               }}
-              className="rounded-lg bg-accent-500 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
             >
               {t("sync.refresh")}
-            </button>
-          </div>
+            </Button>
+          </Row>
         </Section>
 
         <Section title={t("settings.about")}>
-          <p className="px-3 py-3 text-sm text-slate-600 dark:text-slate-300">
-            {t("settings.aboutText")}
-          </p>
+          <Row>
+            <p className="font-text text-caption text-muted">{t("settings.aboutText")}</p>
+          </Row>
         </Section>
       </div>
     </div>

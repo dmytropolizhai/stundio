@@ -1,0 +1,58 @@
+/* Verbatim from Studio Design System — tokens/typography.css. Do not hand-edit; re-pull instead. */
+:root {
+  --font-wordmark: "Moho Condensed", "Archivo Narrow", "Arial Narrow", system-ui, sans-serif;
+  --font-display: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-text: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* weights */
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-black: 800;
+
+  /* display scale — always tight and set BIG */
+  --size-hero: 56px;
+  --lh-hero: 0.95;
+  --size-display-1: 40px;
+  --lh-display-1: 1;
+  --size-display-2: 30px;
+  --lh-display-2: 1.05;
+  --size-title: 22px;
+  --lh-title: 1.15;
+
+  /* text scale — Manrope */
+  --size-body-lg: 17px;
+  --lh-body-lg: 1.45;
+  --size-body: 15px;
+  --lh-body: 1.5;
+  --size-caption: 13px;
+  --lh-caption: 1.4;
+  --size-micro: 11px;
+  --lh-micro: 1.2;
+
+  /* tracking */
+  --track-display: -0.025em;
+  --track-hero: -0.035em;
+  --track-body: 0em;
+  --track-label: 0.14em;
+
+  /* data */
+  --size-time: 15px;
+  --track-time: 0.01em;
+
+  /* semantic type aliases */
+  --type-hero: var(--fw-black) var(--size-hero) / var(--lh-hero) var(--font-display);
+  --type-wordmark: 900 var(--size-hero) / 0.9 var(--font-wordmark);
+  --type-display-1: var(--fw-black) var(--size-display-1) / var(--lh-display-1) var(--font-display);
+  --type-display-2: var(--fw-bold) var(--size-display-2) / var(--lh-display-2) var(--font-display);
+  --type-title: var(--fw-bold) var(--size-title) / var(--lh-title) var(--font-display);
+  --type-body-lg: var(--fw-medium) var(--size-body-lg) / var(--lh-body-lg) var(--font-text);
+  --type-body: var(--fw-medium) var(--size-body) / var(--lh-body) var(--font-text);
+  --type-body-strong: var(--fw-bold) var(--size-body) / var(--lh-body) var(--font-text);
+  --type-caption: var(--fw-medium) var(--size-caption) / var(--lh-caption) var(--font-text);
+  --type-label: var(--fw-bold) var(--size-micro) / var(--lh-micro) var(--font-text);
+  --type-data: var(--fw-medium) var(--size-time) / 1.3 var(--font-data);
+}

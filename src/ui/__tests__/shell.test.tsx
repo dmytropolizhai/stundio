@@ -44,15 +44,21 @@ afterEach(() => {
 });
 
 describe("TabBar", () => {
-  it("shows the three tabs and reports taps", async () => {
+  it("shows every tab and reports taps", async () => {
     const harness = await bootHarness();
     const onChange = vi.fn();
     wrap(harness, <TabBar tab="day" onChange={onChange} />);
 
-    expect(screen.getByText("Diena")).toBeDefined();
-    expect(screen.getByText("Nedēļa")).toBeDefined();
+    /*
+     * Only the active tab renders its label as text — the design system's nav grows the selected
+     * item into a pill and leaves the rest as bare icons. The label still reaches assistive tech
+     * on every tab, which is what this asserts.
+     */
+    expect(screen.getByRole("button", { name: "Diena" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Nedēļa" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();
 
-    fireEvent.click(screen.getByText("Iestatījumi"));
+    fireEvent.click(screen.getByRole("button", { name: "Iestatījumi" }));
     expect(onChange).toHaveBeenCalledWith("settings");
   });
 

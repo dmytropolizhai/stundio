@@ -71,13 +71,24 @@ describe("ClassPicker", () => {
 });
 
 describe("WeekView", () => {
+  /*
+   * The design system's week grid heads each column with the weekday alone — the day-and-month
+   * line the old grid carried does not fit the 3-letter cell rhythm. Locale spelling comes from
+   * `Intl`, so these match on the shape rather than hardcoding "Pr"/"Pk".
+   */
+  const weekdayHeaders = () =>
+    screen.getAllByRole("button").filter((b) => b.className.includes("tracking-label"));
+
   it("renders a Mon–Fri grid of the class's week", async () => {
     const harness = await bootHarness();
     wrap(harness, <WeekView date={FIXTURE_DATE} onOpenDay={vi.fn()} />);
 
-    // Five weekday headers, whatever the locale spells them.
-    expect(screen.getByText("07.09.")).toBeDefined();
-    expect(screen.getByText("11.09.")).toBeDefined();
+    expect(weekdayHeaders()).toHaveLength(5);
+    // Cells carry the short subject code — the one place the DS allows an abbreviation.
+    const filled = screen
+      .getAllByRole("button")
+      .filter((b) => b.className.includes("h-10") && b.textContent !== "");
+    expect(filled.length).toBeGreaterThan(0);
   });
 
   it("opens a lesson sheet from a cell", async () => {
@@ -86,7 +97,7 @@ describe("WeekView", () => {
 
     const cells = screen
       .getAllByRole("button")
-      .filter((b) => b.className.includes("h-12") && b.textContent !== "");
+      .filter((b) => b.className.includes("h-10") && b.textContent !== "");
     fireEvent.click(cells[0]!);
 
     expect(await screen.findByRole("dialog")).toBeDefined();
@@ -97,7 +108,7 @@ describe("WeekView", () => {
     const onOpenDay = vi.fn();
     wrap(harness, <WeekView date={FIXTURE_DATE} onOpenDay={onOpenDay} />);
 
-    fireEvent.click(screen.getByText("07.09.").closest("button")!);
+    fireEvent.click(weekdayHeaders()[0]!);
     expect(onOpenDay).toHaveBeenCalledWith("2026-09-07");
   });
 });
@@ -155,7 +166,8 @@ describe("SettingsView", () => {
     const onPickClass = vi.fn();
     wrap(harness, <SettingsView onPickClass={onPickClass} />);
 
-    expect(screen.getByText("A1-2")).toBeDefined();
+    // Twice now: once as the header eyebrow, once as the value of the class row.
+    expect(screen.getAllByText("A1-2").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByText("Mainīt"));
     expect(onPickClass).toHaveBeenCalled();
   });

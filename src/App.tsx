@@ -1,40 +1,48 @@
 /**
  * App shell: theme, tabs, and the one piece of navigation state the app has (which day you
- * are looking at). No router — three tabs and a modal picker do not need one, and every
+ * are looking at). No router — four tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
 import { useState } from "react";
 import { AppStoreProvider, useAppStore } from "./store/index.ts";
 import { todayInRiga } from "./sync/index.ts";
 import type { ISODate } from "./lib/edupage/index.ts";
+import { TopBar } from "./ds/index.ts";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
 import { WeekView } from "./ui/screens/WeekView.tsx";
+import { SubjectsView } from "./ui/screens/SubjectsView.tsx";
 import { SettingsView } from "./ui/screens/SettingsView.tsx";
 import { useTheme } from "./ui/theme/index.ts";
 import { useT } from "./ui/i18n/index.ts";
 
 const Splash = () => (
-  <div className="flex h-full items-center justify-center bg-white dark:bg-slate-950">
-    <span className="text-sm text-slate-400">Studio</span>
+  <div className="flex h-full items-center justify-center bg-brand">
+    <span className="u-wordmark text-white">studio.</span>
   </div>
 );
 
-/** First run: no class chosen yet, so the picker *is* the app until one is. */
+/**
+ * First run: no class chosen yet, so the picker *is* the app until one is.
+ *
+ * This is the DS's onboarding screen — a full-bleed brand flood, the wordmark, and one
+ * oversized headline. It is the only place in the app that goes edge-to-edge in blue.
+ */
 const Onboarding = () => {
   const t = useT();
   return (
-    <div className="flex h-full flex-col bg-white pt-[var(--app-inset-top)] dark:bg-slate-950">
-      <header className="px-6 pt-8 pb-2">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+    <div className="flex h-full flex-col">
+      <div className="bg-brand px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-white">
+        <span className="u-wordmark block text-[34px] leading-none">studio.</span>
+        <h1 className="mt-5 font-display text-hero tracking-hero text-white">
           {t("onboarding.title")}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {t("onboarding.subtitle")}
-        </p>
-      </header>
-      <ClassPicker />
+        <p className="mt-3 font-text text-body-lg text-white/72">{t("onboarding.subtitle")}</p>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col pt-5">
+        <ClassPicker />
+      </div>
     </div>
   );
 };
@@ -52,22 +60,15 @@ const Shell = () => {
 
   if (picking) {
     return (
-      <div className="flex h-full flex-col bg-white dark:bg-slate-950">
-        <header className="flex items-center gap-2 border-b border-slate-200 px-2 pt-[var(--app-inset-top)] pb-2 dark:border-slate-800">
-          <button
-            type="button"
-            onClick={() => {
+      <div className="flex h-full flex-col">
+        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
+          <TopBar
+            title={t("settings.class")}
+            onBack={() => {
               setPicking(false);
             }}
-            className="px-2 py-1 text-xl text-slate-400"
-            aria-label={t("lesson.close")}
-          >
-            ‹
-          </button>
-          <h1 className="font-semibold text-slate-900 dark:text-slate-100">
-            {t("settings.class")}
-          </h1>
-        </header>
+          />
+        </div>
         <ClassPicker
           onPicked={() => {
             setPicking(false);
@@ -78,7 +79,7 @@ const Shell = () => {
   }
 
   return (
-    <div className="flex h-full flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="flex h-full flex-col">
       {tab === "day" && (
         <DayView
           date={date}
@@ -97,6 +98,7 @@ const Shell = () => {
           }}
         />
       )}
+      {tab === "subjects" && <SubjectsView />}
       {tab === "settings" && (
         <SettingsView
           onPickClass={() => {

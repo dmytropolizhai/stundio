@@ -11,6 +11,7 @@ export const lv = {
 
   "nav.day": "Diena",
   "nav.week": "Nedēļa",
+  "nav.subjects": "Priekšmeti",
   "nav.settings": "Iestatījumi",
 
   "onboarding.title": "Izvēlies savu klasi",
@@ -42,6 +43,7 @@ export const lv = {
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
   "lesson.period": "Stunda",
+  "lesson.ordinal": "{n}. stunda",
   "lesson.group": "Grupa",
   "lesson.building": "Ēka",
   "lesson.was": "Bija",
@@ -66,6 +68,12 @@ export const lv = {
   "time.inMinutes": "pēc {n} min",
   "time.minutesLeft": "atlikušas {n} min",
   "time.startsNow": "sākas tūlīt",
+
+  "subjects.title": "Priekšmeti",
+  "subjects.perWeek": "{n}× nedēļā",
+  "subjects.teachers": "Skolotāji",
+  "subjects.empty": "Nav priekšmetu",
+  "subjects.emptyHint": "Priekšmeti parādīsies, kad būs lejupielādēts saraksts.",
 
   "settings.title": "Iestatījumi",
   "settings.class": "Mana klase",

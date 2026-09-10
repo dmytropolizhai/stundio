@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
+import { EmptyState, type IconName } from "../../ds/index.ts";
 
 /**
  * The empty/blocked states — no class picked, holiday, nothing cached. A screen that goes
  * blank reads as a bug, so every one of them says what happened and what to do about it.
+ *
+ * The DS keeps these flat by rule: no apology, no cheerleading, no exclamation mark.
  */
 export const StateMessage = ({
   icon,
@@ -10,15 +13,17 @@ export const StateMessage = ({
   hint,
   action,
 }: {
-  icon?: ReactNode;
+  icon?: IconName;
   title: string;
   hint?: string;
   action?: ReactNode;
 }) => (
-  <div className="flex flex-col items-center gap-2 px-8 py-16 text-center">
-    {icon !== undefined && <div className="text-3xl opacity-60">{icon}</div>}
-    <p className="font-medium text-slate-700 dark:text-slate-200">{title}</p>
-    {hint !== undefined && <p className="text-sm text-slate-500 dark:text-slate-400">{hint}</p>}
-    {action}
+  <div className="px-gutter py-8">
+    <EmptyState
+      {...(icon === undefined ? {} : { icon })}
+      title={title}
+      {...(hint === undefined ? {} : { body: hint })}
+      {...(action === undefined ? {} : { action })}
+    />
   </div>
 );

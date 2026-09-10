@@ -1,40 +1,118 @@
 /**
- * Subject colour handling. EduPage gives each subject a hex colour ("#14C030"); it is the
- * only visual identity a lesson has, so the day and week views tint by it — but as a
- * 4px accent rail, never as a background, which would wreck contrast in both themes.
+ * Subject and status colour handling, expressed in design-system terms.
+ *
+ * EduPage gives each subject a hex colour ("#14C030"). The Studio DS does not use it: it defines
+ * exactly six flat subject accents, each shipped with its own dark ink pair so text on it clears
+ * 4.5:1, and requires that a subject keep the same colour everywhere in the app. An arbitrary
+ * school-supplied hex satisfies neither guarantee, so the hex is dropped and each subject is
+ * assigned one of the six deterministically instead.
  */
 import type { ResolvedStatus, SubjectRef } from "../../lib/edupage/index.ts";
+import type { BadgeProps, LessonStatus, LessonTone } from "../../ds/index.ts";
 
-const HEX = /^#?([0-9a-f]{6})$/i;
+/** The six subject accents, in DS order. `brand` is reserved for "now" and is not assignable. */
+export const SUBJECT_TONES = ["amber", "sky", "lilac", "pink", "mint", "lime"] as const;
 
-/** A CSS colour for the subject rail, or a neutral when EduPage left the colour empty. */
-export const subjectColor = (subject: SubjectRef | null): string => {
-  const raw = subject?.color ?? null;
-  if (raw === null) return "currentColor";
-  const match = HEX.exec(raw.trim());
-  return match === null ? "currentColor" : `#${match[1]}`;
+export type SubjectTone = (typeof SUBJECT_TONES)[number];
+
+/**
+ * FNV-1a. Any stable hash would do; what matters is that it is pure and version-independent, so
+ * the same subject lands on the same accent on every device and after every timetable republish.
+ */
+const hash = (value: string): number => {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < value.length; i += 1) {
+    h ^= value.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h;
 };
 
 /**
- * Status → badge classes. Kept as one table so DayView, WeekView and LessonSheet cannot
- * drift into three different ideas of what "cancelled" looks like.
+ * A subject's accent.
+ *
+ * Keyed on `short` (the subject code) rather than `id`, because the code is what survives a
+ * weekly republish — EduPage is free to renumber ids, and a subject changing colour mid-term is
+ * exactly what the DS rule forbids.
  */
-export const STATUS_BADGE: Record<Exclude<ResolvedStatus, "normal">, string> = {
-  cancelled: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
-  moved: "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300",
-  substituted: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
-  room_change: "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300",
-  added: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+export const subjectTone = (subject: SubjectRef | null): SubjectTone => {
+  const key = (subject?.short ?? subject?.name ?? subject?.id ?? "").trim().toLowerCase();
+  if (key === "") return "sky";
+  return SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? "sky";
 };
 
-/** Small square dot used in the week grid, where there is no room for a word. */
-export const STATUS_DOT: Record<Exclude<ResolvedStatus, "normal">, string> = {
-  cancelled: "bg-rose-500",
-  moved: "bg-violet-500",
-  substituted: "bg-amber-500",
-  room_change: "bg-sky-500",
-  added: "bg-emerald-500",
+/*
+ * Words that carry no identity in a Latvian subject title, plus the Roman numerals RVT uses to
+ * number course parts ("Latviešu valoda I") — an acronym of "L-V-I" says less than "LVL".
+ */
+const STOPWORDS = new Set(["un", "vai", "ar", "par", "uz", "i", "ii", "iii", "iv"]);
+
+/**
+ * The short code the week grid puts in a cell.
+ *
+ * The design system assumes a fixed 3-letter code per subject (PRG, DTB, MAT). RVT does not
+ * publish one: `subject.short` comes back as a copy of the full name, so rendering it raw fills
+ * a 40px cell with "Tehnoloģiju un inovāciju centrs Dārzciema ielā" truncated to "Tehno…", and
+ * every cell in a column looks alike. This derives an acronym from the significant words instead,
+ * which lands on the abbreviations these subjects actually go by — IKT, TIC, LVL.
+ *
+ * A genuinely short `short` is trusted as-is, so this costs nothing if the school ever fills it in.
+ */
+export const subjectCode = (subject: SubjectRef | null): string => {
+  const short = (subject?.short ?? "").trim();
+  if (short !== "" && short.length <= 5) return short.toUpperCase();
+
+  const source = (subject?.name ?? "").trim() === "" ? short : (subject?.name ?? "").trim();
+  if (source === "") return "—";
+
+  const words = source
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter((w) => w.length > 1 && !STOPWORDS.has(w.toLowerCase()));
+
+  if (words.length >= 2) {
+    return words
+      .slice(0, 3)
+      .map((w) => w.charAt(0))
+      .join("")
+      .toUpperCase();
+  }
+  return source.slice(0, 3).toUpperCase();
+};
+
+/**
+ * Domain status → DS `Badge` tone.
+ *
+ * Status colour is reserved in this system, so each of the five changes gets a distinguishable
+ * tone rather than a shared "something changed" grey.
+ */
+export const STATUS_TONE: Record<
+  Exclude<ResolvedStatus, "normal">,
+  NonNullable<BadgeProps["tone"]>
+> = {
+  cancelled: "danger",
+  moved: "ink",
+  substituted: "warning",
+  room_change: "brand",
+  added: "success",
+};
+
+/**
+ * Domain status → DS `LessonCard` visual treatment.
+ *
+ * The card has four treatments and the domain has six statuses; this is the lossy half of that
+ * mapping, and it is deliberately only about *appearance*. The precise word still reaches the
+ * card through its `badge` slot, so nothing is actually lost on screen.
+ */
+export const STATUS_TREATMENT: Record<ResolvedStatus, LessonStatus> = {
+  normal: "normal",
+  cancelled: "cancelled",
+  moved: "substitute",
+  substituted: "substitute",
+  room_change: "substitute",
+  added: "substitute",
 };
 
 export const isChanged = (status: ResolvedStatus): status is Exclude<ResolvedStatus, "normal"> =>
   status !== "normal";
+
+export type { LessonTone };

@@ -1,0 +1,51 @@
+/*
+ * Dark theme — AUTHORED HERE, NOT PART OF THE DESIGN SYSTEM.
+ *
+ * The Studio DS is light-only: it defines no dark values for any token. Studio ships dark mode as
+ * a user *setting* (see `useTheme`), so the semantic aliases are re-pointed under `.dark` while the
+ * base palette (blue-*, ink-*, accent-*) stays exactly as the DS defines it. Only aliases are
+ * overridden — never a base step — so if the DS later publishes its own dark layer this file is
+ * the single thing to delete.
+ *
+ * Rules kept from the DS: neutrals stay cool/blue-leaning, status colours stay reserved and
+ * distinguishable, subject accents keep their identity (they are light fills with dark ink pairs,
+ * which read correctly on a dark ground unchanged).
+ */
+:root.dark {
+  /* Surfaces: app ground is the darkest, cards lift toward the viewer. */
+  --bg-app: #0b0c10;
+  --surface-card: #16181f;
+  --surface-sunken: #101219;
+  --bg-inverse: var(--ink-100);
+  --surface-overlay: rgba(0, 0, 0, 0.66);
+  --surface-glass: rgba(255, 255, 255, 0.1);
+
+  /* Text. --text-muted clears 4.5:1 on both --bg-app and --surface-card. */
+  --text-body: var(--ink-200);
+  --text-strong: var(--white);
+  --text-muted: #9ba2b4;
+  --text-on-inverse: var(--ink-900);
+  --text-link: var(--blue-300);
+  --text-link-hover: var(--blue-200);
+
+  /* Brand. The fill stays blue-500 so `--text-on-brand` white still holds; only the
+     tint and the focus ring move, because both are read against a dark ground. */
+  --brand-tint: #131a4a;
+  --focus-ring: var(--blue-300);
+
+  /* Status. The DS tunes these for white ground; on dark they are lifted to keep 4.5:1
+     as *text*. Warning is already light enough to survive unchanged. */
+  --status-success: #35c97f;
+  --status-danger: #ff6b5e;
+  --status-offline: var(--ink-400);
+
+  --border-hairline: #262a35;
+  --border-strong: #3a404f;
+
+  /* Elevation: a navy-tinted shadow is invisible on a dark ground, so dark leans on
+     surface contrast and drops to plain black shadows for the floating chrome. */
+  --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.4), 0 12px 28px -12px rgba(0, 0, 0, 0.6);
+  --shadow-raised: 0 4px 10px rgba(0, 0, 0, 0.45), 0 24px 48px -20px rgba(0, 0, 0, 0.7);
+  --shadow-nav: 0 8px 24px rgba(0, 0, 0, 0.7);
+  --shadow-brand: 0 12px 32px -12px rgba(30, 58, 255, 0.7);
+}

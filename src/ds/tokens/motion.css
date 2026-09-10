@@ -1,0 +1,26 @@
+/* Verbatim from Studio Design System — tokens/motion.css. Do not hand-edit; re-pull instead. */
+:root {
+  --dur-instant: 90ms;
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 380ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0.7, 0.2, 1);
+  --ease-in: cubic-bezier(0.5, 0, 0.9, 0.3);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* sheets, tab pills */
+  --press-scale: 0.97;
+  --press-scale-tile: 0.94;
+  --transition-press: transform var(--dur-instant) var(--ease-out);
+  --transition-color:
+    background-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur-base: 1ms;
+    --dur-slow: 1ms;
+    --press-scale: 1;
+    --press-scale-tile: 1;
+  }
+}

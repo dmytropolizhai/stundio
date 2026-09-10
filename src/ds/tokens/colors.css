@@ -1,0 +1,73 @@
+/* Verbatim from Studio Design System — tokens/colors.css. Do not hand-edit; re-pull instead. */
+:root {
+  /* ——— Base palette: Studio Electric blue ——— */
+  --blue-050: #edf0ff;
+  --blue-100: #d8deff;
+  --blue-200: #adb9ff;
+  --blue-300: #7a8aff;
+  --blue-400: #4a5cff;
+  --blue-500: #1e3aff; /* primary — "Studio Electric" */
+  --blue-600: #1730d6;
+  --blue-700: #0f1fa0;
+  --blue-800: #0a1568;
+  --blue-900: #060b3d; /* deep navy ink */
+
+  /* ——— Neutrals ——— */
+  --white: #ffffff;
+  --ink-050: #f6f7fa;
+  --ink-100: #edeff4;
+  --ink-200: #dde1ea;
+  --ink-300: #b9bfce;
+  --ink-400: #868c9e;
+  --ink-500: #5b6070;
+  --ink-700: #2a2d36;
+  --ink-900: #0b0c10;
+
+  /* ——— Subject accents (timetable colour coding) ——— */
+  --accent-amber: #ffb552;
+  --accent-amber-ink: #5a3703;
+  --accent-sky: #9cc8f7;
+  --accent-sky-ink: #0c3560;
+  --accent-lilac: #b79cff;
+  --accent-lilac-ink: #2c1470;
+  --accent-pink: #ffa3e0;
+  --accent-pink-ink: #611349;
+  --accent-mint: #9fe3c0;
+  --accent-mint-ink: #0b4a32;
+  --accent-lime: #d7f53c;
+  --accent-lime-ink: #2e3a00;
+
+  /* ——— Semantic status ——— */
+  --status-success: #0b8a4e;
+  --status-warning: #ffb552;
+  --status-danger: #d92020;
+  --status-offline: #5b6070;
+
+  /* ——— Semantic aliases (use these in product code) ——— */
+  --brand: var(--blue-500);
+  --brand-strong: var(--blue-600);
+  --brand-deep: var(--blue-900);
+  --brand-tint: var(--blue-050);
+
+  --bg-app: var(--ink-050);
+  --bg-hero: var(--blue-500);
+  --bg-inverse: var(--ink-900);
+  --surface-card: var(--white);
+  --surface-sunken: var(--ink-100);
+  --surface-overlay: rgba(11, 12, 16, 0.56);
+  --surface-glass: rgba(255, 255, 255, 0.14);
+
+  --text-body: var(--ink-700);
+  --text-strong: var(--ink-900);
+  --text-muted: var(--ink-500);
+  --text-on-brand: var(--white);
+  --text-on-inverse: var(--white);
+  --text-link: var(--blue-600);
+  --text-link-hover: var(--blue-700);
+
+  --border-hairline: var(--ink-200);
+  --border-strong: var(--ink-300);
+  --border-on-brand: rgba(255, 255, 255, 0.28);
+
+  --focus-ring: var(--blue-400);
+}
