@@ -49,7 +49,6 @@ export {
   type LessonStatus,
   type LessonTone,
 } from "./components/ui/lesson-card.tsx";
-export { DayStrip, type DayStripDay, type DayStripProps } from "./components/ui/day-strip.tsx";
 export {
   WeekGrid,
   type WeekGridCell,

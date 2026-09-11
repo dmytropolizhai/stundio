@@ -45,12 +45,18 @@
   --text-display-1--letter-spacing: var(--track-display);
   --text-display-1--font-weight: var(--fw-black);
 
-  --text-display-2: var(--size-display-2);
+  /*
+   * `display-2` and `title` are sized here rather than at the DS's own token size — the
+   * vendored scale (30px / 22px) reads oversized on a screen this dense with school data.
+   * Re-pulling `ds/tokens/typography.css` won't revert this: the override lives in this mapping
+   * layer, not in the vendored file.
+   */
+  --text-display-2: 24px;
   --text-display-2--line-height: var(--lh-display-2);
   --text-display-2--letter-spacing: var(--track-display);
   --text-display-2--font-weight: var(--fw-bold);
 
-  --text-title: var(--size-title);
+  --text-title: 18px;
   --text-title--line-height: var(--lh-title);
   --text-title--letter-spacing: var(--track-display);
   --text-title--font-weight: var(--fw-bold);

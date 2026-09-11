@@ -1,11 +1,28 @@
 import type React from "react";
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
 
 /**
  * The shadcn class merger: `clsx` for conditionals, `tailwind-merge` so a caller's `className`
  * beats the component's own default instead of landing in an arbitrary source-order fight.
+ *
+ * `extendTailwindMerge` registers the DS's named font-size utilities (`text-title`,
+ * `text-display-2`, …) as their own group. Without this, default `tailwind-merge` doesn't
+ * recognise them as font-size classes — it falls back to treating any unrecognised `text-*`
+ * class as a text-*color* utility, so `text-title` and a later `text-current`/`text-strong`
+ * "conflict" and the size class silently gets dropped from every element that pairs a DS type
+ * scale with a DS text-color alias (which is most headings in this codebase).
  */
+const twMerge = extendTailwindMerge<"ds-font-size">({
+  extend: {
+    classGroups: {
+      "ds-font-size": [
+        { text: ["hero", "display-1", "display-2", "title", "body-lg", "body", "caption", "micro"] },
+      ],
+    },
+  },
+});
+
 export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs));
 
 /**

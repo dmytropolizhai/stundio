@@ -441,12 +441,13 @@ the product deliberately leans on the larger steps — 16, 20, 24, 28 — which 
 feel comes from.
 
 Chrome is asymmetric on purpose. The **top bar** (56px min-height) is *not* sticky: it scrolls away
-with the content so the day strip stays adjacent to the lesson list it controls. The **bottom nav**
-is the only fixed element — a floating 64px pill inset 16px from the screen edges, sitting above
+with the content, consistent with the Day screen's swipe paging the whole block — header included —
+rather than a fixed chrome piece sitting above a scrolling list. The **bottom nav** is the only
+fixed element — a floating 64px pill inset 16px from the screen edges, sitting above
 `env(safe-area-inset-bottom)`. Content that could slide under it reserves that height plus the inset.
 
-Two horizontal scrollers exist — the day strip and the class list — and both hide their scrollbar
-(`no-scrollbar`); on a phone the bar is pure noise. Safe-area insets are read at the root as
+One horizontal scroller remains — the class list — and hides its scrollbar (`no-scrollbar`); on a
+phone the bar is pure noise. Safe-area insets are read at the root as
 `--app-inset-top` / `--app-inset-bottom`, because the app runs full-bleed edge-to-edge inside the
 WebView. There are no desktop breakpoints: this is a phone design that centres, not a responsive
 grid that reflows.
@@ -584,19 +585,12 @@ rather than hints.
   muted bold. Exposed as a **`radiogroup` with roving tabindex**, not a tablist — the segments pick a
   value (theme, language, building) rather than swapping a panel, and arrow keys move between them.
 
-### Day Strip
+### Day Paging
 
-The horizontal week pager above the day list. Each day is a 74×46px tile at the 24px radius,
-stacking three things: an uppercase micro weekday (from `Intl`, never a hardcoded table), the day of
-month at 22px display-black, and a 5px dot.
-
-- **Selected:** a fill swap to electric with white text and the brand glow — the day strip is the
-  one place the brand shadow appears outside the primary button.
-- **Unselected:** white with a hairline inset ring.
-- **The dot is the only change signal.** It marks a day with something worth noticing (a
-  cancellation, a substitution) and is brand-coloured on an unselected tile, white on the selected
-  one. When there is nothing to flag it stays in the layout as transparent, so tiles never reflow.
-- Scrolls horizontally with the scrollbar hidden; press is the standard `0.97`.
+The Day screen has no visible day-to-day control. Swiping left/right anywhere below the top bar
+pages to the adjacent day, with a small same-direction slide (16px, `--dur-base`, `--ease-standard`)
+as the only feedback that it worked; arrow keys do the same for anyone who can't swipe. Jumping to
+an arbitrary day in the week now goes through the Week screen instead of a jump control on Day.
 
 ### Week Grid
 

@@ -81,14 +81,53 @@ describe("DayView", () => {
     expect(onDateChange).toHaveBeenCalledWith(FIXTURE_DATE);
   });
 
-  it("steps a day at a time", async () => {
+  it("pages to the next day on a left swipe, and back on a right swipe", async () => {
     const harness = await bootHarness();
     const { onDateChange } = renderDay(harness);
 
-    fireEvent.click(screen.getByLabelText("Nākamā diena"));
+    const pager = screen.getByRole("group");
+    fireEvent.touchStart(pager, { touches: [{ clientX: 300, clientY: 400 }] });
+    fireEvent.touchMove(pager, { touches: [{ clientX: 200, clientY: 400 }] });
+    fireEvent.touchEnd(pager);
     expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
 
-    fireEvent.click(screen.getByLabelText("Iepriekšējā diena"));
+    fireEvent.touchStart(pager, { touches: [{ clientX: 200, clientY: 400 }] });
+    fireEvent.touchMove(pager, { touches: [{ clientX: 300, clientY: 400 }] });
+    fireEvent.touchEnd(pager);
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-08");
+  });
+
+  it("ignores a drag that stays under the swipe threshold", async () => {
+    const harness = await bootHarness();
+    const { onDateChange } = renderDay(harness);
+
+    const pager = screen.getByRole("group");
+    fireEvent.touchStart(pager, { touches: [{ clientX: 300, clientY: 400 }] });
+    fireEvent.touchMove(pager, { touches: [{ clientX: 280, clientY: 400 }] });
+    fireEvent.touchEnd(pager);
+    expect(onDateChange).not.toHaveBeenCalled();
+  });
+
+  it("ignores a mostly-vertical drag, so scrolling the list never pages the day", async () => {
+    const harness = await bootHarness();
+    const { onDateChange } = renderDay(harness);
+
+    const pager = screen.getByRole("group");
+    fireEvent.touchStart(pager, { touches: [{ clientX: 300, clientY: 400 }] });
+    fireEvent.touchMove(pager, { touches: [{ clientX: 260, clientY: 600 }] });
+    fireEvent.touchEnd(pager);
+    expect(onDateChange).not.toHaveBeenCalled();
+  });
+
+  it("steps a day at a time with the arrow keys, for anyone who can't swipe", async () => {
+    const harness = await bootHarness();
+    const { onDateChange } = renderDay(harness);
+
+    const pager = screen.getByRole("group");
+    fireEvent.keyDown(pager, { key: "ArrowRight" });
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
+
+    fireEvent.keyDown(pager, { key: "ArrowLeft" });
     expect(onDateChange).toHaveBeenCalledWith("2026-09-08");
   });
 

@@ -27,8 +27,7 @@ export const lv = {
 
   "day.today": "Šodien",
   "day.jumpToday": "Uz šodienu",
-  "day.prev": "Iepriekšējā diena",
-  "day.next": "Nākamā diena",
+  "day.pageHint": "Velc pa kreisi vai pa labi, vai izmanto bultiņu taustiņus, lai mainītu dienu",
   "day.empty": "Stundu nav",
   "day.emptyHint": "Brīvdiena vai svētku diena?",
   "day.noClass": "Vispirms izvēlies klasi",
