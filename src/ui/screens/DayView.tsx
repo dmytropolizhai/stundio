@@ -62,6 +62,9 @@ export const DayView = ({
   const lang = useLang();
   const now = useNow();
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
+  /* Times start hidden — the student reveals them on demand, animating in on the lesson card's
+     own colour rail (LessonCard's `timeVisible`). */
+  const [showTime, setShowTime] = useState(false);
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
@@ -148,6 +151,7 @@ export const DayView = ({
           <LessonRow
             lesson={lesson}
             live={live}
+            showTime={showTime}
             {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
             onOpen={() => {
               setOpen(lesson);
@@ -161,7 +165,7 @@ export const DayView = ({
     });
 
     return items;
-  }, [day, date, now.date, now.minutes, progress, t]);
+  }, [day, date, now.date, now.minutes, progress, showTime, t]);
 
   const body = (): ReactNode => {
     if (!ready) return <DaySkeleton />;
@@ -268,6 +272,24 @@ export const DayView = ({
 
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <SyncBadge onRetry={() => void refresh({ date, force: true })} />
+            <Button
+              variant="ghost"
+              size="sm"
+              icon="clock"
+              aria-pressed={showTime}
+              onClick={() => {
+                setShowTime((v) => !v);
+              }}
+              /*
+               * A fill swap to solid black, per the DS's selection rule (chips, day tiles, the
+               * nav's active item all do this) — `bg-inverse`/`text-on-inverse` rather than the
+               * `Button` "inverse" variant's fixed `bg-ink-900`, which is invisible against the
+               * near-black dark-mode ground this button sits directly on.
+               */
+              className={showTime ? "bg-inverse text-on-inverse hover:bg-inverse" : undefined}
+            >
+              {showTime ? t("day.hideTime") : t("day.showTime")}
+            </Button>
             {!isToday && (
               <Button
                 variant="ghost"
