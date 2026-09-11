@@ -1,6 +1,6 @@
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { useEffect, useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
 import { Icon, type IconName } from "./icon.tsx";
-import { cn } from "../../lib/utils.ts";
+import { cn, pressable } from "../../lib/utils.ts";
 
 export type SyncState = "synced" | "syncing" | "offline" | "failed";
 
@@ -26,6 +26,12 @@ export type SyncStatusProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
   detail?: ReactNode;
   onRetry?: (() => void) | undefined;
   retryLabel?: string;
+  /**
+   * When set, the pill starts as an icon-only dot and opens horizontally on tap to reveal
+   * `label`/`detail`, closing the same way on a second tap. The icon and its status colour stay
+   * visible either way, so the state itself is never hidden — only the freshness text is.
+   */
+  collapsible?: boolean;
 };
 
 /**
@@ -39,30 +45,52 @@ export const SyncStatus = ({
   detail,
   onRetry,
   retryLabel = "Retry",
+  collapsible = false,
   ...props
 }: SyncStatusProps) => {
+  const [open, setOpen] = useState(!collapsible);
+  /*
+   * `collapsible` flips on and off as the sync state cycles (syncing → idle, or a retry that
+   * fails → succeeds); the pill should start closed each time it re-enters the quiet, collapsible
+   * state rather than freezing at whatever `open` happened to be from an earlier state where
+   * collapsing wasn't offered at all.
+   */
+  useEffect(() => {
+    if (collapsible) setOpen(false);
+  }, [collapsible]);
   const { icon, className: iconClass } = STATES[state];
+  const toggle = collapsible ? () => setOpen((v) => !v) : undefined;
   return (
     <div
       className={cn(
-        "inline-flex h-[30px] items-center gap-2 rounded-pill bg-card px-3",
+        "inline-grid h-[30px] grid-flow-col items-center rounded-pill bg-card px-3",
         "font-text text-caption text-muted shadow-hairline",
+        collapsible &&
+          "cursor-pointer transition-[grid-template-columns] duration-(--dur-base) ease-(--ease-standard)",
+        open ? "grid-cols-[auto_1fr] gap-2" : "grid-cols-[auto_0fr] gap-0",
         className,
       )}
+      aria-expanded={collapsible ? open : undefined}
+      {...pressable(toggle)}
       {...props}
     >
       <Icon name={icon} size={14} className={iconClass} />
-      <span className="font-bold text-fg">{label}</span>
-      {detail !== undefined && <span className="tabular-nums">{detail}</span>}
-      {onRetry !== undefined && state === "failed" && (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="cursor-pointer border-0 bg-transparent p-0 font-text text-caption font-bold text-link"
-        >
-          {retryLabel}
-        </button>
-      )}
+      <div className="flex min-w-0 items-center gap-2 overflow-hidden whitespace-nowrap">
+        <span className="font-bold text-fg">{label}</span>
+        {detail !== undefined && <span className="tabular-nums">{detail}</span>}
+        {onRetry !== undefined && state === "failed" && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onRetry();
+            }}
+            className="cursor-pointer border-0 bg-transparent p-0 font-text text-caption font-bold text-strong underline underline-offset-2"
+          >
+            {retryLabel}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

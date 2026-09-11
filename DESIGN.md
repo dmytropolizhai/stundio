@@ -125,14 +125,14 @@ spacing:
   screen-max: "420px"
 components:
   button-primary:
-    backgroundColor: "{colors.studio-electric}"
+    backgroundColor: "{colors.surface-inverse}"
     textColor: "#ffffff"
     typography: "{typography.body}"
     rounded: "{rounded.pill}"
     padding: "0 20px"
     height: "44px"
   button-primary-hover:
-    backgroundColor: "{colors.electric-strong}"
+    backgroundColor: "{colors.text-body}"
     textColor: "#ffffff"
   button-inverse:
     backgroundColor: "{colors.surface-inverse}"
@@ -339,11 +339,11 @@ subject indices, and four reserved status colours.
 
 ### Primary
 
-- **Studio Electric** (`#1e3aff`): the single accent. It fills the primary button, the "now" ring on
-  the current lesson, the active day tile, and the brand-tint icon wells — and almost nothing else.
-  Its `-strong` step (`#1730d6`) is the hover/link state; `-deep` (`#060b3d`) is the navy that tints
-  every shadow in the system; `-tint` (`#edf0ff`) is the pale wash behind ghost buttons and icon
-  wells.
+- **Studio Electric** (`#1e3aff`): the single accent. It fills the "now" ring on the current lesson,
+  the active day tile, and the subjects-view initial wells — and almost nothing else. Buttons
+  (`Button`, `IconButton`) are deliberately excluded — see The Neutral Button Rule. Its `-strong`
+  step (`#1730d6`) is the link/underline colour; `-deep` (`#060b3d`) is the navy that tints every
+  shadow in the system; `-tint` (`#edf0ff`) is the pale wash behind the subjects-view wells.
 
 ### Neutral
 
@@ -384,6 +384,14 @@ action.
 **The Alias-Only Rule.** Dark mode re-points semantic aliases (`--bg-app`, `--surface-card`,
 `--text-muted`, …) and never a base palette step (`--blue-*`, `--ink-*`, `--accent-*`). A component
 that reaches for a base step directly will be wrong in one of the two themes.
+
+**The Neutral Button Rule.** Every `Button` and `IconButton` variant, and every text-styled button
+control (e.g. the sync badge's retry action), is near-black, white, or transparent — none of them
+fill with or colour their text in Studio Electric. A pressable control earns attention from its
+position and its pill shape, not from being the one blue thing on the screen; that rarity budget
+(see The One Voice Rule) is spent entirely on the "now" ring, the active day tile, and the
+subjects-view wells. A text-only control that drops its colour still needs a non-colour affordance,
+so it carries an underline instead.
 
 **The Server-Colour Rule.** EduPage ships its own per-subject hex. It is never used. It carries no
 contrast guarantee, and it breaks the promise that a subject looks the same on every device.
@@ -514,11 +522,11 @@ rather than hints.
 ### Buttons
 
 - **Shape:** always a pill (`999px`). Three heights: 36 / 44 / 54px (`sm` / `md` / `lg`).
-- **Primary:** Studio Electric fill, white text, and the brand glow beneath it
-  (`0 12px 32px -12px rgba(30,58,255,.55)`).
-- **Variants:** `inverse` (near-black fill, white text), `outline` (transparent with a 2px inset
-  ring), `ghost` (transparent, electric-strong text, brand-tint on hover), `onBrand` (white fill on
-  the blue hero).
+- **Primary:** near-black fill, white text, `shadow-card` beneath it — neutral by design, no brand
+  glow. `inverse` is the identical treatment kept as its own name for callers on a light hero.
+- **Variants:** `outline` (transparent with a 2px inset ring), `ghost` (transparent, near-black
+  text, sunken tint on hover), `onBrand` (white fill, near-black text, for a callsite on the blue
+  hero). None of the variants carry the brand blue any more — see The Neutral Button Rule.
 - **Press:** transform only — `scale(0.97)` over 90ms on `--ease-out`. Colour does not change on
   press. Hover tints exist for desktop previews but the device has no hover.
 - **Disabled:** 38% opacity, pointer events off.
@@ -547,8 +555,9 @@ rather than hints.
 - **Shape:** a circle — `size-9` / `size-11` / `size-13` (36 / 44 / 48px) at the pill radius, with
   the glyph bound to the size (16 / 20 / 22px).
 - **Variants:** `light` (white with a hairline inset ring — the default), `solid` (near-black),
-  `brand` (electric with the brand glow), `bare` (transparent, tinting to sunken on hover), and
-  `glass`.
+  `brand` (an alias of `solid`, kept for callsites that want to say "the emphasized one" — it no
+  longer carries the electric fill, see The Neutral Button Rule), `bare` (transparent, tinting to
+  sunken on hover), and `glass`.
 - **Glass is conditional.** The `glass` variant — 14% white over an 18px backdrop blur with a
   28%-white inset ring — is legal **only over the blue hero**. Never over white, never as a frosted
   card on the app ground (see The Two Blurs Rule).

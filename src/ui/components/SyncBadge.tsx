@@ -10,6 +10,11 @@ import { formatClock, useLang, useT } from "../i18n/index.ts";
  *
  * The store's status vocabulary ("idle" for a settled cache) is mapped onto the DS's four states
  * here rather than in the DS component, which stays domain-free.
+ *
+ * The badge starts collapsed to just its (already colour-coded) icon and opens on tap to reveal
+ * the freshness text — but only for the quiet "synced" case, where the timestamp is a courtesy,
+ * not news. Syncing, offline, and failed states stay fully visible: those are the ones a student
+ * actually needs to notice.
  */
 const STATE: Record<StoreSyncStatus, SyncState> = {
   idle: "synced",
@@ -42,6 +47,8 @@ export const SyncBadge = ({ onRetry }: { onRetry?: () => void }) => {
       label={label}
       onRetry={onRetry}
       retryLabel={t("sync.refresh")}
+      collapsible={status === "idle"}
+      aria-label={label}
       data-testid="sync-badge"
     />
   );
