@@ -35,6 +35,7 @@ export const createMemoryCache = (): AppCache => {
       substitutions.set(d.date, d);
       return Promise.resolve();
     },
+    listSubstitutionDates: () => Promise.resolve([...substitutions.keys()].sort()),
     pruneSubstitutions: (date) => {
       let removed = 0;
       for (const key of [...substitutions.keys()]) {

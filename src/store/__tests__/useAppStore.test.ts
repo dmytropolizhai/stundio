@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createFakeServer, type FakeServer } from "../../sync/__tests__/fakeServer.ts";
 import { createMemoryCache, type AppCache } from "../../db/index.ts";
-import { createSyncEngine } from "../../sync/index.ts";
+import { createSyncEngine, nextSchoolDay, todayInRiga } from "../../sync/index.ts";
 import { createAppStore } from "../useAppStore.ts";
 
 const DATE = "2026-09-09";
@@ -14,10 +14,10 @@ const now = () => new Date(`${DATE}T08:00:00Z`);
 let server: FakeServer;
 let cache: AppCache;
 
-const makeStore = () =>
+const makeStore = (clock: () => Date = now) =>
   createAppStore({
     cache,
-    engine: createSyncEngine({ http: server.http, cache, now }),
+    engine: createSyncEngine({ http: server.http, cache, now: clock }),
   });
 
 /** A1-2 is the class with real changes on 2026-09-09. */
@@ -121,6 +121,53 @@ describe("offline cold open — the Phase 2 exit criterion", () => {
     server.offline = true;
     await store.getState().refresh({ date: DATE });
     expect(store.getState().resolvedDay(DATE)?.lessons.length).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * Regression: `readCache` used to load only a fixed window of days around the *wall clock's*
+ * today, so any cached day outside it was dropped on the floor — the week view would render
+ * a cancelled lesson as if it were going ahead. The store must expose every day the cache
+ * holds, whatever the device clock says.
+ */
+describe("cached days the wall clock does not cover", () => {
+  const datesFor = (clock: () => Date): string[] => [
+    todayInRiga(clock()),
+    nextSchoolDay(todayInRiga(clock())),
+  ];
+
+  // Whichever way the wall clock sits relative to these, at least one is far outside any
+  // window centred on "now" — so this cannot pass by coincidence of the day it is run.
+  const clocks: [label: string, clock: () => Date][] = [
+    ["long past", () => new Date("2025-10-15T08:00:00Z")],
+    ["far future", () => new Date("2027-04-14T08:00:00Z")],
+  ];
+
+  it.each(clocks)("exposes every cached day (%s)", async (_label, clock) => {
+    const store = makeStore(clock);
+    await store.getState().refresh();
+
+    expect(Object.keys(store.getState().substitutions).sort()).toEqual(datesFor(clock).sort());
+    for (const d of datesFor(clock)) {
+      expect(store.getState().substitutions[d]?.items).toHaveLength(55);
+    }
+  });
+
+  it.each(clocks)("keeps cancelled lessons visible on a cold open (%s)", async (_label, clock) => {
+    const seed = makeStore(clock);
+    await seed.getState().refresh();
+    await seed.getState().setClass(classIdOf(seed, "A1-2"));
+
+    // Cold start against the same cache, no network at all.
+    server.reset();
+    server.offline = true;
+    const cold = makeStore(clock);
+    await cold.getState().hydrate();
+
+    const date = todayInRiga(clock());
+    const day = cold.getState().resolvedDay(date);
+    expect(day?.lessons.length).toBeGreaterThan(0);
+    expect(day?.lessons.some((l) => l.status !== "normal")).toBe(true);
   });
 });
 
