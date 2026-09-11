@@ -1,9 +1,10 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useAppStore } from "../../store/index.ts";
 import { addDays } from "../../sync/index.ts";
-import { dayProgress, minutesOf, weekDates } from "../../lib/schedule/index.ts";
+import { dayProgress, minutesOf } from "../../lib/schedule/index.ts";
 import type { ISODate, ResolvedLesson } from "../../lib/edupage/index.ts";
-import { Button, Card, DayStrip, IconButton, TopBar } from "../../ds/index.ts";
+import { Button, Card, TopBar } from "../../ds/index.ts";
 import { LessonRow } from "../components/LessonRow.tsx";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
@@ -12,14 +13,10 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { useSelectedClass } from "../hooks/useClasses.ts";
-import {
-  formatDayMonth,
-  formatDuration,
-  formatLongDate,
-  formatWeekdayShort,
-  useLang,
-  useT,
-} from "../i18n/index.ts";
+import { formatDuration, formatLongDate, useLang, useT } from "../i18n/index.ts";
+
+/** How far a horizontal drag must travel before it counts as "change the day", not a scroll. */
+const SWIPE_THRESHOLD_PX = 56;
 
 /** A gap worth drawing. Anything shorter is just the change-over between lessons. */
 const GAP_MIN_MINUTES = 20;
@@ -49,8 +46,8 @@ const NowMarker = ({ label }: { label: string }) => (
  * (CLAUDE.md). Pull-to-refresh is the single user-initiated fetch, and even that goes
  * through `refresh({ force: true })` rather than touching the network here.
  *
- * Layout note: the header scrolls with the content rather than sticking. That is a DS rule, and
- * the reason for it is the day strip — it has to stay adjacent to the list it filters.
+ * Layout note: the header scrolls with the content rather than sticking, consistent with swipe
+ * paging the whole block — header included — rather than a fixed piece above a scrolling list.
  */
 export const DayView = ({
   date,
@@ -77,18 +74,50 @@ export const DayView = ({
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
   const isToday = date === now.date;
 
-  /* The strip shows the week `date` sits in; it re-renders when a chevron crosses into the next. */
-  const week = useMemo(() => weekDates(date), [date]);
-  const strip = useMemo(
-    () =>
-      week.map((d) => ({
-        key: d,
-        weekday: formatWeekdayShort(d, lang),
-        date: formatDayMonth(d, lang).replace(/\.$/, ""),
-        dot: d === now.date,
-      })),
-    [week, lang, now.date],
-  );
+  /*
+   * Swiping replaced the day strip (CLAUDE.md widget note aside, this is app-only UI). `dragX`
+   * gives live finger-tracking feedback during the gesture; `enterDir` remembers which way we
+   * just paged so the *next* day's content can slide in from the side it logically arrived from.
+   */
+  const reduceMotion = useReducedMotion() ?? false;
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const enterDir = useRef<1 | -1>(1);
+  const [dragX, setDragX] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
+  const onSwipeStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (touch === undefined) return;
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+    setDragging(true);
+  };
+
+  const onSwipeMove = (e: React.TouchEvent) => {
+    const start = touchStart.current;
+    const touch = e.touches[0];
+    if (start === null || touch === undefined) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    // A steeper vertical drag is the list scrolling — leave it alone.
+    if (Math.abs(dy) > Math.abs(dx)) return;
+    setDragX(dx);
+  };
+
+  const onSwipeEnd = () => {
+    const started = touchStart.current !== null;
+    touchStart.current = null;
+    setDragging(false);
+    if (started) {
+      if (dragX <= -SWIPE_THRESHOLD_PX) {
+        enterDir.current = 1;
+        onDateChange(addDays(date, 1));
+      } else if (dragX >= SWIPE_THRESHOLD_PX) {
+        enterDir.current = -1;
+        onDateChange(addDays(date, -1));
+      }
+    }
+    setDragX(0);
+  };
 
   const rows = useMemo(() => {
     if (day === null) return [];
@@ -199,31 +228,42 @@ export const DayView = ({
         releaseLabel={t("sync.release")}
         onRefresh={() => refresh({ date, force: true })}
       >
-        {/* 104px of bottom padding so the last card clears the floating nav. */}
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px]">
+        {/*
+          104px of bottom padding so the last card clears the floating nav. Swipe replaced the
+          day strip: dragging left/right here pages the day, with a same-direction slide as the
+          feedback that it worked. Arrow keys do the same thing for anyone who can't swipe —
+          there is no visible control for either, so `aria-label` is the only place that says so.
+        */}
+        <motion.div
+          key={date}
+          role="group"
+          tabIndex={0}
+          aria-label={t("day.pageHint")}
+          initial={{ opacity: 0, x: reduceMotion ? 0 : enterDir.current * 16 }}
+          animate={{ opacity: 1, x: dragging ? dragX : 0 }}
+          transition={{
+            duration: dragging ? 0 : reduceMotion ? 0.001 : 0.24,
+            ease: [0.2, 0.8, 0.2, 1],
+          }}
+          style={{ touchAction: "pan-y" }}
+          onTouchStart={onSwipeStart}
+          onTouchMove={onSwipeMove}
+          onTouchEnd={onSwipeEnd}
+          onTouchCancel={onSwipeEnd}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") {
+              enterDir.current = 1;
+              onDateChange(addDays(date, 1));
+            } else if (e.key === "ArrowLeft") {
+              enterDir.current = -1;
+              onDateChange(addDays(date, -1));
+            }
+          }}
+          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        >
           <TopBar
             eyebrow={selectedClass?.short ?? t("app.title")}
             title={isToday ? t("day.today") : formatLongDate(date, lang)}
-            actions={
-              <>
-                <IconButton
-                  icon="arrow-left"
-                  label={t("day.prev")}
-                  size="sm"
-                  onClick={() => {
-                    onDateChange(addDays(date, -1));
-                  }}
-                />
-                <IconButton
-                  icon="arrow-right"
-                  label={t("day.next")}
-                  size="sm"
-                  onClick={() => {
-                    onDateChange(addDays(date, 1));
-                  }}
-                />
-              </>
-            }
           />
 
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -241,10 +281,8 @@ export const DayView = ({
             )}
           </div>
 
-          <DayStrip days={strip} value={date} onChange={onDateChange} label={t("nav.week")} />
-
           {body()}
-        </div>
+        </motion.div>
       </PullToRefresh>
 
       <LessonSheet

@@ -21,8 +21,7 @@ export const en: Dict = {
 
   "day.today": "Today",
   "day.jumpToday": "Go to today",
-  "day.prev": "Previous day",
-  "day.next": "Next day",
+  "day.pageHint": "Swipe left or right, or use the arrow keys, to change day",
   "day.empty": "No lessons",
   "day.emptyHint": "A holiday, maybe?",
   "day.noClass": "Pick a class first",
