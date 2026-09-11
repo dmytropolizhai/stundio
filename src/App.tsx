@@ -19,7 +19,7 @@ import { useT } from "./ui/i18n/index.ts";
 
 const Splash = () => (
   <div className="flex h-full items-center justify-center bg-brand">
-    <span className="u-wordmark text-white">studio.</span>
+    <span className="u-wordmark text-white">stundio.</span>
   </div>
 );
 
