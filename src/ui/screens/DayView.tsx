@@ -4,7 +4,17 @@ import { useAppStore } from "../../store/index.ts";
 import { addDays } from "../../sync/index.ts";
 import { dayProgress, minutesOf } from "../../lib/schedule/index.ts";
 import type { ISODate, ResolvedLesson } from "../../lib/edupage/index.ts";
-import { Button, Card, TopBar } from "../../ds/index.ts";
+import {
+  Button,
+  Calendar,
+  Card,
+  Icon,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  TopBar,
+  cn,
+} from "../../ds/index.ts";
 import { LessonRow } from "../components/LessonRow.tsx";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
@@ -14,7 +24,7 @@ import { ClassBadge } from "../components/ClassBadge.tsx";
 import { PreferenceBadge } from "../components/PreferenceBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { formatDuration, formatLongDate, useLang, useT } from "../i18n/index.ts";
+import { formatDuration, formatLongDate, localeTag, useLang, useT } from "../i18n/index.ts";
 
 /** How far a horizontal drag must travel before it counts as "change the day", not a scroll. */
 const SWIPE_THRESHOLD_PX = 56;
@@ -63,6 +73,7 @@ export const DayView = ({
   const lang = useLang();
   const now = useNow();
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   /* Times start hidden — the student reveals them on demand, animating in on the lesson card's
      own colour rail (LessonCard's `timeVisible`). */
   const [showTime, setShowTime] = useState(false);
@@ -264,7 +275,52 @@ export const DayView = ({
           className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         >
           <TopBar
-            title={isToday ? t("day.today") : formatLongDate(date, lang)}
+            title={
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={t("day.openCalendar")}
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)"
+                  >
+                    <span>{isToday ? t("day.today") : formatLongDate(date, lang)}</span>
+                    <Icon
+                      name="chevron-down"
+                      size={22}
+                      className={cn(
+                        "text-muted transition-transform duration-(--dur-fast) ease-(--ease-standard)",
+                        calendarOpen && "rotate-180",
+                      )}
+                    />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <Calendar
+                    value={date}
+                    today={now.date}
+                    locale={localeTag(lang)}
+                    prevMonthLabel={t("day.previousMonth")}
+                    nextMonthLabel={t("day.nextMonth")}
+                    onSelect={(picked) => {
+                      onDateChange(picked);
+                      setCalendarOpen(false);
+                    }}
+                  />
+                  <div className="mt-2 flex justify-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        onDateChange(now.date);
+                        setCalendarOpen(false);
+                      }}
+                    >
+                      {t("day.jumpToday")}
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            }
             actions={
               <>
                 <ClassBadge onClick={onPickClass} />
@@ -273,20 +329,6 @@ export const DayView = ({
               </>
             }
           />
-
-          {!isToday && (
-            <div className="mb-4 flex flex-wrap items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  onDateChange(now.date);
-                }}
-              >
-                {t("day.jumpToday")}
-              </Button>
-            </div>
-          )}
 
           {body()}
         </motion.div>

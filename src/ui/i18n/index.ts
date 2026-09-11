@@ -48,4 +48,5 @@ export {
   formatLongDate,
   formatRange,
   formatWeekdayShort,
+  localeTag,
 } from "./format.ts";

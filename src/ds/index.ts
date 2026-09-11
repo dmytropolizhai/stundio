@@ -30,8 +30,15 @@ export {
 
 /* feedback */
 export { BottomSheet, type BottomSheetProps } from "./components/ui/bottom-sheet.tsx";
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  type PopoverContentProps,
+} from "./components/ui/popover.tsx";
 export { EmptyState, type EmptyStateProps } from "./components/ui/empty-state.tsx";
 export { Skeleton, type SkeletonProps } from "./components/ui/skeleton.tsx";
+export { Calendar, type CalendarProps } from "./components/ui/calendar.tsx";
 
 /* navigation */
 export { TopBar, type TopBarProps } from "./components/ui/top-bar.tsx";

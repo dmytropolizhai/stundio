@@ -73,6 +73,27 @@ describe("DayView", () => {
     expect(screen.queryByTestId("now-marker")).toBeNull();
   });
 
+  it("opens a calendar anchored under the header and jumps to the picked date", async () => {
+    const harness = await bootHarness();
+    const { onDateChange } = renderDay(harness);
+
+    fireEvent.click(screen.getByRole("button", { name: "Izvēlēties datumu" }));
+    const dayButton = await screen.findByRole("button", { name: "10" });
+    fireEvent.click(dayButton);
+
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
+  });
+
+  it("closes the calendar's own today shortcut back onto the fixture date", async () => {
+    const harness = await bootHarness();
+    const { onDateChange } = renderDay(harness, "2026-09-11");
+
+    fireEvent.click(screen.getByRole("button", { name: "Izvēlēties datumu" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Uz šodienu" }));
+
+    expect(onDateChange).toHaveBeenCalledWith(FIXTURE_DATE);
+  });
+
   it("offers a way back to today when browsing another day", async () => {
     const harness = await bootHarness();
     const { onDateChange } = renderDay(harness, "2026-09-11");

@@ -1,6 +1,7 @@
 import type { ResolvedLesson } from "../../lib/edupage/index.ts";
 import { Badge, LessonCard } from "../../ds/index.ts";
-import { STATUS_TONE, STATUS_TREATMENT, isChanged, subjectTone } from "../theme/index.ts";
+import { STATUS_TREATMENT, isChanged, subjectTone } from "../theme/index.ts";
+import { StatusDot } from "./Badge.tsx";
 import { useT } from "../i18n/index.ts";
 
 /**
@@ -10,8 +11,12 @@ import { useT } from "../i18n/index.ts";
  * user wondering whether the app lost the lesson or the school did. The DS agrees: `cancelled`
  * is a treatment (dimmed, struck) rather than a removal.
  *
- * The status word is passed to the card as a `badge` rather than through its `status` prop, so
- * all six of `ResolvedStatus` survive the card's four-value visual vocabulary.
+ * The status still drives the card's four-value visual vocabulary through its `status` prop.
+ * Its exact word no longer sits on the card face, though: a change gets the small corner
+ * `StatusDot` instead of a text `Badge`, so the list stays a glance rather than a caption
+ * reel — the word (and the before/after) surfaces in the lesson sheet on tap. "Now" is not a
+ * change and keeps its own text badge, since it's the one thing worth reading without opening
+ * anything.
  */
 export const LessonRow = ({
   lesson,
@@ -52,11 +57,10 @@ export const LessonRow = ({
             <Badge tone="brand" data-testid="status-now">
               {t("day.now")}
             </Badge>
-          ) : isChanged(lesson.status) ? (
-            <Badge tone={STATUS_TONE[lesson.status]} data-testid={`status-${lesson.status}`}>
-              {t(`status.${lesson.status}`)}
-            </Badge>
           ) : undefined
+        }
+        indicator={
+          !live && isChanged(lesson.status) ? <StatusDot status={lesson.status} /> : undefined
         }
         onClick={onOpen}
         data-testid={`lesson-${lesson.period}`}

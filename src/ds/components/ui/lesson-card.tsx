@@ -18,7 +18,7 @@ export type LessonStatus = "normal" | "now" | "cancelled" | "substitute";
 
 const lessonCardVariants = cva(
   [
-    "grid grid-cols-[auto_1fr] items-stretch gap-3.5 rounded-xl p-4",
+    "relative grid grid-cols-[auto_1fr] items-stretch gap-3.5 rounded-xl p-4",
     "transition-transform duration-(--dur-instant) ease-(--ease-out)",
   ],
   {
@@ -82,6 +82,12 @@ export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
     /** The status chip. The app supplies its own `Badge` so all six statuses survive. */
     badge?: ReactNode;
     /**
+     * A small overlay pinned to the card's top-right corner — a quieter alternative to `badge`
+     * for a change that doesn't need to shout. The exact word still has to reach the lesson
+     * sheet on tap; the card itself only needs to say "something here changed."
+     */
+    indicator?: ReactNode;
+    /**
      * Whether `start`/`end` render at all. Defaults to visible; the Day screen defaults its own
      * toggle to hidden and passes `false` until the student asks to see times. Each time this
      * flips to `true` the digits mount fresh, so the reveal animation (`studio-time-in`) replays.
@@ -101,6 +107,7 @@ export const LessonCard = ({
   status = "normal",
   filled = false,
   badge,
+  indicator,
   timeVisible = true,
   onClick,
   ...props
@@ -121,6 +128,8 @@ export const LessonCard = ({
       )}
       {...props}
     >
+      {indicator !== undefined && <span className="absolute top-3 right-3">{indicator}</span>}
+
       <div className="flex items-center gap-3">
         {timeVisible && (
           <div className="flex min-w-11.5 flex-col items-start justify-between py-0.5">
@@ -154,11 +163,7 @@ export const LessonCard = ({
       </div>
 
       <div className="flex min-w-0 flex-col gap-2">
-        {badge !== undefined && (
-          <div className="flex flex-wrap items-center gap-2">
-            {badge}
-          </div>
-        )}
+        {badge !== undefined && <div className="flex flex-wrap items-center gap-2">{badge}</div>}
 
         <h3
           className={cn(

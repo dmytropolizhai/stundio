@@ -101,6 +101,25 @@ export const STATUS_TONE: Record<
 };
 
 /**
+ * Domain status → the small corner dot's fill.
+ *
+ * The day list no longer spells the change out on the card face — a dot says "this changed,
+ * open it," and the exact word (plus the diff itself) lives one tap away in the lesson sheet.
+ * The five colours still track `STATUS_TONE`, with one deliberate substitution: the `ink` badge
+ * tone is a fixed near-black meant to sit *under* white text, so as a bare fill on a dark-theme
+ * card it nearly vanishes into the card itself. `moved` uses `bg-strong` instead — the same
+ * "strongest ink available" alias body text is set in, which is exactly why it's guaranteed to
+ * clear the card in both themes.
+ */
+export const STATUS_DOT_CLASS: Record<Exclude<ResolvedStatus, "normal">, string> = {
+  cancelled: "bg-danger",
+  moved: "bg-strong",
+  substituted: "bg-warning",
+  room_change: "bg-ink-500",
+  added: "bg-success",
+};
+
+/**
  * Domain status → DS `LessonCard` visual treatment.
  *
  * The card has four treatments and the domain has six statuses; this is the lossy half of that

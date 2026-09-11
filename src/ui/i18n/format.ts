@@ -10,6 +10,10 @@ export type Lang = Settings["lang"];
 
 const LOCALE: Record<Lang, string> = { lv: "lv-LV", en: "en-GB", ru: "ru-RU" };
 
+/** BCP-47 tag for a `Lang` — for callers (the calendar popover) that hand a locale to `Intl`
+ * themselves rather than going through one of this file's formatters. */
+export const localeTag = (lang: Lang): string => LOCALE[lang];
+
 /** Parsed as UTC noon: a date-only value has no timezone, and noon survives any DST shift. */
 const toDate = (date: ISODate): Date => new Date(`${date}T12:00:00Z`);
 

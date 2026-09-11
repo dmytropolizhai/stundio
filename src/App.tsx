@@ -34,7 +34,7 @@ const Onboarding = () => {
   return (
     <div className="flex h-full flex-col">
       <div className="bg-brand px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-white">
-        <span className="u-wordmark block text-[34px] leading-none">studio.</span>
+        <span className="u-wordmark block text-[34px] leading-none">stundio.</span>
         <h1 className="mt-5 font-display text-hero tracking-hero text-white">
           {t("onboarding.title")}
         </h1>

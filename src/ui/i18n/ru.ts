@@ -21,6 +21,9 @@ export const ru: Dict = {
 
   "day.today": "Сегодня",
   "day.jumpToday": "К сегодня",
+  "day.openCalendar": "Выбрать дату",
+  "day.previousMonth": "Предыдущий месяц",
+  "day.nextMonth": "Следующий месяц",
   "day.pageHint": "Проведи пальцем влево или вправо, или используй стрелки, чтобы сменить день",
   "day.empty": "Уроков нет",
   "day.emptyHint": "Выходной или праздник?",
