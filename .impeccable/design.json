@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T00:00:00Z",
+  "title": "Design System: Stundio",
+  "extensions": {
+    "colorMeta": {
+      "studio-electric": {
+        "role": "primary",
+        "displayName": "Studio Electric",
+        "canonical": "#1e3aff",
+        "tonalRamp": [
+          "#060b3d",
+          "#0a1568",
+          "#0f1fa0",
+          "#1730d6",
+          "#1e3aff",
+          "#4a5cff",
+          "#7a8aff",
+          "#adb9ff"
+        ]
+      },
+      "electric-strong": {
+        "role": "primary",
+        "displayName": "Electric Strong",
+        "canonical": "#1730d6"
+      },
+      "electric-deep": {
+        "role": "primary",
+        "displayName": "Deep Navy Ink",
+        "canonical": "#060b3d"
+      },
+      "electric-tint": {
+        "role": "primary",
+        "displayName": "Electric Tint",
+        "canonical": "#edf0ff"
+      },
+      "app-ground": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "#f6f7fa",
+        "tonalRamp": [
+          "#0b0c10",
+          "#2a2d36",
+          "#5b6070",
+          "#868c9e",
+          "#b9bfce",
+          "#dde1ea",
+          "#edeff4",
+          "#f6f7fa"
+        ]
+      },
+      "surface-card": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "canonical": "#ffffff"
+      },
+      "surface-sunken": {
+        "role": "neutral",
+        "displayName": "Sunken",
+        "canonical": "#edeff4"
+      },
+      "surface-inverse": {
+        "role": "neutral",
+        "displayName": "Near-Black Ink",
+        "canonical": "#0b0c10"
+      },
+      "text-body": {
+        "role": "neutral",
+        "displayName": "Reading Ink",
+        "canonical": "#2a2d36"
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#5b6070"
+      },
+      "border-hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#dde1ea"
+      },
+      "status-success": {
+        "role": "tertiary",
+        "displayName": "Reserved Success Green",
+        "canonical": "#0b8a4e"
+      },
+      "status-danger": {
+        "role": "tertiary",
+        "displayName": "Reserved Danger Red",
+        "canonical": "#d92020"
+      },
+      "accent-amber": {
+        "role": "tertiary",
+        "displayName": "Subject Amber",
+        "canonical": "#ffb552",
+        "tonalRamp": ["#5a3703", "#ffb552"]
+      },
+      "accent-sky": {
+        "role": "tertiary",
+        "displayName": "Subject Sky",
+        "canonical": "#9cc8f7",
+        "tonalRamp": ["#0c3560", "#9cc8f7"]
+      },
+      "accent-lilac": {
+        "role": "tertiary",
+        "displayName": "Subject Lilac",
+        "canonical": "#b79cff",
+        "tonalRamp": ["#2c1470", "#b79cff"]
+      },
+      "accent-pink": {
+        "role": "tertiary",
+        "displayName": "Subject Pink",
+        "canonical": "#ffa3e0",
+        "tonalRamp": ["#611349", "#ffa3e0"]
+      },
+      "accent-mint": {
+        "role": "tertiary",
+        "displayName": "Subject Mint",
+        "canonical": "#9fe3c0",
+        "tonalRamp": ["#0b4a32", "#9fe3c0"]
+      },
+      "accent-lime": {
+        "role": "tertiary",
+        "displayName": "Subject Lime",
+        "canonical": "#d7f53c",
+        "tonalRamp": ["#2e3a00", "#d7f53c"]
+      }
+    },
+    "typographyMeta": {
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Moho Condensed Black, licensed and bundled. Sets the 'studio.' wordmark and nothing else."
+      },
+      "hero": {
+        "displayName": "Hero",
+        "purpose": "One-per-screen statement type. Set BIG and tight; used sparingly."
+      },
+      "display": {
+        "displayName": "Display 1",
+        "purpose": "Screen titles (h1). Weight 800 at 40px with negative tracking."
+      },
+      "display-2": {
+        "displayName": "Display 2",
+        "purpose": "Section headings (h2)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The subject name on a lesson card, and card headings (h3)."
+      },
+      "body-lg": {
+        "displayName": "Body Large",
+        "purpose": "Lead paragraphs and bottom-sheet body."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default UI text at weight 500, never 400."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Room, teacher, hints, chip labels."
+      },
+      "label": {
+        "displayName": "Label / Micro",
+        "purpose": "Uppercase eyebrows, period numbers, badge text. The only place uppercase is allowed."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Every time, countdown and period boundary. Tabular figures so digits never jitter."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12)",
+        "purpose": "Resting state of every white card, chip, input and pill. Navy-tinted, never grey."
+      },
+      {
+        "name": "raised",
+        "value": "0 4px 10px rgba(6,11,61,0.06), 0 24px 48px -20px rgba(6,11,61,0.2)",
+        "purpose": "The bottom sheet — the only surface that sits above content."
+      },
+      {
+        "name": "nav",
+        "value": "0 8px 24px rgba(6,11,61,0.24)",
+        "purpose": "The floating black nav pill, top of the elevation stack."
+      },
+      {
+        "name": "brand",
+        "value": "0 12px 32px -12px rgba(30,58,255,0.55)",
+        "purpose": "The coloured glow under the primary button only. Identity, not an elevation step."
+      },
+      {
+        "name": "inset-hairline",
+        "value": "inset 0 0 0 1px #dde1ea",
+        "purpose": "The one inner shadow the system allows: stands in for a border on white-on-white controls."
+      },
+      {
+        "name": "card-dark",
+        "value": "0 2px 6px rgba(0,0,0,0.4), 0 12px 28px -12px rgba(0,0,0,0.6)",
+        "purpose": "Dark-mode card shadow. A navy shadow is invisible on a dark ground, so dark drops to plain black."
+      }
+    ],
+    "motion": [
+      {
+        "name": "dur-instant",
+        "value": "90ms",
+        "purpose": "Press scale-down."
+      },
+      {
+        "name": "dur-fast",
+        "value": "160ms",
+        "purpose": "Colour and state transitions; scrim fade."
+      },
+      {
+        "name": "dur-base",
+        "value": "240ms",
+        "purpose": "Sheet entrance; nav active-pill growth."
+      },
+      {
+        "name": "dur-slow",
+        "value": "380ms",
+        "purpose": "The longest permitted transition."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Default easing everywhere except the two spring exceptions."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0, 0.7, 0.2, 1)",
+        "purpose": "Press transforms."
+      },
+      {
+        "name": "ease-spring",
+        "value": "cubic-bezier(0.34, 1.4, 0.64, 1)",
+        "purpose": "Permitted in exactly three places: the bottom sheet entrance, the nav active pill, and the switch thumb travel. Nothing else bounces."
+      },
+      {
+        "name": "press-scale",
+        "value": "0.97",
+        "purpose": "Controls press this far; colour never changes on press."
+      },
+      {
+        "name": "press-scale-tile",
+        "value": "0.94",
+        "purpose": "Tiles and cards press deeper."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "screen-max",
+        "value": "420px",
+        "purpose": "The phone design width. Content caps here and centres on anything wider; there are no desktop breakpoints."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single electric action on a screen, carrying the brand glow.",
+      "html": "<button class=\"ds-btn-primary\">Uz šodienu</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--brand, #1e3aff); color: #fff; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 12px 32px -12px rgba(30,58,255,0.55); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-btn-primary:hover { background: var(--brand-strong, #1730d6); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filter and value pill. Selection is a full fill swap to solid near-black, never a border.",
+      "html": "<button class=\"ds-chip\">Visas klases</button>\n<button class=\"ds-chip ds-chip--selected\">Izlase</button>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--surface-card, #fff); color: var(--text-body, #2a2d36); font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), color 160ms cubic-bezier(0.2,0.8,0.2,1); } .ds-chip:active { transform: scale(0.97); } .ds-chip--selected { background: var(--ink-900, #0b0c10); color: #fff; box-shadow: none; } .ds-chip:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "Pill input with a leading icon and a hairline inset ring instead of a border.",
+      "html": "<span class=\"ds-field\"><svg class=\"ds-field__icon\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input class=\"ds-field__input\" type=\"search\" placeholder=\"Meklēt klasi…\" /></span>",
+      "css": ".ds-field { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px; border-radius: 999px; background: var(--surface-card, #fff); color: var(--text-muted, #5b6070); box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); } .ds-field__icon { flex: none; } .ds-field__input { min-width: 0; flex: 1; border: 0; background: transparent; outline: none; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 500; color: var(--text-strong, #0b0c10); } .ds-field__input::placeholder { color: var(--text-muted, #5b6070); } .ds-field:focus-within { box-shadow: inset 0 0 0 2px var(--focus-ring, #4a5cff); }"
+    },
+    {
+      "name": "Lesson Card",
+      "kind": "custom",
+      "refersTo": "lesson-card",
+      "description": "The signature component: mono time rail, 4px subject-accent rail, subject at Title size, room and teacher below.",
+      "html": "<div class=\"ds-lesson\"><div class=\"ds-lesson__rail\"><div class=\"ds-lesson__times\"><span class=\"ds-lesson__start\">10:15</span><span class=\"ds-lesson__end\">11:35</span></div><span class=\"ds-lesson__bar\"></span></div><div class=\"ds-lesson__body\"><div class=\"ds-lesson__top\"><span class=\"ds-lesson__period\">3. stunda</span><span class=\"ds-badge ds-badge--brand\">Tagad</span></div><h3 class=\"ds-lesson__subject\">Programmēšana</h3><div class=\"ds-lesson__meta\"><span class=\"ds-lesson__metaitem\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg>314</span><span class=\"ds-lesson__metaitem\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/></svg>Bērziņa Anna</span></div></div></div>",
+      "css": ".ds-lesson { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 16px; border-radius: 28px; background: var(--surface-card, #fff); color: var(--text-strong, #0b0c10); box-shadow: inset 0 0 0 2px var(--brand, #1e3aff), 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); transition: transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-lesson:active { transform: scale(0.94); } .ds-lesson__rail { display: flex; gap: 12px; } .ds-lesson__times { display: flex; min-width: 46px; flex-direction: column; align-items: flex-start; font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; } .ds-lesson__start { font-size: 15px; font-weight: 700; } .ds-lesson__end { font-size: 12px; font-weight: 500; color: var(--text-muted, #5b6070); } .ds-lesson__bar { width: 4px; border-radius: 999px; background: var(--accent-sky, #9cc8f7); } .ds-lesson__body { display: flex; min-width: 0; flex-direction: column; gap: 8px; } .ds-lesson__top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; } .ds-lesson__period { font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted, #5b6070); } .ds-lesson__subject { margin: 0; font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; } .ds-lesson__meta { display: flex; flex-wrap: wrap; gap: 14px; font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted, #5b6070); } .ds-lesson__metaitem { display: inline-flex; align-items: center; gap: 6px; } .ds-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; } .ds-badge--brand { background: var(--brand, #1e3aff); color: #fff; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "The lesson- and sync-state word. Status colour is reserved; warning carries the amber ink pair, not white.",
+      "html": "<span class=\"ds-badge2 ds-badge2--danger\">Atcelta</span>\n<span class=\"ds-badge2 ds-badge2--warning\">Pārcelta</span>\n<span class=\"ds-badge2 ds-badge2--quiet\">Cits kabinets</span>",
+      "css": ".ds-badge2 { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; margin-right: 6px; border-radius: 999px; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; } .ds-badge2--danger { background: var(--status-danger, #d92020); color: #fff; } .ds-badge2--warning { background: var(--status-warning, #ffb552); color: var(--accent-amber-ink, #5a3703); } .ds-badge2--quiet { background: var(--surface-sunken, #edeff4); color: var(--text-muted, #5b6070); }"
+    },
+    {
+      "name": "Bottom Nav",
+      "kind": "nav",
+      "refersTo": "bottom-nav",
+      "description": "The floating black pill. The active tab is a fill swap that grows to include its label — one of only two places spring easing is allowed.",
+      "html": "<nav class=\"ds-nav\"><button class=\"ds-nav__item ds-nav__item--active\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/></svg><span>Diena</span></button><button class=\"ds-nav__item\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/></svg></button><button class=\"ds-nav__item\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 2v2\"/><path d=\"M14 2v2\"/><path d=\"M6 2v2\"/><path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/></svg></button></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; height: 64px; padding: 6px; border-radius: 999px; background: var(--ink-900, #0b0c10); box-shadow: 0 8px 24px rgba(6,11,61,0.24); } .ds-nav__item { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; flex: 1 1 0; padding: 0; border: 0; border-radius: 999px; background: transparent; color: rgba(255,255,255,0.62); font-family: Manrope, system-ui, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color 240ms cubic-bezier(0.34,1.4,0.64,1), color 240ms cubic-bezier(0.34,1.4,0.64,1), padding 240ms cubic-bezier(0.34,1.4,0.64,1), flex 240ms cubic-bezier(0.34,1.4,0.64,1); } .ds-nav__item--active { flex: none; padding: 0 20px; background: #fff; color: var(--ink-900, #0b0c10); } .ds-nav__item:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Freshness Indicator",
+      "kind": "custom",
+      "refersTo": "sync-status",
+      "description": "Every data screen says where its data came from and how old it is. That honesty is a content rule, not decoration.",
+      "html": "<div class=\"ds-sync\"><svg class=\"ds-sync__icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/></svg><span>Atjaunināts</span><span class=\"ds-sync__detail\">pirms 12 min</span></div>",
+      "css": ".ds-sync { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--surface-card, #fff); color: var(--text-muted, #5b6070); font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); } .ds-sync__icon { color: var(--status-success, #0b8a4e); } .ds-sync__detail { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 12px; }"
+    },
+    {
+      "name": "Empty State",
+      "kind": "card",
+      "refersTo": "empty-state",
+      "description": "The only centred surface in the system. Copy stays flat — no apology, no cheerleading, no exclamation mark.",
+      "html": "<div class=\"ds-empty\"><span class=\"ds-empty__well\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 2v2\"/><path d=\"M14 2v2\"/><path d=\"M6 2v2\"/><path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/></svg></span><h3 class=\"ds-empty__title\">Stundu nav</h3><p class=\"ds-empty__body\">Brīvdiena vai svētku diena?</p></div>",
+      "css": ".ds-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 36px 24px; border-radius: 28px; background: var(--surface-card, #fff); text-align: center; box-shadow: 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); } .ds-empty__well { display: inline-flex; width: 56px; height: 56px; align-items: center; justify-content: center; border-radius: 30%; background: var(--brand-tint, #edf0ff); color: var(--brand-strong, #1730d6); } .ds-empty__title { margin: 0; font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; color: var(--text-strong, #0b0c10); } .ds-empty__body { margin: 0; max-width: 260px; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 500; line-height: 1.5; color: var(--text-muted, #5b6070); }"
+    },
+    {
+      "name": "Subject Card (tinted)",
+      "kind": "card",
+      "refersTo": "card-tinted",
+      "description": "A card filled with a subject accent and its ink pair. It gets no shadow — the colour already separates it from the page.",
+      "html": "<div class=\"ds-card-tinted\"><span class=\"ds-card-tinted__eyebrow\">6 stundas nedēļā</span><h3 class=\"ds-card-tinted__title\">Angļu valoda</h3></div>",
+      "css": ".ds-card-tinted { padding: 16px; border-radius: 28px; background: var(--accent-mint, #9fe3c0); color: var(--accent-mint-ink, #0b4a32); box-shadow: none; transition: transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-card-tinted:active { transform: scale(0.94); } .ds-card-tinted__eyebrow { font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; } .ds-card-tinted__title { margin: 4px 0 0; font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; }"
+    },
+    {
+      "name": "Day Strip",
+      "kind": "nav",
+      "refersTo": "day-tile",
+      "description": "The horizontal week pager. Selection is a fill swap to electric with the brand glow; the 5px dot is the only change signal and always holds its space.",
+      "html": "<div class=\"ds-daystrip\"><button class=\"ds-day\"><span class=\"ds-day__wd\">Pr</span><span class=\"ds-day__num\">8</span><span class=\"ds-day__dot\"></span></button><button class=\"ds-day ds-day--active\"><span class=\"ds-day__wd\">Ot</span><span class=\"ds-day__num\">9</span><span class=\"ds-day__dot ds-day__dot--on\"></span></button><button class=\"ds-day\"><span class=\"ds-day__wd\">Tr</span><span class=\"ds-day__num\">10</span><span class=\"ds-day__dot ds-day__dot--on\"></span></button><button class=\"ds-day\"><span class=\"ds-day__wd\">Ce</span><span class=\"ds-day__num\">11</span><span class=\"ds-day__dot\"></span></button><button class=\"ds-day\"><span class=\"ds-day__wd\">Pk</span><span class=\"ds-day__num\">12</span><span class=\"ds-day__dot\"></span></button></div>",
+      "css": ".ds-daystrip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; } .ds-daystrip::-webkit-scrollbar { display: none; } .ds-day { display: flex; height: 74px; min-width: 46px; flex: 1 0 46px; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 0; border-radius: 24px; background: var(--surface-card, #fff); color: var(--text-body, #2a2d36); cursor: pointer; box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), color 160ms cubic-bezier(0.2,0.8,0.2,1), transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-day:active { transform: scale(0.97); } .ds-day--active { background: var(--brand, #1e3aff); color: #fff; box-shadow: 0 12px 32px -12px rgba(30,58,255,0.55); } .ds-day__wd { font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.55; } .ds-day--active .ds-day__wd { opacity: 0.85; } .ds-day__num { font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 800; line-height: 1; } .ds-day__dot { width: 5px; height: 5px; border-radius: 999px; background: transparent; } .ds-day__dot--on { background: var(--brand, #1e3aff); } .ds-day--active .ds-day__dot--on { background: #fff; } .ds-day:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Segmented Tabs",
+      "kind": "nav",
+      "refersTo": "segmented-item-active",
+      "description": "Sunken pill track with a white pill on the selected segment. A radiogroup with roving tabindex, not a tablist: the segments pick a value, they do not swap a panel.",
+      "html": "<div class=\"ds-seg\" role=\"radiogroup\" aria-label=\"Tēma\"><button class=\"ds-seg__item ds-seg__item--active\" role=\"radio\" aria-checked=\"true\">Gaišs</button><button class=\"ds-seg__item\" role=\"radio\" aria-checked=\"false\" tabindex=\"-1\">Tumšs</button><button class=\"ds-seg__item\" role=\"radio\" aria-checked=\"false\" tabindex=\"-1\">Sistēma</button></div>",
+      "css": ".ds-seg { display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--surface-sunken, #edeff4); } .ds-seg__item { height: 36px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: var(--text-muted, #5b6070); font-family: Manrope, system-ui, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), color 160ms cubic-bezier(0.2,0.8,0.2,1); } .ds-seg__item--active { background: var(--surface-card, #fff); color: var(--text-strong, #0b0c10); box-shadow: 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); } .ds-seg__item:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+    },
+    {
+      "name": "Switch",
+      "kind": "input",
+      "refersTo": "switch-track",
+      "description": "50x30 track, 24px white thumb travelling 20px, electric when on. The thumb travel is the third sanctioned spring.",
+      "html": "<label class=\"ds-switch-row\"><span class=\"ds-switch ds-switch--on\"><span class=\"ds-switch__thumb\"></span></span>Tumšais režīms</label><label class=\"ds-switch-row\"><span class=\"ds-switch\"><span class=\"ds-switch__thumb\"></span></span>Paziņojumi</label>",
+      "css": ".ds-switch-row { display: inline-flex; align-items: center; gap: 12px; margin-right: 16px; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 500; color: var(--text-strong, #0b0c10); cursor: pointer; } .ds-switch { position: relative; display: block; width: 50px; height: 30px; flex: none; border-radius: 999px; background: var(--border-hairline, #dde1ea); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1); } .ds-switch--on { background: var(--brand, #1e3aff); } .ds-switch__thumb { position: absolute; top: 3px; left: 0; display: block; width: 24px; height: 24px; border-radius: 999px; background: #fff; box-shadow: 0 2px 6px rgba(6,11,61,0.24); transform: translateX(3px); transition: transform 160ms cubic-bezier(0.34,1.4,0.64,1); } .ds-switch--on .ds-switch__thumb { transform: translateX(23px); }"
+    },
+    {
+      "name": "Week Grid",
+      "kind": "custom",
+      "refersTo": "week-grid-cell",
+      "description": "The whole week at a glance. Accent-filled cells carry the short subject code (the only sanctioned abbreviation); empty slots are sunken blocks, never a string.",
+      "html": "<div class=\"ds-week\"><span></span><span class=\"ds-week__h ds-week__h--today\">Pr</span><span class=\"ds-week__h\">Ot</span><span class=\"ds-week__h\">Tr</span><span class=\"ds-week__h\">Ce</span><span class=\"ds-week__h\">Pk</span><span class=\"ds-week__t\">08:30</span><button class=\"ds-week__c\" style=\"background:var(--accent-sky,#9cc8f7)\">PRG</button><button class=\"ds-week__c\" style=\"background:var(--accent-mint,#9fe3c0)\">ANG</button><span class=\"ds-week__e\"></span><button class=\"ds-week__c\" style=\"background:var(--accent-lilac,#b79cff)\">MAT</button><button class=\"ds-week__c\" style=\"background:var(--accent-sky,#9cc8f7)\">PRG</button><span class=\"ds-week__t\">10:15</span><button class=\"ds-week__c\" style=\"background:var(--accent-amber,#ffb552)\">FIZ</button><button class=\"ds-week__c ds-week__c--off\" style=\"background:var(--accent-sky,#9cc8f7)\">PRG</button><button class=\"ds-week__c\" style=\"background:var(--accent-pink,#ffa3e0)\">VĒS</button><span class=\"ds-week__e\"></span><button class=\"ds-week__c\" style=\"background:var(--accent-lime,#d7f53c)\">SPO</button></div>",
+      "css": ".ds-week { display: grid; grid-template-columns: 36px repeat(5, minmax(0,1fr)); gap: 6px; } .ds-week__h { border-radius: 12px; text-align: center; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted, #5b6070); } .ds-week__h--today { color: var(--brand-strong, #1730d6); } .ds-week__t { align-self: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 11px; color: var(--text-muted, #5b6070); } .ds-week__c { height: 40px; padding: 0 6px; border: 0; border-radius: 12px; font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 700; color: #0b0c10; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-week__c--off { opacity: 0.4; text-decoration: line-through; } .ds-week__e { height: 40px; border-radius: 12px; background: var(--surface-sunken, #edeff4); } .ds-week__c:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Confident Companion",
+    "overview": "Stundio is a pocket-sized assistant with a strong voice. It does not present the school's timetable apologetically or neutrally — it takes a position on what matters right now, sets it large, and gets out of the way. Electric blue, black pills, and display type at 40px on a 420px-wide phone are not restraint; they are the sound of an app that is certain about the answer it is giving. The personality comes entirely from decisiveness, never from ornament: there is no illustration, no gradient mesh, no texture, no mascot. What reads as character is scale, roundness, and the willingness to commit to a single accent.\n\nThe system is dense with information but generous with form. Cards are 28px-rounded and unbordered; everything interactive is a pill; the six subject accents are pastel fills carrying dark ink pairs so a colour-coded card is still full-contrast text. The ground is a cool near-white (#f6f7fa) that never appears as pure white — white is reserved for cards, so a surface reading as white is always a thing, not the page. Dark mode is a first-class user setting, not a media query: only the semantic aliases re-point under .dark, never a base palette step.\n\nIt is built for one hand in a corridor. Every measurement in the system assumes a 420px design width, a 44px minimum hit target, and a reader who has about two seconds. Confirmed anti-references: EduPage's own UI (dense grey tables, server-supplied subject colours with no contrast guarantee, information buried behind taps), Material 3 and stock Android (the Studio DS has its own form language and does not drift toward Material components, elevation, or colour roles), and generic dashboard SaaS (slate-and-indigo Tailwind defaults, hairline-bordered rectangles, desktop data-table density).",
+    "keyCharacteristics": [
+      "Electric blue as a single, sparing voice against cool neutral paper.",
+      "Nothing is square: 28px cards, pill controls, 8px as the smallest radius in the system.",
+      "Selection is a fill swap to solid black — never a border, underline, or indicator line.",
+      "Six pastel subject accents used strictly as an index, each with a dark ink pair.",
+      "Times and countdowns set in tabular mono so digits never jitter.",
+      "Structural elevation: soft, blue-tinted, and ranked.",
+      "Dark mode is a setting, and it re-points aliases only."
+    ],
+    "rules": [
+      {
+        "name": "The Index Rule",
+        "body": "The six subject accents are an index, not decoration. They exist to make a subject recognisable at a glance and to stay bound to it forever. They carry no meaning, no ranking, and no mood — using an accent to signal importance, urgency, or status is a misuse. Status has its own four colours; use those.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Voice Rule",
+        "body": "Studio Electric appears on at most one or two elements per screen. Its rarity is what makes the \"now\" ring read as now. A screen with three blue things has no primary action.",
+        "section": "colors"
+      },
+      {
+        "name": "The Alias-Only Rule",
+        "body": "Dark mode re-points semantic aliases (--bg-app, --surface-card, --text-muted, …) and never a base palette step (--blue-*, --ink-*, --accent-*). A component that reaches for a base step directly will be wrong in one of the two themes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Server-Colour Rule",
+        "body": "EduPage ships its own per-subject hex. It is never used. It carries no contrast guarantee, and it breaks the promise that a subject looks the same on every device.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Time Rule",
+        "body": "Anything that is a time, a countdown, or a number that ticks is set in JetBrains Mono with font-variant-numeric: tabular-nums (the u-data utility). A clock that reflows as its digits change is a broken clock.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tight Display Rule",
+        "body": "Display type is always set BIG and tight — never above 1.05 line-height, never with positive tracking. If a heading needs to be small to fit, it is a Title, not a shrunken Display.",
+        "section": "typography"
+      },
+      {
+        "name": "The Eyebrow Rule",
+        "body": "Uppercase appears only at Label size with 0.14em tracking (the u-eyebrow utility). Uppercase at body size or larger does not exist in this system.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Fixed Thing Rule",
+        "body": "Exactly one element is fixed to the viewport: the bottom nav. Everything else scrolls, including the header.",
+        "section": "layout"
+      },
+      {
+        "name": "The Tinted-Card Rule",
+        "body": "A card filled with a subject accent gets no shadow. Its colour already separates it from the page, and stacking a navy shadow under a pastel fill muddies the tint.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Blue-Shadow Rule",
+        "body": "Shadows are navy-tinted, never grey or black — in light mode. In dark mode a navy shadow is invisible, so the system drops to plain black shadows for floating chrome and otherwise conveys depth through surface contrast (#0b0c10 ground → #16181f card).",
+        "section": "elevation"
+      },
+      {
+        "name": "The Two Blurs Rule",
+        "body": "Backdrop blur exists in exactly two places: glass chrome over the blue hero (18px) and the modal scrim (8px). Blur over a white surface does not exist.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No-Square Rule",
+        "body": "Nothing in this system has a square corner. If a new element needs one, the element is wrong, not the rule.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do use the semantic aliases (bg-card, text-muted, shadow-card, rounded-xl) rather than base palette steps, so both themes follow without a dark: override.",
+      "Do set every time, countdown, and period boundary in the u-data utility with tabular figures.",
+      "Do express selection as a fill swap to solid near-black — chips, day tiles, and nav items all do this and should keep doing it.",
+      "Do give the current lesson the 2px electric inset ring and nothing more.",
+      "Do keep cancelled lessons in place at 55% opacity with a strikethrough; they are information, not clutter.",
+      "Do state data freshness on any screen that shows school data.",
+      "Do pair every fade with a small translate.",
+      "Do keep 44px as the floor for any hit target, and reserve the 64px nav height plus its 16px inset at the bottom of scrollable content.",
+      "Do re-pull src/ds/tokens/*.css from the design system when a token needs to change — dark.css and fonts.css are the two authored-here exceptions and say so in place."
+    ],
+    "donts": [
+      "Don't use a subject accent to mean anything. It is an index (see The Index Rule); status has its own four colours.",
+      "Don't use EduPage's server-supplied subject hex, raw hex of any kind, or stock Tailwind palette colours (slate-500, amber-100).",
+      "Don't put a shadow under a tinted card, or a navy-tinted shadow anywhere in dark mode.",
+      "Don't give anything a square corner, or a radius below 8px.",
+      "Don't draw a border where an inset ring will do, and don't add borders to cards at all.",
+      "Don't add a second modal surface — no Dialog, no Toast, no Tooltip. The bottom sheet is it.",
+      "Don't make the top bar sticky; the bottom nav is the only fixed element.",
+      "Don't let anything bounce except the bottom sheet's entrance, the nav's active pill, and the switch thumb.",
+      "Don't use blur over a white surface.",
+      "Don't put emoji or unicode-as-icon (★, ✓, →) in the UI; use <Icon>, which is bundled Lucide at 2px stroke on a 24px grid.",
+      "Don't set uppercase above 11px Label size.",
+      "Don't drift toward Material 3 components, Material elevation, or Material colour roles."
+    ]
+  }
+}
