@@ -1,7 +1,7 @@
 {
-  "name": "edupage-scraper",
+  "name": "stundio",
   "private": true,
-  "version": "0.0.0",
+  "version": "v0.0.1-alpha",
   "type": "module",
   "engines": {
     "node": ">=20"

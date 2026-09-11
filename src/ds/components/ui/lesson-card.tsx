@@ -9,7 +9,7 @@ export type LessonTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime" | 
 /**
  * Visual treatment, not the full domain vocabulary.
  *
- * Studio's `ResolvedStatus` has six members (cancelled, moved, substituted, room_change, added,
+ * Stundio's `ResolvedStatus` has six members (cancelled, moved, substituted, room_change, added,
  * normal) and the DS card has four. Rather than collapse the domain into the DS's set, this drives
  * only the *treatment* — dimming, strikethrough, the brand ring on "now" — and the exact word is
  * passed in through `badge`, so the app keeps all six and renders them with the DS `Badge`.
