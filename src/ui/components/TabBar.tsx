@@ -15,7 +15,7 @@ const TABS: { id: Tab; icon: IconName }[] = [
 ];
 
 /**
- * The floating black nav pill. It sits 20px above the bottom edge with a 16px side inset, on top
+ * The floating nav pill. It sits 20px above the bottom edge with a 16px side inset, on top
  * of the scrolling content rather than in the layout flow — which is why every screen pads its
  * scroll area at the bottom instead of the shell reserving space here.
  */
