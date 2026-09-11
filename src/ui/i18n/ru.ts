@@ -32,6 +32,8 @@ export const ru: Dict = {
   "day.free": "Окно",
   "day.finished": "Уроки закончились",
   "day.now": "Сейчас",
+  "day.showTime": "Показать время",
+  "day.hideTime": "Скрыть время",
 
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",

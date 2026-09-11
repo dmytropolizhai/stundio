@@ -204,6 +204,7 @@
   --animate-shimmer: studio-shimmer 1.2s linear infinite;
   --animate-sheet-in: studio-sheet-in var(--dur-base) var(--ease-spring);
   --animate-scrim-in: studio-scrim-in var(--dur-fast) var(--ease-standard);
+  --animate-time-in: studio-time-in var(--dur-base) var(--ease-standard) both;
 }
 
 @keyframes studio-shimmer {
@@ -231,6 +232,19 @@
     opacity: 0;
   }
   to {
+    opacity: 1;
+  }
+}
+
+/* The lesson card's time reveal: grows from nothing on its own axis (`origin-top` /
+   `origin-bottom`, set per span), never bounces — see The Tabular Time Rule. */
+@keyframes studio-time-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
     opacity: 1;
   }
 }

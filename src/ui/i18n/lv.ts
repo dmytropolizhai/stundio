@@ -38,6 +38,8 @@ export const lv = {
   "day.free": "Brīvstunda",
   "day.finished": "Stundas beigušās",
   "day.now": "Tagad",
+  "day.showTime": "Rādīt laiku",
+  "day.hideTime": "Slēpt laiku",
 
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",

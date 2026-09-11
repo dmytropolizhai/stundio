@@ -76,6 +76,12 @@ export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
     status?: LessonStatus;
     /** The status chip. The app supplies its own `Badge` so all six statuses survive. */
     badge?: ReactNode;
+    /**
+     * Whether `start`/`end` render at all. Defaults to visible; the Day screen defaults its own
+     * toggle to hidden and passes `false` until the student asks to see times. Each time this
+     * flips to `true` the digits mount fresh, so the reveal animation (`studio-time-in`) replays.
+     */
+    timeVisible?: boolean;
   };
 
 export const LessonCard = ({
@@ -90,6 +96,7 @@ export const LessonCard = ({
   status = "normal",
   filled = false,
   badge,
+  timeVisible = true,
   onClick,
   ...props
 }: LessonCardProps) => {
@@ -109,10 +116,21 @@ export const LessonCard = ({
       {...props}
     >
       <div className="flex gap-3">
-        <div className="flex min-w-[46px] flex-col items-start">
-          <span className={cn("u-data font-bold", cancelled && "line-through")}>{start}</span>
-          <span className={cn("u-data text-[12px]", meta)}>{end}</span>
-        </div>
+        {timeVisible && (
+          <div className="flex min-w-[46px] flex-col items-start justify-between py-0.5">
+            <span
+              className={cn(
+                "u-data origin-top animate-time-in font-bold",
+                cancelled && "line-through",
+              )}
+            >
+              {start}
+            </span>
+            <span className={cn("u-data origin-bottom animate-time-in text-[12px]", meta)}>
+              {end}
+            </span>
+          </div>
+        )}
         <span className={cn("w-1 rounded-pill", filled ? "bg-current opacity-35" : RAIL[tone])} />
       </div>
 

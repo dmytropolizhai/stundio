@@ -17,12 +17,15 @@ export const LessonRow = ({
   lesson,
   live,
   progress,
+  showTime,
   onOpen,
 }: {
   lesson: ResolvedLesson;
   live: boolean;
   /** 0–1 through the lesson; only passed when `live`. */
   progress?: number;
+  /** Whether times are revealed on this screen — the Day screen's own toggle. */
+  showTime: boolean;
   onOpen: () => void;
 }) => {
   const t = useT();
@@ -43,6 +46,7 @@ export const LessonRow = ({
         {...(rooms === "" ? {} : { room: rooms })}
         tone={subjectTone(lesson.subject)}
         status={status}
+        timeVisible={showTime}
         badge={
           live ? (
             <Badge tone="brand" data-testid="status-now">
