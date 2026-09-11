@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "i-have-adhd": {
+      "source": "ayghri/i-have-adhd",
+      "sourceType": "github",
+      "skillPath": "skills/i-have-adhd/SKILL.md",
+      "computedHash": "ff5ac62815dc9c74709333f433e667ea76215126afb628e7dd8e021758a9e3a7"
+    },
     "migrate-radix-to-base": {
       "source": "shadcn/ui",
       "sourceType": "github",
