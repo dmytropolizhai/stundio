@@ -89,7 +89,7 @@ describe("DayView", () => {
     const { onDateChange } = renderDay(harness, "2026-09-11");
 
     fireEvent.click(screen.getByRole("button", { name: "Izvēlēties datumu" }));
-    fireEvent.click(await screen.findByRole("button", { name: "Uz šodienu" }));
+    fireEvent.click(await screen.findByTestId("calendar-jump-today"));
 
     expect(onDateChange).toHaveBeenCalledWith(FIXTURE_DATE);
   });

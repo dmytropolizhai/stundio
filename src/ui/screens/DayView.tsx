@@ -310,6 +310,7 @@ export const DayView = ({
                     <Button
                       variant="ghost"
                       size="sm"
+                      data-testid="calendar-jump-today"
                       onClick={() => {
                         onDateChange(now.date);
                         setCalendarOpen(false);
@@ -329,6 +330,20 @@ export const DayView = ({
               </>
             }
           />
+
+          {!isToday && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  onDateChange(now.date);
+                }}
+              >
+                {t("day.jumpToday")}
+              </Button>
+            </div>
+          )}
 
           {body()}
         </motion.div>
