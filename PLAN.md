@@ -222,6 +222,48 @@ favorite class's day changes while the app has run.
 
 ---
 
+## Phase 6 — e-klase grades integration  (size: M–L, fast-follow after v1, needs a decision first)
+
+**Goal:** show grades for an EduPage subject by pulling them from e-klase's "Sekmju izraksts"
+(grade transcript) report, which — unlike e-klase's own gradebook view — lists every mark
+without a premium subscription.
+
+This is a bigger step than anything else in the roadmap: it's the first per-student,
+per-credential feature in an app whose whole design is anonymous and class-based (see
+"Guiding constraints" above, and the "Out of scope" line below, which currently rules this
+out). Don't start this phase until that trade-off is explicitly re-opened and accepted.
+
+- [ ] **Decide the trust model first.** e-klase requires a real login (username + password),
+      not an anonymous hash like EduPage's `gsechash`. Storing a schoolmate's e-klase password
+      on-device is a materially different privacy posture than read-only public-timetable
+      scraping — needs `@capacitor/preferences`' secure storage (or a native Keystore-backed
+      plugin), a clear "this is unofficial, use at your own risk" disclosure, and probably an
+      opt-in toggle that's off by default.
+- [ ] Reference/probe first: a `reference/probe_eklase.py` (stdlib + `requests`, mirroring
+      `probe_substitution.py`) to log in, pull "Sekmju izraksts", and confirm it isn't gated
+      behind the same premium wall as the in-app gradebook. Capture a fixture under `data/`
+      before writing any TS.
+- [ ] New isolated module `src/lib/eklase/` (own `http.ts`/`client.ts`/parser), **not** inside
+      `src/lib/edupage/` — different origin, different auth, different HTML shape. Same rules
+      as `substitutions.ts` apply: parser never throws, keep `raw`, canary test on unparsed rows.
+- [ ] Login/session handling: e-klase session cookies + whatever CSRF token the login form
+      needs; document the flow in a new `MODEL_EKLASE.md` the way `MODEL.md` documents EduPage.
+- [ ] Subject matching: EduPage subject codes vs. e-klase subject names don't share a key.
+      Needs a small mapping step (manual per-class override, or fuzzy match with a confirm
+      step in Settings) — surface unmatched subjects rather than silently dropping grades.
+- [ ] Storage: a new `db/` store for grades, keyed by subject + date, cached like everything
+      else (offline-first); credentials stored separately from cached data, cleared together
+      on "log out of e-klase" / "clear data".
+- [ ] UI: grades surfaced on `LessonSheet` for that subject (and/or a dedicated Grades screen),
+      clearly marked as "from e-klase" the way substitutions are marked "from school".
+- [ ] Retention/refresh policy for grades (likely: refresh on-demand + daily, not on every
+      timetable sync — grades change far less often than substitutions).
+
+**Exit:** an opted-in user sees e-klase grades for a subject next to that subject's EduPage
+lessons, offline-cached, with credentials stored securely and the feature clearly optional.
+
+---
+
 ## Parallel track — home-screen widget spike  (size: M–L, start after Phase 0)
 
 Capacitor has no App Widget API — this is native Kotlin. Do a spike early so its data
@@ -264,11 +306,14 @@ needs shape the JS side.
 | Wrong building picked → confusing timetable | Decision #4; clear building indicator on every screen |
 | Weekly `ttNum` not published yet for the upcoming week | `stale` flag + banner; fall back to previous week with a warning |
 | Cross-day moved lessons double-count in `resolveDay` | `moved_out` empties the source slot; `moved_in` only added when its `movedFromDate`/period resolves; covered by a resolve test |
+| e-klase login flow breaks/changes, or "Sekmju izraksts" gets gated like the in-app gradebook | Isolate in `src/lib/eklase/`, probe-first (Phase 6); feature is opt-in so a breakage degrades to "no grades", never blocks the timetable |
+| Storing e-klase credentials on-device raises the app's privacy/trust bar | Secure storage only, opt-in default-off, explicit disclosure it's unofficial (Phase 6) |
 
 ## Out of scope for v1
 
-Telegram bot · iOS · per-student login (grades, messages, lunch) · multi-school support ·
+Telegram bot · iOS · per-student login (messages, lunch) · multi-school support ·
 push notifications via server · teacher/classroom timetable views (data supports it — later).
+e-klase grades: tracked as **Phase 6**, a fast-follow after v1 ships — not dropped, but not v1.
 
 ## Definition of done (v1)
 
