@@ -181,6 +181,19 @@ Still unverified on a physical device (no JDK/Android SDK here).
 
 ## Phase 4 — Android packaging + notifications  (size: M)
 
+- [ ] **Customization settings** (extends the Phase 3 Settings screen): user-controlled
+      appearance, stored in `db/` `settings` store like the rest of Settings, applied through
+      `src/ds/` tokens/CSS variables — no new hardcoded colours.
+  - [ ] **Theme:** already have system/light/dark (Phase 3); add an **accent colour picker**
+        limited to the DS's defined accent set (don't invent new hexes outside `src/ds/tokens/`).
+  - [ ] **Per-subject colours:** let the user override a subject's `subjectTone()`-assigned accent
+        with another DS accent, and **toggle subject colour-coding off** entirely (falls back to a
+        single neutral tone everywhere the accent currently renders — lesson rows, WeekView cells,
+        the rail). Persisted per class (per device — this is local-first, not synced), with a
+        "reset to defaults" action. Keep `subjectTone()` as the deterministic default; overrides
+        are an explicit opt-in layered on top, not a replacement for the hashing scheme.
+  - [ ] Settings UI: a per-subject list (subject name + colour swatch + on/off) under a new
+        "Appearance" section, reusing existing Subjects-screen data for the subject list.
 - [ ] App icon, adaptive icon, splash, status-bar styling, edge-to-edge.
 - [ ] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline banner.
 - [ ] `@capacitor/local-notifications`: after a background/foreground sync, if today's (or
