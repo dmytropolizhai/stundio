@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Fragment, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useAppStore } from "../../store/index.ts";
 import { addDays } from "../../sync/index.ts";
@@ -196,9 +196,7 @@ export const DayView = ({
 
         <ul className="mt-3 flex flex-col gap-3">
           {rows.map((row) => (
-            <li key={row.key} className="contents">
-              {row.node}
-            </li>
+            <Fragment key={row.key}>{row.node}</Fragment>
           ))}
         </ul>
 
