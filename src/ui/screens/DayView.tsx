@@ -4,6 +4,7 @@ import { addDays } from "../../sync/index.ts";
 import { dayProgress, minutesOf, weekDates } from "../../lib/schedule/index.ts";
 import type { ISODate, ResolvedLesson } from "../../lib/edupage/index.ts";
 import { Button, Card, DayStrip, IconButton, TopBar } from "../../ds/index.ts";
+import { GlanceCard } from "../components/GlanceCard.tsx";
 import { LessonRow } from "../components/LessonRow.tsx";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
@@ -32,11 +33,15 @@ const Gap = ({ minutes, label }: { minutes: number; label: string }) => (
   </li>
 );
 
+/*
+ * Positional only: it says where in the list "now" falls, not what is on. The GlanceCard above
+ * answers what, and holds the screen's one brand ring — so this marker stays in neutral ink.
+ */
 const NowMarker = ({ label }: { label: string }) => (
   <li className="flex items-center gap-2 px-2" data-testid="now-marker">
-    <span className="size-2 rounded-pill bg-brand" />
-    <span className="h-px flex-1 bg-brand/60" />
-    <span className="font-text text-micro font-bold tracking-label text-brand-strong uppercase">
+    <span className="size-2 rounded-pill bg-strong-border" />
+    <span className="h-px flex-1 bg-hairline" />
+    <span className="font-text text-micro font-bold tracking-label text-muted uppercase">
       {label}
     </span>
   </li>
@@ -71,8 +76,12 @@ export const DayView = ({
   const selectedClass = useSelectedClass();
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
-  // `resolvedDay` is memoised inside the store, so calling it every render is cheap.
-  const day = useAppStore((s) => s.resolvedDay(date));
+  // `resolvedDay` is memoised inside the store, so calling it every render — here or for the
+  // whole strip below — is cheap; `WeekView` already leans on the same memo for all 7 days.
+  const resolvedDay = useAppStore((s) => s.resolvedDay);
+  const timetables = useAppStore((s) => s.timetables);
+  const substitutions = useAppStore((s) => s.substitutions);
+  const day = resolvedDay(date);
 
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
   const isToday = date === now.date;
@@ -81,58 +90,65 @@ export const DayView = ({
   const week = useMemo(() => weekDates(date), [date]);
   const strip = useMemo(
     () =>
-      week.map((d) => ({
-        key: d,
-        weekday: formatWeekdayShort(d, lang),
-        date: formatDayMonth(d, lang).replace(/\.$/, ""),
-        dot: d === now.date,
-      })),
-    [week, lang, now.date],
+      week.map((d) => {
+        // The dot is the DS's one change signal: mark a day with a cancellation or a
+        // substitution, not the day that is already marked by the electric selected tile.
+        const resolved = resolvedDay(d);
+        const changed = resolved !== null && resolved.lessons.some((l) => l.status !== "normal");
+        return {
+          key: d,
+          weekday: formatWeekdayShort(d, lang),
+          date: formatDayMonth(d, lang).replace(/\.$/, ""),
+          dot: changed,
+        };
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the store data drives the result
+    [week, lang, resolvedDay, timetables, substitutions, selectedClassId],
   );
 
-  const rows = useMemo(() => {
+  const rows = useMemo<ReactNode[]>(() => {
     if (day === null) return [];
-    const items: { key: string; node: ReactNode }[] = [];
+    const items: ReactNode[] = [];
     // The marker only belongs on the day you are actually living through.
     let markerDrawn = date !== now.date;
     let previousEnd: number | null = null;
 
     day.lessons.forEach((lesson, index) => {
       const start = minutesOf(lesson.start);
+      const end = minutesOf(lesson.end);
 
       if (previousEnd !== null && start !== null && start - previousEnd >= GAP_MIN_MINUTES) {
-        items.push({
-          key: `gap-${String(index)}`,
-          node: <Gap minutes={start - previousEnd} label={t("day.free")} />,
-        });
+        items.push(
+          <Gap key={`gap-${String(index)}`} minutes={start - previousEnd} label={t("day.free")} />,
+        );
       }
 
       if (!markerDrawn && start !== null && start > now.minutes) {
         markerDrawn = true;
-        items.push({ key: "now", node: <NowMarker label={t("day.now")} /> });
+        items.push(<NowMarker key="now" label={t("day.now")} />);
       }
 
       const live = progress.current === lesson;
-      items.push({
-        key: `${lesson.period}-${lesson.subject?.id ?? "x"}-${lesson.group ?? ""}`,
-        node: (
-          <LessonRow
-            lesson={lesson}
-            live={live}
-            {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
-            onOpen={() => {
-              setOpen(lesson);
-            }}
-          />
-        ),
-      });
+      // A lesson already ended, today only — it stops carrying the same weight as what's ahead.
+      const past = isToday && !live && end !== null && end <= now.minutes;
+      items.push(
+        <LessonRow
+          key={`${lesson.period}-${lesson.subject?.id ?? "x"}-${lesson.group ?? ""}`}
+          lesson={lesson}
+          live={live}
+          past={past}
+          {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
+          onOpen={() => {
+            setOpen(lesson);
+          }}
+        />,
+      );
 
-      const end = minutesOf(lesson.end);
       if (end !== null) previousEnd = end;
     });
 
     return items;
-  }, [day, date, now.date, now.minutes, progress, t]);
+  }, [day, date, isToday, now.date, now.minutes, progress, t]);
 
   const body = (): ReactNode => {
     if (!ready) return <DaySkeleton />;
@@ -161,17 +177,7 @@ export const DayView = ({
           </Card>
         )}
 
-        {isToday && progress.finished && (
-          <p className="mt-3 text-center font-text text-caption text-muted">{t("day.finished")}</p>
-        )}
-
-        <ul className="mt-3 flex flex-col gap-3">
-          {rows.map((row) => (
-            <li key={row.key} className="contents">
-              {row.node}
-            </li>
-          ))}
-        </ul>
+        <ul className="mt-3 flex flex-col gap-3">{rows}</ul>
 
         {day.notes.length > 0 && (
           <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
@@ -209,7 +215,7 @@ export const DayView = ({
                 <IconButton
                   icon="arrow-left"
                   label={t("day.prev")}
-                  size="sm"
+                  size="md"
                   onClick={() => {
                     onDateChange(addDays(date, -1));
                   }}
@@ -217,7 +223,7 @@ export const DayView = ({
                 <IconButton
                   icon="arrow-right"
                   label={t("day.next")}
-                  size="sm"
+                  size="md"
                   onClick={() => {
                     onDateChange(addDays(date, 1));
                   }}
@@ -240,6 +246,8 @@ export const DayView = ({
               </Button>
             )}
           </div>
+
+          {isToday && <GlanceCard day={day} now={now} />}
 
           <DayStrip days={strip} value={date} onChange={onDateChange} label={t("nav.week")} />
 

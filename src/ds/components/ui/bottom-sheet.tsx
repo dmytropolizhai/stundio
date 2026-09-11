@@ -13,6 +13,10 @@ export type BottomSheetProps = {
   className?: string;
   /** Accessible name when `title` is absent or not a plain string. */
   label?: string;
+  /** Fallback sr-only title when neither `title` nor `label` is given. Translated, not hardcoded. */
+  fallbackLabel?: string;
+  /** Accessible name for the close icon button. Translated, not hardcoded. */
+  closeLabel?: string;
 };
 
 /**
@@ -33,6 +37,8 @@ export const BottomSheet = ({
   footer,
   className,
   label,
+  fallbackLabel = "Details",
+  closeLabel = "Close",
 }: BottomSheetProps) => (
   <Dialog.Root
     open={open}
@@ -63,12 +69,12 @@ export const BottomSheet = ({
                 title === undefined && "sr-only",
               )}
             >
-              {title ?? label ?? "Details"}
+              {title ?? label ?? fallbackLabel}
             </Dialog.Title>
           </div>
           {onClose !== undefined && (
             <Dialog.Close asChild>
-              <IconButton icon="x" label="Close" variant="bare" size="sm" />
+              <IconButton icon="x" label={closeLabel} variant="bare" size="sm" />
             </Dialog.Close>
           )}
         </div>

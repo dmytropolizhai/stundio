@@ -47,7 +47,7 @@ export const DayStrip = <K extends string>({
             onChange(day.key);
           }}
           className={cn(
-            "flex h-[74px] min-w-[46px] flex-[1_0_46px] cursor-pointer flex-col items-center justify-center gap-0.5",
+            "flex h-[74px] min-w-[46px] flex-[1_0_46px] cursor-pointer flex-col items-center justify-center gap-0.5 overflow-hidden",
             "rounded-lg border-0",
             "transition-[background-color,color,box-shadow,transform] duration-(--dur-fast) ease-(--ease-standard)",
             "active:scale-(--press-scale) active:duration-(--dur-instant)",
@@ -56,7 +56,7 @@ export const DayStrip = <K extends string>({
         >
           <span
             className={cn(
-              "font-text text-micro font-bold tracking-[.08em] uppercase",
+              "max-w-full truncate font-text text-micro font-bold tracking-[.08em] uppercase",
               active ? "opacity-85" : "opacity-55",
             )}
           >

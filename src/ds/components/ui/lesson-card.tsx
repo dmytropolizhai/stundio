@@ -34,6 +34,8 @@ const lessonCardVariants = cva(
         brand: "",
       },
       cancelled: { true: "opacity-55", false: "" },
+      /** Past lessons reuse the cancelled dimming mechanic rather than a new visual language. */
+      past: { true: "opacity-60", false: "" },
       interactive: {
         true: "cursor-pointer active:scale-(--press-scale-tile)",
         false: "cursor-default",
@@ -47,8 +49,17 @@ const lessonCardVariants = cva(
       { filled: true, tone: "mint", class: "bg-mint text-mint-ink" },
       { filled: true, tone: "lime", class: "bg-lime text-lime-ink" },
       { filled: true, tone: "brand", class: "bg-brand text-white" },
+      /* Past + cancelled compose: a lesson that is both gets one combined, more-faded step
+         rather than stacking two opacities multiplicatively. */
+      { cancelled: true, past: true, class: "opacity-45" },
     ],
-    defaultVariants: { filled: false, tone: "sky", cancelled: false, interactive: false },
+    defaultVariants: {
+      filled: false,
+      tone: "sky",
+      cancelled: false,
+      past: false,
+      interactive: false,
+    },
   },
 );
 
@@ -76,6 +87,8 @@ export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
     status?: LessonStatus;
     /** The status chip. The app supplies its own `Badge` so all six statuses survive. */
     badge?: ReactNode;
+    /** A lesson whose time has already passed. Dims the card and desaturates the colour rail. */
+    past?: boolean;
   };
 
 export const LessonCard = ({
@@ -90,6 +103,7 @@ export const LessonCard = ({
   status = "normal",
   filled = false,
   badge,
+  past = false,
   onClick,
   ...props
 }: LessonCardProps) => {
@@ -102,7 +116,7 @@ export const LessonCard = ({
     <div
       {...pressable(onClick)}
       className={cn(
-        lessonCardVariants({ filled, tone, cancelled, interactive }),
+        lessonCardVariants({ filled, tone, cancelled, past, interactive }),
         status === "now" && !filled && "inset-ring-2 inset-ring-brand",
         className,
       )}
@@ -111,9 +125,15 @@ export const LessonCard = ({
       <div className="flex gap-3">
         <div className="flex min-w-[46px] flex-col items-start">
           <span className={cn("u-data font-bold", cancelled && "line-through")}>{start}</span>
-          <span className={cn("u-data text-[12px]", meta)}>{end}</span>
+          <span className={cn("u-data text-caption", meta)}>{end}</span>
         </div>
-        <span className={cn("w-1 rounded-pill", filled ? "bg-current opacity-35" : RAIL[tone])} />
+        <span
+          className={cn(
+            "w-1 rounded-pill",
+            filled ? "bg-current opacity-35" : RAIL[tone],
+            past && "saturate-50",
+          )}
+        />
       </div>
 
       <div className="flex min-w-0 flex-col gap-2">

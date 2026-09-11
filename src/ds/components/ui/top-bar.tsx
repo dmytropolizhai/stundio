@@ -8,6 +8,8 @@ export type TopBarProps = Omit<ComponentPropsWithoutRef<"header">, "title"> & {
   actions?: ReactNode;
   onBack?: (() => void) | undefined;
   tone?: "app" | "brand";
+  /** Accessible name for the back icon button. Translated, not hardcoded. */
+  backLabel?: string;
 };
 
 /**
@@ -23,6 +25,7 @@ export const TopBar = ({
   actions,
   onBack,
   tone = "app",
+  backLabel = "Back",
   ...props
 }: TopBarProps) => {
   const onBrand = tone === "brand";
@@ -38,7 +41,7 @@ export const TopBar = ({
       {onBack !== undefined && (
         <IconButton
           icon="arrow-left"
-          label="Back"
+          label={backLabel}
           variant={onBrand ? "glass" : "light"}
           onClick={onBack}
         />

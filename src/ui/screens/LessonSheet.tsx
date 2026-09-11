@@ -1,5 +1,5 @@
 import type { ResolvedDay, ResolvedLesson } from "../../lib/edupage/index.ts";
-import { Button, Card } from "../../ds/index.ts";
+import { Card } from "../../ds/index.ts";
 import { Sheet } from "../components/Sheet.tsx";
 import { StatusBadge } from "../components/Badge.tsx";
 import { formatRange, useT } from "../i18n/index.ts";
@@ -79,10 +79,6 @@ export const LessonSheet = ({
               <p className="mt-1 font-text text-body text-fg">{lesson.changeNote}</p>
             </Card>
           )}
-
-          <Button variant="inverse" block onClick={onClose} className="mt-5">
-            {t("lesson.close")}
-          </Button>
         </div>
       )}
     </Sheet>

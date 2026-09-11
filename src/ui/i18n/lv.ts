@@ -39,6 +39,9 @@ export const lv = {
   "day.free": "Brīvstunda",
   "day.finished": "Stundas beigušās",
   "day.now": "Tagad",
+  "day.glanceNext": "Nākamā",
+
+  "nav.back": "Atpakaļ",
 
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
@@ -49,6 +52,7 @@ export const lv = {
   "lesson.was": "Bija",
   "lesson.fromSchool": "No skolas",
   "lesson.close": "Aizvērt",
+  "sheet.details": "Informācija",
 
   "status.cancelled": "Atcelta",
   "status.moved": "Pārcelta",

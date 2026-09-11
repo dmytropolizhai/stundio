@@ -44,6 +44,7 @@ export const SyncStatus = ({
   const { icon, className: iconClass } = STATES[state];
   return (
     <div
+      role="status"
       className={cn(
         "inline-flex h-[30px] items-center gap-2 rounded-pill bg-card px-3",
         "font-text text-caption text-muted shadow-hairline",
@@ -53,12 +54,18 @@ export const SyncStatus = ({
     >
       <Icon name={icon} size={14} className={iconClass} />
       <span className="font-bold text-fg">{label}</span>
-      {detail !== undefined && <span className="tabular-nums">{detail}</span>}
+      {detail !== undefined && <span className="u-data">{detail}</span>}
       {onRetry !== undefined && state === "failed" && (
         <button
           type="button"
           onClick={onRetry}
-          className="cursor-pointer border-0 bg-transparent p-0 font-text text-caption font-bold text-link"
+          className={cn(
+            "relative cursor-pointer border-0 bg-transparent p-0 font-text text-caption font-bold text-link",
+            /* 30px pill, 44px floor: an invisible pseudo-element carries the touch target at the
+               full 44px without growing the pill — the DS shape must not shift between states. */
+            "before:absolute before:inset-x-0 before:top-1/2 before:h-11",
+            "before:-translate-y-1/2 before:content-['']",
+          )}
         >
           {retryLabel}
         </button>

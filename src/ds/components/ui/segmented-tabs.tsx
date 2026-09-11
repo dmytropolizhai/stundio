@@ -46,7 +46,10 @@ export const SegmentedTabs = <K extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className={cn("inline-flex gap-0.5 rounded-pill bg-sunken p-1", className)}
+      className={cn(
+        "no-scrollbar inline-flex max-w-full gap-0.5 overflow-x-auto rounded-pill bg-sunken p-1",
+        className,
+      )}
     >
       {items.map((item, i) => {
         const active = item.key === value;
@@ -74,7 +77,7 @@ export const SegmentedTabs = <K extends string>({
               }
             }}
             className={cn(
-              "h-9 cursor-pointer rounded-pill border-0 bg-transparent px-4.5",
+              "h-9 shrink-0 cursor-pointer rounded-pill border-0 bg-transparent px-4.5 whitespace-nowrap",
               "font-text text-sm font-bold text-muted",
               "transition-[background-color,color,box-shadow] duration-(--dur-fast) ease-(--ease-standard)",
               active && "bg-card text-strong shadow-card",

@@ -65,59 +65,79 @@ export const WeekGrid = <K extends string>({
   cellLabel,
 }: WeekGridProps<K>) => (
   <div
+    role="grid"
     className={cn("grid gap-1.5", className)}
-    style={{ gridTemplateColumns: `36px repeat(${String(days.length)}, minmax(0,1fr))` }}
+    style={{ gridTemplateColumns: `44px repeat(${String(days.length)}, minmax(0,1fr))` }}
   >
-    <span />
-    {days.map((day) => {
-      const heading = cn(
-        "rounded-sm text-center font-text text-micro font-bold tracking-label uppercase",
-        day.today === true ? "text-brand-strong" : "text-muted",
-      );
-      return onSelectDay === undefined ? (
-        <span key={day.key} className={heading}>
-          {day.weekday}
-        </span>
-      ) : (
-        <button
-          key={day.key}
-          type="button"
-          onClick={() => {
-            onSelectDay(day.key);
-          }}
-          className={cn(heading, "cursor-pointer border-0 bg-transparent py-1 hover:bg-sunken")}
-        >
-          {day.weekday}
-        </button>
-      );
-    })}
+    {/*
+     * Rows are `display: contents` wrappers so their children still lay out on this top-level CSS
+     * grid; both Chromium and Firefox keep `role` on a `display: contents` element.
+     *
+     * The grid roles go on *wrappers*, never on the buttons. Putting `role="gridcell"` on a
+     * `<button>` replaces the button role instead of adding to it: the cell stops announcing as
+     * actionable, which is worse than the bare grid this replaced. The wrapper is the cell; the
+     * button inside it stays a button. Empty cells are real, un-hidden `gridcell`s for the same
+     * reason — an `aria-hidden` cell leaves its row short and breaks the grid's shape.
+     */}
+    <div role="row" className="contents">
+      <span role="columnheader" />
+      {days.map((day) => {
+        const heading = cn(
+          "block truncate rounded-sm text-center font-text text-micro font-bold tracking-label uppercase",
+          day.today === true ? "text-brand-strong" : "text-muted",
+        );
+        return (
+          <span key={day.key} role="columnheader" className="min-w-0">
+            {onSelectDay === undefined ? (
+              <span className={heading}>{day.weekday}</span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectDay(day.key);
+                }}
+                className={cn(
+                  heading,
+                  "w-full cursor-pointer border-0 bg-transparent py-1 hover:bg-sunken",
+                )}
+              >
+                {day.weekday}
+              </button>
+            )}
+          </span>
+        );
+      })}
+    </div>
 
     {periods.map((period) => (
-      <div key={period.period} className="contents">
-        <span className="u-data self-center text-[11px] text-muted">{period.start}</span>
+      <div key={period.period} role="row" className="contents">
+        <span role="rowheader" className="u-data self-center text-micro font-medium text-muted">
+          {period.start}
+        </span>
         {days.map((day) => {
           const cell = period.cells[day.key];
           if (cell === undefined) {
-            return <span key={day.key} aria-hidden="true" className="h-10 rounded-sm bg-sunken" />;
+            return <span key={day.key} role="gridcell" className="h-10 rounded-sm bg-sunken" />;
           }
           return (
-            <button
-              key={day.key}
-              type="button"
-              aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
-              onClick={() => {
-                onSelect?.(cell, day.key, period.period);
-              }}
-              className={cn(
-                "h-10 truncate rounded-sm border-0 px-1.5",
-                "font-text text-caption font-bold text-ink-900",
-                TONE_BG[cell.tone ?? "sky"],
-                cell.cancelled === true && "opacity-40 line-through",
-                onSelect === undefined ? "cursor-default" : "cursor-pointer",
-              )}
-            >
-              {cell.short}
-            </button>
+            <span key={day.key} role="gridcell" className="min-w-0">
+              <button
+                type="button"
+                aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
+                onClick={() => {
+                  onSelect?.(cell, day.key, period.period);
+                }}
+                className={cn(
+                  "h-10 w-full truncate rounded-sm border-0 px-1.5",
+                  "font-text text-caption font-bold text-ink-900",
+                  TONE_BG[cell.tone ?? "sky"],
+                  cell.cancelled === true && "opacity-40 line-through",
+                  onSelect === undefined ? "cursor-default" : "cursor-pointer",
+                )}
+              >
+                {cell.short}
+              </button>
+            </span>
           );
         })}
       </div>

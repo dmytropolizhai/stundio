@@ -36,7 +36,7 @@ export const SelectField = ({
 }: SelectFieldProps) => (
   <label className={cn("flex flex-col gap-1.5", className)}>
     {label !== undefined && <span className="u-eyebrow">{label}</span>}
-    <span className="relative flex h-13 items-center rounded-pill bg-card px-4.5 shadow-hairline">
+    <span className="relative flex h-13 items-center rounded-pill bg-card px-4.5 shadow-hairline has-[:focus-visible]:inset-ring-2 has-[:focus-visible]:inset-ring-focus">
       <select
         value={value}
         onChange={(e) => {

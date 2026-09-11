@@ -64,6 +64,7 @@ const Shell = () => {
         <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
           <TopBar
             title={t("settings.class")}
+            backLabel={t("nav.back")}
             onBack={() => {
               setPicking(false);
             }}

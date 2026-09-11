@@ -17,7 +17,14 @@ export type EmptyStateProps = Omit<ComponentPropsWithoutRef<"div">, "title"> & {
  */
 export const EmptyState = ({
   className,
-  icon = "coffee",
+  /*
+   * "coffee" made every unspecified empty/failure state look like a relaxed coffee break, which
+   * is wrong for e.g. a sync error. "info" is neutral across the whole range of callers (no
+   * results, nothing scheduled, an error) and does not itself claim the state is good or bad —
+   * callers with a real point of view (Saturday is clear, a network failure) should still pass
+   * their own icon.
+   */
+  icon = "info",
   title,
   body,
   action,

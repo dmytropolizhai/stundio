@@ -1,9 +1,11 @@
+import { useMemo } from "react";
 import { useAppStore } from "../../store/index.ts";
 import { Card, Icon, TopBar } from "../../ds/index.ts";
-import { subjectCode, subjectTone } from "../theme/index.ts";
+import { isBuildingArtifact, subjectCode, subjectTone } from "../theme/index.ts";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { useSubjects } from "../hooks/useSubjects.ts";
+import { useClassSubjectTones } from "../hooks/useSubjectTones.ts";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { useT } from "../i18n/index.ts";
 
@@ -22,7 +24,15 @@ export const SubjectsView = () => {
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const selectedClass = useSelectedClass();
-  const { subjects, teachers } = useSubjects();
+  const { subjects: allSubjects, teachers, building } = useSubjects();
+  const tones = useClassSubjectTones();
+
+  // A subject that is really the building itself (CLAUDE.md/MODEL.md's per-building timetable
+  // artifact) has no business in a colour-coded index next to a real subject and its teachers.
+  const subjects = useMemo(
+    () => allSubjects.filter((s) => !isBuildingArtifact(s.subject, building)),
+    [allSubjects, building],
+  );
 
   const body = () => {
     if (!ready) return <DaySkeleton rows={4} />;
@@ -41,7 +51,7 @@ export const SubjectsView = () => {
           {subjects.map(({ subject, count, teachers: taughtBy }) => (
             <Card
               key={subject.id}
-              tone={subjectTone(subject)}
+              tone={subjectTone(subject, tones)}
               data-testid={`subject-${subject.id}`}
             >
               <div className="flex items-center justify-between">

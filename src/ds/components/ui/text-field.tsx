@@ -43,7 +43,11 @@ export const TextField = ({
       <span
         className={cn(
           "flex h-13 items-center gap-2.5 rounded-pill bg-card px-4.5 text-muted",
-          invalid ? "inset-ring-2 inset-ring-danger" : "shadow-hairline",
+          /* An invalid field still has to show focus, so the danger ring keeps its width and
+             only yields its colour while the input is focused. */
+          invalid
+            ? "inset-ring-2 inset-ring-danger has-[:focus-visible]:inset-ring-focus"
+            : "shadow-hairline has-[:focus-visible]:inset-ring-2 has-[:focus-visible]:inset-ring-focus",
         )}
       >
         {icon !== undefined && <Icon name={icon} size={18} />}

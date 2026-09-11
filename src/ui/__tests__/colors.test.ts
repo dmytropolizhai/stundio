@@ -7,7 +7,13 @@
  */
 import { describe, expect, it } from "vitest";
 import type { SubjectRef } from "../../lib/edupage/index.ts";
-import { SUBJECT_TONES, subjectCode, subjectTone } from "../theme/colors.ts";
+import {
+  SUBJECT_TONES,
+  classSubjectTones,
+  isBuildingArtifact,
+  subjectCode,
+  subjectTone,
+} from "../theme/colors.ts";
 
 const subject = (partial: Partial<SubjectRef>): SubjectRef => ({
   id: "1",
@@ -97,5 +103,65 @@ describe("subjectCode", () => {
     for (const title of titles) {
       expect(subjectCode(subject({ short: title, name: title })).length).toBeLessThanOrEqual(3);
     }
+  });
+});
+
+describe("classSubjectTones", () => {
+  // A1-1's real subject count (CLAUDE.md/DESIGN.md's own worked example: 8 subjects, 6 accents).
+  const EIGHT = ["VKI", "LVL", "MAT", "ANG", "INF", "SPO", "KRV", "DIZ"];
+
+  it("never repeats an accent among the first six subjects", () => {
+    const tones = classSubjectTones(EIGHT.map((short) => subject({ short })));
+    const firstSix = [...tones.values()].slice(0, 6);
+    expect(new Set(firstSix).size).toBe(6);
+  });
+
+  it("gives the same class the same colours regardless of input order", () => {
+    const forward = classSubjectTones(EIGHT.map((short) => subject({ short })));
+    const shuffled = classSubjectTones([...EIGHT].reverse().map((short) => subject({ short })));
+    expect(Object.fromEntries(shuffled)).toEqual(Object.fromEntries(forward));
+  });
+
+  it("does not depend on id, so a weekly republish cannot recolour the class", () => {
+    const before = classSubjectTones(EIGHT.map((short, i) => subject({ id: String(i), short })));
+    const after = classSubjectTones(
+      EIGHT.map((short, i) => subject({ id: String(900 + i), short })),
+    );
+    expect(Object.fromEntries(after)).toEqual(Object.fromEntries(before));
+  });
+
+  it("resolves duplicate subjects (same key) to one entry", () => {
+    const tones = classSubjectTones([
+      subject({ short: "MAT" }),
+      subject({ short: "mat" }),
+      subject({ id: "2", short: "ANG" }),
+    ]);
+    expect(tones.size).toBe(2);
+  });
+
+  it("feeds subjectTone so the day list, week grid and subject index agree", () => {
+    const tones = classSubjectTones(EIGHT.map((short) => subject({ short })));
+    const vki = subject({ short: "VKI" });
+    const lvl = subject({ short: "LVL" });
+    // The bug this fixes: two subjects sharing an accent by hash coincidence.
+    expect(subjectTone(vki, tones)).not.toBe(subjectTone(lvl, tones));
+  });
+});
+
+describe("isBuildingArtifact", () => {
+  it("flags a subject whose derived code is the timetable's own building code", () => {
+    const tic = subject({
+      short: "Tehnoloģiju un inovāciju centrs Dārzciema ielā",
+      name: "Tehnoloģiju un inovāciju centrs Dārzciema ielā",
+    });
+    expect(isBuildingArtifact(tic, "TIC")).toBe(true);
+  });
+
+  it("leaves a real subject alone", () => {
+    expect(isBuildingArtifact(subject({ short: "MAT" }), "TIC")).toBe(false);
+  });
+
+  it("never throws with no building context", () => {
+    expect(isBuildingArtifact(subject({ short: "TIC" }), null)).toBe(false);
   });
 });

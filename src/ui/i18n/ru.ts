@@ -33,6 +33,9 @@ export const ru: Dict = {
   "day.free": "Окно",
   "day.finished": "Уроки закончились",
   "day.now": "Сейчас",
+  "day.glanceNext": "Следующий",
+
+  "nav.back": "Назад",
 
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",
@@ -43,6 +46,7 @@ export const ru: Dict = {
   "lesson.was": "Было",
   "lesson.fromSchool": "От школы",
   "lesson.close": "Закрыть",
+  "sheet.details": "Подробности",
 
   "status.cancelled": "Отменён",
   "status.moved": "Перенесён",

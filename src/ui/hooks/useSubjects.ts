@@ -7,7 +7,7 @@
  */
 import { useMemo } from "react";
 import { useAppStore } from "../../store/index.ts";
-import type { SubjectRef, TeacherRef, Timetable } from "../../lib/edupage/index.ts";
+import type { Building, SubjectRef, TeacherRef, Timetable } from "../../lib/edupage/index.ts";
 
 export type SubjectSummary = {
   subject: SubjectRef;
@@ -33,9 +33,11 @@ const timetableFor = (timetables: Record<string, Timetable>, classId: string): T
 export type SubjectCatalogue = {
   subjects: SubjectSummary[];
   teachers: TeacherSummary[];
+  /** The building the catalogue was derived from — lets a caller flag building-as-subject rows. */
+  building: Building | null;
 };
 
-const EMPTY: SubjectCatalogue = { subjects: [], teachers: [] };
+const EMPTY: SubjectCatalogue = { subjects: [], teachers: [], building: null };
 
 export const useSubjects = (): SubjectCatalogue => {
   const timetables = useAppStore((s) => s.timetables);
@@ -96,6 +98,6 @@ export const useSubjects = (): SubjectCatalogue => {
       })
       .sort((a, b) => a.teacher.short.localeCompare(b.teacher.short, "lv"));
 
-    return { subjects, teachers };
+    return { subjects, teachers, building: timetable.meta.building };
   }, [timetables, classId]);
 };

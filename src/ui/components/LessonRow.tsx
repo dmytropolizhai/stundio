@@ -1,6 +1,7 @@
 import type { ResolvedLesson } from "../../lib/edupage/index.ts";
 import { Badge, LessonCard } from "../../ds/index.ts";
 import { STATUS_TONE, STATUS_TREATMENT, isChanged, subjectTone } from "../theme/index.ts";
+import { useClassSubjectTones } from "../hooks/useSubjectTones.ts";
 import { useT } from "../i18n/index.ts";
 
 /**
@@ -17,20 +18,29 @@ export const LessonRow = ({
   lesson,
   live,
   progress,
+  past = false,
   onOpen,
 }: {
   lesson: ResolvedLesson;
   live: boolean;
   /** 0–1 through the lesson; only passed when `live`. */
   progress?: number;
+  /** A lesson whose end time has already passed, today. Dims it a notch below the rest. */
+  past?: boolean;
   onOpen: () => void;
 }) => {
   const t = useT();
+  const tones = useClassSubjectTones();
   const teachers = lesson.teachers.map((x) => x.short).join(", ");
   const rooms = lesson.rooms.map((x) => x.short).join(", ");
 
-  /* "Now" outranks a change: it is the thing you are looking for when you open the app. */
-  const status = live ? "now" : STATUS_TREATMENT[lesson.status];
+  /*
+   * The GlanceCard above the list now owns "now" and carries the one brand ring for it, so the
+   * row no longer rings itself — DESIGN.md's One Voice Rule budgets one or two electric elements
+   * per screen, and a live day was spending six. The row still identifies itself as the current
+   * lesson through its badge and progress bar, in ink rather than brand.
+   */
+  const status = STATUS_TREATMENT[lesson.status];
 
   return (
     <li className="relative">
@@ -41,11 +51,12 @@ export const LessonRow = ({
         subject={lesson.subject?.name ?? lesson.subject?.short ?? "—"}
         {...(teachers === "" ? {} : { teacher: teachers })}
         {...(rooms === "" ? {} : { room: rooms })}
-        tone={subjectTone(lesson.subject)}
+        tone={subjectTone(lesson.subject, tones)}
         status={status}
+        past={past}
         badge={
           live ? (
-            <Badge tone="brand" data-testid="status-now">
+            <Badge tone="ink" data-testid="status-now">
               {t("day.now")}
             </Badge>
           ) : isChanged(lesson.status) ? (
@@ -64,7 +75,7 @@ export const LessonRow = ({
           className="pointer-events-none absolute inset-x-4 bottom-2 h-1 overflow-hidden rounded-pill bg-sunken"
         >
           <span
-            className="block h-full rounded-pill bg-brand"
+            className="block h-full rounded-pill bg-ink-900"
             style={{ width: `${String(Math.round(progress * 100))}%` }}
           />
         </span>

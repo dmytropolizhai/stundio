@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { useAppStore } from "../../store/index.ts";
 import { weekDates } from "../../lib/schedule/index.ts";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "../../lib/edupage/index.ts";
-import { TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
-import { subjectCode, subjectTone } from "../theme/index.ts";
+import { Chip, TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
+import { TONE_FILL, subjectCode, subjectTone } from "../theme/index.ts";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -11,6 +11,8 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { useSelectedClass } from "../hooks/useClasses.ts";
+import { useSubjects } from "../hooks/useSubjects.ts";
+import { useClassSubjectTones } from "../hooks/useSubjectTones.ts";
 import { formatWeekdayShort, useLang, useT } from "../i18n/index.ts";
 
 const periodNum = (p: string): number => {
@@ -54,6 +56,10 @@ export const WeekView = ({
   const resolvedDay = useAppStore((s) => s.resolvedDay);
   const timetables = useAppStore((s) => s.timetables);
   const substitutions = useAppStore((s) => s.substitutions);
+  const tones = useClassSubjectTones();
+  // The grid's legend: SubjectsView already derives "everything this class is taught" from the
+  // cached timetable, so this reuses it rather than re-deriving the same catalogue from `days`.
+  const { subjects } = useSubjects();
 
   const dates = useMemo(() => weekDates(date), [date]);
   const days = useMemo(
@@ -94,13 +100,13 @@ export const WeekView = ({
           cells[d] = {
             short: subjectCode(lesson.subject),
             name: lesson.subject?.name ?? lesson.subject?.short ?? "",
-            tone: subjectTone(lesson.subject),
+            tone: subjectTone(lesson.subject, tones),
             cancelled: lesson.status === "cancelled",
           };
         });
         return { period: periodNum(period), start, cells };
       }),
-    [periods, days, dates],
+    [periods, days, dates, tones],
   );
 
   const body = () => {
@@ -113,17 +119,34 @@ export const WeekView = ({
     }
 
     return (
-      <WeekGrid
-        className="mt-4"
-        days={columns}
-        periods={rows}
-        cellLabel={(cell, day) => `${cell.name ?? cell.short} · ${day.weekday}`}
-        onSelectDay={onOpenDay}
-        onSelect={(_cell, dayKey, period) => {
-          const hit = lessonAt.get(`${dayKey}|${String(period)}`);
-          if (hit !== undefined) setOpen(hit);
-        }}
-      />
+      <>
+        <WeekGrid
+          className="mt-4"
+          days={columns}
+          periods={rows}
+          cellLabel={(cell, day) => `${cell.name ?? cell.short} · ${day.weekday}`}
+          onSelectDay={onOpenDay}
+          onSelect={(_cell, dayKey, period) => {
+            const hit = lessonAt.get(`${dayKey}|${String(period)}`);
+            if (hit !== undefined) setOpen(hit);
+          }}
+        />
+
+        {/* The grid abbreviates every subject to a 3-letter code; this spells each one back out. */}
+        {subjects.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2" aria-label={t("subjects.title")}>
+            {subjects.map(({ subject }) => (
+              <Chip
+                key={subject.id}
+                className={TONE_FILL[subjectTone(subject, tones)]}
+                data-testid={`legend-${subject.id}`}
+              >
+                {subjectCode(subject)} · {subject.name || subject.short}
+              </Chip>
+            ))}
+          </div>
+        )}
+      </>
     );
   };
 

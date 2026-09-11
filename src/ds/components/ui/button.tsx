@@ -30,7 +30,7 @@ const buttonVariants = cva(
       size: {
         sm: "h-9 gap-1.5 px-4 text-caption",
         md: "h-11 gap-2 px-5 text-body",
-        lg: "h-[54px] gap-2.5 px-[26px] text-[16px]",
+        lg: "h-[54px] gap-2.5 px-[26px] text-body-lg",
       },
       block: { true: "flex w-full", false: "inline-flex w-auto" },
     },

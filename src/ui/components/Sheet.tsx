@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { BottomSheet } from "../../ds/index.ts";
+import { useT } from "../i18n/index.ts";
 
 /**
  * Bottom sheet — the only modal on Android, per the DS.
@@ -26,13 +27,18 @@ export const Sheet = ({
   title: string;
   eyebrow?: ReactNode;
   children: ReactNode;
-}) => (
-  <BottomSheet
-    open={open}
-    onClose={onClose}
-    title={title}
-    {...(eyebrow === undefined ? {} : { eyebrow })}
-  >
-    {children}
-  </BottomSheet>
-);
+}) => {
+  const t = useT();
+  return (
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      title={title}
+      closeLabel={t("lesson.close")}
+      fallbackLabel={t("sheet.details")}
+      {...(eyebrow === undefined ? {} : { eyebrow })}
+    >
+      {children}
+    </BottomSheet>
+  );
+};

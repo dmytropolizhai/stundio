@@ -7,7 +7,7 @@
  * school-supplied hex satisfies neither guarantee, so the hex is dropped and each subject is
  * assigned one of the six deterministically instead.
  */
-import type { ResolvedStatus, SubjectRef } from "../../lib/edupage/index.ts";
+import type { Building, ResolvedStatus, SubjectRef } from "../../lib/edupage/index.ts";
 import type { BadgeProps, LessonStatus, LessonTone } from "../../ds/index.ts";
 
 /** The six subject accents, in DS order. `brand` is reserved for "now" and is not assignable. */
@@ -28,17 +28,74 @@ const hash = (value: string): number => {
   return h;
 };
 
+/** The same normalisation `subjectTone` and `classSubjectTones` key a subject by. */
+const subjectKey = (subject: SubjectRef | null): string =>
+  (subject?.short ?? subject?.name ?? subject?.id ?? "").trim().toLowerCase();
+
 /**
  * A subject's accent.
  *
  * Keyed on `short` (the subject code) rather than `id`, because the code is what survives a
  * weekly republish — EduPage is free to renumber ids, and a subject changing colour mid-term is
  * exactly what the DS rule forbids.
+ *
+ * `tones`, when given, is a collision-aware map built by `classSubjectTones` for the class this
+ * subject belongs to — pass it whenever the caller has that context so two subjects in the same
+ * timetable never land on the same accent by hash coincidence. Every caller in the app does; the
+ * plain hash stays the fallback for a subject seen with no class context (and for any subject
+ * past the sixth in `tones`, or one the map was built without).
  */
-export const subjectTone = (subject: SubjectRef | null): SubjectTone => {
-  const key = (subject?.short ?? subject?.name ?? subject?.id ?? "").trim().toLowerCase();
+export const subjectTone = (
+  subject: SubjectRef | null,
+  tones?: ReadonlyMap<string, SubjectTone>,
+): SubjectTone => {
+  const key = subjectKey(subject);
   if (key === "") return "sky";
+  const assigned = tones?.get(key);
+  if (assigned !== undefined) return assigned;
   return SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? "sky";
+};
+
+/**
+ * Collision-aware accent assignment for one class's own subject list.
+ *
+ * The plain hash in `subjectTone` guarantees nothing about a specific timetable: a class with
+ * more than six subjects (the common case — A1-1 has eight) is guaranteed at least one collision,
+ * which breaks the Index Rule's promise that a subject is recognisable at a glance. This instead
+ * sorts the class's *distinct* subjects by their normalised key — never by fetch order, object key
+ * order, or `id` (ids are free to be renumbered on a weekly republish) — and hands out the six DS
+ * accents in that fixed order, so the same class produces the same colours on every device and
+ * every launch. A seventh-plus subject falls back to the hash, which can collide — the DS only
+ * ships six accents, so past six a collision is unavoidable, not a bug.
+ */
+export const classSubjectTones = (subjects: readonly SubjectRef[]): Map<string, SubjectTone> => {
+  const byKey = new Map<string, SubjectRef>();
+  for (const subject of subjects) {
+    const key = subjectKey(subject);
+    if (key !== "" && !byKey.has(key)) byKey.set(key, subject);
+  }
+
+  const sortedKeys = [...byKey.keys()].sort();
+  const tones = new Map<string, SubjectTone>();
+  sortedKeys.forEach((key, index) => {
+    tones.set(
+      key,
+      index < SUBJECT_TONES.length
+        ? (SUBJECT_TONES[index] ?? "sky")
+        : (SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? "sky"),
+    );
+  });
+  return tones;
+};
+
+/** `bg-{tone} text-{tone}-ink` for painting a filled surface (chip, legend swatch) by tone. */
+export const TONE_FILL: Record<SubjectTone, string> = {
+  amber: "bg-amber text-amber-ink",
+  sky: "bg-sky text-sky-ink",
+  lilac: "bg-lilac text-lilac-ink",
+  pink: "bg-pink text-pink-ink",
+  mint: "bg-mint text-mint-ink",
+  lime: "bg-lime text-lime-ink",
 };
 
 /*
@@ -78,6 +135,24 @@ export const subjectCode = (subject: SubjectRef | null): string => {
   }
   return source.slice(0, 3).toUpperCase();
 };
+
+/**
+ * True when a "subject" is really a building, not a lesson topic.
+ *
+ * RVT's data occasionally schedules a period against the building itself ("Tehnoloģiju un
+ * inovāciju centrs Dārzciema ielā", i.e. the TIC annex) rather than a real subject — it still
+ * occupies a real period on the timetable, so the day/week views keep showing it, but it has no
+ * business in a subject index next to an accent and a (necessarily empty) teacher list.
+ *
+ * Detected generically rather than by matching RVT's own string: a subject counts as a building
+ * artifact when its derived short code (`subjectCode`) matches the building code of the
+ * timetable it came from — the same signal `CLAUDE.md`/`MODEL.md` use to pick a timetable by
+ * building, so this needs no school-specific literal to work on a different school's data.
+ */
+export const isBuildingArtifact = (
+  subject: SubjectRef | null,
+  building: Building | null,
+): boolean => building !== null && subjectCode(subject).toUpperCase() === building.toUpperCase();
 
 /**
  * Domain status → DS `Badge` tone.

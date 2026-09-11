@@ -33,6 +33,9 @@ export const en: Dict = {
   "day.free": "Free period",
   "day.finished": "Lessons are over",
   "day.now": "Now",
+  "day.glanceNext": "Next",
+
+  "nav.back": "Back",
 
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",
@@ -43,6 +46,7 @@ export const en: Dict = {
   "lesson.was": "Was",
   "lesson.fromSchool": "From school",
   "lesson.close": "Close",
+  "sheet.details": "Details",
 
   "status.cancelled": "Cancelled",
   "status.moved": "Moved",
