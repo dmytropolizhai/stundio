@@ -11,9 +11,9 @@ import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
+import { PreferenceBadge } from "../components/PreferenceBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { useSelectedClass } from "../hooks/useClasses.ts";
 import { formatDuration, formatLongDate, useLang, useT } from "../i18n/index.ts";
 
 /** How far a horizontal drag must travel before it counts as "change the day", not a scroll. */
@@ -69,7 +69,6 @@ export const DayView = ({
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedClass = useSelectedClass();
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
   // `resolvedDay` is memoised inside the store, so calling it every render is cheap.
@@ -268,32 +267,15 @@ export const DayView = ({
             title={isToday ? t("day.today") : formatLongDate(date, lang)}
             actions={
               <>
-                <SyncBadge onRetry={() => void refresh({ date, force: true })} />
                 <ClassBadge onClick={onPickClass} />
+                <SyncBadge onRetry={() => void refresh({ date, force: true })} />
+                <PreferenceBadge showTime={showTime} onShowTimeChange={setShowTime} />
               </>
             }
           />
 
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              icon="clock"
-              aria-pressed={showTime}
-              onClick={() => {
-                setShowTime((v) => !v);
-              }}
-              /*
-               * A fill swap to solid black, per the DS's selection rule (chips, day tiles, the
-               * nav's active item all do this) — `bg-inverse`/`text-on-inverse` rather than the
-               * `Button` "inverse" variant's fixed `bg-ink-900`, which is invisible against the
-               * near-black dark-mode ground this button sits directly on.
-               */
-              className={showTime ? "bg-inverse text-on-inverse hover:bg-inverse" : undefined}
-            >
-              {showTime ? t("day.hideTime") : t("day.showTime")}
-            </Button>
-            {!isToday && (
+          {!isToday && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -303,8 +285,8 @@ export const DayView = ({
               >
                 {t("day.jumpToday")}
               </Button>
-            )}
-          </div>
+            </div>
+          )}
 
           {body()}
         </motion.div>
