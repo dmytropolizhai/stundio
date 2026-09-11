@@ -44,7 +44,6 @@ export const lv = {
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
   "lesson.period": "Stunda",
-  "lesson.ordinal": "{n}. stunda",
   "lesson.group": "Grupa",
   "lesson.building": "Ēka",
   "lesson.was": "Bija",

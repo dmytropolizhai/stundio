@@ -38,7 +38,6 @@ export const ru: Dict = {
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",
   "lesson.period": "Урок",
-  "lesson.ordinal": "{n}. урок",
   "lesson.group": "Группа",
   "lesson.building": "Корпус",
   "lesson.was": "Было",

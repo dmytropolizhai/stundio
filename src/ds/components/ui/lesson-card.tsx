@@ -9,8 +9,8 @@ export type LessonTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime" | 
 /**
  * Visual treatment, not the full domain vocabulary.
  *
- * Stundio's `ResolvedStatus` has six members (cancelled, moved, substituted, room_change, added,
- * normal) and the DS card has four. Rather than collapse the domain into the DS's set, this drives
+ * Stundio's `ResolvedStatus` has six members (canceled, moved, substituted, room_change, added,
+ * normal), and the DS card has four. Rather than collapse the domain into the DS's set, this drives
  * only the *treatment* — dimming, strikethrough, the brand ring on "now" — and the exact word is
  * passed in through `badge`, so the app keeps all six and renders them with the DS `Badge`.
  */
@@ -48,11 +48,16 @@ const lessonCardVariants = cva(
       { filled: true, tone: "lime", class: "bg-lime text-lime-ink" },
       { filled: true, tone: "brand", class: "bg-brand text-white" },
     ],
-    defaultVariants: { filled: false, tone: "sky", cancelled: false, interactive: false },
+    defaultVariants: {
+      filled: false,
+      tone: "sky",
+      cancelled: false,
+      interactive: false,
+    },
   },
 );
 
-/** The 4px rail is the only place a subject's colour appears on an unfilled card. */
+/** The 4px rail is the only place a subject's color appears on an unfilled card. */
 const RAIL: Record<LessonTone, string> = {
   amber: "bg-amber",
   sky: "bg-sky",
@@ -102,7 +107,8 @@ export const LessonCard = ({
 }: LessonCardProps) => {
   const cancelled = status === "cancelled";
   const interactive = onClick !== undefined;
-  /* On a filled card the ink pair carries every string; on white the DS splits strong vs muted. */
+
+  /* On a filled card the ink pair carries every string; on white the DS splits strong vs. muted. */
   const meta = filled ? "opacity-75" : "text-muted";
 
   return (
@@ -115,9 +121,9 @@ export const LessonCard = ({
       )}
       {...props}
     >
-      <div className="flex gap-3">
+      <div className="flex items-center gap-3">
         {timeVisible && (
-          <div className="flex min-w-[46px] flex-col items-start justify-between py-0.5">
+          <div className="flex min-w-11.5 flex-col items-start justify-between py-0.5">
             <span
               className={cn(
                 "u-data origin-top animate-time-in font-bold",
@@ -126,30 +132,34 @@ export const LessonCard = ({
             >
               {start}
             </span>
+
             <span className={cn("u-data origin-bottom animate-time-in text-[12px]", meta)}>
               {end}
             </span>
           </div>
         )}
-        <span className={cn("w-1 rounded-pill", filled ? "bg-current opacity-35" : RAIL[tone])} />
+
+        {period !== undefined && (
+          <span
+            className={cn(
+              "flex size-10 shrink-0 items-center justify-center rounded-full",
+              "font-text text-micro font-bold tracking-label",
+              filled ? "bg-current/15" : cn(RAIL[tone], "text-black"),
+              cancelled && "line-through",
+            )}
+          >
+            {period}
+          </span>
+        )}
       </div>
 
       <div className="flex min-w-0 flex-col gap-2">
-        {(period !== undefined || badge !== undefined) && (
+        {badge !== undefined && (
           <div className="flex flex-wrap items-center gap-2">
-            {period !== undefined && (
-              <span
-                className={cn(
-                  "font-text text-micro font-bold tracking-label uppercase",
-                  filled ? "opacity-80" : "text-muted",
-                )}
-              >
-                {period}
-              </span>
-            )}
             {badge}
           </div>
         )}
+
         <h3
           className={cn(
             "m-0 font-display text-title tracking-display text-current",
@@ -158,6 +168,7 @@ export const LessonCard = ({
         >
           {subject}
         </h3>
+
         {(room !== undefined || teacher !== undefined) && (
           <div className={cn("flex flex-wrap gap-3.5 font-text text-caption", meta)}>
             {room !== undefined && (
@@ -166,6 +177,7 @@ export const LessonCard = ({
                 {room}
               </span>
             )}
+
             {teacher !== undefined && (
               <span className="inline-flex items-center gap-1.5">
                 <Icon name="user-round" size={14} />

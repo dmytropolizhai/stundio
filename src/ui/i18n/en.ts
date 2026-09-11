@@ -38,7 +38,6 @@ export const en: Dict = {
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",
   "lesson.period": "Period",
-  "lesson.ordinal": "{n}. lesson",
   "lesson.group": "Group",
   "lesson.building": "Building",
   "lesson.was": "Was",

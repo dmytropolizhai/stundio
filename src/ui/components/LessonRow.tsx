@@ -38,7 +38,7 @@ export const LessonRow = ({
   return (
     <li className="relative">
       <LessonCard
-        period={t("lesson.ordinal", { n: lesson.period })}
+        period={lesson.period}
         start={lesson.start}
         end={lesson.end}
         subject={lesson.subject?.name ?? lesson.subject?.short ?? "—"}
