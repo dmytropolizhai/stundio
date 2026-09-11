@@ -72,6 +72,16 @@ describe.each(implementations)("AppCache — %s", (_name, make) => {
     expect(await cache.getTimetable("1175")).toBeNull();
     expect(await cache.getSubstitutions("2026-09-09")).toBeNull();
     expect(await cache.listTimetableNums()).toEqual([]);
+    expect(await cache.listSubstitutionDates()).toEqual([]);
+  });
+
+  it("lists cached substitution days in date order", async () => {
+    for (const d of ["2026-09-09", "2026-09-01", "2026-09-10"]) {
+      await cache.putSubstitutions(substitutions(d));
+    }
+    expect(await cache.listSubstitutionDates()).toEqual(["2026-09-01", "2026-09-09", "2026-09-10"]);
+    await cache.pruneSubstitutions("2026-09-09");
+    expect(await cache.listSubstitutionDates()).toEqual(["2026-09-09", "2026-09-10"]);
   });
 
   it("defaults settings rather than returning undefined", async () => {

@@ -20,7 +20,7 @@ import {
   type Timetable,
 } from "../lib/edupage/index.ts";
 import { DEFAULT_SETTINGS, type AppCache, type Settings } from "../db/index.ts";
-import { addDays, todayInRiga, type SyncEngine, type SyncStatus } from "../sync/index.ts";
+import type { SyncEngine, SyncStatus } from "../sync/index.ts";
 
 export type AppState = {
   ready: boolean;
@@ -87,9 +87,10 @@ export const createAppStore = ({ cache, engine }: StoreDeps) => {
       const timetables: Record<string, Timetable> = {};
       for (const t of loaded) if (t !== null) timetables[t.meta.ttNum] = t;
 
-      // Only the days the UI can plausibly show; the rest stay on disk until asked for.
-      const today = todayInRiga();
-      const dates = [-1, 0, 1, 2, 3, 4, 5, 6].map((d) => addDays(today, d));
+      // Every cached day, not a window around "today": the week view browses freely, and a
+      // day left out here renders its cancelled lessons as if nothing had changed. Retention
+      // (`SUBSTITUTION_RETENTION_DAYS`) is what bounds this, not the calendar.
+      const dates = await cache.listSubstitutionDates();
       const days = await Promise.all(dates.map((d) => cache.getSubstitutions(d)));
       const substitutions: Record<ISODate, DaySubstitutions> = {};
       for (const day of days) if (day !== null) substitutions[day.date] = day;

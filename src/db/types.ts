@@ -45,6 +45,12 @@ export type AppCache = {
 
   getSubstitutions: (date: ISODate) => Promise<DaySubstitutions | null>;
   putSubstitutions: (day: DaySubstitutions) => Promise<void>;
+  /**
+   * Every day currently cached, ascending. Retention keeps this small (a fortnight back plus
+   * the next school day), and the store loads all of them: a fixed window around "today"
+   * would hide substitutions the device already holds for any other date the user browses to.
+   */
+  listSubstitutionDates: () => Promise<ISODate[]>;
   /** Drops cached days strictly before `date`. Returns how many were removed. */
   pruneSubstitutions: (date: ISODate) => Promise<number>;
 

@@ -55,6 +55,9 @@ export const createIdbCache = (
   putSubstitutions: async (day) => {
     await (await dbPromise).put("substitutions", day, day.date);
   },
+  // IndexedDB returns keys in key order, and ISO dates sort lexicographically: already ascending.
+  listSubstitutionDates: async () =>
+    (await (await dbPromise).getAllKeys("substitutions")).map(String),
   pruneSubstitutions: async (date) => {
     const db = await dbPromise;
     // ISO dates sort lexicographically, so an upper-bound range is exactly "older than".
