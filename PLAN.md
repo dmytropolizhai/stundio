@@ -264,6 +264,53 @@ lessons, offline-cached, with credentials stored securely and the feature clearl
 
 ---
 
+## Phase 7 — iOS via PWA on Vercel  (size: S–M, fast-follow after v1)
+
+**Goal:** iOS users get the app too, without an Apple developer account or a native iOS build.
+No App Store, no Xcode — a PWA installed via Safari's "Add to Home Screen" is the only realistic
+path for a non-commercial, ~100–250-user school project.
+
+This does **not** touch the Android/Capacitor app or the widget — same `src/` web build, a second
+deployment target. The `apiBaseUrl()` proxy rule (see Conventions) needs a real answer for this
+target: iOS Safari, like the Vite dev proxy, has no `CapacitorHttp` to bypass CORS, and
+`pikcrvt.edupage.org` sends none. That is decided as part of this phase, below.
+
+- [ ] **Decide the CORS path first.** Three options, in order of preference:
+  1. A Vercel **serverless rewrite/proxy** (`vercel.json` rewrite or an `api/` edge function) that
+     forwards `POST` to `pikcrvt.edupage.org` and adds no auth of its own — same shape as the Vite
+     dev proxy, just hosted. This is the only piece of the whole project that would run off-device;
+     confirm it stays acceptable under "no backend server in v1" (it holds no state, no database,
+     no credentials — pure pass-through — so it's closer to a CDN edge rule than a backend, but
+     say so explicitly rather than assuming).
+  2. A public CORS-passthrough proxy (e.g. `corsproxy.io`) — fastest to ship, but a third party
+     sees every request; reject unless (1) turns out to be infeasible.
+  3. Ask the school to add CORS headers — unlikely to happen, not worth blocking on.
+- [ ] `manifest.json` (or `manifest.webmanifest`): name, short_name, `display: standalone`,
+      `theme_color`/`background_color` from `src/ds/tokens/`, icons (same source art as the Android
+      adaptive icon from Phase 4, re-exported at PWA sizes: 192/512 + maskable).
+- [ ] iOS-specific meta tags `index.html` needs beyond the manifest (Safari ignores parts of the
+      spec): `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`,
+      `apple-touch-icon`, splash-screen `<link>`s per device size (or accept the plain white
+      splash and skip these).
+- [ ] Service worker for offline app-shell caching (Workbox via `vite-plugin-pwa`, or hand-rolled)
+      — separate from the existing `db/`+`sync/` data cache, which already works offline; this
+      only needs to cache the JS/CSS/HTML shell so the app *opens* offline, not just renders stale
+      data once open.
+- [ ] Vercel project: static build (`npm run build` → `dist/`) + the CORS rewrite from step 1;
+      confirm `apiBaseUrl()` picks the right origin in this deployment (neither the Vite dev proxy
+      path nor the Capacitor direct-fetch path — a third branch keyed off `import.meta.env`).
+- [ ] No local notifications, no home-screen widget on this target — both are native-only
+      (`@capacitor/local-notifications`, the Kotlin `AppWidgetProvider`) and iOS Safari PWAs can't
+      host either. State this plainly in Settings/about so iOS users don't expect Phase 4 parity.
+- [ ] Update `README`/about copy: "Android: Play testing track. iOS: install as a web app from
+      Safari — no App Store account, tap Share → Add to Home Screen."
+
+**Exit:** the Vercel URL, opened in iOS Safari and added to the home screen, launches full-screen
+(no browser chrome), works offline for previously-synced days, and shows the same DayView/WeekView
+as Android — without any change to the Android app or the widget.
+
+---
+
 ## Parallel track — home-screen widget spike  (size: M–L, start after Phase 0)
 
 Capacitor has no App Widget API — this is native Kotlin. Do a spike early so its data
@@ -311,9 +358,11 @@ needs shape the JS side.
 
 ## Out of scope for v1
 
-Telegram bot · iOS · per-student login (messages, lunch) · multi-school support ·
+Telegram bot · per-student login (messages, lunch) · multi-school support ·
 push notifications via server · teacher/classroom timetable views (data supports it — later).
 e-klase grades: tracked as **Phase 6**, a fast-follow after v1 ships — not dropped, but not v1.
+iOS: tracked as **Phase 7** (PWA on Vercel, since there's no Apple developer account) — same
+fast-follow status, no native app, no notifications/widget on that platform.
 
 ## Definition of done (v1)
 
