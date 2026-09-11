@@ -373,9 +373,16 @@ hashing its code, so the same subject is the same colour on every screen and eve
 ### Named Rules
 
 **The Index Rule.** The six subject accents are an index, not decoration. They exist to make a
-subject recognisable at a glance and to stay bound to it forever. They carry no meaning, no ranking,
+subject recognisable at a glance and to stay bound to it. They carry no meaning, no ranking,
 and no mood — using an accent to signal importance, urgency, or status is a misuse. Status has its
 own four colours; use those.
+
+The guarantee is **uniqueness within a class, stability within a class** — not global uniqueness.
+Tones are dealt from a class's own subject list in a stable sorted order, so no two subjects in one
+timetable ever share an accent, and a subject keeps its colour across every screen and every device
+for that class. Past the sixth subject the assignment falls back to a hash of the subject code and
+collisions become possible again. Two different classes may colour the same subject differently;
+that is accepted, because no student sees two classes at once.
 
 **The One Voice Rule.** Studio Electric appears on at most one or two elements per screen. Its
 rarity is what makes the "now" ring read as *now*. A screen with three blue things has no primary

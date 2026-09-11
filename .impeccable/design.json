@@ -376,7 +376,7 @@
     "rules": [
       {
         "name": "The Index Rule",
-        "body": "The six subject accents are an index, not decoration. They exist to make a subject recognisable at a glance and to stay bound to it forever. They carry no meaning, no ranking, and no mood — using an accent to signal importance, urgency, or status is a misuse. Status has its own four colours; use those.",
+        "body": "The six subject accents are an index, not decoration. They exist to make a subject recognisable at a glance and to stay bound to it. They carry no meaning, no ranking, and no mood - using an accent to signal importance, urgency, or status is a misuse. Status has its own four colours; use those. The guarantee is uniqueness within a class, stability within a class - not global uniqueness: tones are dealt from a class's own subject list in a stable sorted order, so no two subjects in one timetable share an accent, with a hash fallback past the sixth subject.",
         "section": "colors"
       },
       {
