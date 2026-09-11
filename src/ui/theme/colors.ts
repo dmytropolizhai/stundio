@@ -83,7 +83,11 @@ export const subjectCode = (subject: SubjectRef | null): string => {
  * Domain status → DS `Badge` tone.
  *
  * Status colour is reserved in this system, so each of the five changes gets a distinguishable
- * tone rather than a shared "something changed" grey.
+ * tone rather than a shared "something changed" grey — except `room_change`, which is deliberately
+ * the exception: `brand` is the "now" ring's own colour, and reusing it here made a room swap read
+ * as urgent as the current lesson at a glance. A room change is the mildest substitution (nothing
+ * moved, nothing was cancelled), so it gets the system's one muted tone instead — small and quiet,
+ * with the room itself (and the school's own note) one tap away in the lesson sheet.
  */
 export const STATUS_TONE: Record<
   Exclude<ResolvedStatus, "normal">,
@@ -92,7 +96,7 @@ export const STATUS_TONE: Record<
   cancelled: "danger",
   moved: "ink",
   substituted: "warning",
-  room_change: "brand",
+  room_change: "quiet",
   added: "success",
 };
 

@@ -31,6 +31,7 @@ export const lv = {
   "day.empty": "Stundu nav",
   "day.emptyHint": "Brīvdiena vai svētku diena?",
   "day.noClass": "Vispirms izvēlies klasi",
+  "day.changeClass": "Mainīt klasi",
   "day.noData": "Nav saglabātu datu",
   "day.noDataHint": "Pievienojies internetam, lai lejupielādētu sarakstu.",
   "day.stale": "Šai nedēļai saraksts vēl nav publicēts — rādām iepriekšējo.",

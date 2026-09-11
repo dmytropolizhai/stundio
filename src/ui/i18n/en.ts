@@ -25,6 +25,7 @@ export const en: Dict = {
   "day.empty": "No lessons",
   "day.emptyHint": "A holiday, maybe?",
   "day.noClass": "Pick a class first",
+  "day.changeClass": "Change class",
   "day.noData": "Nothing cached yet",
   "day.noDataHint": "Go online once to download the timetable.",
   "day.stale": "This week's timetable is not published yet — showing the previous one.",

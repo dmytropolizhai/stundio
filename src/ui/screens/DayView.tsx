@@ -10,6 +10,7 @@ import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
+import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { useSelectedClass } from "../hooks/useClasses.ts";
@@ -264,12 +265,16 @@ export const DayView = ({
           className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         >
           <TopBar
-            eyebrow={selectedClass?.short ?? t("app.title")}
             title={isToday ? t("day.today") : formatLongDate(date, lang)}
+            actions={
+              <>
+                <SyncBadge onRetry={() => void refresh({ date, force: true })} />
+                <ClassBadge onClick={onPickClass} />
+              </>
+            }
           />
 
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <SyncBadge onRetry={() => void refresh({ date, force: true })} />
             <Button
               variant="ghost"
               size="sm"
