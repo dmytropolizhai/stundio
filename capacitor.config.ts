@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "site.polizhai.rvtstunda",
+  appId: "stundio",
   appName: "Stundio",
   webDir: "dist",
   android: {
