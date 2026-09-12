@@ -16,7 +16,6 @@ import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
-import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { useWeekOverview } from "../hooks/useWeekOverview.ts";
@@ -33,7 +32,7 @@ const periodNum = (p: string): number => {
   return Number.isFinite(n) ? n : 0;
 };
 
-/** The period rows the week actually uses — an empty row 0 or row 12 is wasted screen. */
+/** The period rows the week actually uses — an empty row 0 or row 12 is a wasted screen. */
 const usedPeriods = (days: (ResolvedDay | null)[]): string[] => {
   const seen = new Set<string>();
   for (const day of days) for (const lesson of day?.lessons ?? []) seen.add(lesson.period);
@@ -51,7 +50,6 @@ export const WeekView = ({
   date,
   onDateChange,
   onOpenDay,
-  onPickClass,
 }: {
   date: ISODate;
   onDateChange: (date: ISODate) => void;
