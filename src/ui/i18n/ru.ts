@@ -93,6 +93,8 @@ export const ru: Dict = {
     "Неофициальное приложение. Данные берутся из публичного расписания pikcrvt.edupage.org и принадлежат школе.",
   "settings.updateAvailable": "Доступна новая версия ({version})",
   "settings.updateAction": "Скачать",
+  "settings.reportIssue": "Нашли ошибку?",
+  "settings.reportIssueAction": "Сообщить",
 
   "theme.system": "Как в системе",
   "theme.light": "Светлое",

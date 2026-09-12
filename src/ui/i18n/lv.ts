@@ -99,6 +99,8 @@ export const lv = {
     "Neoficiāla lietotne. Dati nāk no publiskā pikcrvt.edupage.org saraksta un pieder skolai.",
   "settings.updateAvailable": "Pieejama jaunāka versija ({version})",
   "settings.updateAction": "Lejupielādēt",
+  "settings.reportIssue": "Pamanīji kļūdu?",
+  "settings.reportIssueAction": "Ziņot",
 
   "theme.system": "Kā sistēmā",
   "theme.light": "Gaišs",
