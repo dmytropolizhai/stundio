@@ -20,7 +20,7 @@ import {
   type Timetable,
 } from "../lib/edupage/index.ts";
 import { DEFAULT_SETTINGS, type AppCache, type Settings } from "../db/index.ts";
-import type { SyncEngine, SyncStatus } from "../sync/index.ts";
+import type { SyncEngine, SyncOutcome, SyncStatus } from "../sync/index.ts";
 import { noopAnalytics, type AnalyticsClient } from "../lib/analytics/index.ts";
 
 export type AppState = {
@@ -35,7 +35,7 @@ export type AppState = {
   lastError: string | null;
 
   hydrate: () => Promise<void>;
-  refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<void>;
+  refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<SyncOutcome>;
   setClass: (classId: string | null) => Promise<void>;
   setBuilding: (building: Building | null) => Promise<void>;
   toggleFavorite: (classId: string) => Promise<void>;
@@ -43,6 +43,11 @@ export type AppState = {
   setLang: (lang: Settings["lang"]) => Promise<void>;
   setMergeConsecutiveLessons: (merge: boolean) => Promise<void>;
   setShowTime: (showTime: boolean) => Promise<void>;
+  setNotifyLessonReminderMinutes: (minutes: number) => Promise<void>;
+  setNotifySubstitutionChanges: (enabled: boolean) => Promise<void>;
+  setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
+  /** Not user-facing — the update-notification wiring marks a version as already announced. */
+  setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
   setAnalyticsEnabled: (enabled: boolean) => Promise<void>;
   /** No-op when the user has opted out. Screen views, manual refreshes — nothing PII-bearing. */
   trackEvent: (event: string) => void;
@@ -132,6 +137,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           lastSyncAt: outcome.lastSyncAt ?? get().lastSyncAt,
           lastError: outcome.errors[0] ?? null,
         });
+        return outcome;
       },
 
       setClass: (classId) => persist({ selectedClassId: classId }),
@@ -140,6 +146,13 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setLang: (lang) => persist({ lang }),
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
       setShowTime: (showTime) => persist({ showTime }),
+      setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>
+        persist({ notifyLessonReminderMinutes }),
+      setNotifySubstitutionChanges: (notifySubstitutionChanges) =>
+        persist({ notifySubstitutionChanges }),
+      setNotifyAppUpdates: (notifyAppUpdates) => persist({ notifyAppUpdates }),
+      setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
+        persist({ lastNotifiedUpdateVersion }),
       setAnalyticsEnabled: (analyticsEnabled) => persist({ analyticsEnabled }),
       trackEvent: (event) => {
         if (get().settings.analyticsEnabled) analytics.track(event);

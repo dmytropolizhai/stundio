@@ -65,6 +65,19 @@ describe("a cold first sync", () => {
     expect(day?.items).toHaveLength(55);
     expect(day?.items.every((i) => i.raw.length > 0)).toBe(true);
   });
+
+  it("reports every date fetched for the first time as changed", async () => {
+    const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
+    expect(outcome.changedDates).toEqual(["2026-09-09", "2026-09-10"]);
+  });
+});
+
+describe("re-syncing with nothing new", () => {
+  it("does not report a date as changed when the school sent the same substitutions again", async () => {
+    await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
+    const outcome = await engineAt(`${DATE}T09:00:00Z`).sync({ date: DATE });
+    expect(outcome.changedDates).toEqual([]);
+  });
 });
 
 describe("the 12-hour rule on the timetable list", () => {
@@ -117,6 +130,10 @@ describe("the cached-week rule", () => {
       selectedClassId: null,
       building: "TIC",
       favorites: [],
+      notifyLessonReminderMinutes: 10,
+      notifySubstitutionChanges: true,
+      notifyAppUpdates: true,
+      lastNotifiedUpdateVersion: null,
       theme: "system",
       lang: "lv",
       mergeConsecutiveLessons: false,

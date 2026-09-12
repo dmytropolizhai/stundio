@@ -236,7 +236,9 @@ export const DayView = ({
         refreshing={syncStatus === "syncing"}
         label={t("sync.pull")}
         releaseLabel={t("sync.release")}
-        onRefresh={() => refresh({ date, force: true })}
+        onRefresh={() => {
+          void refresh({ date, force: true });
+        }}
       >
         {/*
           104px of bottom padding so the last card clears the floating nav. Swipe replaced the

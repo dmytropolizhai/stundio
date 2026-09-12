@@ -51,6 +51,7 @@ export default defineConfig({
         "src/lib/version/**",
         "src/db/**",
         "src/sync/**",
+        "src/notifications/**",
         "src/store/**",
         "src/ui/**",
       ],
