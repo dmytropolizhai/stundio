@@ -24,8 +24,8 @@ export const EmptyState = ({
 }: EmptyStateProps) => (
   <div
     className={cn(
-      "flex flex-col items-center gap-2.5 rounded-xl px-6 py-9 text-center",
-      className,
+      "bg-card flex flex-col items-center gap-2.5 rounded-xl px-6 py-9 text-center",
+      className
     )}
     {...props}
   >
