@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { useAppStore } from "../../store/index.ts";
-import { addDays } from "../../sync/index.ts";
-import { weekDates } from "../../lib/schedule/index.ts";
-import type { ISODate, ResolvedDay, ResolvedLesson } from "../../lib/edupage/index.ts";
+import { useAppStore } from "@/store";
+import { addDays } from "@/sync";
+import { weekDates } from "@/lib/schedule";
+import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import {
   Card,
   IconButton,
@@ -10,8 +10,8 @@ import {
   WeekGrid,
   type WeekGridCell,
   type WeekGridPeriod,
-} from "../../ds/index.ts";
-import { subjectCode, subjectTone } from "../theme/index.ts";
+} from "@/ds";
+import { subjectCode, subjectTone } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -26,7 +26,7 @@ import {
   formatWeekRange,
   useLang,
   useT,
-} from "../i18n/index.ts";
+} from "@/ui/i18n";
 
 const periodNum = (p: string): number => {
   const n = Number(p);
@@ -223,7 +223,7 @@ export const WeekView = ({
         releaseLabel={t("sync.release")}
         onRefresh={() => refresh({ date, force: true })}
       >
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px]">
+        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26">
           <TopBar
             title={
               <div className="flex items-center gap-0.5">
@@ -254,7 +254,6 @@ export const WeekView = ({
             }
             actions={
               <>
-                <ClassBadge onClick={onPickClass} />
                 <SyncBadge onRetry={() => void refresh({ date, force: true })} />
               </>
             }
