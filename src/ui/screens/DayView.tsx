@@ -1,9 +1,9 @@
 import { Fragment, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { useAppStore } from "../../store/index.ts";
-import { addDays } from "../../sync/index.ts";
-import { dayProgress, minutesOf } from "../../lib/schedule/index.ts";
-import type { ISODate, ResolvedLesson } from "../../lib/edupage/index.ts";
+import { useAppStore } from "@/store";
+import { addDays } from "@/sync";
+import { dayProgress, minutesOf } from "@/lib/schedule";
+import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import {
   Button,
   Calendar,
@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
   TopBar,
   cn,
-} from "../../ds/index.ts";
+} from "@/ds";
 import { LessonRow } from "../components/LessonRow.tsx";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
@@ -24,7 +24,7 @@ import { ClassBadge } from "../components/ClassBadge.tsx";
 import { PreferenceBadge } from "../components/PreferenceBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { formatDuration, formatLongDate, localeTag, useLang, useT } from "../i18n/index.ts";
+import { formatDuration, formatDayMonth, localeTag, useLang, useT } from "@/ui/i18n";
 
 /** How far a horizontal drag must travel before it counts as "change the day", not a scroll. */
 const SWIPE_THRESHOLD_PX = 56;
@@ -82,7 +82,7 @@ export const DayView = ({
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
-  // `resolvedDay` is memoised inside the store, so calling it every render is cheap.
+  // `resolvedDay` is memoized inside the store, so calling it every render is cheap.
   const day = useAppStore((s) => s.resolvedDay(date));
 
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
@@ -272,7 +272,7 @@ export const DayView = ({
               onDateChange(addDays(date, -1));
             }
           }}
-          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         >
           <TopBar
             title={
@@ -283,12 +283,12 @@ export const DayView = ({
                     aria-label={t("day.openCalendar")}
                     className="inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)"
                   >
-                    <span>{isToday ? t("day.today") : formatLongDate(date, lang)}</span>
+                    <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
                     <Icon
                       name="chevron-down"
                       size={22}
                       className={cn(
-                        "text-muted transition-transform duration-(--dur-fast) ease-(--ease-standard)",
+                        "text-muted transition-transform duration-(--dur-fast) ease-standard",
                         calendarOpen && "rotate-180",
                       )}
                     />
