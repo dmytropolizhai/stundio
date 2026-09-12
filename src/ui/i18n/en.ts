@@ -77,7 +77,7 @@ export const en: Dict = {
   "subjects.emptyHint": "Subjects appear once the timetable is downloaded.",
 
   "settings.title": "Settings",
-  "settings.class": "My class",
+  "settings.class": "My group",
   "settings.change": "Change",
   "settings.building": "Building",
   "settings.buildingAuto": "Automatic",

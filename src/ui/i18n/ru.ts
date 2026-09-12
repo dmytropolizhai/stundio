@@ -77,7 +77,7 @@ export const ru: Dict = {
   "subjects.emptyHint": "Предметы появятся после загрузки расписания.",
 
   "settings.title": "Настройки",
-  "settings.class": "Мой класс",
+  "settings.class": "Моя группа",
   "settings.change": "Изменить",
   "settings.building": "Корпус",
   "settings.buildingAuto": "Автоматически",

@@ -83,7 +83,7 @@ export const lv = {
   "subjects.emptyHint": "Priekšmeti parādīsies, kad būs lejupielādēts saraksts.",
 
   "settings.title": "Iestatījumi",
-  "settings.class": "Mana klase",
+  "settings.class": "Mana grupa",
   "settings.change": "Mainīt",
   "settings.building": "Ēka",
   "settings.buildingAuto": "Automātiski",
