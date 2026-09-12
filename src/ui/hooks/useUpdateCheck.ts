@@ -21,12 +21,19 @@ export const useUpdateCheck = (): {
   const [result, setResult] = useState<UpdateCheckResult | null>(null);
   const [checking, setChecking] = useState(true);
   const [checked, setChecked] = useState(false);
-  const cancelledRef = useRef(false);
+  /**
+   * A per-call token rather than a single sticky "cancelled" flag: StrictMode's dev-only
+   * mount→cleanup→mount double-invoke would otherwise set a shared flag to `true` once and
+   * leave it there, so every check afterwards — including a later manual `recheck()` — bailed
+   * out silently and `checking` never returned to `false`.
+   */
+  const requestIdRef = useRef(0);
 
   const run = useCallback(() => {
+    const requestId = ++requestIdRef.current;
     setChecking(true);
     void checkForUpdate(__APP_VERSION__, OWNER, REPO).then((outcome) => {
-      if (cancelledRef.current) return;
+      if (requestIdRef.current !== requestId) return;
       setResult(outcome);
       setChecking(false);
       setChecked(true);
@@ -35,9 +42,6 @@ export const useUpdateCheck = (): {
 
   useEffect(() => {
     run();
-    return () => {
-      cancelledRef.current = true;
-    };
   }, [run]);
 
   return { result, checking, checked, recheck: run };
