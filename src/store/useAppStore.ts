@@ -40,6 +40,7 @@ export type AppState = {
   toggleFavorite: (classId: string) => Promise<void>;
   setTheme: (theme: Settings["theme"]) => Promise<void>;
   setLang: (lang: Settings["lang"]) => Promise<void>;
+  setMergeConsecutiveLessons: (merge: boolean) => Promise<void>;
   resolvedDay: (date: ISODate, classId?: string) => ResolvedDay | null;
 };
 
@@ -131,6 +132,8 @@ export const createAppStore = ({ cache, engine }: StoreDeps) => {
       setBuilding: (building) => persist({ building }),
       setTheme: (theme) => persist({ theme }),
       setLang: (lang) => persist({ lang }),
+      setMergeConsecutiveLessons: (mergeConsecutiveLessons) =>
+        persist({ mergeConsecutiveLessons }),
       toggleFavorite: (classId) => {
         const favorites = get().settings.favorites;
         return persist({

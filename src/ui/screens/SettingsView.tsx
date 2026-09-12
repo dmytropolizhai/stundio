@@ -2,7 +2,7 @@ import { useMemo, type ReactNode } from "react";
 import { useAppStore } from "../../store/index.ts";
 import { listBuildings } from "../../lib/edupage/index.ts";
 import type { Settings } from "../../db/index.ts";
-import { Button, Card, Icon, SegmentedTabs, TopBar } from "../../ds/index.ts";
+import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "../../ds/index.ts";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
@@ -42,6 +42,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const setBuilding = useAppStore((s) => s.setBuilding);
   const setTheme = useAppStore((s) => s.setTheme);
   const setLang = useAppStore((s) => s.setLang);
+  const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
   const refresh = useAppStore((s) => s.refresh);
   const update = useUpdateCheck();
 
@@ -113,6 +114,26 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               items={LANGS.map((key) => ({ key, label: LANG_NAMES[key] }))}
               onChange={(value) => {
                 void setLang(value);
+              }}
+            />
+          </Row>
+        </Section>
+
+        <Section title={t("settings.week")}>
+          <Row className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">
+                {t("settings.mergeLessons")}
+              </p>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("settings.mergeLessonsHint")}
+              </p>
+            </div>
+            <Switch
+              aria-label={t("settings.mergeLessons")}
+              checked={settings.mergeConsecutiveLessons}
+              onChange={(checked) => {
+                void setMergeConsecutiveLessons(checked);
               }}
             />
           </Row>

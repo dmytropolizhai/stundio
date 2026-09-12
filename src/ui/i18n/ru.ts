@@ -39,6 +39,9 @@ export const ru: Dict = {
   "day.preferences": "Настройки",
   "day.showTime": "Показать время",
 
+  "week.previousWeek": "Предыдущая неделя",
+  "week.nextWeek": "Следующая неделя",
+
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",
   "lesson.period": "Урок",
@@ -80,6 +83,10 @@ export const ru: Dict = {
   "settings.buildingAuto": "Автоматически",
   "settings.theme": "Оформление",
   "settings.language": "Язык",
+  "settings.week": "Просмотр недели",
+  "settings.mergeLessons": "Объединять одинаковые уроки",
+  "settings.mergeLessonsHint":
+    "Показывает предмет, повторяющийся подряд, как один длинный блок в просмотре недели.",
   "settings.data": "Данные",
   "settings.about": "О приложении",
   "settings.aboutText":

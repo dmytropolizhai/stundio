@@ -92,9 +92,13 @@ const Shell = () => {
       {tab === "week" && (
         <WeekView
           date={date}
+          onDateChange={setDate}
           onOpenDay={(next) => {
             setDate(next);
             setTab("day");
+          }}
+          onPickClass={() => {
+            setPicking(true);
           }}
         />
       )}

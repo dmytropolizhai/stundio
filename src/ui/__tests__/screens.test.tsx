@@ -5,6 +5,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { StoreContext } from "../../store/index.ts";
+import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
 import { ClassPicker } from "../screens/ClassPicker.tsx";
 import { WeekView } from "../screens/WeekView.tsx";
 import { SettingsView } from "../screens/SettingsView.tsx";
@@ -70,6 +71,45 @@ describe("ClassPicker", () => {
   });
 });
 
+describe("WeekGrid merge", () => {
+  const days = [
+    { key: "mon", weekday: "Pirmd." },
+    { key: "tue", weekday: "Otrd." },
+  ];
+  const lvl: WeekGridCell = { short: "LVL", tone: "pink" };
+  const mat: WeekGridCell = { short: "MAT", tone: "mint" };
+  const periods: WeekGridPeriod<string>[] = [
+    { period: 1, start: "08:30", cells: { mon: lvl } },
+    { period: 2, start: "09:15", cells: { mon: lvl, tue: mat } },
+    { period: 3, start: "10:10", cells: { mon: lvl } },
+  ];
+
+  it("keeps a run of identical lessons as separate cells by default", () => {
+    render(<WeekGrid days={days} periods={periods} />);
+    // 3 identical Monday lessons + 1 Tuesday lesson, none collapsed.
+    expect(screen.getAllByTestId("week-cell")).toHaveLength(4);
+  });
+
+  it("collapses a consecutive run into one spanning cell when enabled", () => {
+    render(<WeekGrid days={days} periods={periods} mergeConsecutive />);
+    const cells = screen.getAllByTestId("week-cell");
+    // The 3-period Monday run becomes one cell; Tuesday's single lesson is untouched.
+    expect(cells).toHaveLength(2);
+    const merged = cells.find((c) => c.textContent === "LVL");
+    expect(merged?.style.gridRow).toBe("2 / span 3");
+  });
+
+  it("does not merge across a gap or a different subject", () => {
+    const gappy: WeekGridPeriod<string>[] = [
+      { period: 1, start: "08:30", cells: { mon: lvl } },
+      { period: 2, start: "09:15", cells: {} },
+      { period: 3, start: "10:10", cells: { mon: lvl } },
+    ];
+    render(<WeekGrid days={days} periods={gappy} mergeConsecutive />);
+    expect(screen.getAllByTestId("week-cell")).toHaveLength(2);
+  });
+});
+
 describe("WeekView", () => {
   /*
    * The design system's week grid heads each column with the weekday alone — the day-and-month
@@ -81,23 +121,34 @@ describe("WeekView", () => {
 
   it("renders a Mon–Fri grid of the class's week", async () => {
     const harness = await bootHarness();
-    wrap(harness, <WeekView date={FIXTURE_DATE} onOpenDay={vi.fn()} />);
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
 
     expect(weekdayHeaders()).toHaveLength(5);
     // Cells carry the short subject code — the one place the DS allows an abbreviation.
-    const filled = screen
-      .getAllByRole("button")
-      .filter((b) => b.className.includes("h-10") && b.textContent !== "");
-    expect(filled.length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId("week-cell").length).toBeGreaterThan(0);
   });
 
   it("opens a lesson sheet from a cell", async () => {
     const harness = await bootHarness();
-    wrap(harness, <WeekView date={FIXTURE_DATE} onOpenDay={vi.fn()} />);
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
 
-    const cells = screen
-      .getAllByRole("button")
-      .filter((b) => b.className.includes("h-10") && b.textContent !== "");
+    const cells = screen.getAllByTestId("week-cell");
     fireEvent.click(cells[0]!);
 
     expect(await screen.findByRole("dialog")).toBeDefined();
@@ -106,10 +157,55 @@ describe("WeekView", () => {
   it("jumps to the day screen when a weekday header is tapped", async () => {
     const harness = await bootHarness();
     const onOpenDay = vi.fn();
-    wrap(harness, <WeekView date={FIXTURE_DATE} onOpenDay={onOpenDay} />);
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={onOpenDay}
+        onPickClass={vi.fn()}
+      />,
+    );
 
     fireEvent.click(weekdayHeaders()[0]!);
     expect(onOpenDay).toHaveBeenCalledWith("2026-09-07");
+  });
+
+  it("steps a whole week at a time via the header arrows", async () => {
+    const harness = await bootHarness();
+    const onDateChange = vi.fn();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={onDateChange}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Nākamā nedēļa"));
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-16");
+
+    fireEvent.click(screen.getByLabelText("Iepriekšējā nedēļa"));
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-02");
+  });
+
+  it("routes to the class picker from the header", async () => {
+    const harness = await bootHarness();
+    const onPickClass = vi.fn();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={onPickClass}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("class-badge"));
+    expect(onPickClass).toHaveBeenCalled();
   });
 });
 
@@ -134,6 +230,17 @@ describe("SettingsView", () => {
       fireEvent.click(screen.getByText("Tumšs"));
     });
     expect(harness.store.getState().settings.theme).toBe("dark");
+  });
+
+  it("persists the week-view merge preference", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+
+    expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(false);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch"));
+    });
+    expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(true);
   });
 
   it("offers a building override once more than one building is cached", async () => {

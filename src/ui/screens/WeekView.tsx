@@ -1,17 +1,18 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "../../store/index.ts";
+import { addDays } from "../../sync/index.ts";
 import { weekDates } from "../../lib/schedule/index.ts";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "../../lib/edupage/index.ts";
-import { TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
+import { IconButton, TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
 import { subjectCode, subjectTone } from "../theme/index.ts";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
+import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { useSelectedClass } from "../hooks/useClasses.ts";
-import { formatWeekdayShort, useLang, useT } from "../i18n/index.ts";
+import { formatWeekdayShort, formatWeekRange, useLang, useT } from "../i18n/index.ts";
 
 const periodNum = (p: string): number => {
   const n = Number(p);
@@ -34,10 +35,14 @@ const usedPeriods = (days: (ResolvedDay | null)[]): string[] => {
  */
 export const WeekView = ({
   date,
+  onDateChange,
   onOpenDay,
+  onPickClass,
 }: {
   date: ISODate;
+  onDateChange: (date: ISODate) => void;
   onOpenDay: (date: ISODate) => void;
+  onPickClass: () => void;
 }) => {
   const t = useT();
   const lang = useLang();
@@ -46,7 +51,7 @@ export const WeekView = ({
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedClass = useSelectedClass();
+  const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
 
@@ -119,6 +124,7 @@ export const WeekView = ({
         periods={rows}
         cellLabel={(cell, day) => `${cell.name ?? cell.short} · ${day.weekday}`}
         onSelectDay={onOpenDay}
+        mergeConsecutive={mergeConsecutive}
         onSelect={(_cell, dayKey, period) => {
           const hit = lessonAt.get(`${dayKey}|${String(period)}`);
           if (hit !== undefined) setOpen(hit);
@@ -126,6 +132,9 @@ export const WeekView = ({
       />
     );
   };
+
+  const firstDay = dates[0];
+  const lastDay = dates[dates.length - 1];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -136,8 +145,41 @@ export const WeekView = ({
         onRefresh={() => refresh({ date, force: true })}
       >
         <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px]">
-          <TopBar eyebrow={selectedClass?.short ?? t("app.title")} title={t("nav.week")} />
-          <SyncBadge onRetry={() => void refresh({ date, force: true })} />
+          <TopBar
+            title={
+              <div className="flex items-center gap-0.5">
+                <IconButton
+                  icon="chevron-left"
+                  label={t("week.previousWeek")}
+                  variant="bare"
+                  size="sm"
+                  onClick={() => {
+                    onDateChange(addDays(date, -7));
+                  }}
+                />
+                <span className="min-w-0 flex-1 truncate text-center text-title">
+                  {firstDay !== undefined && lastDay !== undefined
+                    ? formatWeekRange(firstDay, lastDay, lang)
+                    : t("nav.week")}
+                </span>
+                <IconButton
+                  icon="chevron-right"
+                  label={t("week.nextWeek")}
+                  variant="bare"
+                  size="sm"
+                  onClick={() => {
+                    onDateChange(addDays(date, 7));
+                  }}
+                />
+              </div>
+            }
+            actions={
+              <>
+                <ClassBadge onClick={onPickClass} />
+                <SyncBadge onRetry={() => void refresh({ date, force: true })} />
+              </>
+            }
+          />
           {body()}
         </div>
       </PullToRefresh>
