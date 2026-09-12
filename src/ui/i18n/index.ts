@@ -47,6 +47,7 @@ export {
   formatDuration,
   formatLongDate,
   formatRange,
+  formatWeekdayLong,
   formatWeekdayShort,
   formatWeekRange,
   localeTag,

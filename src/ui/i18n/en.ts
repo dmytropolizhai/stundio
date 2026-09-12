@@ -41,6 +41,15 @@ export const en: Dict = {
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",
+  "week.overview.title": "Overview",
+  "week.overview.lessons": "{n} lessons",
+  "week.overview.lessonsUp": "+{n} vs last week",
+  "week.overview.lessonsDown": "{n} vs last week",
+  "week.overview.lessonsSame": "Same as last week",
+  "week.overview.changes": "{n} changes",
+  "week.overview.changesNone": "No changes",
+  "week.overview.busiestLabel": "Busiest day",
+  "week.overview.lightestLabel": "Lightest day",
 
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",

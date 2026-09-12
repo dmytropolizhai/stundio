@@ -40,6 +40,7 @@ export const SubjectsView = () => {
             <Card
               key={subject.id}
               tone={subjectTone(subject)}
+              className="min-w-0"
               data-testid={`subject-${subject.id}`}
             >
               <div className="flex items-center justify-between">
@@ -51,7 +52,7 @@ export const SubjectsView = () => {
                   {t("subjects.perWeek", { n: count })}
                 </span>
               </div>
-              <div className="mt-2.5 mb-1.5 font-display text-[26px] leading-[.95] font-black">
+              <div className="mt-2.5 mb-1.5 font-display text-[26px] leading-[.95] font-black break-words">
                 {subject.name === "" ? subject.short : subject.name}
               </div>
               <div className="font-text text-caption opacity-80">

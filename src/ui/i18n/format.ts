@@ -28,6 +28,10 @@ export const formatLongDate = (date: ISODate, lang: Lang): string =>
 export const formatWeekdayShort = (date: ISODate, lang: Lang): string =>
   fmt(lang, { weekday: "short" }).format(toDate(date));
 
+/** "trešdiena" — the WeekView overview's busiest/lightest day line. */
+export const formatWeekdayLong = (date: ISODate, lang: Lang): string =>
+  fmt(lang, { weekday: "long" }).format(toDate(date));
+
 /** "9.09." — under the weekday in the pager. */
 export const formatDayMonth = (date: ISODate, lang: Lang): string =>
   fmt(lang, { day: "numeric", month: "numeric" }).format(toDate(date));
