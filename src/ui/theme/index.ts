@@ -5,6 +5,7 @@ export {
   STATUS_DOT_CLASS,
   STATUS_TREATMENT,
   isChanged,
+  offMainBuilding,
   subjectCode,
   subjectTone,
   type SubjectTone,

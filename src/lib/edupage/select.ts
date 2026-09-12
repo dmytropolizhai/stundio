@@ -42,3 +42,14 @@ export const selectTimetable = (
 export const listBuildings = (metas: readonly TimetableMeta[]): Building[] => [
   ...new Set(metas.map((m) => m.building).filter((b) => b !== "")),
 ];
+
+/**
+ * RVT's main building, as it comes back verbatim in the ttviewer label (see
+ * `parseTimetableLabel` in `normalize.ts`). Automatic building mode pools every building's
+ * timetables and picks by date alone (see `selectTimetable` above), so a day can legitimately
+ * resolve to the "TIC" annex instead — the UI marks that with `isMainBuilding` rather than
+ * hiding it, since the lesson is real.
+ */
+export const MAIN_BUILDING: Building = "Galvenā ēka";
+
+export const isMainBuilding = (building: Building): boolean => building === MAIN_BUILDING;

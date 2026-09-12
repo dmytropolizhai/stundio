@@ -8,6 +8,12 @@ export type WeekGridCell = {
   name?: string;
   tone?: LessonTone;
   cancelled?: boolean;
+  /**
+   * The lesson's building, set only when it is not the school's main building. Draws a hairline
+   * outline on the cell — the fill still carries the subject colour, this only says "elsewhere" —
+   * and folds into the cell's accessible label so the fact isn't colour-only.
+   */
+  building?: string;
 };
 
 export type WeekGridDay<K extends string = string> = {
@@ -59,7 +65,8 @@ type Placement = { cell: WeekGridCell; span: number } | "covered";
 const sameCell = (a: WeekGridCell, b: WeekGridCell): boolean =>
   a.short === b.short &&
   (a.tone ?? "sky") === (b.tone ?? "sky") &&
-  (a.cancelled ?? false) === (b.cancelled ?? false);
+  (a.cancelled ?? false) === (b.cancelled ?? false) &&
+  (a.building ?? "") === (b.building ?? "");
 
 /**
  * Placement per row for one day column. Without merging this is just each period's own cell;
@@ -193,7 +200,7 @@ export const WeekGrid = <K extends string>({
             aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
             // Free on desktop (hover), inert on the touch device this app actually ships on —
             // tapping already opens the full lesson sheet with the name.
-            title={cell.name ?? cell.short}
+            title={cell.building === undefined ? (cell.name ?? cell.short) : `${cell.name ?? cell.short} · ${cell.building}`}
             onClick={() => {
               onSelect?.(cell, day.key, period.period);
             }}
@@ -203,6 +210,7 @@ export const WeekGrid = <K extends string>({
               "font-text text-caption font-bold text-ink-900",
               TONE_BG[cell.tone ?? "sky"],
               cell.cancelled === true && "opacity-40 line-through",
+              cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
               onSelect === undefined ? "cursor-default" : "cursor-pointer",
             )}
           >

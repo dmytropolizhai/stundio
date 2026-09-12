@@ -7,7 +7,7 @@
  * school-supplied hex satisfies neither guarantee, so the hex is dropped and each subject is
  * assigned one of the six deterministically instead.
  */
-import type { ResolvedStatus, SubjectRef } from "../../lib/edupage/index.ts";
+import { isMainBuilding, type ResolvedDay, type ResolvedStatus, type SubjectRef } from "../../lib/edupage/index.ts";
 import type { BadgeProps, LessonStatus, LessonTone } from "../../ds/index.ts";
 
 /** The six subject accents, in DS order. `brand` is reserved for "now" and is not assignable. */
@@ -77,6 +77,27 @@ export const subjectCode = (subject: SubjectRef | null): string => {
       .toUpperCase();
   }
   return source.slice(0, 3).toUpperCase();
+};
+
+/**
+ * RVT sometimes sends a whole class day at the TIC annex as a single "lesson" whose subject is
+ * literally the annex's own street address — not a real subject, and published under the class's
+ * *main*-building timetable rather than as a `building`-level republish. `ResolvedDay.building`
+ * reads "Galvenā ēka" for a day like that, so `isMainBuilding` alone misses it; this matches the
+ * one known address text instead.
+ */
+const TIC_ANNEX_ADDRESS = "Tehnoloģiju un inovāciju centrs Dārzciema ielā";
+
+/**
+ * The building to show for a lesson, or `undefined` when it is (as far as the app can tell) the
+ * school's main building — the two cases automatic building mode can silently produce: the day's
+ * published timetable itself came from the "TIC" annex (`day.building`), or the day is nominally
+ * in the main building but this one lesson is the annex-address placeholder above.
+ */
+export const offMainBuilding = (day: Pick<ResolvedDay, "building">, subject: SubjectRef | null): string | undefined => {
+  if (!isMainBuilding(day.building)) return day.building;
+  const name = (subject?.name ?? subject?.short ?? "").trim();
+  return name === TIC_ANNEX_ADDRESS ? "TIC" : undefined;
 };
 
 /**

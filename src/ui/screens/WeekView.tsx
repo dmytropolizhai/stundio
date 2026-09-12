@@ -4,7 +4,7 @@ import { addDays } from "../../sync/index.ts";
 import { weekDates } from "../../lib/schedule/index.ts";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "../../lib/edupage/index.ts";
 import { IconButton, TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
-import { subjectCode, subjectTone } from "../theme/index.ts";
+import { offMainBuilding, subjectCode, subjectTone } from "../theme/index.ts";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -96,11 +96,13 @@ export const WeekView = ({
           const lesson = day.lessons.find((l) => l.period === period);
           if (lesson === undefined) return;
           if (start === "") start = lesson.start;
+          const building = offMainBuilding(day, lesson.subject);
           cells[d] = {
             short: subjectCode(lesson.subject),
             name: lesson.subject?.name ?? lesson.subject?.short ?? "",
             tone: subjectTone(lesson.subject),
             cancelled: lesson.status === "cancelled",
+            ...(building === undefined ? {} : { building }),
           };
         });
         return { period: periodNum(period), start, cells };
@@ -122,7 +124,10 @@ export const WeekView = ({
         className="mt-4"
         days={columns}
         periods={rows}
-        cellLabel={(cell, day) => `${cell.name ?? cell.short} · ${day.weekday}`}
+        cellLabel={(cell, day) =>
+          `${cell.name ?? cell.short} · ${day.weekday}` +
+          (cell.building !== undefined ? ` · ${cell.building}` : "")
+        }
         onSelectDay={onOpenDay}
         mergeConsecutive={mergeConsecutive}
         onSelect={(_cell, dayKey, period) => {
