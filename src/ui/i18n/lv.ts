@@ -17,6 +17,19 @@ export const lv = {
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",
 
+  "onboarding.intro.skip": "Izlaist",
+  "onboarding.intro.next": "Tālāk",
+  "onboarding.intro.start": "Sākt",
+  "onboarding.intro.progress": "Iepazīšanās solis",
+  "onboarding.intro.step1.title": "Stundu saraksts vienā vietā",
+  "onboarding.intro.step1.body": "Diena un nedēļa pārskatāmi — tāpat kā EduPage, bet ātrāk.",
+  "onboarding.intro.step2.title": "Izmaiņas uzreiz redzamas",
+  "onboarding.intro.step2.body":
+    "Atceltas, pārceltas un aizvietotas stundas iezīmētas — nekas nepaliek nepamanīts.",
+  "onboarding.intro.step3.title": "Strādā arī bez interneta",
+  "onboarding.intro.step3.body":
+    "Saraksts saglabājas ierīcē, tāpēc tas ir pieejams pat bez pieslēguma.",
+
   "class.search": "Meklēt klasi…",
   "class.none": "Nav atrasta neviena klase",
   "class.favorites": "Izlase",

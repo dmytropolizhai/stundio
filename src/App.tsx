@@ -10,6 +10,7 @@ import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
+import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
 import { useTheme } from "@/ui/theme";
@@ -34,13 +35,24 @@ const Splash = () => (
 );
 
 /**
- * First run: no class chosen yet, so the picker *is* the app until one is.
+ * First run: no class chosen yet, so onboarding *is* the app until one is picked.
  *
- * This is the DS's onboarding screen — a full-bleed brand flood, the wordmark, and one
- * oversized headline. It is the only place in the app that goes edge-to-edge in blue.
+ * A short feature tour (skippable at every step) runs first, then the DS's onboarding
+ * screen — a full-bleed brand flood, the wordmark, and one oversized headline — hands off
+ * to the class picker. It is the only place in the app that goes edge-to-edge in blue.
  */
 const Onboarding = () => {
   const t = useT();
+  const [introDone, setIntroDone] = useState(false);
+
+  if (!introDone) {
+    return (
+      <div className="flex h-full flex-col">
+        <OnboardingIntro onDone={() => setIntroDone(true)} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col">
       <div className="bg-brand px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-white">

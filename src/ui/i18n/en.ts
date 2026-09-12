@@ -11,6 +11,19 @@ export const en: Dict = {
   "onboarding.title": "Pick your class",
   "onboarding.subtitle": "Your timetable and its changes — offline too.",
 
+  "onboarding.intro.skip": "Skip",
+  "onboarding.intro.next": "Next",
+  "onboarding.intro.start": "Get started",
+  "onboarding.intro.progress": "Intro step",
+  "onboarding.intro.step1.title": "Your timetable, in one place",
+  "onboarding.intro.step1.body": "Day and week views, laid out clearly — like EduPage, but faster.",
+  "onboarding.intro.step2.title": "Changes show up right away",
+  "onboarding.intro.step2.body":
+    "Cancelled, moved, and substituted lessons are flagged — nothing slips by.",
+  "onboarding.intro.step3.title": "Works offline too",
+  "onboarding.intro.step3.body":
+    "The timetable stays on your device, so it's there even without a connection.",
+
   "class.search": "Search classes…",
   "class.none": "No classes found",
   "class.favorites": "Favorites",
