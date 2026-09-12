@@ -11,6 +11,9 @@ export const en: Dict = {
   "onboarding.title": "Pick your class",
   "onboarding.subtitle": "Your timetable and its changes — offline too.",
 
+  "onboarding.language.title": "Choose your language",
+  "onboarding.language.continue": "Continue",
+
   "onboarding.intro.skip": "Skip",
   "onboarding.intro.next": "Next",
   "onboarding.intro.start": "Get started",

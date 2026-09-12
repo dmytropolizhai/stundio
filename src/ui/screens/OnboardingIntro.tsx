@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useRef, useState, type TouchEvent } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button, Card, Icon, type IconName } from "../../ds/index.ts";
 import { ensureNotificationPermission } from "../../notifications/index.ts";
 import { useT } from "../i18n/index.ts";
 import type { MessageKey } from "../i18n/lv.ts";
+
+const SWIPE_THRESHOLD_PX = 56;
 
 type Slide = {
   icon: IconName;
@@ -49,6 +52,17 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
   const slide = SLIDES[step];
   const isLast = step === SLIDES.length - 1;
 
+  /*
+   * Swipeable, same mechanics as DayView's day paging: `dragX` tracks the finger live, `enterDir`
+   * remembers which way we just paged so the next slide's content arrives from the side it
+   * logically came from. Swiping past the last slide finishes the tour, same as tapping the button.
+   */
+  const reduceMotion = useReducedMotion() ?? false;
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const enterDir = useRef<1 | -1>(1);
+  const [dragX, setDragX] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
   const advance = () => {
     if (isLast) {
       // The last slide is the one that explains notifications, so this is the moment the OS
@@ -57,8 +71,47 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
       void ensureNotificationPermission();
       onDone();
     } else {
+      enterDir.current = 1;
       setStep((s) => s + 1);
     }
+  };
+
+  const goBack = () => {
+    if (step === 0) return;
+    enterDir.current = -1;
+    setStep((s) => s - 1);
+  };
+
+  const onSwipeStart = (e: TouchEvent) => {
+    const touch = e.touches[0];
+    if (touch === undefined) return;
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+    setDragging(true);
+  };
+
+  const onSwipeMove = (e: TouchEvent) => {
+    const start = touchStart.current;
+    const touch = e.touches[0];
+    if (start === null || touch === undefined) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    // A steeper vertical drag isn't a page gesture — leave it alone.
+    if (Math.abs(dy) > Math.abs(dx)) return;
+    setDragX(dx);
+  };
+
+  const onSwipeEnd = () => {
+    const started = touchStart.current !== null;
+    touchStart.current = null;
+    setDragging(false);
+    if (started) {
+      if (dragX <= -SWIPE_THRESHOLD_PX) {
+        advance();
+      } else if (dragX >= SWIPE_THRESHOLD_PX) {
+        goBack();
+      }
+    }
+    setDragX(0);
   };
 
   if (slide === undefined) return null;
@@ -71,7 +124,28 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
         </Button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6 text-center">
+      <motion.div
+        key={step}
+        role="group"
+        tabIndex={0}
+        aria-label={t("onboarding.intro.progress")}
+        initial={{ opacity: 0, x: reduceMotion ? 0 : enterDir.current * 16 }}
+        animate={{ opacity: 1, x: dragging ? dragX : 0 }}
+        transition={{
+          duration: dragging ? 0 : reduceMotion ? 0.001 : 0.24,
+          ease: [0.2, 0.8, 0.2, 1],
+        }}
+        style={{ touchAction: "pan-y" }}
+        onTouchStart={onSwipeStart}
+        onTouchMove={onSwipeMove}
+        onTouchEnd={onSwipeEnd}
+        onTouchCancel={onSwipeEnd}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight") advance();
+          else if (e.key === "ArrowLeft") goBack();
+        }}
+        className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+      >
         <Card
           tone={slide.tone}
           radius="2xl"
@@ -83,7 +157,7 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
           <h1 className="font-display text-title tracking-display text-strong">{t(slide.title)}</h1>
           <p className="max-w-70 font-text text-body text-muted">{t(slide.body)}</p>
         </div>
-      </div>
+      </motion.div>
 
       <div
         className="flex items-center justify-center gap-2 pb-6"

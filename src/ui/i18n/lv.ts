@@ -17,6 +17,9 @@ export const lv = {
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",
 
+  "onboarding.language.title": "Izvēlies valodu",
+  "onboarding.language.continue": "Turpināt",
+
   "onboarding.intro.skip": "Izlaist",
   "onboarding.intro.next": "Tālāk",
   "onboarding.intro.start": "Sākt",

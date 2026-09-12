@@ -11,6 +11,9 @@ export const ru: Dict = {
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",
 
+  "onboarding.language.title": "Выберите язык",
+  "onboarding.language.continue": "Продолжить",
+
   "onboarding.intro.skip": "Пропустить",
   "onboarding.intro.next": "Далее",
   "onboarding.intro.start": "Начать",
