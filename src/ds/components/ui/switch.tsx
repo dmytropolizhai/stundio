@@ -39,7 +39,7 @@ export const Switch = ({
       className={cn(
         "relative h-[30px] w-[50px] shrink-0 cursor-pointer rounded-pill border-0",
         "bg-ink-200 dark:bg-ink-700",
-        "data-[state=checked]:bg-brand",
+        "data-[state=checked]:bg-success",
         "transition-colors duration-(--dur-fast) ease-(--ease-standard)",
         "disabled:cursor-not-allowed",
       )}

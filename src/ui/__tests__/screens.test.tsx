@@ -238,9 +238,20 @@ describe("SettingsView", () => {
 
     expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(false);
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("switch"));
+      fireEvent.click(screen.getByRole("switch", { name: "Apvienot vienādas stundas" }));
     });
     expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(true);
+  });
+
+  it("persists the show-time preference", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+
+    expect(harness.store.getState().settings.showTime).toBe(false);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Rādīt laiku" }));
+    });
+    expect(harness.store.getState().settings.showTime).toBe(true);
   });
 
   it("offers a building override once more than one building is cached", async () => {

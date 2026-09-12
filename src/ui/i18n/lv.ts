@@ -42,8 +42,6 @@ export const lv = {
   "day.free": "Brīvstunda",
   "day.finished": "Stundas beigušās",
   "day.now": "Tagad",
-  "day.preferences": "Iestatījumi",
-  "day.showTime": "Rādīt laiku",
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",
@@ -102,6 +100,9 @@ export const lv = {
   "settings.mergeLessons": "Apvienot vienādas stundas",
   "settings.mergeLessonsHint":
     "Pēc kārtas atkārtotu priekšmetu nedēļas skatā rāda kā vienu garāku bloku.",
+  "settings.day": "Dienas skats",
+  "settings.showTime": "Rādīt laiku",
+  "settings.showTimeHint": "Rāda katras stundas sākuma un beigu laiku pie tās numura.",
   "settings.data": "Dati",
   "settings.about": "Par lietotni",
   "settings.aboutText":
@@ -110,6 +111,7 @@ export const lv = {
   "settings.updateAction": "Lejupielādēt",
   "settings.reportIssue": "Pamanīji kļūdu?",
   "settings.reportIssueAction": "Ziņot",
+  "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
 
   "theme.system": "Kā sistēmā",
   "theme.light": "Gaišs",

@@ -28,10 +28,10 @@
   --text-link: var(--blue-300);
   --text-link-hover: var(--blue-200);
 
-  /* Brand. The fill stays blue-500 so `--text-on-brand` white still holds; only the
-     tint and the focus ring move, because both are read against a dark ground. */
-  --brand-tint: #131a4a;
-  --focus-ring: var(--blue-300);
+  /* Brand is ink, not blue — the tint and the focus ring still move here because both
+     are read against a dark ground. */
+  --brand-tint: #1c1e26;
+  --focus-ring: var(--ink-300);
 
   /* Status. The DS tunes these for white ground; on dark they are lifted to keep 4.5:1
      as *text*. Warning is already light enough to survive unchanged. */

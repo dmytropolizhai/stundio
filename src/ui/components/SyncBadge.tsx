@@ -1,7 +1,7 @@
-import { useAppStore } from "../../store/index.ts";
+import { useAppStore } from "@/store";
 import type { SyncStatus as StoreSyncStatus } from "../../sync/index.ts";
-import { SyncStatus, type SyncState } from "../../ds/index.ts";
-import { formatClock, useLang, useT } from "../i18n/index.ts";
+import { SyncStatus, type SyncState } from "@/ds";
+import { formatClock, useLang, useT } from "@/ui/i18n";
 
 /**
  * "Up to date · 14:32" / "Offline copy". A stale-but-shown timetable is the normal case in this
@@ -11,7 +11,7 @@ import { formatClock, useLang, useT } from "../i18n/index.ts";
  * The store's status vocabulary ("idle" for a settled cache) is mapped onto the DS's four states
  * here rather than in the DS component, which stays domain-free.
  *
- * The badge starts collapsed to just its (already colour-coded) icon and opens on tap to reveal
+ * The badge starts collapsed to just its (already color-coded) icon and opens on tap to reveal
  * the freshness text — but only for the quiet "synced" case, where the timestamp is a courtesy,
  * not news. Syncing, offline, and failed states stay fully visible: those are the ones a student
  * actually needs to notice.
@@ -23,7 +23,11 @@ const STATE: Record<StoreSyncStatus, SyncState> = {
   error: "failed",
 };
 
-export const SyncBadge = ({ onRetry }: { onRetry?: () => void }) => {
+type SyncBadgeProps = {
+  onRetry?: () => void;
+} & Omit<Parameters<typeof SyncStatus>[0], "state" | "label" | "aria-label">;
+
+export const SyncBadge = ({ onRetry, ...props }: SyncBadgeProps) => {
   const t = useT();
   const lang = useLang();
   const status = useAppStore((s) => s.syncStatus);
@@ -50,6 +54,7 @@ export const SyncBadge = ({ onRetry }: { onRetry?: () => void }) => {
       collapsible={status === "idle"}
       aria-label={label}
       data-testid="sync-badge"
+      {...props}
     />
   );
 };
