@@ -112,6 +112,8 @@ export const lv = {
     "Neoficiāla lietotne. Dati nāk no publiskā pikcrvt.edupage.org saraksta un pieder skolai.",
   "settings.updateAvailable": "Pieejama jaunāka versija ({version})",
   "settings.updateAction": "Lejupielādēt",
+  "settings.updateDownloading": "Lejupielādē… {percent}%",
+  "settings.updateError": "Neizdevās atjaunināt: {message}",
   "settings.reportIssue": "Pamanīji kļūdu?",
   "settings.reportIssueAction": "Ziņot",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",

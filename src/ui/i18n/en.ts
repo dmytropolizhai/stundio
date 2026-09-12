@@ -106,6 +106,8 @@ export const en: Dict = {
     "Unofficial app. Data comes from the public pikcrvt.edupage.org timetable and belongs to the school.",
   "settings.updateAvailable": "A newer version is available ({version})",
   "settings.updateAction": "Download",
+  "settings.updateDownloading": "Downloading… {percent}%",
+  "settings.updateError": "Update failed: {message}",
   "settings.reportIssue": "Found a bug?",
   "settings.reportIssueAction": "Report",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
