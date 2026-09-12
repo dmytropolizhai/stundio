@@ -3,14 +3,7 @@ import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { weekDates } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import {
-  Card,
-  IconButton,
-  TopBar,
-  WeekGrid,
-  type WeekGridCell,
-  type WeekGridPeriod,
-} from "@/ds";
+import { Card, IconButton, TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { offMainBuilding, subjectCode, subjectTone } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
@@ -101,10 +94,7 @@ export const WeekView = ({
 
   /* The grid speaks in codes; this is what turns a tapped cell back into a real lesson. */
   const lessonAt = useMemo(() => {
-    const map = new Map<
-      string,
-      { lesson: ResolvedLesson; day: ResolvedDay }
-    >();
+    const map = new Map<string, { lesson: ResolvedLesson; day: ResolvedDay }>();
 
     days.forEach((day, i) => {
       const d = dates[i];
@@ -168,13 +158,7 @@ export const WeekView = ({
     }
 
     if (periods.length === 0) {
-      return (
-        <StateMessage
-          icon="cloud"
-          title={t("day.noData")}
-          hint={t("day.noDataHint")}
-        />
-      );
+      return <StateMessage icon="cloud" title={t("day.noData")} hint={t("day.noDataHint")} />;
     }
 
     return (
@@ -263,24 +247,23 @@ export const WeekView = ({
                 </Card>
               )}
 
-              {overview.lightest !== null &&
-                overview.lightest.date !== overview.busiest?.date && (
-                  <Card>
-                    <div className="font-text text-micro font-bold tracking-label text-muted uppercase opacity-75">
-                      {t("week.overview.lightestLabel")}
-                    </div>
+              {overview.lightest !== null && overview.lightest.date !== overview.busiest?.date && (
+                <Card>
+                  <div className="font-text text-micro font-bold tracking-label text-muted uppercase opacity-75">
+                    {t("week.overview.lightestLabel")}
+                  </div>
 
-                    <div className="mt-2 font-display text-[22px] leading-none font-black text-strong">
-                      {formatWeekdayLong(overview.lightest.date, lang)}
-                    </div>
+                  <div className="mt-2 font-display text-[22px] leading-none font-black text-strong">
+                    {formatWeekdayLong(overview.lightest.date, lang)}
+                  </div>
 
-                    <div className="mt-1 font-text text-caption text-muted">
-                      {t("week.overview.lessons", {
-                        n: overview.lightest.count,
-                      })}
-                    </div>
-                  </Card>
-                )}
+                  <div className="mt-1 font-text text-caption text-muted">
+                    {t("week.overview.lessons", {
+                      n: overview.lightest.count,
+                    })}
+                  </div>
+                </Card>
+              )}
             </div>
           </div>
         )}
@@ -335,9 +318,7 @@ export const WeekView = ({
             actions={
               <>
                 <ClassBadge onClick={onPickClass} />
-                <SyncBadge
-                  onRetry={() => void refresh({ date, force: true })}
-                />
+                <SyncBadge onRetry={() => void refresh({ date, force: true })} />
               </>
             }
           />

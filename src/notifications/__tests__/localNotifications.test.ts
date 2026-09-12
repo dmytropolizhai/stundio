@@ -25,6 +25,7 @@ vi.mock("@capacitor/local-notifications", () => ({
 
 const {
   ensureNotificationPermission,
+  hasNotificationPermission,
   notifyAppUpdate,
   notifySubstitutionsChanged,
   rescheduleLessonReminders,
@@ -72,6 +73,26 @@ describe("ensureNotificationPermission", () => {
     requestPermissions.mockResolvedValue({ display: "granted" });
     expect(await ensureNotificationPermission()).toBe(true);
     expect(requestPermissions).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("hasNotificationPermission", () => {
+  it("reports granted without ever calling requestPermissions", async () => {
+    checkPermissions.mockResolvedValue({ display: "granted" });
+    expect(await hasNotificationPermission()).toBe(true);
+    expect(requestPermissions).not.toHaveBeenCalled();
+  });
+
+  it("reports not granted when undetermined, without prompting", async () => {
+    checkPermissions.mockResolvedValue({ display: "prompt" });
+    expect(await hasNotificationPermission()).toBe(false);
+    expect(requestPermissions).not.toHaveBeenCalled();
+  });
+
+  it("reports not granted when denied", async () => {
+    checkPermissions.mockResolvedValue({ display: "denied" });
+    expect(await hasNotificationPermission()).toBe(false);
+    expect(requestPermissions).not.toHaveBeenCalled();
   });
 });
 

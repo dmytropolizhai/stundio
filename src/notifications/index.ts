@@ -1,5 +1,6 @@
 export {
   ensureNotificationPermission,
+  hasNotificationPermission,
   notifyAppUpdate,
   notifySubstitutionsChanged,
   rescheduleLessonReminders,

@@ -65,7 +65,9 @@ describe("TabBar", () => {
   it("marks the active tab for assistive tech, not just visually", async () => {
     const harness = await bootHarness();
     wrap(harness, <TabBar tab="week" onChange={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Nedēļa" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("button", { name: "Nedēļa" }).getAttribute("aria-current")).toBe(
+      "page",
+    );
   });
 });
 

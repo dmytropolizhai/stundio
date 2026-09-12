@@ -8,13 +8,13 @@ import { rigaClock } from "../../lib/schedule/index.ts";
 const rescheduleLessonReminders = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const notifySubstitutionsChanged = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const notifyAppUpdate = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
-const ensureNotificationPermission = vi.hoisted(() => vi.fn().mockResolvedValue(true));
+const hasNotificationPermission = vi.hoisted(() => vi.fn().mockResolvedValue(true));
 
 vi.mock("../localNotifications.ts", () => ({
   rescheduleLessonReminders,
   notifySubstitutionsChanged,
   notifyAppUpdate,
-  ensureNotificationPermission,
+  hasNotificationPermission,
 }));
 
 const checkForUpdate = vi.hoisted(() => vi.fn());
@@ -47,7 +47,7 @@ beforeEach(() => {
   rescheduleLessonReminders.mockClear();
   notifySubstitutionsChanged.mockClear();
   notifyAppUpdate.mockClear();
-  ensureNotificationPermission.mockClear();
+  hasNotificationPermission.mockClear();
   checkForUpdate.mockReset();
 });
 

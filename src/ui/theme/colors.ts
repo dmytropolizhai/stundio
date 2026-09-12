@@ -7,7 +7,12 @@
  * school-supplied hex satisfies neither guarantee, so the hex is dropped and each subject is
  * assigned one of the six deterministically instead.
  */
-import { isMainBuilding, type ResolvedDay, type ResolvedStatus, type SubjectRef } from "../../lib/edupage/index.ts";
+import {
+  isMainBuilding,
+  type ResolvedDay,
+  type ResolvedStatus,
+  type SubjectRef,
+} from "../../lib/edupage/index.ts";
 import type { BadgeProps, LessonStatus, LessonTone } from "../../ds/index.ts";
 
 /** The six subject accents, in DS order. `brand` is reserved for "now" and is not assignable. */
@@ -94,7 +99,10 @@ const TIC_ANNEX_ADDRESS = "Tehnoloģiju un inovāciju centrs Dārzciema ielā";
  * published timetable itself came from the "TIC" annex (`day.building`), or the day is nominally
  * in the main building but this one lesson is the annex-address placeholder above.
  */
-export const offMainBuilding = (day: Pick<ResolvedDay, "building">, subject: SubjectRef | null): string | undefined => {
+export const offMainBuilding = (
+  day: Pick<ResolvedDay, "building">,
+  subject: SubjectRef | null,
+): string | undefined => {
   if (!isMainBuilding(day.building)) return day.building;
   const name = (subject?.name ?? subject?.short ?? "").trim();
   return name === TIC_ANNEX_ADDRESS ? "TIC" : undefined;

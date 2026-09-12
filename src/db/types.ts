@@ -3,13 +3,7 @@
  * so both are testable without a browser and the app can fall back to memory when
  * IndexedDB is unavailable (private mode, an old WebView).
  */
-import type {
-  Building,
-  DaySubstitutions,
-  ISODate,
-  ISODateTime,
-  Timetable,
-} from "@/lib/edupage";
+import type { Building, DaySubstitutions, ISODate, ISODateTime, Timetable } from "@/lib/edupage";
 import type { RawTimetableListEntry } from "@/lib/edupage";
 
 export type CachedTimetableList = {

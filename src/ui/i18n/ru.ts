@@ -23,6 +23,9 @@ export const ru: Dict = {
   "onboarding.intro.step3.title": "Работает и без интернета",
   "onboarding.intro.step3.body":
     "Расписание хранится на устройстве, поэтому оно доступно даже без сети.",
+  "onboarding.intro.step4.title": "Уведомления о важном",
+  "onboarding.intro.step4.body":
+    "Напоминание перед уроком и сигнал, если поменялись замены — и больше ничего.",
 
   "class.search": "Поиск класса…",
   "class.none": "Классы не найдены",

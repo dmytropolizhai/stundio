@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "stundio"
+    namespace "com.dmytropolizhai.stundio"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "stundio"
+        applicationId "com.dmytropolizhai.stundio"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

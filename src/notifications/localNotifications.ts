@@ -40,7 +40,18 @@ const ensureChannel = async (): Promise<void> => {
   });
 };
 
-/** Resolves false without prompting only when the user already said no; otherwise asks. */
+/** Never prompts — just reports whether permission is currently granted. */
+export const hasNotificationPermission = async (): Promise<boolean> => {
+  const current = await LocalNotifications.checkPermissions();
+  return current.display === "granted";
+};
+
+/**
+ * Resolves false without prompting only when the user already said no; otherwise asks.
+ * Only call this from a place the user has just been told *why* — the onboarding notification
+ * slide, or a Settings toggle they turned on themselves. Never call it unconditionally on boot;
+ * that's a cold OS permission dialog with no context, which is exactly what we don't want.
+ */
 export const ensureNotificationPermission = async (): Promise<boolean> => {
   const current = await LocalNotifications.checkPermissions();
   if (current.display === "granted") return true;

@@ -29,6 +29,9 @@ export const lv = {
   "onboarding.intro.step3.title": "Strādā arī bez interneta",
   "onboarding.intro.step3.body":
     "Saraksts saglabājas ierīcē, tāpēc tas ir pieejams pat bez pieslēguma.",
+  "onboarding.intro.step4.title": "Paziņojumi par to, kas svarīgi",
+  "onboarding.intro.step4.body":
+    "Atgādinājums pirms stundas un ziņa, ja mainās aizvietojumi — nekas cits.",
 
   "class.search": "Meklēt klasi…",
   "class.none": "Nav atrasta neviena klase",

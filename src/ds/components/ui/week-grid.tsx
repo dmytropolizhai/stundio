@@ -200,11 +200,18 @@ export const WeekGrid = <K extends string>({
             aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
             // Free on desktop (hover), inert on the touch device this app actually ships on —
             // tapping already opens the full lesson sheet with the name.
-            title={cell.building === undefined ? (cell.name ?? cell.short) : `${cell.name ?? cell.short} · ${cell.building}`}
+            title={
+              cell.building === undefined
+                ? (cell.name ?? cell.short)
+                : `${cell.name ?? cell.short} · ${cell.building}`
+            }
             onClick={() => {
               onSelect?.(cell, day.key, period.period);
             }}
-            style={{ gridColumn, gridRow: span === 1 ? gridRow : `${String(gridRow)} / span ${String(span)}` }}
+            style={{
+              gridColumn,
+              gridRow: span === 1 ? gridRow : `${String(gridRow)} / span ${String(span)}`,
+            }}
             className={cn(
               "truncate rounded-sm border-0 px-1.5",
               "font-text text-caption font-bold text-ink-900",

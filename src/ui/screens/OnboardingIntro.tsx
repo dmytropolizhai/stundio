@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Button, Card, Icon, type IconName } from "../../ds/index.ts";
+import { ensureNotificationPermission } from "../../notifications/index.ts";
 import { useT } from "../i18n/index.ts";
 import type { MessageKey } from "../i18n/lv.ts";
 
 type Slide = {
   icon: IconName;
-  tone: "sky" | "amber" | "mint";
+  tone: "sky" | "amber" | "mint" | "lilac";
   title: MessageKey;
   body: MessageKey;
 };
@@ -29,6 +30,12 @@ const SLIDES: Slide[] = [
     title: "onboarding.intro.step3.title",
     body: "onboarding.intro.step3.body",
   },
+  {
+    icon: "bell",
+    tone: "lilac",
+    title: "onboarding.intro.step4.title",
+    body: "onboarding.intro.step4.body",
+  },
 ];
 
 /**
@@ -44,6 +51,10 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
 
   const advance = () => {
     if (isLast) {
+      // The last slide is the one that explains notifications, so this is the moment the OS
+      // permission dialog has context — "Get started" here doubles as "yes, notify me".
+      // Skipping the tour (the button above) never requests permission, by design.
+      void ensureNotificationPermission();
       onDone();
     } else {
       setStep((s) => s + 1);
@@ -69,9 +80,7 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
           <Icon name={slide.icon} size={40} />
         </Card>
         <div className="flex flex-col gap-2">
-          <h1 className="font-display text-title tracking-display text-strong">
-            {t(slide.title)}
-          </h1>
+          <h1 className="font-display text-title tracking-display text-strong">{t(slide.title)}</h1>
           <p className="max-w-70 font-text text-body text-muted">{t(slide.body)}</p>
         </div>
       </div>

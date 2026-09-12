@@ -3,6 +3,7 @@ import { useAppStore } from "@/store";
 import { listBuildings } from "@/lib/edupage";
 import type { Settings } from "@/db";
 import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "@/ds";
+import { ensureNotificationPermission } from "@/notifications";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
@@ -206,7 +207,11 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               value={String(settings.notifyLessonReminderMinutes)}
               items={reminderOptions}
               onChange={(value) => {
-                void setNotifyLessonReminderMinutes(Number(value));
+                const minutes = Number(value);
+                // Only ask for the OS permission when the user is turning reminders on — they
+                // just told us why by picking a time, same as the onboarding notification slide.
+                if (minutes > 0) void ensureNotificationPermission();
+                void setNotifyLessonReminderMinutes(minutes);
               }}
             />
           </Row>
@@ -223,6 +228,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               aria-label={t("settings.notifySubstitutionChanges")}
               checked={settings.notifySubstitutionChanges}
               onChange={(checked) => {
+                if (checked) void ensureNotificationPermission();
                 void setNotifySubstitutionChanges(checked);
               }}
             />
@@ -240,6 +246,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               aria-label={t("settings.notifyAppUpdates")}
               checked={settings.notifyAppUpdates}
               onChange={(checked) => {
+                if (checked) void ensureNotificationPermission();
                 void setNotifyAppUpdates(checked);
               }}
             />

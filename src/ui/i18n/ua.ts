@@ -23,6 +23,9 @@ export const ua: Dict = {
   "onboarding.intro.step3.title": "Працює й без інтернету",
   "onboarding.intro.step3.body":
     "Розклад зберігається на вашому пристрої, тож він доступний навіть без мережі.",
+  "onboarding.intro.step4.title": "Сповіщення про важливе",
+  "onboarding.intro.step4.body":
+    "Нагадування перед уроком і сигнал, якщо змінилися заміни — і більше нічого.",
 
   "class.search": "Пошук класів…",
   "class.none": "Класи не знайдено",

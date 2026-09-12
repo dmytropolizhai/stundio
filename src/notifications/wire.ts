@@ -9,7 +9,7 @@ import { translate } from "../ui/i18n/index.ts";
 import type { Store } from "../store/index.ts";
 import type { SyncOutcome } from "../sync/index.ts";
 import {
-  ensureNotificationPermission,
+  hasNotificationPermission,
   notifyAppUpdate,
   notifySubstitutionsChanged,
   rescheduleLessonReminders,
@@ -44,7 +44,10 @@ export const wireNotifications = (store: Store): { dispose: () => void } => {
     void rescheduleLessonReminders(reminders, minutes, state.settings.lang);
   };
 
-  void ensureNotificationPermission().then(syncLessonReminders);
+  // Never prompts here — the OS ask only happens where the user has just been told why
+  // (the onboarding notification slide, or turning a Settings toggle on). This just checks
+  // whether a *previous* grant means reminders can actually be scheduled.
+  void hasNotificationPermission().then(syncLessonReminders);
   const unsubscribe = store.subscribe(syncLessonReminders);
 
   return { dispose: unsubscribe };

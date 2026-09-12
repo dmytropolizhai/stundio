@@ -23,6 +23,9 @@ export const en: Dict = {
   "onboarding.intro.step3.title": "Works offline too",
   "onboarding.intro.step3.body":
     "The timetable stays on your device, so it's there even without a connection.",
+  "onboarding.intro.step4.title": "Notified about what matters",
+  "onboarding.intro.step4.body":
+    "A heads-up before class, and a ping if substitutions change — nothing else.",
 
   "class.search": "Search classes…",
   "class.none": "No classes found",

@@ -25,7 +25,7 @@ export const EmptyState = ({
   <div
     className={cn(
       "bg-card flex flex-col items-center gap-2.5 rounded-xl px-6 py-9 text-center",
-      className
+      className,
     )}
     {...props}
   >
