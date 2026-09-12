@@ -115,7 +115,7 @@ export const WeekGrid = <K extends string>({
 }: WeekGridProps<K>) => (
   <div
     className={cn("grid gap-1.5", className)}
-    style={{ gridTemplateColumns: `36px repeat(${String(days.length)}, minmax(0,1fr))` }}
+    style={{ gridTemplateColumns: `46px repeat(${String(days.length)}, minmax(0,1fr))` }}
   >
     <span />
     {days.map((day) => {
@@ -157,7 +157,7 @@ export const WeekGrid = <K extends string>({
       // would collapse to the label text's own height and break the grid's vertical rhythm.
       <span
         key={`t-${period.period}`}
-        className="u-data flex h-10 items-center text-[11px] text-muted"
+        className="u-data flex h-10 items-center text-muted"
         style={{ gridColumn: 1, gridRow: rowIndex + 2 }}
       >
         {period.start}
