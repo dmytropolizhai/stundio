@@ -6,3 +6,10 @@
 import { MotionGlobalConfig } from "framer-motion";
 
 MotionGlobalConfig.skipAnimations = true;
+
+/**
+ * `useUpdateCheck` calls the real `fetch` (GitHub's API needs no EduPage-style proxy), which
+ * would otherwise leave a real network request in flight past test teardown. CLAUDE.md: tests
+ * never touch the network — `checkForUpdate` treats a rejection as "nothing to report".
+ */
+globalThis.fetch = () => Promise.reject(new Error("network disabled in tests"));
