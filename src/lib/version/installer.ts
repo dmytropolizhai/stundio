@@ -3,7 +3,7 @@ import { Capacitor, registerPlugin } from "@capacitor/core";
 /**
  * Native side of "update without leaving the app": downloads the release APK to the
  * app's cache dir and hands it to the OS package installer. Backed by the `ApkInstaller`
- * Capacitor plugin in `android/app/src/main/java/site/polizhai/rvtstunda/`
+ * Capacitor plugin in `android/app/src/main/java/com/dmytropolizhai/stundio/`
  * (`ApkInstallerPlugin.java`) — there is no web/JS fallback because this is Android-only,
  * on-device behaviour by nature.
  */

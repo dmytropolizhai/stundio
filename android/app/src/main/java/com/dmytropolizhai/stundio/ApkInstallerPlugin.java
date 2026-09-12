@@ -1,4 +1,4 @@
-package site.polizhai.rvtstunda;
+package com.dmytropolizhai.stundio;
 
 import android.content.Intent;
 import android.net.Uri;

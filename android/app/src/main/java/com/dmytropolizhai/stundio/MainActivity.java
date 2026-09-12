@@ -1,4 +1,4 @@
-package site.polizhai.rvtstunda;
+package com.dmytropolizhai.stundio;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
