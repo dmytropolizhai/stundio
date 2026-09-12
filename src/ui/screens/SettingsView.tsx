@@ -8,6 +8,21 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 
+const REPORT_ISSUE_BASE = "https://github.com/dmytropolizhai/stundio/issues/new";
+
+/** Prefills a GitHub issue with the details a bug report needs but a user won't think to add. */
+const reportIssueUrl = (className: string | undefined): string => {
+  const body = [
+    "**What happened:**",
+    "",
+    "",
+    "---",
+    `App version: ${__APP_VERSION__}`,
+    `Class: ${className ?? "none selected"}`,
+  ].join("\n");
+  return `${REPORT_ISSUE_BASE}?${new URLSearchParams({ labels: "bug", body }).toString()}`;
+};
+
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="mb-7">
     <h2 className="u-eyebrow pb-2">{title}</h2>
@@ -158,6 +173,16 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
         <Section title={t("settings.about")}>
           <Row>
             <p className="font-text text-caption text-muted">{t("settings.aboutText")}</p>
+          </Row>
+          <Row className="flex flex-wrap items-center justify-between gap-3">
+            <span className="font-text text-caption font-bold text-strong">
+              {t("settings.reportIssue")}
+            </span>
+            <Button size="sm" icon="triangle-alert" asChild>
+              <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
+                {t("settings.reportIssueAction")}
+              </a>
+            </Button>
           </Row>
           {update?.hasUpdate && (
             <Row className="flex flex-wrap items-center justify-between gap-3">
