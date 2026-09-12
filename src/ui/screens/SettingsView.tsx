@@ -5,6 +5,7 @@ import type { Settings } from "../../db/index.ts";
 import { Button, Card, Icon, SegmentedTabs, TopBar } from "../../ds/index.ts";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
+import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { LANGS, LANG_NAMES, useT } from "../i18n/index.ts";
 
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -42,6 +43,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const setTheme = useAppStore((s) => s.setTheme);
   const setLang = useAppStore((s) => s.setLang);
   const refresh = useAppStore((s) => s.refresh);
+  const update = useUpdateCheck();
 
   const buildings = useMemo(() => listBuildings(metas), [metas]);
 
@@ -136,6 +138,18 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
           <Row>
             <p className="font-text text-caption text-muted">{t("settings.aboutText")}</p>
           </Row>
+          {update?.hasUpdate && (
+            <Row className="flex flex-wrap items-center justify-between gap-3">
+              <span className="font-text text-caption font-bold text-strong">
+                {t("settings.updateAvailable", { version: update.latestVersion })}
+              </span>
+              <Button size="sm" icon="external-link" asChild>
+                <a href={update.url} target="_blank" rel="noreferrer">
+                  {t("settings.updateAction")}
+                </a>
+              </Button>
+            </Row>
+          )}
         </Section>
       </div>
     </div>

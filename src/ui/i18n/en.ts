@@ -84,6 +84,8 @@ export const en: Dict = {
   "settings.about": "About",
   "settings.aboutText":
     "Unofficial app. Data comes from the public pikcrvt.edupage.org timetable and belongs to the school.",
+  "settings.updateAvailable": "A newer version is available ({version})",
+  "settings.updateAction": "Download",
 
   "theme.system": "System",
   "theme.light": "Light",

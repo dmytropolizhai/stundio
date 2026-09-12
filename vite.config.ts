@@ -1,13 +1,20 @@
 /// <reference types="vitest/config" />
 import { fileURLToPath, URL } from "node:url";
+import { readFileSync } from "node:fs";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+
+const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf-8")) as {
+  version: string;
+};
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // shadcn convention: "@/…" is the src root. Mirrored in tsconfig.app.json paths.
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
+  // Read once at build/test time so `src/` never imports package.json directly.
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   // Capacitor copies dist/ into the Android assets bundle.
   build: { outDir: "dist", sourcemap: true },
   server: {
@@ -33,6 +40,7 @@ export default defineConfig({
       include: [
         "src/lib/edupage/**",
         "src/lib/schedule/**",
+        "src/lib/version/**",
         "src/db/**",
         "src/sync/**",
         "src/store/**",
