@@ -20,7 +20,7 @@ import {
   type Timetable,
 } from "../lib/edupage/index.ts";
 import { DEFAULT_SETTINGS, type AppCache, type Settings } from "../db/index.ts";
-import type { SyncEngine, SyncStatus } from "../sync/index.ts";
+import type { SyncEngine, SyncOutcome, SyncStatus } from "../sync/index.ts";
 
 export type AppState = {
   ready: boolean;
@@ -34,7 +34,7 @@ export type AppState = {
   lastError: string | null;
 
   hydrate: () => Promise<void>;
-  refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<void>;
+  refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<SyncOutcome>;
   setClass: (classId: string | null) => Promise<void>;
   setBuilding: (building: Building | null) => Promise<void>;
   toggleFavorite: (classId: string) => Promise<void>;
@@ -42,6 +42,11 @@ export type AppState = {
   setLang: (lang: Settings["lang"]) => Promise<void>;
   setMergeConsecutiveLessons: (merge: boolean) => Promise<void>;
   setShowTime: (showTime: boolean) => Promise<void>;
+  setNotifyLessonReminderMinutes: (minutes: number) => Promise<void>;
+  setNotifySubstitutionChanges: (enabled: boolean) => Promise<void>;
+  setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
+  /** Not user-facing — the update-notification wiring marks a version as already announced. */
+  setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
   resolvedDay: (date: ISODate, classId?: string) => ResolvedDay | null;
 };
 
@@ -127,15 +132,22 @@ export const createAppStore = ({ cache, engine }: StoreDeps) => {
           lastSyncAt: outcome.lastSyncAt ?? get().lastSyncAt,
           lastError: outcome.errors[0] ?? null,
         });
+        return outcome;
       },
 
       setClass: (classId) => persist({ selectedClassId: classId }),
       setBuilding: (building) => persist({ building }),
       setTheme: (theme) => persist({ theme }),
       setLang: (lang) => persist({ lang }),
-      setMergeConsecutiveLessons: (mergeConsecutiveLessons) =>
-        persist({ mergeConsecutiveLessons }),
+      setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
       setShowTime: (showTime) => persist({ showTime }),
+      setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>
+        persist({ notifyLessonReminderMinutes }),
+      setNotifySubstitutionChanges: (notifySubstitutionChanges) =>
+        persist({ notifySubstitutionChanges }),
+      setNotifyAppUpdates: (notifyAppUpdates) => persist({ notifyAppUpdates }),
+      setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
+        persist({ lastNotifiedUpdateVersion }),
       toggleFavorite: (classId) => {
         const favorites = get().settings.favorites;
         return persist({

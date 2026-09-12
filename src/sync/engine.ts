@@ -26,6 +26,7 @@ import {
   type TimetableMeta,
 } from "../lib/edupage/index.ts";
 import type { AppCache } from "../db/index.ts";
+import { substitutionsChanged } from "../lib/schedule/index.ts";
 import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
 export type SyncStatus = "idle" | "syncing" | "offline" | "error";
@@ -36,6 +37,8 @@ export type SyncOutcome = {
   /** tt_num actually fetched this run (absent when it was already cached). */
   fetchedTtNum: string | null;
   refreshedDates: ISODate[];
+  /** Dates among `refreshedDates` whose substitutions actually differ from what was cached. */
+  changedDates: ISODate[];
   prunedDays: number;
   /** Human-readable reasons, in order. Empty on a clean run. */
   errors: string[];
@@ -133,19 +136,23 @@ export const createSyncEngine = (deps: SyncDeps) => {
   const refreshSubstitutions = async (
     dates: readonly ISODate[],
     errors: SyncFailure[],
-  ): Promise<ISODate[]> => {
+  ): Promise<{ done: ISODate[]; changed: ISODate[] }> => {
     const done: ISODate[] = [];
+    const changed: ISODate[] = [];
     // Sequential on purpose: two requests, and we are explicitly not hammering the school.
     for (const date of dates) {
       try {
+        const before = await cache.getSubstitutions(date);
         const html = await fetchDaySubstitutionsHtml(http, date, "classes", subdomain);
-        await cache.putSubstitutions(parseDaySubstitutions(html, date, now().toISOString()));
+        const after = parseDaySubstitutions(html, date, now().toISOString());
+        await cache.putSubstitutions(after);
         done.push(date);
+        if (substitutionsChanged(before, after)) changed.push(date);
       } catch (err) {
         errors.push(failure(`substitutions ${date}`, err));
       }
     }
-    return done;
+    return { done, changed };
   };
 
   const sync = async (request: SyncRequest = {}): Promise<SyncOutcome> => {
@@ -170,7 +177,10 @@ export const createSyncEngine = (deps: SyncDeps) => {
       }
     }
 
-    const refreshedDates = await refreshSubstitutions(daysToRefresh(today), errors);
+    const { done: refreshedDates, changed: changedDates } = await refreshSubstitutions(
+      daysToRefresh(today),
+      errors,
+    );
 
     const prunedDays = await cache.pruneSubstitutions(addDays(today, -SUBSTITUTION_RETENTION_DAYS));
 
@@ -182,6 +192,7 @@ export const createSyncEngine = (deps: SyncDeps) => {
       lastSyncAt: errors.length === 0 ? now().toISOString() : null,
       fetchedTtNum,
       refreshedDates,
+      changedDates,
       prunedDays,
       errors: errors.map((e) => e.message),
     };

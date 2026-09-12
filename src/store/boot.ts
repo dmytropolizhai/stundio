@@ -8,6 +8,11 @@ import type { Store } from "./context.ts";
 import { createCache } from "../db/index.ts";
 import { capacitorHttp } from "../lib/edupage/index.ts";
 import { createSyncEngine, watchAppResume } from "../sync/index.ts";
+import {
+  checkForAppUpdateNotification,
+  notifyOnChanges,
+  wireNotifications,
+} from "../notifications/index.ts";
 
 export type Boot = () => Promise<{ store: Store; dispose?: () => void }>;
 
@@ -21,8 +26,24 @@ export const bootApp: Boot = async () => {
 
   // Paint from cache first; the network catches up underneath.
   await store.getState().hydrate();
-  void store.getState().refresh();
 
-  const dispose = watchAppResume({ refresh: () => store.getState().refresh() });
+  const notifications = wireNotifications(store);
+  // A cached timetable list means this device has synced before — gates the "schedule
+  // changed" notification off the very first, baseline-less sync.
+  const hadPreviousSync = (await cache.getTimetableList()) !== null;
+
+  const refreshAndNotify = async (): Promise<void> => {
+    const outcome = await store.getState().refresh();
+    notifyOnChanges(store, outcome, hadPreviousSync);
+  };
+
+  void refreshAndNotify();
+  void checkForAppUpdateNotification(store);
+
+  const disposeResume = watchAppResume({ refresh: refreshAndNotify });
+  const dispose = () => {
+    disposeResume();
+    notifications.dispose();
+  };
   return { store, dispose };
 };

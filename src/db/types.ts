@@ -29,6 +29,14 @@ export type Settings = {
   mergeConsecutiveLessons: boolean;
   /** Day view: show each lesson's start/end time alongside its number. */
   showTime: boolean;
+  /** Minutes before a lesson to notify at; 0 turns the reminder off. */
+  notifyLessonReminderMinutes: number;
+  /** Notify when today's or tomorrow's substitutions change after the initial load. */
+  notifySubstitutionChanges: boolean;
+  /** Notify once a new GitHub release is available. */
+  notifyAppUpdates: boolean;
+  /** Latest release tag already notified about — prevents repeat pings for the same version. */
+  lastNotifiedUpdateVersion: string | null;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -39,6 +47,10 @@ export const DEFAULT_SETTINGS: Settings = {
   lang: "lv",
   mergeConsecutiveLessons: false,
   showTime: false,
+  notifyLessonReminderMinutes: 10,
+  notifySubstitutionChanges: true,
+  notifyAppUpdates: true,
+  lastNotifiedUpdateVersion: null,
 };
 
 export type AppCache = {
