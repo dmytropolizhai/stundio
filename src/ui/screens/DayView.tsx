@@ -16,6 +16,7 @@ import {
   cn,
 } from "@/ds";
 import { LessonRow } from "../components/LessonRow.tsx";
+import { offMainBuilding } from "../theme/index.ts";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -153,6 +154,7 @@ export const DayView = ({
       }
 
       const live = progress.current === lesson;
+      const building = offMainBuilding(day, lesson.subject);
       items.push({
         key: `${lesson.period}-${lesson.subject?.id ?? "x"}-${lesson.group ?? ""}`,
         node: (
@@ -161,6 +163,7 @@ export const DayView = ({
             live={live}
             showTime={showTime}
             {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
+            {...(building === undefined ? {} : { building })}
             onOpen={() => {
               setOpen(lesson);
             }}

@@ -23,6 +23,7 @@ export const LessonRow = ({
   live,
   progress,
   showTime,
+  building,
   onOpen,
 }: {
   lesson: ResolvedLesson;
@@ -31,6 +32,8 @@ export const LessonRow = ({
   progress?: number;
   /** Whether times are revealed on this screen — the Day screen's own toggle. */
   showTime: boolean;
+  /** The day's building, passed only when it isn't the school's main building. */
+  building?: string;
   onOpen: () => void;
 }) => {
   const t = useT();
@@ -49,6 +52,7 @@ export const LessonRow = ({
         subject={lesson.subject?.name ?? lesson.subject?.short ?? "—"}
         {...(teachers === "" ? {} : { teacher: teachers })}
         {...(rooms === "" ? {} : { room: rooms })}
+        {...(building === undefined ? {} : { building })}
         tone={subjectTone(lesson.subject)}
         status={status}
         timeVisible={showTime}

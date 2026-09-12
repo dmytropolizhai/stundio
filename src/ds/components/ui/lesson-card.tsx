@@ -77,6 +77,13 @@ export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
     subject: ReactNode;
     teacher?: ReactNode;
     room?: ReactNode;
+    /**
+     * The lesson's building, passed only when it is not the school's main building — the caller
+     * (`LessonRow`) already knows this from `ResolvedDay.building`. Draws the same hairline
+     * outline the week grid uses for the same fact, plus a labelled line so the signal isn't
+     * colour-only.
+     */
+    building?: ReactNode;
     tone?: LessonTone;
     status?: LessonStatus;
     /** The status chip. The app supplies its own `Badge` so all six statuses survive. */
@@ -103,6 +110,7 @@ export const LessonCard = ({
   subject,
   teacher,
   room,
+  building,
   tone = "sky",
   status = "normal",
   filled = false,
@@ -124,6 +132,10 @@ export const LessonCard = ({
       className={cn(
         lessonCardVariants({ filled, tone, cancelled, interactive }),
         status === "now" && !filled && "inset-ring-2 inset-ring-brand",
+        status !== "now" &&
+          building !== undefined &&
+          !filled &&
+          "inset-ring-2 inset-ring-strong-border",
         className,
       )}
       {...props}
@@ -174,7 +186,7 @@ export const LessonCard = ({
           {subject}
         </h3>
 
-        {(room !== undefined || teacher !== undefined) && (
+        {(room !== undefined || teacher !== undefined || building !== undefined) && (
           <div className={cn("flex flex-wrap gap-3.5 font-text text-caption", meta)}>
             {room !== undefined && (
               <span className="inline-flex items-center gap-1.5">
@@ -187,6 +199,13 @@ export const LessonCard = ({
               <span className="inline-flex items-center gap-1.5">
                 <Icon name="user-round" size={14} />
                 {teacher}
+              </span>
+            )}
+
+            {building !== undefined && (
+              <span className="inline-flex items-center gap-1.5">
+                <Icon name="building-2" size={14} />
+                {building}
               </span>
             )}
           </div>

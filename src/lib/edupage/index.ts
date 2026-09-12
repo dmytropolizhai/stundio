@@ -27,6 +27,12 @@ export {
   toTimetableMeta,
   type NormalizeResult,
 } from "./normalize.ts";
-export { listBuildings, selectTimetable, type TimetableSelection } from "./select.ts";
+export {
+  MAIN_BUILDING,
+  isMainBuilding,
+  listBuildings,
+  selectTimetable,
+  type TimetableSelection,
+} from "./select.ts";
 export { otherRatio, parseDaySubstitutions } from "./substitutions.ts";
 export { resolveDay, weekdayOf, type ResolveOptions } from "./resolve.ts";
