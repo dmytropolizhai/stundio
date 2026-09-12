@@ -117,11 +117,16 @@ export const lv = {
   "notification.update.title": "Pieejams jauninājums",
   "notification.update.body": "Stundio {version} ir pieejama lejupielādei.",
   "settings.data": "Dati",
+  "settings.analytics": "Anonīma lietošanas statistika",
+  "settings.analyticsHint":
+    "Palīdz saprast, kuras funkcijas tiek izmantotas. Bez sīkfailiem un personas datiem.",
   "settings.about": "Par lietotni",
   "settings.aboutText":
     "Neoficiāla lietotne. Dati nāk no publiskā pikcrvt.edupage.org saraksta un pieder skolai.",
   "settings.updateAvailable": "Pieejama jaunāka versija ({version})",
   "settings.updateAction": "Lejupielādēt",
+  "settings.updateDownloading": "Lejupielādē… {percent}%",
+  "settings.updateError": "Neizdevās atjaunināt: {message}",
   "settings.reportIssue": "Pamanīji kļūdu?",
   "settings.reportIssueAction": "Ziņot",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",

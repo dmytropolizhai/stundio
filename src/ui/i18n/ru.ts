@@ -112,11 +112,16 @@ export const ru: Dict = {
   "notification.update.title": "Доступно обновление",
   "notification.update.body": "Stundio {version} готово к загрузке.",
   "settings.data": "Данные",
+  "settings.analytics": "Анонимная статистика использования",
+  "settings.analyticsHint":
+    "Помогает понять, какие функции используются. Без файлов cookie и личных данных.",
   "settings.about": "О приложении",
   "settings.aboutText":
     "Неофициальное приложение. Данные берутся из публичного расписания pikcrvt.edupage.org и принадлежат школе.",
   "settings.updateAvailable": "Доступна новая версия ({version})",
   "settings.updateAction": "Скачать",
+  "settings.updateDownloading": "Загрузка… {percent}%",
+  "settings.updateError": "Не удалось обновить: {message}",
   "settings.reportIssue": "Нашли ошибку?",
   "settings.reportIssueAction": "Сообщить",
   "settings.madeBy": "Dmytro Polizhai сделал с ❤︎",

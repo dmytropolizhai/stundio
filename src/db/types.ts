@@ -37,6 +37,8 @@ export type Settings = {
   notifyAppUpdates: boolean;
   /** Latest release tag already notified about — prevents repeat pings for the same version. */
   lastNotifiedUpdateVersion: string | null;
+  /** Anonymous usage analytics (Plausible). No cookies, no persistent id — opt-out, not opt-in. */
+  analyticsEnabled: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -51,6 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
   notifySubstitutionChanges: true,
   notifyAppUpdates: true,
   lastNotifiedUpdateVersion: null,
+  analyticsEnabled: true,
 };
 
 export type AppCache = {

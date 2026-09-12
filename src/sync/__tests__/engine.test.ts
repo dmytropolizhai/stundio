@@ -138,6 +138,7 @@ describe("the cached-week rule", () => {
       lang: "lv",
       mergeConsecutiveLessons: false,
       showTime: false,
+      analyticsEnabled: true,
     });
     const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
     expect(outcome.fetchedTtNum).toBe("1174"); // TIC, not the 1175 default

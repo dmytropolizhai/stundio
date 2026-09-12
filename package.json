@@ -1,7 +1,7 @@
 {
   "name": "stundio",
   "private": true,
-  "version": "v0.0.1-alpha",
+  "version": "v1-ozols",
   "type": "module",
   "engines": {
     "node": ">=20"

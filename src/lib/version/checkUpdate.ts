@@ -3,6 +3,7 @@ import { compareVersions, parseVersion } from "./parse.ts";
 export type GitHubRelease = {
   tag_name: string;
   html_url: string;
+  assets?: { name: string; browser_download_url: string }[];
 };
 
 export type UpdateCheckResult = {
@@ -10,7 +11,13 @@ export type UpdateCheckResult = {
   currentVersion: string;
   latestVersion: string;
   url: string;
+  /** The release's `.apk` asset, if one was attached — lets the app install in place. */
+  apkUrl: string | null;
 };
+
+/** First asset that looks like an installable APK, or `null` if the release has none attached. */
+const findApkUrl = (release: GitHubRelease): string | null =>
+  (release.assets ?? []).find((a) => a.name.endsWith(".apk"))?.browser_download_url ?? null;
 
 export type FetchLatestRelease = (owner: string, repo: string) => Promise<GitHubRelease>;
 
@@ -43,6 +50,7 @@ export const checkForUpdate = async (
       currentVersion,
       latestVersion: release.tag_name,
       url: release.html_url,
+      apkUrl: findApkUrl(release),
     };
   } catch {
     return null;

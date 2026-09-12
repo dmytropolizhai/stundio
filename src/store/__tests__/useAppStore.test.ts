@@ -2,11 +2,12 @@
  * Phase 2 exit criterion, tested directly: airplane mode → the app opens to the last-known
  * timetable instantly; going online refreshes it and exposes a "last updated" timestamp.
  */
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createFakeServer, type FakeServer } from "../../sync/__tests__/fakeServer.ts";
 import { createMemoryCache, type AppCache } from "../../db/index.ts";
 import { createSyncEngine, nextSchoolDay, todayInRiga } from "../../sync/index.ts";
 import { createAppStore } from "../useAppStore.ts";
+import type { AnalyticsClient } from "../../lib/analytics/index.ts";
 
 const DATE = "2026-09-09";
 const now = () => new Date(`${DATE}T08:00:00Z`);
@@ -14,10 +15,11 @@ const now = () => new Date(`${DATE}T08:00:00Z`);
 let server: FakeServer;
 let cache: AppCache;
 
-const makeStore = (clock: () => Date = now) =>
+const makeStore = (clock: () => Date = now, analytics?: AnalyticsClient) =>
   createAppStore({
     cache,
     engine: createSyncEngine({ http: server.http, cache, now: clock }),
+    ...(analytics === undefined ? {} : { analytics }),
   });
 
 /** A1-2 is the class with real changes on 2026-09-09. */
@@ -213,6 +215,39 @@ describe("settings", () => {
     // TIC's week (1174) was never fetched, so there is nothing to resolve against.
     await store.getState().setBuilding("TIC");
     expect(store.getState().resolvedDay(DATE)).toBeNull();
+  });
+});
+
+describe("analytics", () => {
+  it("tracks through the injected client when enabled (the default)", async () => {
+    const analytics: AnalyticsClient = { track: vi.fn() };
+    const store = makeStore(now, analytics);
+    await store.getState().hydrate();
+
+    store.getState().trackEvent("view_day");
+    expect(analytics.track).toHaveBeenCalledWith("view_day");
+  });
+
+  it("stays silent once the user opts out", async () => {
+    const analytics: AnalyticsClient = { track: vi.fn() };
+    const store = makeStore(now, analytics);
+    await store.getState().hydrate();
+    await store.getState().setAnalyticsEnabled(false);
+
+    store.getState().trackEvent("view_day");
+    expect(analytics.track).not.toHaveBeenCalled();
+  });
+
+  it("tracks a forced refresh but not a routine one", async () => {
+    const analytics: AnalyticsClient = { track: vi.fn() };
+    const store = makeStore(now, analytics);
+    await store.getState().hydrate();
+
+    await store.getState().refresh({ date: DATE });
+    expect(analytics.track).not.toHaveBeenCalled();
+
+    await store.getState().refresh({ date: DATE, force: true });
+    expect(analytics.track).toHaveBeenCalledWith("manual_refresh");
   });
 });
 

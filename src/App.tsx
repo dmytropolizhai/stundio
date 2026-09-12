@@ -3,7 +3,7 @@
  * are looking at). No router — four tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AppStoreProvider, useAppStore } from "@/store";
 import { todayInRiga } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
@@ -62,9 +62,14 @@ const Shell = () => {
   useTheme();
 
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
+  const trackEvent = useAppStore((s) => s.trackEvent);
   const [tab, setTab] = useState<Tab>("day");
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
+
+  useEffect(() => {
+    trackEvent(`view_${tab}`);
+  }, [tab, trackEvent]);
 
   if (selectedClassId === null) return <Onboarding />;
 
