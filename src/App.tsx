@@ -3,19 +3,29 @@
  * are looking at). No router — four tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
-import { useState } from "react";
-import { AppStoreProvider, useAppStore } from "./store/index.ts";
-import { todayInRiga } from "./sync/index.ts";
-import type { ISODate } from "./lib/edupage/index.ts";
-import { TopBar } from "./ds/index.ts";
+import { lazy, Suspense, useState } from "react";
+import { AppStoreProvider, useAppStore } from "@/store";
+import { todayInRiga } from "@/sync";
+import type { ISODate } from "@/lib/edupage";
+import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
-import { WeekView } from "./ui/screens/WeekView.tsx";
-import { SubjectsView } from "./ui/screens/SubjectsView.tsx";
-import { SettingsView } from "./ui/screens/SettingsView.tsx";
-import { useTheme } from "./ui/theme/index.ts";
-import { useT } from "./ui/i18n/index.ts";
+import { DaySkeleton } from "./ui/components/Skeleton.tsx";
+import { useTheme } from "@/ui/theme";
+import { useT } from "@/ui/i18n";
+
+// Split off the tabs that aren't on screen at launch — only DayView (the default tab) and
+// ClassPicker (onboarding) need to be in the initial bundle.
+const WeekView = lazy(() =>
+  import("./ui/screens/WeekView.tsx").then((m) => ({ default: m.WeekView })),
+);
+const SubjectsView = lazy(() =>
+  import("./ui/screens/SubjectsView.tsx").then((m) => ({ default: m.SubjectsView })),
+);
+const SettingsView = lazy(() =>
+  import("./ui/screens/SettingsView.tsx").then((m) => ({ default: m.SettingsView })),
+);
 
 const Splash = () => (
   <div className="flex h-full items-center justify-center bg-brand">
@@ -90,25 +100,33 @@ const Shell = () => {
         />
       )}
       {tab === "week" && (
-        <WeekView
-          date={date}
-          onDateChange={setDate}
-          onOpenDay={(next) => {
-            setDate(next);
-            setTab("day");
-          }}
-          onPickClass={() => {
-            setPicking(true);
-          }}
-        />
+        <Suspense fallback={<DaySkeleton rows={7} />}>
+          <WeekView
+            date={date}
+            onDateChange={setDate}
+            onOpenDay={(next) => {
+              setDate(next);
+              setTab("day");
+            }}
+            onPickClass={() => {
+              setPicking(true);
+            }}
+          />
+        </Suspense>
       )}
-      {tab === "subjects" && <SubjectsView />}
+      {tab === "subjects" && (
+        <Suspense fallback={<DaySkeleton rows={4} />}>
+          <SubjectsView />
+        </Suspense>
+      )}
       {tab === "settings" && (
-        <SettingsView
-          onPickClass={() => {
-            setPicking(true);
-          }}
-        />
+        <Suspense fallback={<DaySkeleton rows={3} />}>
+          <SettingsView
+            onPickClass={() => {
+              setPicking(true);
+            }}
+          />
+        </Suspense>
       )}
       <TabBar tab={tab} onChange={setTab} />
     </div>

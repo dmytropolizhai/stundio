@@ -16,7 +16,15 @@ export default defineConfig({
   // Read once at build/test time so `src/` never imports package.json directly.
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   // Capacitor copies dist/ into the Android assets bundle.
-  build: { outDir: "dist", sourcemap: true },
+  build: {
+    outDir: "dist",
+    sourcemap: true,
+    // The remaining main chunk is vendor code (react-dom, framer-motion, radix, date-fns)
+    // all required by DayView, the tab shown at launch — WeekView/SubjectsView/SettingsView
+    // are already code-split via React.lazy in App.tsx. Further chunking reorders bytes
+    // without shrinking them, so the default 500 kB warning is just noise here.
+    chunkSizeWarningLimit: 600,
+  },
   server: {
     // `host: true` so a phone on the same Wi-Fi can open the dev server.
     host: true,
