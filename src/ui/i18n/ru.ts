@@ -105,6 +105,7 @@ export const ru: Dict = {
   "settings.updateAction": "Скачать",
   "settings.reportIssue": "Нашли ошибку?",
   "settings.reportIssueAction": "Сообщить",
+  "settings.madeBy": "Dmytro Polizhai сделал с ❤︎",
 
   "theme.system": "Как в системе",
   "theme.light": "Светлое",

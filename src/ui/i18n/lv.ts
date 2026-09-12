@@ -111,6 +111,7 @@ export const lv = {
   "settings.updateAction": "Lejupielādēt",
   "settings.reportIssue": "Pamanīji kļūdu?",
   "settings.reportIssueAction": "Ziņot",
+  "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
 
   "theme.system": "Kā sistēmā",
   "theme.light": "Gaišs",

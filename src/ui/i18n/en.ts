@@ -105,6 +105,7 @@ export const en: Dict = {
   "settings.updateAction": "Download",
   "settings.reportIssue": "Found a bug?",
   "settings.reportIssueAction": "Report",
+  "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
 
   "theme.system": "System",
   "theme.light": "Light",

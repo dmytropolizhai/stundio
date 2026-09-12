@@ -8,7 +8,8 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 
-const REPORT_ISSUE_BASE = "https://github.com/dmytropolizhai/stundio/issues/new";
+const REPO_URL = "https://github.com/dmytropolizhai/stundio";
+const REPORT_ISSUE_BASE = `${REPO_URL}/issues/new`;
 
 /** Prefills a GitHub issue with the details a bug report needs but a user won't think to add. */
 const reportIssueUrl = (className: string | undefined): string => {
@@ -175,7 +176,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
 
         <Section title={t("settings.data")}>
           <Row className="flex flex-wrap items-center justify-between gap-3">
-            <SyncBadge />
+            <SyncBadge collapsible={false}/>
             <Button
               size="sm"
               disabled={syncStatus === "syncing"}
@@ -216,6 +217,17 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
             </Row>
           )}
         </Section>
+
+        <div className="flex justify-center pt-2 pb-4">
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="font-text text-caption text-muted underline"
+          >
+            {t("settings.madeBy")}
+          </a>
+        </div>
       </div>
     </div>
   );
