@@ -1,4 +1,4 @@
-import { Slot } from "@radix-ui/react-slot";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentPropsWithoutRef } from "react";
 import { Icon, type IconName } from "./icon.tsx";
@@ -70,7 +70,7 @@ export const Button = ({
       {...props}
     >
       {icon !== undefined && <Icon name={icon} size={glyph} />}
-      {children}
+      <Slottable>{children}</Slottable>
       {iconEnd !== undefined && <Icon name={iconEnd} size={glyph} />}
     </Comp>
   );
