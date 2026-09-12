@@ -11,6 +11,19 @@ export const ru: Dict = {
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",
 
+  "onboarding.intro.skip": "Пропустить",
+  "onboarding.intro.next": "Далее",
+  "onboarding.intro.start": "Начать",
+  "onboarding.intro.progress": "Шаг знакомства",
+  "onboarding.intro.step1.title": "Расписание в одном месте",
+  "onboarding.intro.step1.body": "День и неделя наглядно — как в EduPage, только быстрее.",
+  "onboarding.intro.step2.title": "Замены видно сразу",
+  "onboarding.intro.step2.body":
+    "Отменённые, перенесённые и заменённые уроки выделены — ничего не пропустишь.",
+  "onboarding.intro.step3.title": "Работает и без интернета",
+  "onboarding.intro.step3.body":
+    "Расписание хранится на устройстве, поэтому оно доступно даже без сети.",
+
   "class.search": "Поиск класса…",
   "class.none": "Классы не найдены",
   "class.favorites": "Избранное",
