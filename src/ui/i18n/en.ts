@@ -36,7 +36,6 @@ export const en: Dict = {
   "day.free": "Free period",
   "day.finished": "Lessons are over",
   "day.now": "Now",
-  "day.preferences": "Preferences",
   "day.showTime": "Show time",
 
   "week.previousWeek": "Previous week",

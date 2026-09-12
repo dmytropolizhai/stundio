@@ -27,6 +27,8 @@ export type Settings = {
   lang: "lv" | "en" | "ru";
   /** Week view: collapse a run of consecutive identical lessons into one tall block. */
   mergeConsecutiveLessons: boolean;
+  /** Day view: show each lesson's start/end time alongside its number. */
+  showTime: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -36,6 +38,7 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: "system",
   lang: "lv",
   mergeConsecutiveLessons: false,
+  showTime: false,
 };
 
 export type AppCache = {

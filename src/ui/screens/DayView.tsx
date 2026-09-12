@@ -21,7 +21,6 @@ import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
-import { PreferenceBadge } from "../components/PreferenceBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { formatDuration, formatDayMonth, localeTag, useLang, useT } from "@/ui/i18n";
@@ -74,12 +73,10 @@ export const DayView = ({
   const now = useNow();
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  /* Times start hidden — the student reveals them on demand, animating in on the lesson card's
-     own colour rail (LessonCard's `timeVisible`). */
-  const [showTime, setShowTime] = useState(false);
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
+  const showTime = useAppStore((s) => s.settings.showTime);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
   // `resolvedDay` is memoized inside the store, so calling it every render is cheap.
@@ -326,7 +323,6 @@ export const DayView = ({
               <>
                 <ClassBadge onClick={onPickClass} />
                 <SyncBadge onRetry={() => void refresh({ date, force: true })} />
-                <PreferenceBadge showTime={showTime} onShowTimeChange={setShowTime} />
               </>
             }
           />

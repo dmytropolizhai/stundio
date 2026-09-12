@@ -42,7 +42,6 @@ export const lv = {
   "day.free": "Brīvstunda",
   "day.finished": "Stundas beigušās",
   "day.now": "Tagad",
-  "day.preferences": "Iestatījumi",
   "day.showTime": "Rādīt laiku",
 
   "week.previousWeek": "Iepriekšējā nedēļa",

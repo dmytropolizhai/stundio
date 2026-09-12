@@ -58,6 +58,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const setTheme = useAppStore((s) => s.setTheme);
   const setLang = useAppStore((s) => s.setLang);
   const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
+  const setShowTime = useAppStore((s) => s.setShowTime);
   const refresh = useAppStore((s) => s.refresh);
   const update = useUpdateCheck();
 
@@ -149,6 +150,18 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               checked={settings.mergeConsecutiveLessons}
               onChange={(checked) => {
                 void setMergeConsecutiveLessons(checked);
+              }}
+            />
+          </Row>
+          <Row className="flex items-center justify-between gap-3">
+            <span className="font-text text-body font-bold text-strong">
+              {t("day.showTime")}
+            </span>
+            <Switch
+              aria-label={t("day.showTime")}
+              checked={settings.showTime}
+              onChange={(checked) => {
+                void setShowTime(checked);
               }}
             />
           </Row>
