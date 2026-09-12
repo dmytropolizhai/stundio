@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode, type TouchEvent } from "react";
 import { motion } from "framer-motion";
 
 const THRESHOLD = 72;
@@ -31,12 +31,12 @@ export const PullToRefresh = ({
 
   const armed = pull >= THRESHOLD;
 
-  const onTouchStart = (e: React.TouchEvent) => {
+  const onTouchStart = (e: TouchEvent) => {
     if ((scroller.current?.scrollTop ?? 0) > 0 || refreshing) return;
     startY.current = e.touches[0]?.clientY ?? null;
   };
 
-  const onTouchMove = (e: React.TouchEvent) => {
+  const onTouchMove = (e: TouchEvent) => {
     if (startY.current === null) return;
     const delta = (e.touches[0]?.clientY ?? 0) - startY.current;
     // An upward drag is a normal scroll; hand it back rather than swallowing it.
