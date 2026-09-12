@@ -3,7 +3,14 @@ import { useAppStore } from "../../store/index.ts";
 import { addDays } from "../../sync/index.ts";
 import { weekDates } from "../../lib/schedule/index.ts";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "../../lib/edupage/index.ts";
-import { IconButton, TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
+import {
+  Card,
+  IconButton,
+  TopBar,
+  WeekGrid,
+  type WeekGridCell,
+  type WeekGridPeriod,
+} from "../../ds/index.ts";
 import { subjectCode, subjectTone } from "../theme/index.ts";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
@@ -12,7 +19,14 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { formatWeekdayShort, formatWeekRange, useLang, useT } from "../i18n/index.ts";
+import { useWeekOverview } from "../hooks/useWeekOverview.ts";
+import {
+  formatWeekdayLong,
+  formatWeekdayShort,
+  formatWeekRange,
+  useLang,
+  useT,
+} from "../i18n/index.ts";
 
 const periodNum = (p: string): number => {
   const n = Number(p);
@@ -67,6 +81,7 @@ export const WeekView = ({
     [dates, resolvedDay, timetables, substitutions, selectedClassId],
   );
   const periods = useMemo(() => usedPeriods(days), [days]);
+  const overview = useWeekOverview(date);
 
   const columns = useMemo(
     () =>
@@ -118,18 +133,82 @@ export const WeekView = ({
     }
 
     return (
-      <WeekGrid
-        className="mt-4"
-        days={columns}
-        periods={rows}
-        cellLabel={(cell, day) => `${cell.name ?? cell.short} · ${day.weekday}`}
-        onSelectDay={onOpenDay}
-        mergeConsecutive={mergeConsecutive}
-        onSelect={(_cell, dayKey, period) => {
-          const hit = lessonAt.get(`${dayKey}|${String(period)}`);
-          if (hit !== undefined) setOpen(hit);
-        }}
-      />
+      <>
+        <WeekGrid
+          className="mt-4"
+          days={columns}
+          periods={rows}
+          cellLabel={(cell, day) => `${cell.name ?? cell.short} · ${day.weekday}`}
+          onSelectDay={onOpenDay}
+          mergeConsecutive={mergeConsecutive}
+          onSelect={(_cell, dayKey, period) => {
+            const hit = lessonAt.get(`${dayKey}|${String(period)}`);
+            if (hit !== undefined) setOpen(hit);
+          }}
+        />
+        {overview !== null && (
+          <div className="mt-6">
+            <h2 className="mb-3 font-display text-display-2 tracking-display text-strong">
+              {t("week.overview.title")}
+            </h2>
+            <div className="grid grid-cols-2 gap-3">
+              <Card>
+                <div className="font-data text-display-2 font-black tabular-nums">
+                  {overview.totalLessons}
+                </div>
+                <div className="mt-1 font-text text-caption text-muted">
+                  {t("week.overview.lessons", { n: overview.totalLessons })}
+                </div>
+                {overview.lessonDelta !== null && (
+                  <div className="mt-2 font-text text-micro font-bold text-muted">
+                    {overview.lessonDelta > 0
+                      ? t("week.overview.lessonsUp", { n: overview.lessonDelta })
+                      : overview.lessonDelta < 0
+                        ? t("week.overview.lessonsDown", { n: overview.lessonDelta })
+                        : t("week.overview.lessonsSame")}
+                  </div>
+                )}
+              </Card>
+              <Card>
+                <div className="font-data text-display-2 font-black tabular-nums">
+                  {overview.changedLessons}
+                </div>
+                <div className="mt-1 font-text text-caption text-muted">
+                  {overview.changedLessons > 0
+                    ? t("week.overview.changes", { n: overview.changedLessons })
+                    : t("week.overview.changesNone")}
+                </div>
+              </Card>
+              {overview.busiest !== null && (
+                <Card>
+                  <div className="font-text text-micro font-bold tracking-label text-muted uppercase opacity-75">
+                    {t("week.overview.busiestLabel")}
+                  </div>
+                  <div className="mt-2 font-display text-[22px] leading-none font-black text-strong">
+                    {formatWeekdayLong(overview.busiest.date, lang)}
+                  </div>
+                  <div className="mt-1 font-text text-caption text-muted">
+                    {t("week.overview.lessons", { n: overview.busiest.count })}
+                  </div>
+                </Card>
+              )}
+              {overview.lightest !== null && overview.lightest.date !== overview.busiest?.date && (
+                <Card>
+                  <div className="font-text text-micro font-bold tracking-label text-muted uppercase opacity-75">
+                    {t("week.overview.lightestLabel")}
+                  </div>
+                  <div className="mt-2 font-display text-[22px] leading-none font-black text-strong">
+                    {formatWeekdayLong(overview.lightest.date, lang)}
+                  </div>
+                  <div className="mt-1 font-text text-caption text-muted">
+                    {t("week.overview.lessons", { n: overview.lightest.count })}
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+      </>
     );
   };
 

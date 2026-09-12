@@ -47,6 +47,15 @@ export const lv = {
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",
+  "week.overview.title": "Pārskats",
+  "week.overview.lessons": "{n} stundas",
+  "week.overview.lessonsUp": "+{n} salīdzinot ar iepriekšējo nedēļu",
+  "week.overview.lessonsDown": "{n} salīdzinot ar iepriekšējo nedēļu",
+  "week.overview.lessonsSame": "Tik pat, cik iepriekšējā nedēļā",
+  "week.overview.changes": "{n} izmaiņas",
+  "week.overview.changesNone": "Nav izmaiņu",
+  "week.overview.busiestLabel": "Noslogotākā diena",
+  "week.overview.lightestLabel": "Vieglākā diena",
 
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",

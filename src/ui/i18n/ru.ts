@@ -41,6 +41,15 @@ export const ru: Dict = {
 
   "week.previousWeek": "Предыдущая неделя",
   "week.nextWeek": "Следующая неделя",
+  "week.overview.title": "Обзор",
+  "week.overview.lessons": "{n} уроков",
+  "week.overview.lessonsUp": "+{n} по сравнению с прошлой неделей",
+  "week.overview.lessonsDown": "{n} по сравнению с прошлой неделей",
+  "week.overview.lessonsSame": "Столько же, сколько на прошлой неделе",
+  "week.overview.changes": "{n} изменений",
+  "week.overview.changesNone": "Без изменений",
+  "week.overview.busiestLabel": "Самый загруженный день",
+  "week.overview.lightestLabel": "Самый лёгкий день",
 
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",
