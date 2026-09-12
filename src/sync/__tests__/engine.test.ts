@@ -126,6 +126,32 @@ describe("the cached-week rule", () => {
   });
 });
 
+describe("weekend sync", () => {
+  const SATURDAY = "2026-09-05"; // between the 09-01 and 09-07 published weeks
+
+  it("also ensures next week's timetable, not just the one covering today", async () => {
+    const outcome = await engineAt(`${SATURDAY}T08:00:00Z`).sync({ date: SATURDAY });
+
+    expect(outcome.fetchedTtNum).toBe("1172"); // the week covering Saturday
+    expect(server.calls.timetable).toBe(2); // 1172 (today) + 1175 (next week)
+    expect(await cache.getTimetable("1172")).not.toBeNull();
+    expect(await cache.getTimetable("1175")).not.toBeNull();
+  });
+
+  it("does not double-fetch once both weeks are already cached", async () => {
+    await engineAt(`${SATURDAY}T08:00:00Z`).sync({ date: SATURDAY });
+    server.reset();
+
+    await engineAt(`${SATURDAY}T09:00:00Z`).sync({ date: SATURDAY });
+    expect(server.calls.timetable).toBe(0);
+  });
+
+  it("skips the extra fetch on a weekday", async () => {
+    await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE }); // DATE is a Wednesday
+    expect(server.calls.timetable).toBe(1);
+  });
+});
+
 describe("offline behaviour", () => {
   it("reports offline and keeps serving the cache", async () => {
     await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
