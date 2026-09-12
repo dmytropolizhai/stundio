@@ -1,5 +1,5 @@
 import { useAppStore } from "@/store";
-import { Card, Icon, TopBar } from "@/ds";
+import { Card, TopBar } from "@/ds";
 import { subjectCode, subjectTone } from "@/ui/theme";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -82,7 +82,6 @@ export const SubjectsView = () => {
                       {taught.map((s) => s.name || s.short).join(" · ")}
                     </div>
                   </div>
-                  <Icon name="chevron-right" size={18} className="text-muted" />
                 </div>
               ))}
             </Card>
