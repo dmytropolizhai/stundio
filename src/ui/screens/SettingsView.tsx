@@ -66,7 +66,12 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const setNotifyAppUpdates = useAppStore((s) => s.setNotifyAppUpdates);
   const setAnalyticsEnabled = useAppStore((s) => s.setAnalyticsEnabled);
   const refresh = useAppStore((s) => s.refresh);
-  const update = useUpdateCheck();
+  const {
+    result: update,
+    checking: checkingUpdate,
+    checked: updateChecked,
+    recheck,
+  } = useUpdateCheck();
   const install = useUpdateInstall();
 
   const buildings = useMemo(() => listBuildings(metas), [metas]);
@@ -284,6 +289,23 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
                 {t("settings.reportIssueAction")}
               </a>
+            </Button>
+          </Row>
+          <Row className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">
+                {updateChecked && !update?.hasUpdate
+                  ? t("settings.upToDate")
+                  : t("settings.checkForUpdates")}
+              </p>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("settings.currentVersion", { version: __APP_VERSION__ })}
+              </p>
+            </div>
+            <Button size="sm" icon="refresh-cw" disabled={checkingUpdate} onClick={recheck}>
+              {checkingUpdate
+                ? t("settings.checkingForUpdates")
+                : t("settings.checkForUpdatesAction")}
             </Button>
           </Row>
           {update?.hasUpdate && (

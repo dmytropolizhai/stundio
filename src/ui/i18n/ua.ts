@@ -132,6 +132,11 @@ export const ua: Dict = {
   "settings.about": "Про застосунок",
   "settings.aboutText":
     "Неофіційний застосунок. Дані взяті з публічного розкладу pikcrvt.edupage.org і належать школі.",
+  "settings.currentVersion": "Поточна версія: {version}",
+  "settings.checkForUpdates": "Перевірити оновлення",
+  "settings.checkForUpdatesAction": "Перевірити",
+  "settings.checkingForUpdates": "Перевірка…",
+  "settings.upToDate": "У вас остання версія",
   "settings.updateAvailable": "Доступна новіша версія ({version})",
   "settings.updateAction": "Завантажити",
   "settings.updateDownloading": "Завантаження… {percent}%",

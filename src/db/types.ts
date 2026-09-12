@@ -9,8 +9,8 @@ import type {
   ISODate,
   ISODateTime,
   Timetable,
-} from "../lib/edupage/index.ts";
-import type { RawTimetableListEntry } from "../lib/edupage/index.ts";
+} from "@/lib/edupage";
+import type { RawTimetableListEntry } from "@/lib/edupage";
 
 export type CachedTimetableList = {
   entries: RawTimetableListEntry[];
@@ -24,7 +24,7 @@ export type Settings = {
   /** Class ids the user pinned; notifications in Phase 4 key off these. */
   favorites: string[];
   theme: "system" | "light" | "dark";
-  lang: "lv" | "en" | "ru";
+  lang: "lv" | "en" | "ru" | "ua";
   /** Week view: collapse a run of consecutive identical lessons into one tall block. */
   mergeConsecutiveLessons: boolean;
   /** Day view: show each lesson's start/end time alongside its number. */

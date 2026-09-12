@@ -3,12 +3,12 @@
  * three hand-maintained weekday tables is three chances to be wrong, and the platform
  * already knows Latvian.
  */
-import type { Settings } from "../../db/index.ts";
-import type { HHMM, ISODate } from "../../lib/edupage/index.ts";
+import type { Settings } from "@/db";
+import type { HHMM, ISODate } from "@/lib/edupage";
 
 export type Lang = Settings["lang"];
 
-const LOCALE: Record<Lang, string> = { lv: "lv-LV", en: "en-GB", ru: "ru-RU" };
+const LOCALE: Record<Lang, string> = { lv: "lv-LV", en: "en-GB", ru: "ru-RU", ua: "ua-UA" };
 
 /** BCP-47 tag for a `Lang` — for callers (the calendar popover) that hand a locale to `Intl`
  * themselves rather than going through one of this file's formatters. */

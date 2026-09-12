@@ -3,7 +3,7 @@
  * substitution `raw` string is rendered verbatim behind a "from school" label.
  */
 import { useCallback } from "react";
-import { useAppStore } from "../../store/index.ts";
+import { useAppStore } from "@/store";
 import { lv, type Dict, type MessageKey } from "./lv.ts";
 import { en } from "./en.ts";
 import { ru } from "./ru.ts";
