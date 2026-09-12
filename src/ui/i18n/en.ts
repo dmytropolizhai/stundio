@@ -98,6 +98,9 @@ export const en: Dict = {
   "settings.showTime": "Show time",
   "settings.showTimeHint": "Shows each lesson's start and end time next to its number.",
   "settings.data": "Data",
+  "settings.analytics": "Anonymous usage analytics",
+  "settings.analyticsHint":
+    "Helps understand which features get used. No cookies, no personal data.",
   "settings.about": "About",
   "settings.aboutText":
     "Unofficial app. Data comes from the public pikcrvt.edupage.org timetable and belongs to the school.",

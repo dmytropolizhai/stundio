@@ -98,6 +98,9 @@ export const ru: Dict = {
   "settings.showTime": "Показать время",
   "settings.showTimeHint": "Показывает время начала и конца каждого урока рядом с его номером.",
   "settings.data": "Данные",
+  "settings.analytics": "Анонимная статистика использования",
+  "settings.analyticsHint":
+    "Помогает понять, какие функции используются. Без файлов cookie и личных данных.",
   "settings.about": "О приложении",
   "settings.aboutText":
     "Неофициальное приложение. Данные берутся из публичного расписания pikcrvt.edupage.org и принадлежат школе.",

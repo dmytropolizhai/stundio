@@ -104,6 +104,9 @@ export const lv = {
   "settings.showTime": "Rādīt laiku",
   "settings.showTimeHint": "Rāda katras stundas sākuma un beigu laiku pie tās numura.",
   "settings.data": "Dati",
+  "settings.analytics": "Anonīma lietošanas statistika",
+  "settings.analyticsHint":
+    "Palīdz saprast, kuras funkcijas tiek izmantotas. Bez sīkfailiem un personas datiem.",
   "settings.about": "Par lietotni",
   "settings.aboutText":
     "Neoficiāla lietotne. Dati nāk no publiskā pikcrvt.edupage.org saraksta un pieder skolai.",
