@@ -3,8 +3,9 @@ import { useAppStore } from "@/store";
 import { listBuildings } from "@/lib/edupage";
 import type { Settings } from "@/db";
 import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "@/ds";
-import { ensureNotificationPermission } from "@/notifications";
+import { ensureNotificationPermission, openNotificationSettings } from "@/notifications";
 import { useSelectedClass } from "../hooks/useClasses.ts";
+import { useNotificationPermissionDenied } from "../hooks/useNotificationPermission.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
@@ -53,6 +54,7 @@ const Row = ({ children, className = "" }: { children: ReactNode; className?: st
  */
 export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const t = useT();
+  const notifyPermissionDenied = useNotificationPermissionDenied();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
   const settings = useAppStore((s) => s.settings);
@@ -195,6 +197,22 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
         </Section>
 
         <Section title={t("settings.notifications")}>
+          {notifyPermissionDenied && (
+            <Row className="flex flex-wrap items-center justify-between gap-3">
+              <p className="font-text text-caption font-bold text-danger">
+                {t("settings.notifyPermissionDenied")}
+              </p>
+              <Button
+                size="sm"
+                icon="external-link"
+                onClick={() => {
+                  void openNotificationSettings();
+                }}
+              >
+                {t("settings.notifyOpenSettings")}
+              </Button>
+            </Row>
+          )}
           <Row>
             <p className="mb-2 font-text text-body font-bold text-strong">
               {t("settings.notifyLessonReminder")}

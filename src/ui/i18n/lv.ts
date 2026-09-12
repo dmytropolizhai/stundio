@@ -130,6 +130,8 @@ export const lv = {
   "settings.notifySubstitutionChangesHint": "Paziņo, ja mainās šodienas vai rītdienas stundas.",
   "settings.notifyAppUpdates": "Jauninājumi",
   "settings.notifyAppUpdatesHint": "Paziņo, kad iznāk jauna lietotnes versija.",
+  "settings.notifyPermissionDenied": "Paziņojumi ir bloķēti sistēmas iestatījumos.",
+  "settings.notifyOpenSettings": "Atvērt iestatījumus",
   "notification.lessonReminder.title": "{subject} pēc {minutes} min",
   "notification.changed.title": "Izmaiņas stundu sarakstā",
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",

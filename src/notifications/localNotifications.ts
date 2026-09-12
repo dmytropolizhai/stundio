@@ -7,10 +7,18 @@
  *   - substitution changes: a single fixed id, re-fired (never queued) per changed date
  *   - app updates: a single fixed id, one-shot per version (caller dedupes via Settings)
  */
+import { registerPlugin } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import type { ResolvedLesson } from "../lib/edupage/index.ts";
 import type { LessonReminder } from "../lib/schedule/index.ts";
 import { translate, type Lang } from "../ui/i18n/index.ts";
+
+/**
+ * Backed by `AppSettingsPlugin.java` — once the OS permission is denied, `requestPermissions()`
+ * can never show the dialog again, so the only way back in is the app's own settings screen.
+ */
+type AppSettingsPlugin = { openNotificationSettings(): Promise<void> };
+const AppSettings = registerPlugin<AppSettingsPlugin>("AppSettings");
 
 const CHANGE_ID = 1;
 const UPDATE_ID = 2;
@@ -44,6 +52,25 @@ const ensureChannel = async (): Promise<void> => {
 export const hasNotificationPermission = async (): Promise<boolean> => {
   const current = await LocalNotifications.checkPermissions();
   return current.display === "granted";
+};
+
+/**
+ * Never prompts — reports whether permission was actively denied, as opposed to just never
+ * having been asked. Settings uses this to decide whether to offer "open system settings"
+ * instead of the normal in-app request, since the OS won't show its dialog again either way.
+ */
+export const isNotificationPermissionDenied = async (): Promise<boolean> => {
+  const current = await LocalNotifications.checkPermissions();
+  return current.display === "denied";
+};
+
+/**
+ * Deep-links into the app's own notification settings screen. This is the only way back in
+ * once the user has denied the OS permission — `requestPermissions()` resolves "denied" silently
+ * from then on, with no dialog shown, so the app can't re-ask directly.
+ */
+export const openNotificationSettings = async (): Promise<void> => {
+  await AppSettings.openNotificationSettings();
 };
 
 /**
