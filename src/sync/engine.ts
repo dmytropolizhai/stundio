@@ -26,7 +26,7 @@ import {
   type TimetableMeta,
 } from "../lib/edupage/index.ts";
 import type { AppCache } from "../db/index.ts";
-import { addDays, daysToRefresh } from "./schoolDays.ts";
+import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
 export type SyncStatus = "idle" | "syncing" | "offline" | "error";
 
@@ -159,6 +159,16 @@ export const createSyncEngine = (deps: SyncDeps) => {
 
     const selection = selectTimetable(metas, date, building ?? undefined);
     const fetchedTtNum = selection === null ? null : await ensureTimetable(selection.meta, errors);
+
+    // On a weekend `date` (today, by default) resolves to the week that just ended — the
+    // week the user actually opens the app to see is the next one. Without this, that
+    // timetable is only ever fetched once the user forces a refresh from the next-week view.
+    if (isWeekend(date)) {
+      const upcoming = selectTimetable(metas, nextSchoolDay(date), building ?? undefined);
+      if (upcoming !== null && upcoming.meta.ttNum !== selection?.meta.ttNum) {
+        await ensureTimetable(upcoming.meta, errors);
+      }
+    }
 
     const refreshedDates = await refreshSubstitutions(daysToRefresh(today), errors);
 
