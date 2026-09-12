@@ -12,6 +12,7 @@ import {
   type WeekGridPeriod,
 } from "@/ds";
 import { offMainBuilding, subjectCode, subjectTone } from "@/ui/theme";
+import { subjectCode, subjectTone } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -20,13 +21,7 @@ import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { useWeekOverview } from "../hooks/useWeekOverview.ts";
-import {
-  formatWeekdayLong,
-  formatWeekdayShort,
-  formatWeekRange,
-  useLang,
-  useT,
-} from "@/ui/i18n";
+import { formatWeekdayLong, formatWeekdayShort, formatWeekRange, useLang, useT } from "@/ui/i18n";
 
 const periodNum = (p: string): number => {
   const n = Number(p);
@@ -303,7 +298,9 @@ export const WeekView = ({
         refreshing={syncStatus === "syncing"}
         label={t("sync.pull")}
         releaseLabel={t("sync.release")}
-        onRefresh={() => refresh({ date, force: true })}
+        onRefresh={() => {
+          void refresh({ date, force: true });
+        }}
       >
         <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26">
           <TopBar

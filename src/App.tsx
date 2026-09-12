@@ -3,13 +3,14 @@
  * are looking at). No router — four tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AppStoreProvider, useAppStore } from "@/store";
 import { todayInRiga } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
+import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
 import { useTheme } from "@/ui/theme";
@@ -34,13 +35,24 @@ const Splash = () => (
 );
 
 /**
- * First run: no class chosen yet, so the picker *is* the app until one is.
+ * First run: no class chosen yet, so onboarding *is* the app until one is picked.
  *
- * This is the DS's onboarding screen — a full-bleed brand flood, the wordmark, and one
- * oversized headline. It is the only place in the app that goes edge-to-edge in blue.
+ * A short feature tour (skippable at every step) runs first, then the DS's onboarding
+ * screen — a full-bleed brand flood, the wordmark, and one oversized headline — hands off
+ * to the class picker. It is the only place in the app that goes edge-to-edge in blue.
  */
 const Onboarding = () => {
   const t = useT();
+  const [introDone, setIntroDone] = useState(false);
+
+  if (!introDone) {
+    return (
+      <div className="flex h-full flex-col">
+        <OnboardingIntro onDone={() => setIntroDone(true)} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col">
       <div className="bg-brand px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-white">
@@ -62,9 +74,14 @@ const Shell = () => {
   useTheme();
 
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
+  const trackEvent = useAppStore((s) => s.trackEvent);
   const [tab, setTab] = useState<Tab>("day");
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
+
+  useEffect(() => {
+    trackEvent(`view_${tab}`);
+  }, [tab, trackEvent]);
 
   if (selectedClassId === null) return <Onboarding />;
 

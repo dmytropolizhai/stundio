@@ -30,6 +30,34 @@ export const rigaClock = (now: Date = new Date()): RigaClock => {
   };
 };
 
+/** Minutes-since-epoch of a Riga wall-clock reading — comparable across DST without a library. */
+const wallMinutes = (date: ISODate, minutes: number): number => {
+  const [y, m, d] = date.split("-").map(Number);
+  return Date.UTC(y ?? 1970, (m ?? 1) - 1, d ?? 1) / 60_000 + minutes;
+};
+
+/**
+ * The UTC instant at which the Riga wall clock reads `date` `minutes`. Needed because
+ * notifications must fire at an absolute instant, but lesson times are Riga wall-clock
+ * minutes and the device may sit in a different (or DST-shifted) timezone.
+ *
+ * Converges in one correction: a first guess (treating the reading as if it were UTC) is off
+ * by exactly Riga's UTC offset, and that offset doesn't change between the guess and the
+ * corrected instant except across the DST transition instant itself — which no lesson time
+ * lands on.
+ */
+export const rigaTimeToDate = (date: ISODate, minutes: number): Date => {
+  const [y, m, d] = date.split("-").map(Number);
+  let guess = new Date(Date.UTC(y ?? 1970, (m ?? 1) - 1, d ?? 1, 0, minutes));
+  for (let i = 0; i < 2; i += 1) {
+    const clock = rigaClock(guess);
+    const diff = wallMinutes(date, minutes) - wallMinutes(clock.date, clock.minutes);
+    if (diff === 0) break;
+    guess = new Date(guess.getTime() + diff * 60_000);
+  }
+  return guess;
+};
+
 /** "08:30" → 510. Returns null for the empty strings `resolveDay` emits for unknown periods. */
 export const minutesOf = (time: HHMM): number | null => {
   const [h, m] = time.split(":");

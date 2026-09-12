@@ -196,9 +196,13 @@ Still unverified on a physical device (no JDK/Android SDK here).
         "Appearance" section, reusing existing Subjects-screen data for the subject list.
 - [ ] App icon, adaptive icon, splash, status-bar styling, edge-to-edge.
 - [ ] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline banner.
-- [ ] `@capacitor/local-notifications`: after a background/foreground sync, if today's (or
-      tomorrow's) `ResolvedDay` for a favorite class changed vs last snapshot → fire a local
-      notification ("Tomorrow: 1st period cancelled"). Diff logic reuses `resolve.ts`.
+- [x] `@capacitor/local-notifications`: after a foreground/resume sync, if today's (or
+      tomorrow's) substitutions changed vs the cached snapshot → fire a local notification.
+      Diffs the raw `DaySubstitutions` in `sync/engine.ts` rather than the resolved view (simpler,
+      same effect); gated on the device having synced before, so a fresh install doesn't fire on
+      its first sync. Also shipped alongside: a configurable "n minutes before the next lesson"
+      reminder (`src/lib/schedule/reminders.ts` + `src/notifications/`) and a one-shot "new
+      version available" notification reusing the existing `useUpdateCheck` release check.
 - [ ] Background refresh: `@capacitor/background-runner` (or a WorkManager periodic task) to
       pull substitutions ~every few hours. **Document that Android throttles this** — treat
       on-open refresh as the reliable path, background as best-effort.
