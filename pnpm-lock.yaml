@@ -17,6 +17,9 @@ importers:
       '@capacitor/core':
         specifier: ^7.0.0
         version: 7.6.9
+      '@capacitor/local-notifications':
+        specifier: ^7.0.7
+        version: 7.0.7(@capacitor/core@7.6.9)
       '@date-fns/tz':
         specifier: ^1.2.0
         version: 1.5.0
@@ -246,6 +249,11 @@ packages:
 
   '@capacitor/core@7.6.9':
     resolution: {integrity: sha512-4DOh/xySC9S5ryhUIqpOppasIyi2WiTdF0JuZ/2DEs+vf5eunRzHDdNYBp1snA3faHciTw/3SVGXfR+WkYxsMA==}
+
+  '@capacitor/local-notifications@7.0.7':
+    resolution: {integrity: sha512-3qSpa8PpVMONHqBOaJ4RbA/lB5vOdEngtep0myGmP3S56gShPScDCotbw7dwmQy3NCdY4Up9nH3ySrGvUh2jZg==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
 
   '@date-fns/tz@1.5.0':
     resolution: {integrity: sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg==}
@@ -2444,6 +2452,10 @@ snapshots:
   '@capacitor/core@7.6.9':
     dependencies:
       tslib: 2.8.1
+
+  '@capacitor/local-notifications@7.0.7(@capacitor/core@7.6.9)':
+    dependencies:
+      '@capacitor/core': 7.6.9
 
   '@date-fns/tz@1.5.0': {}
 
