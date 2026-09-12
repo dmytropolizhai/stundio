@@ -10,6 +10,7 @@ import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
+import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
 import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
@@ -37,18 +38,28 @@ const Splash = () => (
 /**
  * First run: no class chosen yet, so onboarding *is* the app until one is picked.
  *
- * A short feature tour (skippable at every step) runs first, then the DS's onboarding
- * screen — a full-bleed brand flood, the wordmark, and one oversized headline — hands off
- * to the class picker. It is the only place in the app that goes edge-to-edge in blue.
+ * A language question comes first — every other screen from here on is translated, so it has
+ * to be answered before anything else is worth showing. Then a short feature tour (skippable
+ * at every step), then the DS's onboarding screen — a full-bleed brand flood, the wordmark,
+ * and one oversized headline — hands off to the class picker. It is the only place in the app
+ * that goes edge-to-edge in blue.
  */
 const Onboarding = () => {
   const t = useT();
-  const [introDone, setIntroDone] = useState(false);
+  const [step, setStep] = useState<"language" | "intro" | "picker">("language");
 
-  if (!introDone) {
+  if (step === "language") {
     return (
       <div className="flex h-full flex-col">
-        <OnboardingIntro onDone={() => setIntroDone(true)} />
+        <OnboardingLanguage onDone={() => setStep("intro")} />
+      </div>
+    );
+  }
+
+  if (step === "intro") {
+    return (
+      <div className="flex h-full flex-col">
+        <OnboardingIntro onDone={() => setStep("picker")} />
       </div>
     );
   }

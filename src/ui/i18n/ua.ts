@@ -11,6 +11,9 @@ export const ua: Dict = {
   "onboarding.title": "Оберіть свій клас",
   "onboarding.subtitle": "Ваш розклад та його зміни — працює і офлайн.",
 
+  "onboarding.language.title": "Оберіть мову",
+  "onboarding.language.continue": "Продовжити",
+
   "onboarding.intro.skip": "Пропустити",
   "onboarding.intro.next": "Далі",
   "onboarding.intro.start": "Розпочати",
