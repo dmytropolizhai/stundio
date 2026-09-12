@@ -94,7 +94,14 @@ export type IconProps = {
   className?: string;
 };
 
-/** Monochrome, always inherits `currentColor`. The DS forbids two-tone and filled icons. */
+/**
+ * Monochrome, always inherits `currentColor`. The DS forbids two-tone and filled icons — tried a
+ * `filled` prop for the bottom nav's active tab and reverted it: Lucide's glyphs are outline sets
+ * built from strokes plus decorative sub-paths (a calendar's day grid, a cap's tassel), not solid
+ * shapes. `fill="currentColor"` fills every one of those sub-paths in the same colour as the
+ * stroke, so the decorative strokes vanish into the fill and every icon collapses into a blob.
+ * The active tab's pill plus its colour swap is the signal; don't reach for fill again.
+ */
 export const Icon = ({ name, size = 20, className }: IconProps) => {
   const Glyph = ICONS[name];
   return (

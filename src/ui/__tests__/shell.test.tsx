@@ -50,9 +50,9 @@ describe("TabBar", () => {
     wrap(harness, <TabBar tab="day" onChange={onChange} />);
 
     /*
-     * Only the active tab renders its label as text — the design system's nav grows the selected
-     * item into a pill and leaves the rest as bare icons. The label still reaches assistive tech
-     * on every tab, which is what this asserts.
+     * Every tab is a bare icon — the design system's nav slides an inverse-fill pill beneath the
+     * selected one rather than growing a label into view. Each tab's name still reaches assistive
+     * tech via `aria-label`, which is what these queries rely on.
      */
     expect(screen.getByRole("button", { name: "Diena" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Nedēļa" })).toBeDefined();
@@ -65,7 +65,7 @@ describe("TabBar", () => {
   it("marks the active tab for assistive tech, not just visually", async () => {
     const harness = await bootHarness();
     wrap(harness, <TabBar tab="week" onChange={vi.fn()} />);
-    expect(screen.getByText("Nedēļa").closest("button")?.getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("button", { name: "Nedēļa" }).getAttribute("aria-current")).toBe("page");
   });
 });
 
