@@ -153,12 +153,18 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               }}
             />
           </Row>
-          <Row className="flex items-center justify-between gap-3">
-            <span className="font-text text-body font-bold text-strong">
-              {t("day.showTime")}
-            </span>
+        </Section>
+
+        <Section title={t("settings.day")}>
+          <Row className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">{t("settings.showTime")}</p>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("settings.showTimeHint")}
+              </p>
+            </div>
             <Switch
-              aria-label={t("day.showTime")}
+              aria-label={t("settings.showTime")}
               checked={settings.showTime}
               onChange={(checked) => {
                 void setShowTime(checked);

@@ -36,7 +36,6 @@ export const ru: Dict = {
   "day.free": "Окно",
   "day.finished": "Уроки закончились",
   "day.now": "Сейчас",
-  "day.showTime": "Показать время",
 
   "week.previousWeek": "Предыдущая неделя",
   "week.nextWeek": "Следующая неделя",
@@ -95,6 +94,9 @@ export const ru: Dict = {
   "settings.mergeLessons": "Объединять одинаковые уроки",
   "settings.mergeLessonsHint":
     "Показывает предмет, повторяющийся подряд, как один длинный блок в просмотре недели.",
+  "settings.day": "Просмотр дня",
+  "settings.showTime": "Показать время",
+  "settings.showTimeHint": "Показывает время начала и конца каждого урока рядом с его номером.",
   "settings.data": "Данные",
   "settings.about": "О приложении",
   "settings.aboutText":

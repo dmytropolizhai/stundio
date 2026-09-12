@@ -36,7 +36,6 @@ export const en: Dict = {
   "day.free": "Free period",
   "day.finished": "Lessons are over",
   "day.now": "Now",
-  "day.showTime": "Show time",
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",
@@ -95,6 +94,9 @@ export const en: Dict = {
   "settings.mergeLessons": "Merge identical lessons",
   "settings.mergeLessonsHint":
     "Shows a subject that repeats back-to-back in the week view as one longer block.",
+  "settings.day": "Day view",
+  "settings.showTime": "Show time",
+  "settings.showTimeHint": "Shows each lesson's start and end time next to its number.",
   "settings.data": "Data",
   "settings.about": "About",
   "settings.aboutText":
