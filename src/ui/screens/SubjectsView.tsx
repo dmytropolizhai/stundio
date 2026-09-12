@@ -1,18 +1,17 @@
-import { useAppStore } from "../../store/index.ts";
-import { Card, Icon, TopBar } from "../../ds/index.ts";
-import { subjectCode, subjectTone } from "../theme/index.ts";
+import { useAppStore } from "@/store";
+import { Card, Icon, TopBar } from "@/ds";
+import { subjectCode, subjectTone } from "@/ui/theme";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { useSubjects } from "../hooks/useSubjects.ts";
-import { useSelectedClass } from "../hooks/useClasses.ts";
-import { useT } from "../i18n/index.ts";
+import { useT } from "@/ui/i18n";
 
 /**
  * Everything the class is taught, and who teaches it.
  *
  * The one screen with no counterpart in the pre-design-system app — it comes from the DS UI kit,
  * and it is the payoff for assigning each subject a fixed accent: this is the legend for every
- * colour the day and week views use.
+ * color the day and week views use.
  *
  * Derived entirely from the cached timetable, so it works offline like everything else. Subject
  * names are printed verbatim from EduPage, in Latvian, diacritics intact.
@@ -21,7 +20,6 @@ export const SubjectsView = () => {
   const t = useT();
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedClass = useSelectedClass();
   const { subjects, teachers } = useSubjects();
 
   const body = () => {
@@ -95,8 +93,8 @@ export const SubjectsView = () => {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px]">
-        <TopBar eyebrow={selectedClass?.short ?? t("app.title")} title={t("subjects.title")} />
+      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26">
+        <TopBar title={t("subjects.title")} />
         {body()}
       </div>
     </div>

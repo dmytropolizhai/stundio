@@ -1,12 +1,12 @@
 import { useMemo, type ReactNode } from "react";
-import { useAppStore } from "../../store/index.ts";
-import { listBuildings } from "../../lib/edupage/index.ts";
-import type { Settings } from "../../db/index.ts";
-import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "../../ds/index.ts";
+import { useAppStore } from "@/store";
+import { listBuildings } from "@/lib/edupage";
+import type { Settings } from "@/db";
+import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "@/ds";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
-import { LANGS, LANG_NAMES, useT } from "../i18n/index.ts";
+import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 
 const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="mb-7">
@@ -56,8 +56,8 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
 
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
-      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-[104px]">
-        <TopBar eyebrow={selectedClass?.short ?? t("app.title")} title={t("settings.title")} />
+      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26">
+        <TopBar title={t("settings.title")} />
 
         <Section title={t("settings.class")}>
           <button
