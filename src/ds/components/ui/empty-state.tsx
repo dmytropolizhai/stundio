@@ -1,6 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { Icon, type IconName } from "./icon.tsx";
-import { cn } from "../../lib/utils.ts";
+import { cn, Icon, type IconName } from "@/ds";
 
 export type EmptyStateProps = Omit<ComponentPropsWithoutRef<"div">, "title"> & {
   icon?: IconName;
@@ -25,16 +24,16 @@ export const EmptyState = ({
 }: EmptyStateProps) => (
   <div
     className={cn(
-      "flex flex-col items-center gap-2.5 rounded-xl bg-card px-6 py-9 text-center shadow-card",
+      "flex flex-col items-center gap-2.5 rounded-xl px-6 py-9 text-center",
       className,
     )}
     {...props}
   >
-    <span className="inline-flex size-14 items-center justify-center rounded-squircle bg-brand-tint text-brand-strong">
+    <span className="inline-flex size-14 items-center justify-center rounded-squircle text-title">
       <Icon name={icon} size={26} />
     </span>
     <h3 className="font-display text-title tracking-display text-strong">{title}</h3>
-    {body !== undefined && <p className="max-w-[260px] font-text text-body text-muted">{body}</p>}
+    {body !== undefined && <p className="max-w-65 font-text text-body text-muted">{body}</p>}
     {action !== undefined && <div className="mt-1.5">{action}</div>}
   </div>
 );

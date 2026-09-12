@@ -95,16 +95,16 @@
 
   /* ——— Colour: base palette ——— */
   --color-white: var(--white);
-  --color-blue-050: var(--blue-050);
-  --color-blue-100: var(--blue-100);
-  --color-blue-200: var(--blue-200);
-  --color-blue-300: var(--blue-300);
-  --color-blue-400: var(--blue-400);
-  --color-blue-500: var(--blue-500);
-  --color-blue-600: var(--blue-600);
-  --color-blue-700: var(--blue-700);
-  --color-blue-800: var(--blue-800);
-  --color-blue-900: var(--blue-900);
+  --color-blue-050: var(--ink-050);
+  --color-blue-100: var(--ink-100);
+  --color-blue-200: var(--ink-200);
+  --color-blue-300: var(--ink-300);
+  --color-blue-400: var(--ink-400);
+  --color-blue-500: var(--ink-500);
+  --color-blue-600: var(--ink-700);
+  --color-blue-700: var(--ink-700);
+  --color-blue-800: var(--ink-900);
+  --color-blue-900: var(--ink-900);
   --color-ink-050: var(--ink-050);
   --color-ink-100: var(--ink-100);
   --color-ink-200: var(--ink-200);
@@ -301,7 +301,7 @@
   h3,
   h4 {
     margin: 0;
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-weight: var(--fw-black);
     letter-spacing: var(--track-display);
     line-height: 0.95;
@@ -365,7 +365,7 @@
 }
 @utility u-wordmark {
   font: var(--type-wordmark);
-  font-family: var(--font-wordmark);
+  font-family: var(--font-wordmark), serif;
   font-weight: 900;
   letter-spacing: 0.005em;
 }

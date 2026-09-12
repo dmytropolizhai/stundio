@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { IconButton } from "./icon-button.tsx";
-import { cn } from "../../lib/utils.ts";
+import { IconButton } from "@/ds";
+import { cn } from "@/ds";
 
 /** `"YYYY-MM-DD"`, the same date-only shape `ISODate` uses in the app layer — the DS stays free
  * of that type so it does not have to import from `lib/edupage`. */
@@ -41,7 +41,7 @@ export type CalendarProps = {
 /**
  * A month grid, styled but domain-free: it knows nothing about lessons, classes or substitutions,
  * only the calendar. `DayView`'s popover supplies the locale and the "today" jump; everything else
- * is this component's own state so it forgets which month it was showing every time it closes.
+ * is this component's own state, so it forgets which month it was showing every time it closes.
  */
 export const Calendar = ({
   value,
@@ -72,7 +72,7 @@ export const Calendar = ({
   while (cells.length % 7 !== 0) cells.push(null);
 
   const weekdayLabels = Array.from({ length: 7 }, (_, i) =>
-    // Monday (2026-09-07 is a Monday) is the anchor so the header matches `leadingBlanks`.
+    // Monday (2026-09-07 is a Monday) is the anchor, so the header matches `leadingBlanks`.
     weekdayFmt.format(new Date(Date.UTC(2026, 8, 7 + i, 12))),
   );
 
@@ -84,7 +84,7 @@ export const Calendar = ({
   };
 
   return (
-    <div className={cn("w-[296px]", className)}>
+    <div className={cn("w-74", className)}>
       <div className="mb-2 flex items-center justify-between">
         <IconButton
           icon="chevron-left"
@@ -136,7 +136,7 @@ export const Calendar = ({
               }}
               className={cn(
                 "u-data flex size-10 items-center justify-center rounded-pill font-bold",
-                "transition-[background-color,color,box-shadow] duration-(--dur-fast) ease-(--ease-standard)",
+                "transition-[background-color,color,box-shadow] duration-(--dur-fast) ease-standard",
                 "active:scale-(--press-scale)",
                 isSelected
                   ? "bg-ink-900 text-white"

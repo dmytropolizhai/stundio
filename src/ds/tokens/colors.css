@@ -45,9 +45,9 @@
 
   /* ——— Semantic aliases (use these in product code) ——— */
   --brand: var(--ink-100);
-  --brand-strong: var(--blue-600);
-  --brand-deep: var(--blue-900);
-  --brand-tint: var(--blue-050);
+  --brand-strong: var(--ink-200);
+  --brand-deep: var(--ink-900);
+  --brand-tint: var(--ink-050);
 
   --bg-app: var(--ink-050);
   --bg-hero: var(--blue-500);
