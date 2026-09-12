@@ -60,6 +60,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const setLang = useAppStore((s) => s.setLang);
   const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
   const setShowTime = useAppStore((s) => s.setShowTime);
+  const setAnalyticsEnabled = useAppStore((s) => s.setAnalyticsEnabled);
   const refresh = useAppStore((s) => s.refresh);
   const update = useUpdateCheck();
 
@@ -176,7 +177,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
 
         <Section title={t("settings.data")}>
           <Row className="flex flex-wrap items-center justify-between gap-3">
-            <SyncBadge collapsible={false}/>
+            <SyncBadge collapsible={false} />
             <Button
               size="sm"
               disabled={syncStatus === "syncing"}
@@ -187,6 +188,21 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
             >
               {t("sync.refresh")}
             </Button>
+          </Row>
+          <Row className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">{t("settings.analytics")}</p>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("settings.analyticsHint")}
+              </p>
+            </div>
+            <Switch
+              aria-label={t("settings.analytics")}
+              checked={settings.analyticsEnabled}
+              onChange={(checked) => {
+                void setAnalyticsEnabled(checked);
+              }}
+            />
           </Row>
         </Section>
 

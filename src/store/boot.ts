@@ -8,6 +8,10 @@ import type { Store } from "./context.ts";
 import { createCache } from "../db/index.ts";
 import { capacitorHttp } from "../lib/edupage/index.ts";
 import { createSyncEngine, watchAppResume } from "../sync/index.ts";
+import { createAnalyticsClient, capacitorHttp as analyticsHttp } from "../lib/analytics/index.ts";
+
+/** The Plausible site the app reports to (a fake domain — there is no web page behind it). */
+const ANALYTICS_DOMAIN = "stundio.lv";
 
 export type Boot = () => Promise<{ store: Store; dispose?: () => void }>;
 
@@ -17,10 +21,12 @@ export const bootApp: Boot = async () => {
   const store = createAppStore({
     cache,
     engine: createSyncEngine({ http: capacitorHttp, cache }),
+    analytics: createAnalyticsClient(analyticsHttp, ANALYTICS_DOMAIN),
   });
 
   // Paint from cache first; the network catches up underneath.
   await store.getState().hydrate();
+  store.getState().trackEvent("app_open");
   void store.getState().refresh();
 
   const dispose = watchAppResume({ refresh: () => store.getState().refresh() });

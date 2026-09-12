@@ -40,4 +40,22 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Same rule, mirrored for lib/analytics.
+    files: ["src/lib/analytics/**/*.ts"],
+    ignores: ["src/lib/analytics/http.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@capacitor/*"],
+              message: "Only src/lib/analytics/http.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

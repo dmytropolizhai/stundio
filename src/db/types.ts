@@ -29,6 +29,8 @@ export type Settings = {
   mergeConsecutiveLessons: boolean;
   /** Day view: show each lesson's start/end time alongside its number. */
   showTime: boolean;
+  /** Anonymous usage analytics (Plausible). No cookies, no persistent id — opt-out, not opt-in. */
+  analyticsEnabled: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -39,6 +41,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lang: "lv",
   mergeConsecutiveLessons: false,
   showTime: false,
+  analyticsEnabled: true,
 };
 
 export type AppCache = {
