@@ -84,6 +84,8 @@ export const ru: Dict = {
   "settings.about": "О приложении",
   "settings.aboutText":
     "Неофициальное приложение. Данные берутся из публичного расписания pikcrvt.edupage.org и принадлежат школе.",
+  "settings.updateAvailable": "Доступна новая версия ({version})",
+  "settings.updateAction": "Скачать",
 
   "theme.system": "Как в системе",
   "theme.light": "Светлое",

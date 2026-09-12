@@ -70,8 +70,12 @@ export const WeekGrid = <K extends string>({
   >
     <span />
     {days.map((day) => {
+      // `min-w-0` lets the heading actually honour the column's `minmax(0,1fr)` track;
+      // without it a grid item's implicit min-width is its content's, so a long weekday
+      // abbreviation (Latvian "ceturtd." is 8 characters) overflows into the next column
+      // instead of truncating.
       const heading = cn(
-        "rounded-sm text-center font-text text-micro font-bold tracking-label uppercase",
+        "min-w-0 truncate rounded-sm px-0.5 text-center font-text text-micro font-bold tracking-label uppercase",
         day.today === true ? "text-brand-strong" : "text-muted",
       );
       return onSelectDay === undefined ? (
@@ -85,7 +89,13 @@ export const WeekGrid = <K extends string>({
           onClick={() => {
             onSelectDay(day.key);
           }}
-          className={cn(heading, "cursor-pointer border-0 bg-transparent py-1 hover:bg-sunken")}
+          className={cn(
+            heading,
+            // A line-height rather than `flex items-center` for the 44px tap target: a flex
+            // container centers the anonymous text box as an unconstrained flex item, which
+            // defeats `truncate`'s ellipsis (Chrome/Firefox clip it silently instead).
+            "min-h-11 cursor-pointer border-0 bg-transparent leading-11 hover:bg-sunken",
+          )}
         >
           {day.weekday}
         </button>
@@ -98,13 +108,25 @@ export const WeekGrid = <K extends string>({
         {days.map((day) => {
           const cell = period.cells[day.key];
           if (cell === undefined) {
-            return <span key={day.key} aria-hidden="true" className="h-10 rounded-sm bg-sunken" />;
+            // `shadow-hairline` gives the block a boundary independent of fill contrast —
+            // `--surface-sunken` sits only a few levels above `--bg-app` in dark mode, so an
+            // unbordered fill nearly disappears into the page there.
+            return (
+              <span
+                key={day.key}
+                aria-hidden="true"
+                className="h-10 rounded-sm bg-sunken shadow-hairline"
+              />
+            );
           }
           return (
             <button
               key={day.key}
               type="button"
               aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
+              // Free on desktop (hover), inert on the touch device this app actually ships on —
+              // tapping already opens the full lesson sheet with the name.
+              title={cell.name ?? cell.short}
               onClick={() => {
                 onSelect?.(cell, day.key, period.period);
               }}
