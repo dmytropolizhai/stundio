@@ -124,6 +124,8 @@ export const en: Dict = {
   "settings.notifySubstitutionChangesHint": "Notify when today's or tomorrow's lessons change.",
   "settings.notifyAppUpdates": "App updates",
   "settings.notifyAppUpdatesHint": "Notify when a new app version is released.",
+  "settings.notifyPermissionDenied": "Notifications are blocked in system settings.",
+  "settings.notifyOpenSettings": "Open settings",
   "notification.lessonReminder.title": "{subject} in {minutes} min",
   "notification.changed.title": "Timetable changed",
   "notification.changed.body": "Today's schedule has changes.",

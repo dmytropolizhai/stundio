@@ -125,6 +125,8 @@ export const ru: Dict = {
     "Уведомлять об изменениях в расписании на сегодня или завтра.",
   "settings.notifyAppUpdates": "Обновления приложения",
   "settings.notifyAppUpdatesHint": "Уведомлять о выходе новой версии приложения.",
+  "settings.notifyPermissionDenied": "Уведомления заблокированы в настройках системы.",
+  "settings.notifyOpenSettings": "Открыть настройки",
   "notification.lessonReminder.title": "{subject} через {minutes} мин",
   "notification.changed.title": "Изменения в расписании",
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",

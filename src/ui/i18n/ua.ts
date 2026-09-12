@@ -126,6 +126,8 @@ export const ua: Dict = {
     "Сповіщати, коли змінюються уроки на сьогодні або завтра.",
   "settings.notifyAppUpdates": "Оновлення застосунку",
   "settings.notifyAppUpdatesHint": "Сповіщати про вихід нової версії застосунку.",
+  "settings.notifyPermissionDenied": "Сповіщення заблоковані в налаштуваннях системи.",
+  "settings.notifyOpenSettings": "Відкрити налаштування",
   "notification.lessonReminder.title": "{subject} через {minutes} хв",
   "notification.changed.title": "Розклад змінився",
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
