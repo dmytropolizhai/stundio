@@ -7,14 +7,16 @@ import { useAppStore } from "../../store/index.ts";
 import { lv, type Dict, type MessageKey } from "./lv.ts";
 import { en } from "./en.ts";
 import { ru } from "./ru.ts";
+import { ua } from "./ua.ts";
 import type { Lang } from "./format.ts";
 
-export const DICTS: Record<Lang, Dict> = { lv, en, ru };
-export const LANGS = ["lv", "en", "ru"] as const;
+export const DICTS: Record<Lang, Dict> = { lv, en, ru, ua };
+export const LANGS = ["lv", "en", "ru", "ua"] as const;
 export const LANG_NAMES: Record<Lang, string> = {
   lv: "Latviešu",
   en: "English",
   ru: "Русский",
+  ua: "Солов'їна",
 };
 
 export type Translate = (key: MessageKey, params?: Record<string, string | number>) => string;

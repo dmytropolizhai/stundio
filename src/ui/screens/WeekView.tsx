@@ -12,7 +12,6 @@ import {
   type WeekGridPeriod,
 } from "@/ds";
 import { offMainBuilding, subjectCode, subjectTone } from "@/ui/theme";
-import { subjectCode, subjectTone } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
