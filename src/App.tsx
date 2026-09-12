@@ -29,7 +29,7 @@ const SettingsView = lazy(() =>
 );
 
 const Splash = () => (
-  <div className="flex h-full items-center justify-center bg-card">
+  <div className="flex h-full items-center justify-center bg-brand-deep">
     <span className="u-wordmark text-brand">stundio.</span>
   </div>
 );
