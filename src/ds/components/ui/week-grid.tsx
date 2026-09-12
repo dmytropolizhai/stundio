@@ -37,6 +37,11 @@ export type WeekGridProps<K extends string = string> = {
   className?: string;
   /** Accessible label for each cell, so a 3-letter code is not the only thing announced. */
   cellLabel?: (cell: WeekGridCell, day: WeekGridDay<K>, period: number) => string;
+  /**
+   * Collapse a run of consecutive identical lessons for one day into a single cell spanning
+   * those rows, instead of stacking identical pills. Off by default — a user setting.
+   */
+  mergeConsecutive?: boolean;
 };
 
 const TONE_BG: Record<LessonTone, string> = {
@@ -47,6 +52,49 @@ const TONE_BG: Record<LessonTone, string> = {
   mint: "bg-mint",
   lime: "bg-lime",
   brand: "bg-brand",
+};
+
+type Placement = { cell: WeekGridCell; span: number } | "covered";
+
+const sameCell = (a: WeekGridCell, b: WeekGridCell): boolean =>
+  a.short === b.short &&
+  (a.tone ?? "sky") === (b.tone ?? "sky") &&
+  (a.cancelled ?? false) === (b.cancelled ?? false);
+
+/**
+ * Placement per row for one day column. Without merging this is just each period's own cell;
+ * with it, a run of adjacent rows carrying the identical cell collapses to one `span`-tall
+ * placement, and the rows it absorbs come back as `"covered"` (render nothing — the spanning
+ * cell above already fills that grid area).
+ */
+const placementsFor = <K extends string>(
+  day: WeekGridDay<K>,
+  periods: readonly WeekGridPeriod<K>[],
+  mergeConsecutive: boolean,
+): (Placement | undefined)[] => {
+  const raw = periods.map((p) => p.cells[day.key]);
+  if (!mergeConsecutive) {
+    return raw.map((cell) => (cell === undefined ? undefined : { cell, span: 1 }));
+  }
+  const out = new Array<Placement | undefined>(raw.length).fill(undefined);
+  let i = 0;
+  while (i < raw.length) {
+    const cell = raw[i];
+    if (cell === undefined) {
+      i += 1;
+      continue;
+    }
+    let span = 1;
+    while (i + span < raw.length) {
+      const next = raw[i + span];
+      if (next === undefined || !sameCell(cell, next)) break;
+      span += 1;
+    }
+    out[i] = { cell, span };
+    for (let k = 1; k < span; k += 1) out[i + k] = "covered";
+    i += span;
+  }
+  return out;
 };
 
 /**
@@ -63,6 +111,7 @@ export const WeekGrid = <K extends string>({
   onSelectDay,
   className,
   cellLabel,
+  mergeConsecutive = false,
 }: WeekGridProps<K>) => (
   <div
     className={cn("grid gap-1.5", className)}
@@ -102,47 +151,65 @@ export const WeekGrid = <K extends string>({
       );
     })}
 
-    {periods.map((period) => (
-      <div key={period.period} className="contents">
-        <span className="u-data self-center text-[11px] text-muted">{period.start}</span>
-        {days.map((day) => {
-          const cell = period.cells[day.key];
-          if (cell === undefined) {
-            // `shadow-hairline` gives the block a boundary independent of fill contrast —
-            // `--surface-sunken` sits only a few levels above `--bg-app` in dark mode, so an
-            // unbordered fill nearly disappears into the page there.
-            return (
-              <span
-                key={day.key}
-                aria-hidden="true"
-                className="h-10 rounded-sm bg-sunken shadow-hairline"
-              />
-            );
-          }
-          return (
-            <button
-              key={day.key}
-              type="button"
-              aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
-              // Free on desktop (hover), inert on the touch device this app actually ships on —
-              // tapping already opens the full lesson sheet with the name.
-              title={cell.name ?? cell.short}
-              onClick={() => {
-                onSelect?.(cell, day.key, period.period);
-              }}
-              className={cn(
-                "h-10 truncate rounded-sm border-0 px-1.5",
-                "font-text text-caption font-bold text-ink-900",
-                TONE_BG[cell.tone ?? "sky"],
-                cell.cancelled === true && "opacity-40 line-through",
-                onSelect === undefined ? "cursor-default" : "cursor-pointer",
-              )}
-            >
-              {cell.short}
-            </button>
-          );
-        })}
-      </div>
+    {periods.map((period, rowIndex) => (
+      // `h-10` here (not just on cells) keeps every row at least one lesson-cell tall, even a
+      // row every day's lesson merges away from (see `placementsFor`) — otherwise that row
+      // would collapse to the label text's own height and break the grid's vertical rhythm.
+      <span
+        key={`t-${period.period}`}
+        className="u-data flex h-10 items-center text-[11px] text-muted"
+        style={{ gridColumn: 1, gridRow: rowIndex + 2 }}
+      >
+        {period.start}
+      </span>
     ))}
+
+    {days.map((day, colIndex) =>
+      placementsFor(day, periods, mergeConsecutive).map((placement, rowIndex) => {
+        const gridColumn = colIndex + 2;
+        const gridRow = rowIndex + 2;
+        if (placement === "covered") return null;
+        if (placement === undefined) {
+          // `shadow-hairline` gives the block a boundary independent of fill contrast —
+          // `--surface-sunken` sits only a few levels above `--bg-app` in dark mode, so an
+          // unbordered fill nearly disappears into the page there.
+          return (
+            <span
+              key={`${day.key}-${rowIndex}`}
+              aria-hidden="true"
+              className="h-10 rounded-sm bg-sunken shadow-hairline"
+              style={{ gridColumn, gridRow }}
+            />
+          );
+        }
+        const { cell, span } = placement;
+        const period = periods[rowIndex];
+        if (period === undefined) return null;
+        return (
+          <button
+            key={`${day.key}-${rowIndex}`}
+            type="button"
+            data-testid="week-cell"
+            aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
+            // Free on desktop (hover), inert on the touch device this app actually ships on —
+            // tapping already opens the full lesson sheet with the name.
+            title={cell.name ?? cell.short}
+            onClick={() => {
+              onSelect?.(cell, day.key, period.period);
+            }}
+            style={{ gridColumn, gridRow: span === 1 ? gridRow : `${String(gridRow)} / span ${String(span)}` }}
+            className={cn(
+              "truncate rounded-sm border-0 px-1.5",
+              "font-text text-caption font-bold text-ink-900",
+              TONE_BG[cell.tone ?? "sky"],
+              cell.cancelled === true && "opacity-40 line-through",
+              onSelect === undefined ? "cursor-default" : "cursor-pointer",
+            )}
+          >
+            {cell.short}
+          </button>
+        );
+      }),
+    )}
   </div>
 );

@@ -45,6 +45,9 @@ export const lv = {
   "day.preferences": "Iestatījumi",
   "day.showTime": "Rādīt laiku",
 
+  "week.previousWeek": "Iepriekšējā nedēļa",
+  "week.nextWeek": "Nākamā nedēļa",
+
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
   "lesson.period": "Stunda",
@@ -86,6 +89,10 @@ export const lv = {
   "settings.buildingAuto": "Automātiski",
   "settings.theme": "Noformējums",
   "settings.language": "Valoda",
+  "settings.week": "Nedēļas skats",
+  "settings.mergeLessons": "Apvienot vienādas stundas",
+  "settings.mergeLessonsHint":
+    "Pēc kārtas atkārtotu priekšmetu nedēļas skatā rāda kā vienu garāku bloku.",
   "settings.data": "Dati",
   "settings.about": "Par lietotni",
   "settings.aboutText":

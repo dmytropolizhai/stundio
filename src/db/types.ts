@@ -25,6 +25,8 @@ export type Settings = {
   favorites: string[];
   theme: "system" | "light" | "dark";
   lang: "lv" | "en" | "ru";
+  /** Week view: collapse a run of consecutive identical lessons into one tall block. */
+  mergeConsecutiveLessons: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -33,6 +35,7 @@ export const DEFAULT_SETTINGS: Settings = {
   favorites: [],
   theme: "system",
   lang: "lv",
+  mergeConsecutiveLessons: false,
 };
 
 export type AppCache = {

@@ -32,6 +32,14 @@ export const formatWeekdayShort = (date: ISODate, lang: Lang): string =>
 export const formatDayMonth = (date: ISODate, lang: Lang): string =>
   fmt(lang, { day: "numeric", month: "numeric" }).format(toDate(date));
 
+/**
+ * "07.09.–11.09." — the WeekView header title. Numeric rather than the spelled-out month
+ * `formatLongDate` uses: it sits between two 44px arrow buttons in a single header row, and a
+ * spelled-out month range does not fit a 375px phone next to the class/sync actions.
+ */
+export const formatWeekRange = (start: ISODate, end: ISODate, lang: Lang): string =>
+  fmt(lang, { day: "2-digit", month: "2-digit" }).formatRange(toDate(start), toDate(end));
+
 /** Clock time for "updated 14:32". EduPage times are already local wall clock. */
 export const formatClock = (at: string, lang: Lang): string =>
   new Intl.DateTimeFormat(LOCALE[lang], {

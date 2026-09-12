@@ -39,6 +39,9 @@ export const en: Dict = {
   "day.preferences": "Preferences",
   "day.showTime": "Show time",
 
+  "week.previousWeek": "Previous week",
+  "week.nextWeek": "Next week",
+
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",
   "lesson.period": "Period",
@@ -80,6 +83,10 @@ export const en: Dict = {
   "settings.buildingAuto": "Automatic",
   "settings.theme": "Appearance",
   "settings.language": "Language",
+  "settings.week": "Week view",
+  "settings.mergeLessons": "Merge identical lessons",
+  "settings.mergeLessonsHint":
+    "Shows a subject that repeats back-to-back in the week view as one longer block.",
   "settings.data": "Data",
   "settings.about": "About",
   "settings.aboutText":
