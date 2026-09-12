@@ -46,7 +46,14 @@ export const SegmentedTabs = <K extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className={cn("inline-flex gap-0.5 rounded-pill bg-sunken p-1", className)}
+      // `max-w-full` lets the track shrink-wrap its items as before when they fit, and only
+      // then fall back to a horizontal scroller instead of clipping — a segment list whose
+      // length depends on data (e.g. the building picker) can otherwise overflow the viewport
+      // with its last item unreachable.
+      className={cn(
+        "no-scrollbar inline-flex max-w-full gap-0.5 overflow-x-auto rounded-pill bg-sunken p-1",
+        className,
+      )}
     >
       {items.map((item, i) => {
         const active = item.key === value;
@@ -74,7 +81,7 @@ export const SegmentedTabs = <K extends string>({
               }
             }}
             className={cn(
-              "h-9 cursor-pointer rounded-pill border-0 bg-transparent px-4.5",
+              "h-9 shrink-0 cursor-pointer rounded-pill border-0 bg-transparent px-4.5",
               "font-text text-sm font-bold text-muted",
               "transition-[background-color,color,box-shadow] duration-(--dur-fast) ease-(--ease-standard)",
               active && "bg-card text-strong shadow-card",
