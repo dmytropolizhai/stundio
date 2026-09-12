@@ -1,4 +1,4 @@
-# Stundio
+![Stundio](.github/assets/github-banner-1200x400.png)
 
 Stundio takes the public timetable from **Rīgas Valsts tehnikums** (`pikcrvt.edupage.org`) and turns it into a fast, offline-friendly schedule app.
 
@@ -73,7 +73,7 @@ npm install
 npm run android
 ```
 
-`npm run android` builds the web app, syncs it into the Capacitor Android project in [android/](android/), and launches it on a device or emulator detected by `adb`.
+`npm run android` builds the web app, syncs it into the Capacitor Android project in [android/](android), and launches it on a device or emulator detected by `adb`.
 
 If multiple devices are connected, you'll be asked which one to use.
 
