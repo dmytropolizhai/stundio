@@ -22,17 +22,17 @@ const palette: SharePalette = {
   text: "#2a2d36",
   strong: "#0b0c10",
   muted: "#5b6070",
+  shadow: "rgba(6, 11, 61, 0.16)",
 };
 
 const data: ShareImageData = {
-  eyebrow: "Stundu saraksts",
   className: "A1-2",
   period: "07.09.–11.09.",
   classTeacher: null,
   columns: [{ weekday: "Pr", date: "7.09." }],
   rows: [
     {
-      period: "1.",
+      period: "1",
       start: "08:30",
       end: "09:10",
       cells: [{ label: "PRG", fill: "#9cc8f7", ink: "#0c3560" }],
@@ -40,7 +40,7 @@ const data: ShareImageData = {
   ],
   notes: [],
   brand: "Stundio",
-  link: "github.com/dmytropolizhai/stundio/releases",
+  link: { label: "shorturl.at/pPrzh", qr: null },
 };
 
 const stubContext = (): ShareContext =>
@@ -63,6 +63,9 @@ const stubContext = (): ShareContext =>
     textAlign: "",
     textBaseline: "",
     globalAlpha: 1,
+    shadowColor: "",
+    shadowBlur: 0,
+    shadowOffsetY: 0,
   }) satisfies ShareContext;
 
 const fakeCanvas = (
@@ -92,14 +95,14 @@ describe("renderShareImage", () => {
     const image = renderShareImage(data, { palette, scale: 3, createCanvas: create });
 
     expect(canvas.width).toBe(image.width);
-    expect(image.width).toBe(720 * 3);
+    expect(image.width).toBe(560 * 3);
     expect(ctx.scale).toHaveBeenCalledWith(3, 3);
     expect(image.dataUrl.startsWith("data:image/png;base64,")).toBe(true);
   });
 
   it("defaults to 2× — a phone screenshot of a shared card should not be soft", () => {
     const { create } = fakeCanvas(stubContext());
-    expect(renderShareImage(data, { palette, createCanvas: create }).width).toBe(1440);
+    expect(renderShareImage(data, { palette, createCanvas: create }).width).toBe(1120);
   });
 
   it("says so when the platform hands back no 2D context", () => {

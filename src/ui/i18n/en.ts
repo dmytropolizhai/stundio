@@ -76,9 +76,7 @@ export const en: Dict = {
   "share.error": "Could not create the image",
   "share.title": "{class} timetable",
   "share.message": "{class} timetable {period}",
-  "share.image.eyebrow": "Timetable",
   "share.image.classTeacher": "Form teacher",
-  "share.image.period": "{n}.",
 
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",

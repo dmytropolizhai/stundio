@@ -23,6 +23,7 @@ const FALLBACK_SURFACE: Record<keyof SharePalette, string> = {
   text: "#2a2d36",
   strong: "#0b0c10",
   muted: "#5b6070",
+  shadow: "rgba(6, 11, 61, 0.16)",
 };
 
 const FALLBACK_TONES: Record<SubjectTone, ToneColors> = {
@@ -43,6 +44,10 @@ const VARS: Record<keyof SharePalette, string> = {
   text: "--text-body",
   strong: "--text-strong",
   muted: "--text-muted",
+  // The design system's shadows are composites, and canvas takes one colour — so this is the
+  // navy they are all tinted with rather than a token, and it darkens for a dark ground the way
+  // `--shadow-card` does under `.dark`.
+  shadow: "--share-shadow",
 };
 
 type Vars = { getPropertyValue: (property: string) => string };

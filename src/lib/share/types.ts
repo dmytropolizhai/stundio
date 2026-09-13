@@ -7,6 +7,7 @@
  * translated, so the same painter serves light and dark, LV/EN/RU/UA, and — should it ever be
  * needed — a day card, without reaching upward into `ui/` (CLAUDE.md).
  */
+import type { QrMatrix } from "./qr.ts";
 
 /** Surface and text colours, pulled from the live theme by the caller. */
 export type SharePalette = {
@@ -22,6 +23,8 @@ export type SharePalette = {
   text: string;
   strong: string;
   muted: string;
+  /** The navy the design system tints every shadow with. */
+  shadow: string;
 };
 
 /** One lesson cell. `fill`/`ink` are the subject accent pair the app already assigned it. */
@@ -45,7 +48,7 @@ export type ShareColumn = {
 };
 
 export type ShareRow = {
-  /** Period label ("1"), drawn small next to the times. */
+  /** The source period key ("1"), used to line cells up — never drawn. */
   period: string;
   start: string;
   end: string;
@@ -53,9 +56,15 @@ export type ShareRow = {
   cells: (ShareCell | null)[];
 };
 
+/** Where to get the app: a scannable code, with the URL spelled out for whoever cannot scan. */
+export type ShareLink = {
+  /** The URL as a person reads and types it — no scheme, since it is not a link here. */
+  label: string;
+  /** Dark-module matrix, or `null` when the URL could not be encoded. */
+  qr: QrMatrix | null;
+};
+
 export type ShareImageData = {
-  /** Small caps line above the class name — "Stundu saraksts". */
-  eyebrow: string;
   /** The class the card is for — the biggest thing on it. */
   className: string;
   /** "07.09.–11.09." — the week the card covers. */
@@ -68,6 +77,5 @@ export type ShareImageData = {
   notes: string[];
   /** Wordmark in the footer. */
   brand: string;
-  /** Where to get the app — the release page, without its scheme. */
-  link: string;
+  link: ShareLink;
 };

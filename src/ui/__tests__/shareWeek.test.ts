@@ -100,9 +100,11 @@ describe("buildWeekImageData", () => {
     expect(data.notes[0]).toMatch(/otr/i); // Tuesday, in Latvian
   });
 
-  it("carries the release link, so the card is its own invitation", async () => {
+  it("carries the way back to the app: a scannable code and the same address in words", async () => {
     const data = await buildFor("A1-2");
-    expect(data.link).toBe("github.com/dmytropolizhai/stundio/releases");
+
+    expect(data.link.label).toBe("shorturl.at/pPrzh");
+    expect(data.link.qr).not.toBeNull();
     expect(data.brand).toBe("Stundio");
   });
 

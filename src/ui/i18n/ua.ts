@@ -76,9 +76,7 @@ export const ua: Dict = {
   "share.error": "Не вдалося створити зображення",
   "share.title": "Розклад {class}",
   "share.message": "Розклад {class} {period}",
-  "share.image.eyebrow": "Розклад",
   "share.image.classTeacher": "Класний керівник",
-  "share.image.period": "{n}.",
 
   "lesson.teacher": "Учитель",
   "lesson.room": "Кабінет",

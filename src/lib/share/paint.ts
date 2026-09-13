@@ -26,6 +26,15 @@ export type ShareContext = {
   textAlign: string;
   textBaseline: string;
   globalAlpha: number;
+  shadowColor: string;
+  shadowBlur: number;
+  shadowOffsetY: number;
+  /**
+   * Canvas letter-spacing, which the design system's label style needs and which older WebViews
+   * do not have. Optional so a context without it still paints — untracked type is a wrong
+   * detail, a thrown exception is a missing card.
+   */
+  letterSpacing?: string;
 };
 
 /**
@@ -53,15 +62,32 @@ const roundedPath = (
   ctx.closePath();
 };
 
+const clearShadow = (ctx: ShareContext): void => {
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+};
+
 const paintOp = (ctx: ShareContext, op: ShareOp): void => {
   ctx.globalAlpha = ("alpha" in op ? op.alpha : undefined) ?? 1;
 
   if (op.op === "rect") {
     roundedPath(ctx, op.x, op.y, op.w, op.h, op.radius);
+
+    if (op.shadow !== undefined) {
+      ctx.shadowColor = op.shadow.color;
+      ctx.shadowBlur = op.shadow.blur;
+      ctx.shadowOffsetY = op.shadow.offsetY;
+    }
+
     if (op.fill !== undefined) {
       ctx.fillStyle = op.fill;
       ctx.fill();
     }
+
+    // Cleared before the stroke so an outline never picks up the fill's elevation.
+    clearShadow(ctx);
+
     if (op.stroke !== undefined) {
       ctx.strokeStyle = op.stroke;
       ctx.lineWidth = op.lineWidth ?? 1;
@@ -85,6 +111,7 @@ const paintOp = (ctx: ShareContext, op: ShareOp): void => {
   ctx.textAlign = op.align;
   // Every y in the layout is a text baseline, so the context must agree.
   ctx.textBaseline = "alphabetic";
+  if (ctx.letterSpacing !== undefined) ctx.letterSpacing = `${String(op.tracking ?? 0)}px`;
   ctx.fillText(op.text, op.x, op.y);
 };
 
@@ -96,6 +123,7 @@ export const paintShareImage = (
 ): void => {
   ctx.save();
   ctx.scale(scale, scale);
+  clearShadow(ctx);
   for (const op of layout.ops) paintOp(ctx, op);
   ctx.globalAlpha = 1;
   ctx.restore();

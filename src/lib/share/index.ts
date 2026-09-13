@@ -4,7 +4,15 @@
  * Domain-free by design — the caller resolves subject accents, translations and dates, so this
  * layer never reaches up into `ui/` or into EduPage's vocabulary (CLAUDE.md).
  */
-export type { ShareCell, ShareColumn, ShareImageData, SharePalette, ShareRow } from "./types.ts";
+export type {
+  ShareCell,
+  ShareColumn,
+  ShareImageData,
+  ShareLink,
+  SharePalette,
+  ShareRow,
+} from "./types.ts";
+export { encodeQr, QrTooLongError, type QrMatrix } from "./qr.ts";
 export { clip, layoutShareImage, type ShareImageLayout, type ShareOp } from "./layout.ts";
 export { paintShareImage, type ShareContext } from "./paint.ts";
 export {

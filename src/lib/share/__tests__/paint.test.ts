@@ -39,6 +39,10 @@ const recorder = (): Recorder => {
     textAlign: "",
     textBaseline: "",
     globalAlpha: 1,
+    shadowColor: "",
+    shadowBlur: 0,
+    shadowOffsetY: 0,
+    letterSpacing: "",
   };
 };
 

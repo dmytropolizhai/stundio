@@ -3,8 +3,14 @@
  *
  * Kept separate from the painting so the card can be reasoned about (and tested) without a
  * canvas: `layoutShareImage` decides *what sits where*, `paint.ts` only replays the result.
- * All numbers are logical CSS pixels; the renderer scales them for the exported bitmap.
+ *
+ * Every number below is a design-system value, not a guess: the 4px spacing base and its larger
+ * steps, the radius scale (28 for the card, 12 for a lesson cell), and the type scale with its
+ * tracking (DESIGN.md). The card is a Studio surface that happens to be exported as a bitmap
+ * rather than rendered in the WebView, and it has to look like one next to a screenshot of the
+ * app. Units are logical pixels; the renderer scales them for the exported image.
  */
+import type { QrMatrix } from "./qr.ts";
 import type { ShareCell, ShareImageData, SharePalette } from "./types.ts";
 
 export type ShareOp =
@@ -19,6 +25,8 @@ export type ShareOp =
       stroke?: string;
       lineWidth?: number;
       alpha?: number;
+      /** Navy-tinted drop shadow, the system's one elevation idiom. */
+      shadow?: { color: string; blur: number; offsetY: number };
     }
   | {
       op: "text";
@@ -29,27 +37,65 @@ export type ShareOp =
       color: string;
       align: "left" | "center" | "right";
       alpha?: number;
+      /** Letter-spacing in pixels — the label style's 0.14em, resolved. */
+      tracking?: number;
     }
   /** Always horizontal: hairline rules and the strike through a cancelled lesson. */
   | { op: "line"; x: number; y: number; w: number; color: string; width: number };
 
 export type ShareImageLayout = { width: number; height: number; ops: ShareOp[] };
 
-/* The two bundled families (`ds/tokens/fonts.css`); the fallbacks are what a browser
- * without them — a desktop dev build — lands on. */
+/* The two bundled families (`ds/tokens/fonts.css`); the fallbacks are what a browser without
+ * them — a desktop dev build — lands on. */
 const DISPLAY = '"Manrope", system-ui, -apple-system, sans-serif';
 const DATA = '"JetBrains Mono", ui-monospace, SFMono-Regular, monospace';
 
-const WIDTH = 720;
-const PAD = 44;
-const CONTENT = WIDTH - PAD * 2;
+/* The type scale, verbatim from DESIGN.md. */
+const HERO = `800 56px ${DISPLAY}`;
+const DISPLAY_2 = `700 30px ${DISPLAY}`;
+const BODY_STRONG = `700 15px ${DISPLAY}`;
+const CAPTION = `500 13px ${DISPLAY}`;
+const LABEL = `700 11px ${DISPLAY}`;
+const LABEL_TRACKING = 11 * 0.14;
+const DATA_15 = `500 15px ${DATA}`;
+const DATA_13 = `500 13px ${DATA}`;
+const DATA_11 = `500 11px ${DATA}`;
 
-const COL_GAP = 8;
-const TIME_COL = 78;
-const HEAD_ROW = 50;
-const ROW_H = 64;
-const ROW_GAP = 8;
-const CELL_RADIUS = 12;
+/*
+ * A wider artboard than the app's 420px phone width: this is read as an image, often beside a
+ * chat bubble, and a week of subject codes plus room numbers needs the columns. The type,
+ * spacing and radius scales are the phone's, unchanged — only the canvas is wider.
+ */
+const WIDTH = 560;
+const CARD_INSET = 16;
+const CARD_RADIUS = 28; // --radius-xl, the design system's standard card
+const CARD_PAD = 24;
+
+const CONTENT_X = CARD_INSET + CARD_PAD;
+const CONTENT_W = WIDTH - CONTENT_X * 2;
+
+const TIME_COL = 52;
+const COL_GAP = 6;
+const HEAD_ROW = 44;
+const ROW_H = 48;
+const ROW_GAP = 6;
+const CELL_RADIUS = 12; // --radius-sm, as the week grid uses
+
+const NOTE_H = 28;
+const NOTE_PAD = 12;
+const NOTE_GAP = 8;
+
+/**
+ * Module size for the QR block, in logical pixels.
+ *
+ * Sized from what actually scans, not from what looks tidy: a shared image is read at phone
+ * width, and at 4px a detector already loses the code in the full frame while 5px finds it every
+ * time. The block lands at just under a third of the card's width — deliberately a real element
+ * rather than a stamp in the corner.
+ */
+const QR_MODULE = 5;
+/** The light margin the format requires around a symbol for a scanner to find it. */
+const QR_QUIET = 4;
 
 /**
  * Character-budget truncation rather than `measureText`.
@@ -62,9 +108,12 @@ const CELL_RADIUS = 12;
 export const clip = (text: string, max: number): string =>
   text.length <= max ? text : `${text.slice(0, Math.max(0, max - 1)).trimEnd()}…`;
 
-/** Roughly how many characters fit across a cell at the given font size. */
+/** Roughly how many characters fit across a box at the given font size. */
 const budget = (width: number, fontSize: number): number =>
   Math.max(1, Math.floor(width / (fontSize * 0.62)));
+
+const columnWidth = (columns: number): number =>
+  columns === 0 ? CONTENT_W : (CONTENT_W - TIME_COL - COL_GAP * columns) / columns;
 
 const cellOps = (
   cell: ShareCell,
@@ -73,7 +122,16 @@ const cellOps = (
   w: number,
   palette: SharePalette,
 ): ShareOp[] => {
-  const alpha = cell.cancelled === true ? 0.45 : undefined;
+  /*
+   * Cancelled: faded and struck through, kept exactly where it was. The lesson card's 55% rather
+   * than the week grid's 40% — a pastel fill at 40% over a dark card turns to mud and takes its
+   * ink with it, and this surface has to hold up in both themes with no tap to clarify it.
+   */
+  const alpha = cell.cancelled === true ? 0.55 : undefined;
+  const detail = (cell.detail ?? "").trim();
+  const centre = x + w / 2;
+  const label = clip(cell.label, budget(w - 12, 13));
+
   const ops: ShareOp[] = [
     {
       op: "rect",
@@ -83,53 +141,87 @@ const cellOps = (
       h: ROW_H,
       radius: CELL_RADIUS,
       fill: cell.fill,
-      ...(cell.outlined === true ? { stroke: palette.strongBorder, lineWidth: 3 } : {}),
+      // A tinted surface never carries a shadow (DESIGN.md); the ring is the building marker,
+      // exactly as the week grid draws it.
+      ...(cell.outlined === true ? { stroke: palette.strongBorder, lineWidth: 2 } : {}),
+      ...(alpha === undefined ? {} : { alpha }),
+    },
+    {
+      op: "text",
+      x: centre,
+      y: detail === "" ? y + ROW_H / 2 + 5 : y + 21,
+      text: label,
+      font: `700 13px ${DISPLAY}`,
+      color: cell.ink,
+      align: "center",
       ...(alpha === undefined ? {} : { alpha }),
     },
   ];
-
-  const detail = cell.detail === undefined ? "" : cell.detail.trim();
-  const centre = x + w / 2;
-  const labelY = detail === "" ? y + ROW_H / 2 + 8 : y + ROW_H / 2 - 2;
-  const label = clip(cell.label, budget(w - 12, 22));
-
-  ops.push({
-    op: "text",
-    x: centre,
-    y: labelY,
-    text: label,
-    font: `800 22px ${DISPLAY}`,
-    color: cell.ink,
-    align: "center",
-    ...(alpha === undefined ? {} : { alpha }),
-  });
 
   if (detail !== "") {
     ops.push({
       op: "text",
       x: centre,
-      y: y + ROW_H / 2 + 18,
-      text: clip(detail, budget(w - 10, 13)),
-      font: `500 13px ${DATA}`,
+      y: y + 37,
+      text: clip(detail, budget(w - 8, 11)),
+      font: DATA_11,
       color: cell.ink,
       align: "center",
-      alpha: (alpha ?? 1) * 0.8,
+      // The ink pair at reduced strength: still the subject's own colour, still past 4.5:1.
+      alpha: (alpha ?? 1) * 0.85,
     });
   }
 
   if (cell.cancelled === true) {
-    // The week grid strikes a cancelled lesson through; a colour change alone would be the one
-    // thing a screenshot cannot explain later.
-    const strike = Math.min(w - 20, label.length * 13 + 8);
+    const strike = Math.min(w - 16, label.length * 9 + 6);
     ops.push({
       op: "line",
       x: centre - strike / 2,
-      y: labelY - 7,
+      y: (detail === "" ? y + ROW_H / 2 + 5 : y + 21) - 4,
       w: strike,
       color: cell.ink,
-      width: 2,
+      width: 1.5,
     });
   }
+
+  return ops;
+};
+
+/** The QR block: a light plate, its quiet zone, and one rect per dark module. */
+const qrOps = (qr: QrMatrix, x: number, y: number): ShareOp[] => {
+  const plate = (qr.length + QR_QUIET * 2) * QR_MODULE;
+
+  const ops: ShareOp[] = [
+    // White plate and near-black modules in *both* themes — the one place this card ignores the
+    // theme on purpose. A scanner needs dark-on-light; a code inverted for dark mode is a code
+    // half the readers' cameras refuse.
+    {
+      op: "rect",
+      x,
+      y,
+      w: plate,
+      h: plate,
+      radius: CELL_RADIUS,
+      fill: "#ffffff",
+    },
+  ];
+
+  const origin = QR_QUIET * QR_MODULE;
+
+  qr.forEach((row, r) => {
+    row.forEach((dark, c) => {
+      if (!dark) return;
+      ops.push({
+        op: "rect",
+        x: x + origin + c * QR_MODULE,
+        y: y + origin + r * QR_MODULE,
+        w: QR_MODULE,
+        h: QR_MODULE,
+        radius: 0,
+        fill: "#0b0c10",
+      });
+    });
+  });
 
   return ops;
 };
@@ -141,61 +233,57 @@ const cellOps = (
 export const layoutShareImage = (data: ShareImageData, palette: SharePalette): ShareImageLayout => {
   const ops: ShareOp[] = [];
   const columns = data.columns.length;
-  const colW = columns === 0 ? CONTENT : (CONTENT - TIME_COL - COL_GAP * columns) / columns;
-  const colX = (i: number): number => PAD + TIME_COL + COL_GAP + i * (colW + COL_GAP);
+  const colW = columnWidth(columns);
+  const colX = (i: number): number => CONTENT_X + TIME_COL + COL_GAP + i * (colW + COL_GAP);
 
   /* ---------- header ---------- */
-  const eyebrowY = PAD + 14;
-  const classY = eyebrowY + 50;
-  const teacherY = classY + 28;
+
+  // Set BIG and tight, and given the room to be: the class is what the reader is looking for.
+  const classY = CARD_INSET + CARD_PAD + 44;
 
   ops.push(
     {
       op: "text",
-      x: PAD,
-      y: eyebrowY,
-      text: data.eyebrow.toUpperCase(),
-      font: `700 13px ${DISPLAY}`,
-      color: palette.muted,
-      align: "left",
-    },
-    {
-      op: "text",
-      x: PAD,
+      x: CONTENT_X,
       y: classY,
-      text: clip(data.className, 14),
-      font: `800 44px ${DISPLAY}`,
+      text: clip(data.className, 12),
+      font: HERO,
       color: palette.strong,
       align: "left",
+      tracking: -56 * 0.035,
     },
     {
       op: "text",
-      x: WIDTH - PAD,
-      y: classY,
+      x: CONTENT_X,
+      y: classY + 28,
       text: data.period,
-      font: `700 26px ${DATA}`,
-      color: palette.strong,
-      align: "right",
+      font: DATA_15,
+      color: palette.text,
+      align: "left",
     },
   );
 
+  let y = classY + 28;
+
   if (data.classTeacher !== null) {
+    y += 22;
     ops.push({
       op: "text",
-      x: PAD,
-      y: teacherY,
-      text: `${data.classTeacher.label}: ${clip(data.classTeacher.name, 34)}`,
-      font: `500 16px ${DISPLAY}`,
+      x: CONTENT_X,
+      y,
+      text: `${data.classTeacher.label}: ${clip(data.classTeacher.name, 36)}`,
+      font: CAPTION,
       color: palette.muted,
       align: "left",
     });
   }
 
-  const headerBottom = (data.classTeacher === null ? classY + 12 : teacherY) + 22;
-  ops.push({ op: "line", x: PAD, y: headerBottom, w: CONTENT, color: palette.hairline, width: 1 });
+  y += 24;
+  ops.push({ op: "line", x: CONTENT_X, y, w: CONTENT_W, color: palette.hairline, width: 1 });
 
   /* ---------- grid ---------- */
-  const gridTop = headerBottom + 26;
+
+  const gridTop = y + 26;
 
   data.columns.forEach((column, i) => {
     const centre = colX(i) + colW / 2;
@@ -203,45 +291,39 @@ export const layoutShareImage = (data: ShareImageData, palette: SharePalette): S
       {
         op: "text",
         x: centre,
-        y: gridTop + 16,
+        y: gridTop + 14,
+        // Uppercase lives at label size and nowhere else in this system.
         text: column.weekday.toUpperCase(),
-        font: `700 14px ${DISPLAY}`,
+        font: LABEL,
         color: palette.strong,
         align: "center",
+        tracking: LABEL_TRACKING,
       },
       {
         op: "text",
         x: centre,
-        y: gridTop + 36,
+        y: gridTop + 30,
         text: column.date,
-        font: `500 13px ${DATA}`,
+        font: DATA_11,
         color: palette.muted,
         align: "center",
       },
     );
   });
 
-  const rowY = (i: number): number => gridTop + HEAD_ROW + i * (ROW_H + ROW_GAP);
+  const rowsTop = gridTop + HEAD_ROW;
+  const rowY = (i: number): number => rowsTop + i * (ROW_H + ROW_GAP);
 
   data.rows.forEach((row, rowIndex) => {
-    const y = rowY(rowIndex);
+    const top = rowY(rowIndex);
 
     ops.push(
       {
         op: "text",
-        x: PAD,
-        y: y + 18,
-        text: row.period,
-        font: `700 12px ${DISPLAY}`,
-        color: palette.muted,
-        align: "left",
-      },
-      {
-        op: "text",
-        x: PAD,
-        y: y + 38,
+        x: CONTENT_X,
+        y: top + 21,
         text: row.start,
-        font: `500 16px ${DATA}`,
+        font: DATA_13,
         color: palette.text,
         align: "left",
       },
@@ -250,27 +332,26 @@ export const layoutShareImage = (data: ShareImageData, palette: SharePalette): S
       // from reading as two separate start times.
       {
         op: "text",
-        x: PAD,
-        y: y + 56,
+        x: CONTENT_X,
+        y: top + 37,
         text: `–${row.end}`,
-        font: `500 14px ${DATA}`,
+        font: DATA_11,
         color: palette.muted,
         align: "left",
       },
     );
 
     for (let i = 0; i < columns; i += 1) {
-      const x = colX(i);
       const cell = row.cells[i] ?? null;
 
       if (cell === null) {
-        // Hairline as well as fill, for the same reason the week grid carries one: in dark mode
-        // the sunken surface sits a few levels off the card and an unbordered free slot would
+        // Fill plus hairline, for the same reason the week grid carries one: in dark mode the
+        // sunken surface sits a few levels off the card and an unbordered free slot would
         // dissolve into it.
         ops.push({
           op: "rect",
-          x,
-          y,
+          x: colX(i),
+          y: top,
           w: colW,
           h: ROW_H,
           radius: CELL_RADIUS,
@@ -281,70 +362,114 @@ export const layoutShareImage = (data: ShareImageData, palette: SharePalette): S
         continue;
       }
 
-      ops.push(...cellOps(cell, x, y, colW, palette));
+      ops.push(...cellOps(cell, colX(i), top, colW, palette));
     }
   });
 
-  const gridBottom =
-    data.rows.length === 0 ? gridTop + HEAD_ROW : rowY(data.rows.length - 1) + ROW_H;
+  y = data.rows.length === 0 ? gridTop + HEAD_ROW : rowY(data.rows.length - 1) + ROW_H;
 
-  /* ---------- notes + footer ---------- */
-  let y = gridBottom + 30;
+  /* ---------- building notes ---------- */
 
-  data.notes.forEach((note, i) => {
-    ops.push({
-      op: "text",
-      x: PAD,
-      y: y + 14 + i * 24,
-      text: clip(note, 62),
-      font: `500 15px ${DISPLAY}`,
-      color: palette.text,
-      align: "left",
-    });
-  });
+  if (data.notes.length > 0) {
+    y += 20;
+    let noteX = CONTENT_X;
 
-  if (data.notes.length > 0) y += data.notes.length * 24 + 12;
+    for (const note of data.notes) {
+      const text = clip(note, 40);
+      // Caption-sized Manrope averages a shade over 6px a character; the pill hugs that rather
+      // than trailing dead space on the longer of two notes.
+      const width = Math.min(text.length * 6.4 + NOTE_PAD * 2, CONTENT_W);
 
-  ops.push({ op: "line", x: PAD, y, w: CONTENT, color: palette.hairline, width: 1 });
+      if (noteX + width > CONTENT_X + CONTENT_W && noteX > CONTENT_X) {
+        noteX = CONTENT_X;
+        y += NOTE_H + NOTE_GAP;
+      }
 
-  const brandY = y + 34;
+      ops.push(
+        {
+          op: "rect",
+          x: noteX,
+          y,
+          w: width,
+          h: NOTE_H,
+          radius: NOTE_H / 2, // a pill: anything that could be pressed in the app is one
+          fill: palette.sunken,
+        },
+        {
+          op: "text",
+          x: noteX + NOTE_PAD,
+          y: y + 18,
+          text,
+          font: CAPTION,
+          color: palette.text,
+          align: "left",
+        },
+      );
+
+      noteX += width + NOTE_GAP;
+    }
+
+    y += NOTE_H;
+  }
+
+  /* ---------- footer: the signature and the way in ---------- */
+
+  y += 24;
+  ops.push({ op: "line", x: CONTENT_X, y, w: CONTENT_W, color: palette.hairline, width: 1 });
+
+  const footerTop = y + 24;
+  const qr = data.link.qr;
+  const qrPlate = qr === null ? 0 : (qr.length + QR_QUIET * 2) * QR_MODULE;
+  const footerH = Math.max(qrPlate, 52);
+
+  if (qr !== null) {
+    ops.push(...qrOps(qr, CONTENT_X + CONTENT_W - qrPlate, footerTop));
+  }
+
+  // The wordmark and the typed route, centred against the code: whoever is reading this on the
+  // very phone that would scan it still has somewhere to go.
+  const textMiddle = footerTop + footerH / 2;
+
   ops.push(
     {
       op: "text",
-      x: PAD,
-      y: brandY,
+      x: CONTENT_X,
+      y: textMiddle - 2,
       text: data.brand,
-      font: `800 24px ${DISPLAY}`,
+      font: DISPLAY_2,
       color: palette.strong,
       align: "left",
+      tracking: -30 * 0.025,
     },
     {
       op: "text",
-      x: WIDTH - PAD,
-      y: brandY - 2,
-      text: data.link,
-      font: `500 13px ${DATA}`,
+      x: CONTENT_X,
+      y: textMiddle + 20,
+      text: data.link.label,
+      font: qr === null ? BODY_STRONG : DATA_13,
       color: palette.muted,
-      align: "right",
+      align: "left",
     },
   );
 
-  const height = brandY + PAD;
+  const height = footerTop + footerH + CARD_PAD + CARD_INSET;
 
   return {
     width: WIDTH,
     height,
-    // The ground goes in first: every op above is painted over it.
+    // The ground and the card go in first: every op above is painted over them.
     ops: [
       { op: "rect", x: 0, y: 0, w: WIDTH, h: height, radius: 0, fill: palette.background },
       {
         op: "rect",
-        x: PAD / 2,
-        y: PAD / 2,
-        w: WIDTH - PAD,
-        h: height - PAD,
-        radius: 24,
+        x: CARD_INSET,
+        y: CARD_INSET,
+        w: WIDTH - CARD_INSET * 2,
+        h: height - CARD_INSET * 2,
+        radius: CARD_RADIUS,
         fill: palette.surface,
+        // `shadow-card`: navy-tinted, offset and softly blurred, never a grey halo.
+        shadow: { color: palette.shadow, blur: 28, offsetY: 12 },
       },
       ...ops,
     ],

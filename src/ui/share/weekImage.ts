@@ -7,7 +7,7 @@
  */
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { weekPeriods } from "@/lib/schedule";
-import type { ShareCell, ShareImageData } from "@/lib/share";
+import { encodeQr, type ShareCell, type ShareImageData, type ShareLink } from "@/lib/share";
 import { buildingNotice, lessonBuilding, subjectCode, subjectTone } from "@/ui/theme";
 import {
   formatDayMonth,
@@ -18,9 +18,33 @@ import {
 } from "@/ui/i18n";
 import type { ShareTheme } from "./palette.ts";
 
-/** Where a reader of the shared image gets the app. Also the text that rides with the share. */
+/**
+ * Where a reader of the shared image gets the app.
+ *
+ * The card carries the short link because it has to survive being scanned *and* typed out by
+ * hand, and because a QR of the full releases URL is a denser symbol for no gain. The message
+ * that travels beside the image carries the real URL, where it is a tappable link and length
+ * costs nothing.
+ */
+const APP_URL = "https://shorturl.at/pPrzh";
+const APP_URL_LABEL = "shorturl.at/pPrzh";
 const RELEASES_URL = "https://github.com/dmytropolizhai/stundio/releases";
-const RELEASES_LABEL = "github.com/dmytropolizhai/stundio/releases";
+
+/**
+ * The "get the app" block: a scannable code plus the same address in words.
+ *
+ * Both, not either — the likeliest reader is looking at this on the very phone that would do
+ * the scanning, and a camera cannot read its own screen. The code is generated on the device
+ * (`encodeQr`); if a URL ever outgrows what that encoder handles, the card silently keeps the
+ * words and drops the square rather than failing to render at all.
+ */
+const appLink = (): ShareLink => {
+  try {
+    return { label: APP_URL_LABEL, qr: encodeQr(APP_URL) };
+  } catch {
+    return { label: APP_URL_LABEL, qr: null };
+  }
+};
 
 export type WeekImageInput = {
   dates: ISODate[];
@@ -97,10 +121,8 @@ export const buildWeekImageData = ({
   const first = dates[0];
   const last = dates[dates.length - 1];
 
-  // `slot.period` stays the raw source key ("1") for matching lessons; only the drawn label
-  // is localized, so a period is never looked up by the string a translator chose.
   const rows = weekPeriods(days).map((slot) => ({
-    period: t("share.image.period", { n: slot.period }),
+    period: slot.period,
     start: slot.start,
     end: slot.end,
     cells: days.map((day) => {
@@ -110,7 +132,6 @@ export const buildWeekImageData = ({
   }));
 
   return {
-    eyebrow: t("share.image.eyebrow"),
     className,
     period: first === undefined || last === undefined ? "" : formatWeekRange(first, last, lang),
     classTeacher:
@@ -122,7 +143,7 @@ export const buildWeekImageData = ({
     rows,
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
-    link: RELEASES_LABEL,
+    link: appLink(),
   };
 };
 

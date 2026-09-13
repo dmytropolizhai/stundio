@@ -76,9 +76,7 @@ export const ru: Dict = {
   "share.error": "Не удалось создать изображение",
   "share.title": "Расписание {class}",
   "share.message": "Расписание {class} {period}",
-  "share.image.eyebrow": "Расписание",
   "share.image.classTeacher": "Классный руководитель",
-  "share.image.period": "{n}.",
 
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",

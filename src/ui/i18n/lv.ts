@@ -82,9 +82,7 @@ export const lv = {
   "share.error": "Neizdevās sagatavot attēlu",
   "share.title": "{class} stundu saraksts",
   "share.message": "{class} stundu saraksts {period}",
-  "share.image.eyebrow": "Stundu saraksts",
   "share.image.classTeacher": "Klases audzinātājs",
-  "share.image.period": "{n}.",
 
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
