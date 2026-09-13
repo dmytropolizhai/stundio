@@ -8,12 +8,13 @@ export type {
   ShareCell,
   ShareColumn,
   ShareImageData,
+  ShareLegendEntry,
   ShareLink,
   SharePalette,
   ShareRow,
 } from "./types.ts";
 export { encodeQr, QrTooLongError, type QrMatrix } from "./qr.ts";
-export { clip, layoutShareImage, type ShareImageLayout, type ShareOp } from "./layout.ts";
+export { clip, layoutShareImage, wrap, type ShareImageLayout, type ShareOp } from "./layout.ts";
 export { paintShareImage, type ShareContext } from "./paint.ts";
 export {
   dataUrlToBase64,

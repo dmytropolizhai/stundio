@@ -206,7 +206,9 @@ Still unverified on a physical device (no JDK/Android SDK here).
 - [x] **Share the week as an image**: the week view exports a card — class set at Hero size, form
       teacher (`classes.teacherid`, MODEL.md §2), the week's period rows with start *and* end
       times, subject accents, and the buildings the week visits as sunken pills — and hands it to
-      Android's share sheet. The footer carries the wordmark and a **QR code to the download
+      Android's share sheet. Under the grid sits a **key** pairing every code with the subject's
+      full name: RVT publishes names up to 92 characters, so no five-column grid can hold them in
+      a cell, and an unexplained acronym on an image is unreadable (there is nothing to tap). The footer carries the wordmark and a **QR code to the download
       page**, generated on-device (`lib/share/qr.ts`), with the short URL printed beside it for
       whoever is reading the image on the phone that would have scanned it. Laid out in design
       system units throughout, so the export reads as a Studio surface next to a screenshot of

@@ -43,6 +43,14 @@ const data = (overrides: Partial<ShareImageData> = {}): ShareImageData => ({
       cells: [cell("PRG", { detail: "312" }), null],
     },
   ],
+  legend: [
+    {
+      label: "PRG",
+      name: "Algoritmēšanas un programmēšanas pamati",
+      fill: "#9cc8f7",
+      ink: "#0c3560",
+    },
+  ],
   notes: ["TIC: Ot"],
   brand: "Stundio",
   link: { label: "shorturl.at/pPrzh", qr: null },
@@ -159,6 +167,39 @@ describe("layoutShareImage", () => {
 
     expect(heading).toMatchObject({ font: expect.stringContaining("11px") as string });
     expect(heading).toMatchObject({ tracking: expect.closeTo(11 * 0.14) as number });
+  });
+
+  describe("the key to the codes", () => {
+    it("draws a swatch and the full subject name for every entry", () => {
+      const { ops } = layoutShareImage(data(), palette);
+      const drawn = texts(ops);
+
+      expect(drawn).toContain("PRG");
+      expect(drawn).toContain("Algoritmēšanas un programmēšanas pamati");
+    });
+
+    it("wraps a name too long for one line instead of cutting it", () => {
+      const long =
+        "Ritošā sastāva enerģētisko iekārtu un palīgiekārtu tehniskās apkopes un remonta veikšana PB4";
+      const drawn = texts(
+        layoutShareImage(
+          data({ legend: [{ label: "RSE", name: long, fill: "#9cc8f7", ink: "#0c3560" }] }),
+          palette,
+        ).ops,
+      );
+
+      const lines = drawn.filter(
+        (text) => long.startsWith(text.replace("…", "")) || text.endsWith("PB4"),
+      );
+      expect(lines.length).toBeGreaterThan(1);
+      expect(lines.join(" ").replace(/…/g, "")).not.toBe("");
+    });
+
+    it("takes no room at all when there is nothing to explain", () => {
+      expect(layoutShareImage(data({ legend: [] }), palette).height).toBeLessThan(
+        layoutShareImage(data(), palette).height,
+      );
+    });
   });
 
   describe("the QR block", () => {

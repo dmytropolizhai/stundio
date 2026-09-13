@@ -7,7 +7,13 @@
  */
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { weekPeriods } from "@/lib/schedule";
-import { encodeQr, type ShareCell, type ShareImageData, type ShareLink } from "@/lib/share";
+import {
+  encodeQr,
+  type ShareCell,
+  type ShareImageData,
+  type ShareLegendEntry,
+  type ShareLink,
+} from "@/lib/share";
 import { buildingNotice, lessonBuilding, subjectCode, subjectTone } from "@/ui/theme";
 import {
   formatDayMonth,
@@ -80,6 +86,33 @@ const toCell = (day: ResolvedDay, lesson: ResolvedLesson, theme: ShareTheme): Sh
 };
 
 /**
+ * The key to the grid's codes: every subject the week uses, once, with its full name.
+ *
+ * `subjectCode` derives a three-letter code because RVT publishes no short one and a 40pt cell
+ * holds nothing longer — which is fine in the app, where the lesson is one tap from its full
+ * name, and useless on an image, where there is nothing to tap. Sorted by code so a reader
+ * scanning from a cell finds the line quickly.
+ */
+const subjectKey = (days: (ResolvedDay | null)[], theme: ShareTheme): ShareLegendEntry[] => {
+  const byLabel = new Map<string, ShareLegendEntry>();
+
+  for (const day of days) {
+    for (const lesson of day?.lessons ?? []) {
+      const label = subjectCode(lesson.subject);
+      const name = (lesson.subject?.name ?? lesson.subject?.short ?? "").trim();
+
+      // Nothing to explain when there is no name behind the code.
+      if (name === "" || name === label || byLabel.has(label)) continue;
+
+      const tone = theme.tones[subjectTone(lesson.subject)];
+      byLabel.set(label, { label, name, fill: tone.fill, ink: tone.ink });
+    }
+  }
+
+  return [...byLabel.values()].sort((a, b) => a.label.localeCompare(b.label, "lv"));
+};
+
+/**
  * Which weekdays sit in another building, as one line per building — the same sentence the week
  * view prints under its grid. On a card that someone screenshots and forgets the origin of, this
  * is the difference between "Tuesday, room 12" and "Tuesday, the other side of town".
@@ -141,6 +174,7 @@ export const buildWeekImageData = ({
       date: formatDayMonth(date, lang),
     })),
     rows,
+    legend: subjectKey(days, theme),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
     link: appLink(),

@@ -47,6 +47,22 @@ export type ShareColumn = {
   date: string;
 };
 
+/**
+ * One line of the key under the grid: a cell's label, and what it actually stands for.
+ *
+ * A grid cell is too small for a subject name, so it carries a code — and a code nobody can
+ * expand is a card nobody can read. The key closes that loop, carrying the accent as well as the
+ * letters so the colour in the grid is also findable here.
+ */
+export type ShareLegendEntry = {
+  /** Exactly the label the matching cells draw. */
+  label: string;
+  /** The subject's full name, unabbreviated. */
+  name: string;
+  fill: string;
+  ink: string;
+};
+
 export type ShareRow = {
   /** The source period key ("1"), used to line cells up — never drawn. */
   period: string;
@@ -73,6 +89,8 @@ export type ShareImageData = {
   classTeacher: { label: string; name: string } | null;
   columns: ShareColumn[];
   rows: ShareRow[];
+  /** What the grid's codes mean — every code the week uses, once. */
+  legend: ShareLegendEntry[];
   /** Building lines ("TIC: Ot, Ce") — one per building the week visits. */
   notes: string[];
   /** Wordmark in the footer. */

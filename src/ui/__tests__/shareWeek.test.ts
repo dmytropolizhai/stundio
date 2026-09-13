@@ -100,6 +100,31 @@ describe("buildWeekImageData", () => {
     expect(data.notes[0]).toMatch(/otr/i); // Tuesday, in Latvian
   });
 
+  it("spells out every code the grid uses, so the card explains itself", async () => {
+    const data = await buildFor("A1-2");
+    const codes = new Set(
+      data.rows.flatMap((row) => row.cells).flatMap((cell) => (cell === null ? [] : [cell.label])),
+    );
+
+    expect(data.legend.length).toBeGreaterThan(0);
+    for (const entry of data.legend) {
+      // The full name, not another abbreviation of it.
+      expect(entry.name.length).toBeGreaterThan(entry.label.length);
+      expect(entry.fill).toMatch(/^#/);
+    }
+
+    const explained = new Set(data.legend.map((entry) => entry.label));
+    for (const code of codes) expect(explained.has(code)).toBe(true);
+  });
+
+  it("lists each subject once, in code order", async () => {
+    const { legend } = await buildFor("DT3-2");
+    const labels = legend.map((entry) => entry.label);
+
+    expect(new Set(labels).size).toBe(labels.length);
+    expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b, "lv")));
+  });
+
   it("carries the way back to the app: a scannable code and the same address in words", async () => {
     const data = await buildFor("A1-2");
 

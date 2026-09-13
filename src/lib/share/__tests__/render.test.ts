@@ -38,6 +38,7 @@ const data: ShareImageData = {
       cells: [{ label: "PRG", fill: "#9cc8f7", ink: "#0c3560" }],
     },
   ],
+  legend: [],
   notes: [],
   brand: "Stundio",
   link: { label: "shorturl.at/pPrzh", qr: null },

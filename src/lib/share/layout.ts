@@ -85,6 +85,13 @@ const NOTE_H = 28;
 const NOTE_PAD = 12;
 const NOTE_GAP = 8;
 
+/* The key under the grid: an accent swatch carrying the code, then the name it stands for. */
+const KEY_SWATCH_W = 46;
+const KEY_SWATCH_H = 20;
+const KEY_TEXT_X = KEY_SWATCH_W + 10;
+const KEY_LINE_H = 17;
+const KEY_ROW_GAP = 7;
+
 /**
  * Module size for the QR block, in logical pixels.
  *
@@ -111,6 +118,39 @@ export const clip = (text: string, max: number): string =>
 /** Roughly how many characters fit across a box at the given font size. */
 const budget = (width: number, fontSize: number): number =>
   Math.max(1, Math.floor(width / (fontSize * 0.62)));
+
+/**
+ * Greedy word wrap to at most `maxLines`, ellipsising whatever will not fit.
+ *
+ * Same reasoning as `clip`: a character budget, not measured text, so the card lays out
+ * identically wherever it is drawn. Two lines at the key's width covers every subject name RVT
+ * publishes, including the 92-character ones.
+ */
+export const wrap = (text: string, perLine: number, maxLines: number): string[] => {
+  const words = text.split(/\s+/).filter((word) => word !== "");
+  const lines: string[] = [];
+  let line = "";
+
+  for (const word of words) {
+    const candidate = line === "" ? word : `${line} ${word}`;
+
+    if (candidate.length <= perLine) {
+      line = candidate;
+      continue;
+    }
+
+    if (lines.length + 1 === maxLines) {
+      lines.push(clip(candidate, perLine));
+      return lines;
+    }
+
+    if (line !== "") lines.push(line);
+    line = clip(word, perLine);
+  }
+
+  if (line !== "") lines.push(line);
+  return lines;
+};
 
 const columnWidth = (columns: number): number =>
   columns === 0 ? CONTENT_W : (CONTENT_W - TIME_COL - COL_GAP * columns) / columns;
@@ -163,7 +203,9 @@ const cellOps = (
       op: "text",
       x: centre,
       y: y + 37,
-      text: clip(detail, budget(w - 8, 11)),
+      // Nearly the full cell width: the detail is centred and monospaced, and RVT's room codes
+      // ("341 D(30) P") land exactly on the boundary where a tighter budget costs a character.
+      text: clip(detail, budget(w - 4, 11)),
       font: DATA_11,
       color: cell.ink,
       align: "center",
@@ -367,6 +409,63 @@ export const layoutShareImage = (data: ShareImageData, palette: SharePalette): S
   });
 
   y = data.rows.length === 0 ? gridTop + HEAD_ROW : rowY(data.rows.length - 1) + ROW_H;
+
+  /* ---------- the key to the codes ---------- */
+
+  /*
+   * The grid abbreviates because a cell is 80pt wide; RVT's subject names run to 92 characters
+   * ("Ritošā sastāva enerģētisko iekārtu un palīgiekārtu tehniskās apkopes un remonta veikšana
+   * PB4"), so no arrangement of five columns holds them. The key is where the card pays that
+   * back in full — every code the week uses, spelled out, with its accent alongside so the
+   * colour is a second way in.
+   */
+  if (data.legend.length > 0) {
+    y += 26;
+
+    const nameWidth = CONTENT_W - KEY_TEXT_X;
+
+    for (const entry of data.legend) {
+      const lines = wrap(entry.name, budget(nameWidth, 13), 2);
+
+      ops.push(
+        {
+          op: "rect",
+          x: CONTENT_X,
+          y,
+          w: KEY_SWATCH_W,
+          h: KEY_SWATCH_H,
+          radius: KEY_SWATCH_H / 2,
+          fill: entry.fill,
+        },
+        {
+          op: "text",
+          x: CONTENT_X + KEY_SWATCH_W / 2,
+          y: y + 14,
+          text: clip(entry.label, 6),
+          font: LABEL,
+          color: entry.ink,
+          align: "center",
+          tracking: LABEL_TRACKING,
+        },
+      );
+
+      lines.forEach((line, i) => {
+        ops.push({
+          op: "text",
+          x: CONTENT_X + KEY_TEXT_X,
+          y: y + 14 + i * KEY_LINE_H,
+          text: line,
+          font: CAPTION,
+          color: palette.text,
+          align: "left",
+        });
+      });
+
+      y += Math.max(KEY_SWATCH_H, lines.length * KEY_LINE_H) + KEY_ROW_GAP;
+    }
+
+    y -= KEY_ROW_GAP;
+  }
 
   /* ---------- building notes ---------- */
 
