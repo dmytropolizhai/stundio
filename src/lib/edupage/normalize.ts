@@ -7,6 +7,7 @@
 import type {
   Building,
   ClassRef,
+  EntityRef,
   ISODate,
   ISODateTime,
   Lesson,
@@ -42,12 +43,18 @@ export const weekdayFromBitmask = (mask: string): Weekday | null => {
  * Entity tables
  * ------------------------------------------------------------------ */
 
-const toEntityRef = (r: Row): ClassRef => ({
+const toEntityRef = (r: Row): EntityRef => ({
   id: str(r["id"]),
   // RVT leaves `name` empty on teachers; fall back so the UI always has something.
   name: str(r["name"]) || str(r["short"]),
   short: str(r["short"]) || str(r["name"]),
   color: strOrNull(r["color"]),
+});
+
+/** A class additionally carries its form teacher — MODEL.md §2, `classes.teacherid`. */
+const toClassRef = (r: Row): ClassRef => ({
+  ...toEntityRef(r),
+  teacherId: strOrNull(r["teacherid"]),
 });
 
 const toRoomRef = (r: Row): RoomRef => ({
@@ -77,7 +84,7 @@ export type NormalizeStats = {
 export type NormalizeResult = { timetable: Timetable; stats: NormalizeStats };
 
 export const normalizeTimetable = (tables: RawTables, meta: TimetableMeta): NormalizeResult => {
-  const classes = (tables["classes"] ?? []).map(toEntityRef);
+  const classes = (tables["classes"] ?? []).map(toClassRef);
   const teachers: TeacherRef[] = (tables["teachers"] ?? []).map(toEntityRef);
   const subjects: SubjectRef[] = (tables["subjects"] ?? []).map(toEntityRef);
   const rooms = (tables["classrooms"] ?? []).map(toRoomRef);

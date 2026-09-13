@@ -29,6 +29,7 @@ export {
 } from "./normalize.ts";
 export {
   MAIN_BUILDING,
+  findClassTeacher,
   isMainBuilding,
   listBuildings,
   selectTimetable,

@@ -77,6 +77,13 @@ export const lv = {
   "week.overview.busiestLabel": "Noslogotākā diena",
   "week.overview.lightestLabel": "Vieglākā diena",
 
+  "share.week": "Dalīties ar nedēļu",
+  "share.working": "Sagatavo attēlu…",
+  "share.error": "Neizdevās sagatavot attēlu",
+  "share.title": "{class} stundu saraksts",
+  "share.message": "{class} stundu saraksts {period}",
+  "share.image.classTeacher": "Klases audzinātājs",
+
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
   "lesson.period": "Stunda",

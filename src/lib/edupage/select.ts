@@ -4,7 +4,7 @@
  * RVT republishes weekly AND separately per building, so `tt_num` alone means nothing
  * without the pair (date, building).
  */
-import type { Building, ISODate, TimetableMeta } from "./types.ts";
+import type { Building, ISODate, TeacherRef, Timetable, TimetableMeta } from "./types.ts";
 
 export type TimetableSelection = {
   meta: TimetableMeta;
@@ -85,4 +85,27 @@ export const selectTimetables = (
   return buildings
     .sort((a, b) => Number(isMainBuilding(b)) - Number(isMainBuilding(a)) || a.localeCompare(b))
     .flatMap((b) => selectTimetable(metas, date, b) ?? []);
+};
+
+/**
+ * A class's form teacher ("klases audzinātājs"), or `null` when the school publishes none.
+ *
+ * Both halves of the join have to come from the *same* timetable: `ClassRef.teacherId` is an id
+ * into that timetable's own `teachers` table, and RVT renumbers ids on every weekly republish
+ * (MODEL.md §2). So this walks whole timetables rather than a merged class list, and takes the
+ * first one that can answer — a class lives in exactly one building's timetable anyway.
+ */
+export const findClassTeacher = (
+  timetables: Iterable<Timetable>,
+  classId: string,
+): TeacherRef | null => {
+  for (const timetable of timetables) {
+    const teacherId = timetable.classes.find((c) => c.id === classId)?.teacherId ?? null;
+    if (teacherId === null) continue;
+
+    const teacher = timetable.teachers.find((t) => t.id === teacherId);
+    if (teacher !== undefined) return teacher;
+  }
+
+  return null;
 };

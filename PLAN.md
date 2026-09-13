@@ -203,6 +203,19 @@ Still unverified on a physical device (no JDK/Android SDK here).
       its first sync. Also shipped alongside: a configurable "n minutes before the next lesson"
       reminder (`src/lib/schedule/reminders.ts` + `src/notifications/`) and a one-shot "new
       version available" notification reusing the existing `useUpdateCheck` release check.
+- [x] **Share the week as an image**: the week view exports a card — class set at Hero size, form
+      teacher (`classes.teacherid`, MODEL.md §2), the week's period rows with start *and* end
+      times, subject accents, and the buildings the week visits as sunken pills — and hands it to
+      Android's share sheet. Under the grid sits a **key** pairing every code with the subject's
+      full name: RVT publishes names up to 92 characters, so no five-column grid can hold them in
+      a cell, and an unexplained acronym on an image is unreadable (there is nothing to tap). The footer carries the wordmark and a **QR code to the download
+      page**, generated on-device (`lib/share/qr.ts`), with the short URL printed beside it for
+      whoever is reading the image on the phone that would have scanned it. Laid out in design
+      system units throughout, so the export reads as a Studio surface next to a screenshot of
+      the app, and drawn with plain canvas calls (`src/lib/share/`, `src/ui/share/`): no
+      DOM-to-image dependency, no QR service, no backend, works offline. Native side is this
+      app's own `ImageShare` plugin, reusing the installer's `FileProvider`; a browser falls back
+      to the Web Share API, then to a download.
 - [ ] Background refresh: `@capacitor/background-runner` (or a WorkManager periodic task) to
       pull substitutions ~every few hours. **Document that Android throttles this** — treat
       on-open refresh as the reliable path, background as best-effort.
