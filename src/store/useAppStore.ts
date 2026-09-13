@@ -51,6 +51,8 @@ export type AppState = {
   setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
   /** Not user-facing — the update-notification wiring marks a version as already announced. */
   setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
+  /** Not user-facing — the what's-new sheet marks this build's notes as read. */
+  setLastSeenChangelogVersion: (version: string) => Promise<void>;
   setAnalyticsEnabled: (enabled: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
@@ -164,6 +166,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setNotifyAppUpdates: (notifyAppUpdates) => persist({ notifyAppUpdates }),
       setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
         persist({ lastNotifiedUpdateVersion }),
+      setLastSeenChangelogVersion: (lastSeenChangelogVersion) =>
+        persist({ lastSeenChangelogVersion }),
       setAnalyticsEnabled: (analyticsEnabled) => persist({ analyticsEnabled }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();

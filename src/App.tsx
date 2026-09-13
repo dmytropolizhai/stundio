@@ -15,6 +15,8 @@ import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
 import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
+import { WhatsNewSheet } from "./ui/screens/WhatsNewSheet.tsx";
+import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
 import { useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 
@@ -91,6 +93,7 @@ const Shell = () => {
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const trackEvent = useAppStore((s) => s.trackEvent);
   const [tab, setTab] = useState<Tab>("day");
+  const whatsNew = useWhatsNew();
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
 
@@ -157,10 +160,21 @@ const Shell = () => {
             onPickClass={() => {
               setPicking(true);
             }}
+            onShowWhatsNew={whatsNew.show}
           />
         </Suspense>
       )}
       <TabBar tab={tab} onChange={setTab} />
+      {/*
+        Outside the tab switch: the sheet auto-opens on the launch after an update, whichever
+        tab happens to be showing, and must survive a tab change while it is open.
+      */}
+      <WhatsNewSheet
+        open={whatsNew.open}
+        unread={whatsNew.unread}
+        history={whatsNew.history}
+        onClose={whatsNew.dismiss}
+      />
     </div>
   );
 };
