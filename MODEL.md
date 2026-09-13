@@ -41,7 +41,10 @@ and returns the effective per-day timetable as structured JSON.
 Fields used by the scraper:
 
 - **periods**: `{period, name, starttime, endtime}` — `period` is `"0".."12"` (string).
-- **classes**: `{id, name, short, color, teacherid}`.
+- **classes**: `{id, name, short, color, teacherid}` — `teacherid` is the form teacher ("klases
+  audzinātājs") and resolves against this same timetable's `teachers` table (115/122 classes carry
+  one in the 1175 fixture). It is kept on `ClassRef.teacherId`; ids are renumbered on every weekly
+  republish, so never resolve it against another timetable's teachers.
 - **teachers**: `{id, short, color}` — ⚠️ only `short` populated here (`"Surname Name"`), no `firstname`/`lastname`.
 - **subjects**: `{id, name, short, color}` — `name` and `short` are often identical (full LV title).
 - **classrooms**: `{id, name, short}` — `short` like `"501 (32)P"`.

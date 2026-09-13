@@ -11,11 +11,12 @@ import {
   type AppCache,
   type CachedTimetableList,
   type Settings,
+  type SubjectNote,
 } from "./types.ts";
 import type { DaySubstitutions, ISODate, Timetable } from "../lib/edupage/index.ts";
 
 export const DB_NAME = "rvt-stunda";
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 
 const LIST_KEY = "timetableList";
 const SETTINGS_KEY = "app";
@@ -25,6 +26,7 @@ export type EdupageDB = DBSchema & {
   timetables: { key: string; value: Timetable };
   substitutions: { key: ISODate; value: DaySubstitutions };
   settings: { key: string; value: Settings };
+  notes: { key: string; value: SubjectNote };
 };
 
 export const openAppDb = (): Promise<IDBPDatabase<EdupageDB>> =>
@@ -34,6 +36,8 @@ export const openAppDb = (): Promise<IDBPDatabase<EdupageDB>> =>
       if (!db.objectStoreNames.contains("timetables")) db.createObjectStore("timetables");
       if (!db.objectStoreNames.contains("substitutions")) db.createObjectStore("substitutions");
       if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings");
+      // User-authored, like settings: created on upgrade too, never dropped and recreated.
+      if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes");
     },
   });
 
@@ -76,6 +80,15 @@ export const createIdbCache = (
     await (await dbPromise).put("settings", settings, SETTINGS_KEY);
   },
 
+  getNote: async (subject) => (await (await dbPromise).get("notes", subject)) ?? null,
+  putNote: async (note) => {
+    await (await dbPromise).put("notes", note, note.subject);
+  },
+  deleteNote: async (subject) => {
+    await (await dbPromise).delete("notes", subject);
+  },
+  listNoteSubjects: async () => (await (await dbPromise).getAllKeys("notes")).map(String),
+
   clear: async () => {
     const db = await dbPromise;
     await Promise.all([
@@ -83,6 +96,7 @@ export const createIdbCache = (
       db.clear("timetables"),
       db.clear("substitutions"),
       db.clear("settings"),
+      db.clear("notes"),
     ]);
   },
 });

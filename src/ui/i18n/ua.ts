@@ -71,6 +71,13 @@ export const ua: Dict = {
   "week.overview.busiestLabel": "Найзавантаженіший день",
   "week.overview.lightestLabel": "Найлегший день",
 
+  "share.week": "Поділитися тижнем",
+  "share.working": "Створюємо зображення…",
+  "share.error": "Не вдалося створити зображення",
+  "share.title": "Розклад {class}",
+  "share.message": "Розклад {class} {period}",
+  "share.image.classTeacher": "Класний керівник",
+
   "lesson.teacher": "Учитель",
   "lesson.room": "Кабінет",
   "lesson.period": "Урок",
@@ -104,6 +111,9 @@ export const ua: Dict = {
   "subjects.teachers": "Учителі",
   "subjects.empty": "Немає предметів",
   "subjects.emptyHint": "Предмети з'являться після завантаження розкладу.",
+  "subjects.note.placeholder": "Нотатка для цього предмета…",
+  "subjects.note.save": "Зберегти",
+  "subjects.note.badge": "Є нотатка",
 
   "settings.title": "Налаштування",
   "settings.class": "Моя група",

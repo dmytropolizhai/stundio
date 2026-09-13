@@ -29,7 +29,14 @@ export type EntityRef = {
   color?: string | null; // "#14C030"; only classes/subjects/teachers carry one
 };
 
-export type ClassRef = EntityRef;
+export type ClassRef = EntityRef & {
+  /**
+   * The class's form teacher ("klases audzinātājs") — aSc `classes.teacherid`, resolvable
+   * against the `teachers` table. Optional: a class row may carry no teacher at all, and
+   * older cached timetables predate this field.
+   */
+  teacherId?: string | null;
+};
 export type SubjectRef = EntityRef;
 export type TeacherRef = EntityRef; // NOTE: RVT populates only `short` ("Surname Name")
 export type RoomRef = Omit<EntityRef, "color">;

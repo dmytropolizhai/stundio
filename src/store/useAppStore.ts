@@ -20,7 +20,7 @@ import {
   type ResolvedDay,
   type Timetable,
 } from "../lib/edupage/index.ts";
-import { DEFAULT_SETTINGS, type AppCache, type Settings } from "../db/index.ts";
+import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "../db/index.ts";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "../sync/index.ts";
 import { noopAnalytics, type AnalyticsClient } from "../lib/analytics/index.ts";
 
@@ -31,6 +31,8 @@ export type AppState = {
   metas: ReturnType<typeof toTimetableMeta>[];
   timetables: Record<string, Timetable>;
   substitutions: Record<ISODate, DaySubstitutions>;
+  /** Keyed by subject label — see `useSubjects.ts`'s `subjectKey` (`name || short`). */
+  notes: Record<string, SubjectNote>;
   syncStatus: SyncStatus;
   lastSyncAt: ISODateTime | null;
   lastError: string | null;
@@ -50,6 +52,8 @@ export type AppState = {
   /** Not user-facing — the update-notification wiring marks a version as already announced. */
   setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
   setAnalyticsEnabled: (enabled: boolean) => Promise<void>;
+  setNote: (subject: string, text: string) => Promise<void>;
+  deleteNote: (subject: string) => Promise<void>;
   /** No-op when the user has opted out. Screen views, manual refreshes — nothing PII-bearing. */
   trackEvent: (event: string) => void;
   resolvedDay: (date: ISODate, classId?: string) => ResolvedDay | null;
@@ -107,8 +111,13 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       const substitutions: Record<ISODate, DaySubstitutions> = {};
       for (const day of days) if (day !== null) substitutions[day.date] = day;
 
+      const subjects = await cache.listNoteSubjects();
+      const loadedNotes = await Promise.all(subjects.map((s) => cache.getNote(s)));
+      const notes: Record<string, SubjectNote> = {};
+      for (const note of loadedNotes) if (note !== null) notes[note.subject] = note;
+
       memo.clear();
-      set({ settings, metas, timetables, substitutions, ready: true });
+      set({ settings, metas, timetables, substitutions, notes, ready: true });
     };
 
     return {
@@ -117,6 +126,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       metas: [],
       timetables: {},
       substitutions: {},
+      notes: {},
       syncStatus: "idle",
       lastSyncAt: null,
       lastError: null,
@@ -155,6 +165,26 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
         persist({ lastNotifiedUpdateVersion }),
       setAnalyticsEnabled: (analyticsEnabled) => persist({ analyticsEnabled }),
+      setNote: async (subject, text) => {
+        const trimmed = text.trim();
+        if (trimmed === "") {
+          await get().deleteNote(subject);
+          return;
+        }
+        const note: SubjectNote = {
+          subject,
+          text: trimmed,
+          updatedAt: new Date().toISOString(),
+        };
+        set({ notes: { ...get().notes, [subject]: note } });
+        await cache.putNote(note);
+      },
+      deleteNote: async (subject) => {
+        const notes = { ...get().notes };
+        delete notes[subject];
+        set({ notes });
+        await cache.deleteNote(subject);
+      },
       trackEvent: (event) => {
         if (get().settings.analyticsEnabled) analytics.track(event);
       },

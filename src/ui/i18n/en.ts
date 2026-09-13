@@ -71,6 +71,13 @@ export const en: Dict = {
   "week.overview.busiestLabel": "Busiest day",
   "week.overview.lightestLabel": "Lightest day",
 
+  "share.week": "Share this week",
+  "share.working": "Making the image…",
+  "share.error": "Could not create the image",
+  "share.title": "{class} timetable",
+  "share.message": "{class} timetable {period}",
+  "share.image.classTeacher": "Form teacher",
+
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",
   "lesson.period": "Period",
@@ -104,6 +111,9 @@ export const en: Dict = {
   "subjects.teachers": "Teachers",
   "subjects.empty": "No subjects",
   "subjects.emptyHint": "Subjects appear once the timetable is downloaded.",
+  "subjects.note.placeholder": "Note for this subject…",
+  "subjects.note.save": "Save",
+  "subjects.note.badge": "Has a note",
 
   "settings.title": "Settings",
   "settings.class": "My group",

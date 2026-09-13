@@ -71,6 +71,13 @@ export const ru: Dict = {
   "week.overview.busiestLabel": "Самый загруженный день",
   "week.overview.lightestLabel": "Самый лёгкий день",
 
+  "share.week": "Поделиться неделей",
+  "share.working": "Создаём изображение…",
+  "share.error": "Не удалось создать изображение",
+  "share.title": "Расписание {class}",
+  "share.message": "Расписание {class} {period}",
+  "share.image.classTeacher": "Классный руководитель",
+
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",
   "lesson.period": "Урок",
@@ -104,6 +111,9 @@ export const ru: Dict = {
   "subjects.teachers": "Учителя",
   "subjects.empty": "Нет предметов",
   "subjects.emptyHint": "Предметы появятся после загрузки расписания.",
+  "subjects.note.placeholder": "Заметка по предмету…",
+  "subjects.note.save": "Сохранить",
+  "subjects.note.badge": "Есть заметка",
 
   "settings.title": "Настройки",
   "settings.class": "Моя группа",

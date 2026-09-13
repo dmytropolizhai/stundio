@@ -4,9 +4,10 @@
  */
 import { describe, expect, it } from "vitest";
 import { FIXTURES, readJsonFixture } from "./fixtures.ts";
-import { listBuildings, selectTimetable, selectTimetables } from "../select.ts";
+import { findClassTeacher, listBuildings, selectTimetable, selectTimetables } from "../select.ts";
 import { toTimetableMeta } from "../normalize.ts";
 import type { RawTimetableListEntry } from "../client.ts";
+import type { Timetable } from "../types.ts";
 
 type RawViewer = {
   r: { regular: { default_num: string; timetables: RawTimetableListEntry[] } };
@@ -100,5 +101,43 @@ describe("selectTimetables (automatic building mode)", () => {
 
   it("returns nothing when there is nothing published", () => {
     expect(selectTimetables([], "2026-09-09")).toEqual([]);
+  });
+});
+
+describe("findClassTeacher", () => {
+  const timetable = (
+    classes: { id: string; teacherId?: string | null }[],
+    teachers: { id: string; short: string }[],
+  ) =>
+    ({
+      classes: classes.map((c) => ({ name: c.id, short: c.id, ...c })),
+      teachers: teachers.map((t) => ({ name: t.short, ...t })),
+    }) as unknown as Timetable;
+
+  it("resolves the form teacher through the same timetable's teacher table", () => {
+    const found = findClassTeacher(
+      [timetable([{ id: "c1", teacherId: "t9" }], [{ id: "t9", short: "Pleča Sintija" }])],
+      "c1",
+    );
+    expect(found?.short).toBe("Pleča Sintija");
+  });
+
+  it("keeps looking in the next building's timetable when the first does not carry the class", () => {
+    const found = findClassTeacher(
+      [
+        timetable([{ id: "other" }], [{ id: "t9", short: "Pleča Sintija" }]),
+        timetable([{ id: "c1", teacherId: "t9" }], [{ id: "t9", short: "Pleča Sintija" }]),
+      ],
+      "c1",
+    );
+    expect(found?.short).toBe("Pleča Sintija");
+  });
+
+  it("is null for a class the school publishes no teacher for", () => {
+    expect(findClassTeacher([timetable([{ id: "c1", teacherId: null }], [])], "c1")).toBeNull();
+  });
+
+  it("is null when the id points at a teacher that timetable does not list", () => {
+    expect(findClassTeacher([timetable([{ id: "c1", teacherId: "gone" }], [])], "c1")).toBeNull();
   });
 });

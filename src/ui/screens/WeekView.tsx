@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
-import { weekDates } from "@/lib/schedule";
+import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import {
+  Button,
   Card,
   Icon,
   IconButton,
@@ -21,24 +22,12 @@ import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { useWeekOverview } from "../hooks/useWeekOverview.ts";
+import { useShareWeek } from "../share/useShareWeek.ts";
 import { formatWeekdayLong, formatWeekdayShort, formatWeekRange, useLang, useT } from "@/ui/i18n";
 
 const periodNum = (p: string): number => {
   const n = Number(p);
   return Number.isFinite(n) ? n : 0;
-};
-
-/** The period rows the week actually uses — an empty row 0 or row 12 is a wasted screen. */
-const usedPeriods = (days: (ResolvedDay | null)[]): string[] => {
-  const seen = new Set<string>();
-
-  for (const day of days) {
-    for (const lesson of day?.lessons ?? []) {
-      seen.add(lesson.period);
-    }
-  }
-
-  return [...seen].sort((a, b) => periodNum(a) - periodNum(b));
 };
 
 /**
@@ -87,8 +76,9 @@ export const WeekView = ({
     [dates, resolvedDay, timetables, substitutions, selectedClassId],
   );
 
-  const periods = useMemo(() => usedPeriods(days), [days]);
+  const periods = useMemo(() => weekPeriods(days), [days]);
   const overview = useWeekOverview(date);
+  const shareWeek = useShareWeek(date);
 
   const columns = useMemo(
     () =>
@@ -141,9 +131,8 @@ export const WeekView = ({
 
   const rows = useMemo<WeekGridPeriod<ISODate>[]>(
     () =>
-      periods.map((period) => {
+      periods.map(({ period, start }) => {
         const cells: Partial<Record<ISODate, WeekGridCell>> = {};
-        let start = "";
 
         days.forEach((day, i) => {
           const d = dates[i];
@@ -153,10 +142,6 @@ export const WeekView = ({
           const lesson = day.lessons.find((l) => l.period === period);
 
           if (lesson === undefined) return;
-
-          if (start === "") {
-            start = lesson.start;
-          }
 
           const building = lessonBuilding(day, lesson);
 
@@ -227,6 +212,30 @@ export const WeekView = ({
               </span>
             ))}
           </Card>
+        )}
+
+        {/*
+          Under the grid rather than in the header: at 375px the header already carries the week
+          range between two arrows, the class chip and the sync badge, and a fourth control there
+          truncates the date range — the one thing that says which week this is. Down here it can
+          also be a labelled button instead of a bare glyph.
+        */}
+        <Button
+          icon="share-2"
+          variant="outline"
+          block
+          className="mt-4"
+          disabled={shareWeek.disabled}
+          onClick={shareWeek.share}
+          data-testid="share-week"
+        >
+          {shareWeek.status === "working" ? t("share.working") : t("share.week")}
+        </Button>
+
+        {shareWeek.status === "error" && (
+          <p role="status" className="mt-2 text-center font-text text-caption text-danger">
+            {t("share.error")}
+          </p>
         )}
 
         {overview !== null && (

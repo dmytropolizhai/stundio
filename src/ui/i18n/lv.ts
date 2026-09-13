@@ -77,6 +77,13 @@ export const lv = {
   "week.overview.busiestLabel": "Noslogotākā diena",
   "week.overview.lightestLabel": "Vieglākā diena",
 
+  "share.week": "Dalīties ar nedēļu",
+  "share.working": "Sagatavo attēlu…",
+  "share.error": "Neizdevās sagatavot attēlu",
+  "share.title": "{class} stundu saraksts",
+  "share.message": "{class} stundu saraksts {period}",
+  "share.image.classTeacher": "Klases audzinātājs",
+
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
   "lesson.period": "Stunda",
@@ -110,6 +117,9 @@ export const lv = {
   "subjects.teachers": "Skolotāji",
   "subjects.empty": "Nav priekšmetu",
   "subjects.emptyHint": "Priekšmeti parādīsies, kad būs lejupielādēts saraksts.",
+  "subjects.note.placeholder": "Piezīme šim priekšmetam…",
+  "subjects.note.save": "Saglabāt",
+  "subjects.note.badge": "Ir piezīme",
 
   "settings.title": "Iestatījumi",
   "settings.class": "Mana grupa",

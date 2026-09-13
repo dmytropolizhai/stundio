@@ -315,9 +315,19 @@
     --app-inset-top: env(safe-area-inset-top, 0px);
     --app-inset-bottom: env(safe-area-inset-bottom, 0px);
     color-scheme: light;
+
+    /*
+     * The shared-image card's elevation, in the one form a canvas can take: a single colour.
+     * `--shadow-card` is a composite of two layers, so it cannot be read across; this is the
+     * navy it is tinted with (DESIGN.md, The Blue-Shadow Rule), at the strength that reads as
+     * one card lifted off the app ground.
+     */
+    --share-shadow: rgba(6, 11, 61, 0.16);
   }
   :root.dark {
     color-scheme: dark;
+    /* Navy is invisible on a dark ground; the system drops to plain black there. */
+    --share-shadow: rgba(0, 0, 0, 0.5);
   }
 
   body {
