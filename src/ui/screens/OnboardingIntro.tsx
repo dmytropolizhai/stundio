@@ -1,41 +1,46 @@
-import { useRef, useState, type TouchEvent } from "react";
+import { useRef, useState, type ComponentType, type TouchEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Button, Card, Icon, type IconName } from "../../ds/index.ts";
-import { ensureNotificationPermission } from "../../notifications/index.ts";
-import { useT } from "../i18n/index.ts";
-import type { MessageKey } from "../i18n/lv.ts";
+import { Button } from "@/ds";
+import { ensureNotificationPermission } from "@/notifications";
+import {
+  AppScreensArt,
+  ChangesArt,
+  NotificationArt,
+  OfflineArt,
+} from "../components/OnboardingArt.tsx";
+import { useT } from "@/ui/i18n";
+import type { MessageKey } from "@/ui/i18n";
 
 const SWIPE_THRESHOLD_PX = 56;
 
+/**
+ * Each slide leads with a working piece of the app rather than an icon standing in for one —
+ * `art` is the component that demonstrates the promise the copy makes. See `OnboardingArt.tsx`.
+ */
 type Slide = {
-  icon: IconName;
-  tone: "sky" | "amber" | "mint" | "lilac";
+  art: ComponentType;
   title: MessageKey;
   body: MessageKey;
 };
 
 const SLIDES: Slide[] = [
   {
-    icon: "calendar-days",
-    tone: "sky",
+    art: AppScreensArt,
     title: "onboarding.intro.step1.title",
     body: "onboarding.intro.step1.body",
   },
   {
-    icon: "triangle-alert",
-    tone: "amber",
+    art: ChangesArt,
     title: "onboarding.intro.step2.title",
     body: "onboarding.intro.step2.body",
   },
   {
-    icon: "wifi-off",
-    tone: "mint",
+    art: OfflineArt,
     title: "onboarding.intro.step3.title",
     body: "onboarding.intro.step3.body",
   },
   {
-    icon: "bell",
-    tone: "lilac",
+    art: NotificationArt,
     title: "onboarding.intro.step4.title",
     body: "onboarding.intro.step4.body",
   },
@@ -115,6 +120,7 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
   };
 
   if (slide === undefined) return null;
+  const Art = slide.art;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6">
@@ -146,13 +152,7 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
         }}
         className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       >
-        <Card
-          tone={slide.tone}
-          radius="2xl"
-          className="flex size-24 items-center justify-center p-0"
-        >
-          <Icon name={slide.icon} size={40} />
-        </Card>
+        <Art />
         <div className="flex flex-col gap-2">
           <h1 className="font-display text-title tracking-display text-strong">{t(slide.title)}</h1>
           <p className="max-w-70 font-text text-body text-muted">{t(slide.body)}</p>
