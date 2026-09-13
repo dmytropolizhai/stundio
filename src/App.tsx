@@ -17,7 +17,7 @@ import { DaySkeleton } from "./ui/components/Skeleton.tsx";
 import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
 import { WhatsNewSheet } from "./ui/screens/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
-import { useTheme } from "@/ui/theme";
+import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 
 // Split off the tabs that aren't on screen at launch — only DayView (the default tab) and
@@ -89,6 +89,7 @@ const Onboarding = () => {
 const Shell = () => {
   const t = useT();
   useTheme();
+  useCustomization();
 
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const trackEvent = useAppStore((s) => s.trackEvent);

@@ -1,4 +1,5 @@
 export { applyTheme, resolveTheme, useTheme, type Theme } from "./useTheme.ts";
+export { useCustomization } from "./useCustomization.ts";
 export {
   SUBJECT_TONES,
   STATUS_TONE,
@@ -9,5 +10,6 @@ export {
   lessonBuilding,
   subjectCode,
   subjectTone,
+  subjectToneKey,
   type SubjectTone,
 } from "./colors.ts";

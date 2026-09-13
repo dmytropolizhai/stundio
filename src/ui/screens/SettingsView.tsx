@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useAppStore } from "@/store";
 import { listBuildings } from "@/lib/edupage";
 import type { Settings } from "@/db";
@@ -9,6 +9,7 @@ import { useNotificationPermissionDenied } from "../hooks/useNotificationPermiss
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
+import { CustomizationSheet } from "./CustomizationSheet.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 
 const REPO_URL = "https://github.com/dmytropolizhai/stundio";
@@ -27,7 +28,8 @@ const reportIssueUrl = (className: string | undefined): string => {
   return `${REPORT_ISSUE_BASE}?${new URLSearchParams({ labels: "bug", body }).toString()}`;
 };
 
-const Section = ({ title, children }: { title: string; children: ReactNode }) => (
+/** Also used by `CustomizationSheet`, which shares this screen's section/row look. */
+export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <section className="mb-7">
     <h2 className="u-eyebrow pb-2">{title}</h2>
     <Card radius="lg" className="p-0">
@@ -37,7 +39,7 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
 );
 
 /** A row inside a section card. Rows after the first carry the hairline. */
-const Row = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
+export const Row = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
   <div className={`px-4 py-3.5 not-first:border-t not-first:border-hairline ${className}`}>
     {children}
   </div>
@@ -60,6 +62,7 @@ export const SettingsView = ({
   onShowWhatsNew: () => void;
 }) => {
   const t = useT();
+  const [customizing, setCustomizing] = useState(false);
   const notifyPermissionDenied = useNotificationPermissionDenied();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
@@ -119,6 +122,21 @@ export const SettingsView = ({
               {t("settings.change")}
               <Icon name="chevron-right" size={16} />
             </span>
+          </button>
+        </Section>
+
+        <Section title={t("settings.customization")}>
+          <button
+            type="button"
+            onClick={() => {
+              setCustomizing(true);
+            }}
+            className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent px-4 py-3.5 text-left"
+          >
+            <span className="font-text text-body font-bold text-strong">
+              {t("settings.customizationOpen")}
+            </span>
+            <Icon name="chevron-right" size={16} className="text-muted" />
           </button>
         </Section>
 
@@ -437,6 +455,13 @@ export const SettingsView = ({
           </a>
         </div>
       </div>
+
+      <CustomizationSheet
+        open={customizing}
+        onClose={() => {
+          setCustomizing(false);
+        }}
+      />
     </div>
   );
 };

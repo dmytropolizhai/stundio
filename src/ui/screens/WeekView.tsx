@@ -61,6 +61,7 @@ export const WeekView = ({
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
+  const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
 
@@ -149,7 +150,7 @@ export const WeekView = ({
           cells[d] = {
             short: subjectCode(lesson.subject),
             name: lesson.subject?.name ?? lesson.subject?.short ?? "",
-            tone: subjectTone(lesson.subject),
+            tone: subjectTone(lesson.subject, subjectColorOverrides),
             cancelled: lesson.status === "cancelled",
             ...(building === undefined ? {} : { building }),
           };
@@ -162,7 +163,7 @@ export const WeekView = ({
           cells,
         };
       }),
-    [periods, days, dates],
+    [periods, days, dates, subjectColorOverrides],
   );
 
   const body = () => {

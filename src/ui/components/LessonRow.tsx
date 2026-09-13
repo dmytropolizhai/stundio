@@ -1,6 +1,7 @@
 import type { ResolvedLesson } from "@/lib/edupage";
 import { Badge, LessonCard } from "@/ds";
 import { STATUS_TREATMENT, isChanged, subjectTone } from "@/ui/theme";
+import { useAppStore } from "@/store";
 import { StatusDot } from "./Badge.tsx";
 import { useT } from "@/ui/i18n";
 
@@ -42,6 +43,8 @@ export const LessonRow = ({
   onOpen?: () => void;
 }) => {
   const t = useT();
+  const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
+  const filled = useAppStore((s) => s.settings.lessonCardStyle) === "filled";
   const teachers = lesson.teachers.map((x) => x.short).join(", ");
   const rooms = lesson.rooms.map((x) => x.short).join(", ");
 
@@ -58,7 +61,8 @@ export const LessonRow = ({
         {...(teachers === "" ? {} : { teacher: teachers })}
         {...(rooms === "" ? {} : { room: rooms })}
         {...(building === undefined ? {} : { building })}
-        tone={subjectTone(lesson.subject)}
+        tone={subjectTone(lesson.subject, subjectColorOverrides)}
+        filled={filled}
         status={status}
         timeVisible={showTime}
         badge={

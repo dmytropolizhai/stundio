@@ -5,7 +5,7 @@
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { createFakeServer, type FakeServer } from "./fakeServer.ts";
-import { createMemoryCache } from "@/db";
+import { createMemoryCache, DEFAULT_SETTINGS } from "@/db";
 import { createSyncEngine, schoolYearOf, todayInRiga, LIST_MAX_AGE_MS } from "@/sync";
 import type { AppCache } from "@/db";
 
@@ -127,24 +127,7 @@ describe("the cached-week rule", () => {
   });
 
   it("picks the building's tt_num, not the default", async () => {
-    await cache.putSettings({
-      selectedClassId: null,
-      building: "TIC",
-      favorites: [],
-      notifyLessonReminderMinutes: 10,
-      notifySubstitutionChanges: true,
-      notifyAppUpdates: true,
-      lastNotifiedUpdateVersion: null,
-      lastSeenChangelogVersion: null,
-      theme: "system",
-      lang: "lv",
-      mergeConsecutiveLessons: false,
-      showTime: false,
-      analyticsEnabled: true,
-      shareLang: "lv",
-      shareLangSyncWithApp: true,
-      shareLangPromptShown: false,
-    });
+    await cache.putSettings({ ...DEFAULT_SETTINGS, building: "TIC" });
     const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
     expect(outcome.fetchedTtNum).toBe("1174"); // TIC, not the 1175 default
     expect(server.calls.timetable).toBe(1); // and only TIC — a pinned building needs no merge

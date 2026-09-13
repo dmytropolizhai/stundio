@@ -36,16 +36,28 @@ const hash = (value: string): number => {
 };
 
 /**
- * A subject's accent.
+ * The stable key a subject is hashed (or overridden) on.
  *
- * Keyed on `short` (the subject code) rather than `id`, because the code is what survives a
- * weekly republish — EduPage is free to renumber ids, and a subject changing colour mid-term is
- * exactly what the DS rule forbids.
+ * `short` (the subject code) rather than `id`, because the code is what survives a weekly
+ * republish — EduPage is free to renumber ids, and a subject changing colour mid-term is exactly
+ * what the DS rule forbids.
  */
-export const subjectTone = (subject: SubjectRef | null): SubjectTone => {
-  const key = (subject?.short ?? subject?.name ?? subject?.id ?? "").trim().toLowerCase();
+export const subjectToneKey = (subject: SubjectRef | null): string =>
+  (subject?.short ?? subject?.name ?? subject?.id ?? "").trim().toLowerCase();
+
+/**
+ * A subject's accent: a user-chosen override first, the deterministic hash otherwise.
+ *
+ * `overrides` only ever maps a key to one of the same six DS tones (`Settings.subjectColorOverrides`),
+ * so a customized subject is still exactly as full-contrast and on-brand as an auto-assigned one.
+ */
+export const subjectTone = (
+  subject: SubjectRef | null,
+  overrides: Record<string, SubjectTone> = {},
+): SubjectTone => {
+  const key = subjectToneKey(subject);
   if (key === "") return "sky";
-  return SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? "sky";
+  return overrides[key] ?? SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? "sky";
 };
 
 /*
