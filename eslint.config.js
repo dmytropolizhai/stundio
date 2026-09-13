@@ -58,4 +58,22 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // And for lib/share, where only the OS hand-off is native — the painter stays portable.
+    files: ["src/lib/share/**/*.ts"],
+    ignores: ["src/lib/share/native.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@capacitor/*"],
+              message: "Only src/lib/share/native.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

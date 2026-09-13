@@ -2,8 +2,8 @@
  * The remaining Phase 3 screens. Same rule as DayView: a real store over the `data/`
  * fixtures, no network, and assertions on behaviour a schoolmate would notice.
  */
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { StoreContext } from "../../store/index.ts";
 import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
 import { ClassPicker } from "../screens/ClassPicker.tsx";
@@ -239,6 +239,118 @@ describe("WeekView", () => {
 
     fireEvent.click(screen.getByTestId("class-badge"));
     expect(onPickClass).toHaveBeenCalled();
+  });
+
+  /*
+   * Sharing, end to end through the screen: happy-dom has no canvas and no share sheet, so both
+   * are stood in for — what is under test is that a tap really draws the week and really hands
+   * the PNG to whatever the platform offers, and that a platform that can do neither says so
+   * instead of failing silently.
+   */
+  describe("sharing the week as an image", () => {
+    type StubbedCanvas = { getContext: unknown; toDataURL: unknown };
+    const canvasPrototype = HTMLCanvasElement.prototype as unknown as StubbedCanvas;
+    const realCanvas: StubbedCanvas = { ...canvasPrototype };
+
+    const stubCanvas = (context: unknown) => {
+      canvasPrototype.getContext = () => context;
+      canvasPrototype.toDataURL = () => "data:image/png;base64,QUJD";
+    };
+
+    const drawingContext = () => ({
+      save: vi.fn(),
+      restore: vi.fn(),
+      scale: vi.fn(),
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      arcTo: vi.fn(),
+      closePath: vi.fn(),
+      fill: vi.fn(),
+      stroke: vi.fn(),
+      fillText: vi.fn(),
+      fillStyle: "",
+      strokeStyle: "",
+      lineWidth: 0,
+      font: "",
+      textAlign: "",
+      textBaseline: "",
+      globalAlpha: 1,
+    });
+
+    const renderWeek = (harness: Harness) =>
+      wrap(
+        harness,
+        <WeekView
+          date={FIXTURE_DATE}
+          onDateChange={vi.fn()}
+          onOpenDay={vi.fn()}
+          onPickClass={vi.fn()}
+        />,
+      );
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      Object.assign(canvasPrototype, realCanvas);
+    });
+
+    it("paints the card and passes it to the share sheet, with the class on it", async () => {
+      const harness = await bootHarness();
+      const ctx = drawingContext();
+      stubCanvas(ctx);
+
+      const share = vi.fn().mockResolvedValue(undefined);
+      vi.stubGlobal("navigator", { share, canShare: () => true });
+
+      renderWeek(harness);
+      fireEvent.click(screen.getByTestId("share-week"));
+
+      await waitFor(() => {
+        expect(share).toHaveBeenCalled();
+      });
+
+      const drawn = ctx.fillText.mock.calls.map(([text]) => text as string);
+      expect(drawn).toContain("A1-2");
+      expect(drawn.some((text) => text.startsWith("–"))).toBe(true); // a lesson's end time
+
+      const sent = share.mock.calls[0]?.[0] as { text: string; files: File[] };
+      expect(sent.text).toContain("https://github.com/dmytropolizhai/stundio/releases");
+      expect(sent.files[0]?.name).toContain("a1-2");
+    });
+
+    it("tells the user when the card cannot be drawn at all", async () => {
+      const harness = await bootHarness();
+      stubCanvas(null);
+
+      renderWeek(harness);
+      fireEvent.click(screen.getByTestId("share-week"));
+
+      expect(await screen.findByText("Neizdevās sagatavot attēlu")).toBeDefined();
+    });
+
+    it("stays quiet when the share sheet is dismissed — that is not a failure", async () => {
+      const harness = await bootHarness();
+      stubCanvas(drawingContext());
+
+      const abort = Object.assign(new Error("cancelled"), { name: "AbortError" });
+      const share = vi.fn().mockRejectedValue(abort);
+      vi.stubGlobal("navigator", { share, canShare: () => true });
+
+      renderWeek(harness);
+      fireEvent.click(screen.getByTestId("share-week"));
+
+      await waitFor(() => {
+        expect(share).toHaveBeenCalled();
+      });
+      expect(screen.queryByText("Neizdevās sagatavot attēlu")).toBeNull();
+    });
+
+    it("offers nothing to share before a class is picked", async () => {
+      const harness = await bootHarness({ selectedClassId: null });
+      renderWeek(harness);
+
+      expect(screen.queryByTestId("share-week")).toBeNull();
+    });
   });
 });
 

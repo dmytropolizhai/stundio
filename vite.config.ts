@@ -48,6 +48,7 @@ export default defineConfig({
       include: [
         "src/lib/edupage/**",
         "src/lib/schedule/**",
+        "src/lib/share/**",
         "src/lib/version/**",
         "src/db/**",
         "src/sync/**",

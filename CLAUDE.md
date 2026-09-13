@@ -47,6 +47,10 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   `http.ts`. `types.ts` is the single source of truth for the domain types.
 - **`src/lib/schedule/`** — pure "what's on now / next", week maths, reminder times, substitution
   diffing. React-free **on purpose**: this is the logic the planned Android widget shares.
+- **`src/lib/share/`** — the shareable week card: a pure layout → display list → canvas painter,
+  then the hand-off to the OS share sheet. Domain- and design-system-free: colours arrive as
+  resolved CSS colour strings and strings arrive translated, from `ui/share/`. Only `native.ts`
+  touches Capacitor.
 - **`src/lib/version/`**, **`src/lib/analytics/`** — GitHub release update checks; anonymous
   Plausible pings (opt-out, no cookies or persistent id).
 - **`src/db/`** — the `AppCache` port (`types.ts`) with an `idb` implementation and a memory
@@ -66,8 +70,10 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 
 These are enforced by lint, tests, or CI — breaking one breaks the build:
 
-- **Only `lib/edupage/http.ts` and `lib/analytics/http.ts` may import `@capacitor/*`.** ESLint
-  `no-restricted-imports` enforces this; everything else stays platform-agnostic and testable.
+- **Only `lib/edupage/http.ts`, `lib/analytics/http.ts` and `lib/share/native.ts` may import
+  `@capacitor/*`.** ESLint `no-restricted-imports` enforces this; everything else stays
+  platform-agnostic and testable. (`lib/version/installer.ts` is the one Android-only module by
+  nature — it drives this app's own `ApkInstaller` plugin.)
 - **Import a module through its barrel** (`@/ds`, `@/store`, `@/lib/edupage`, …), never from a
   sibling file across a layer boundary.
 - **Never reach upward.** `lib/` knows nothing about `store/` or `ui/`; `ds/` knows nothing about

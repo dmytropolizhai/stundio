@@ -203,6 +203,13 @@ Still unverified on a physical device (no JDK/Android SDK here).
       its first sync. Also shipped alongside: a configurable "n minutes before the next lesson"
       reminder (`src/lib/schedule/reminders.ts` + `src/notifications/`) and a one-shot "new
       version available" notification reusing the existing `useUpdateCheck` release check.
+- [x] **Share the week as an image**: the week view exports a card — class, form teacher
+      (`classes.teacherid`, MODEL.md §2), the week's period rows with start *and* end times,
+      subject accents, the buildings the week visits — and hands it to Android's share sheet with
+      a line pointing at the releases page. Drawn on-device with plain canvas calls
+      (`src/lib/share/`, `src/ui/share/`): no DOM-to-image dependency, no backend, works offline.
+      Native side is this app's own `ImageShare` plugin, reusing the installer's `FileProvider`;
+      a browser falls back to the Web Share API, then to a download.
 - [ ] Background refresh: `@capacitor/background-runner` (or a WorkManager periodic task) to
       pull substitutions ~every few hours. **Document that Android throttles this** — treat
       on-open refresh as the reliable path, background as best-effort.

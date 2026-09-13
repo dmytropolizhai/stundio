@@ -71,6 +71,15 @@ export const en: Dict = {
   "week.overview.busiestLabel": "Busiest day",
   "week.overview.lightestLabel": "Lightest day",
 
+  "share.week": "Share this week",
+  "share.working": "Making the image…",
+  "share.error": "Could not create the image",
+  "share.title": "{class} timetable",
+  "share.message": "{class} timetable {period}",
+  "share.image.eyebrow": "Timetable",
+  "share.image.classTeacher": "Form teacher",
+  "share.image.period": "{n}.",
+
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",
   "lesson.period": "Period",

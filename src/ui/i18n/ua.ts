@@ -71,6 +71,15 @@ export const ua: Dict = {
   "week.overview.busiestLabel": "Найзавантаженіший день",
   "week.overview.lightestLabel": "Найлегший день",
 
+  "share.week": "Поділитися тижнем",
+  "share.working": "Створюємо зображення…",
+  "share.error": "Не вдалося створити зображення",
+  "share.title": "Розклад {class}",
+  "share.message": "Розклад {class} {period}",
+  "share.image.eyebrow": "Розклад",
+  "share.image.classTeacher": "Класний керівник",
+  "share.image.period": "{n}.",
+
   "lesson.teacher": "Учитель",
   "lesson.room": "Кабінет",
   "lesson.period": "Урок",

@@ -8,6 +8,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(ApkInstallerPlugin.class);
         registerPlugin(AppSettingsPlugin.class);
+        registerPlugin(ImageSharePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

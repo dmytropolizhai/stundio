@@ -94,6 +94,12 @@ describe("normalizeTimetable", () => {
     expect(slots).toBe(oracle.slots.length);
   });
 
+  it("keeps each class's form teacher, resolvable against the teachers table", () => {
+    const cls = timetable.classes.find((c) => c.short === "A1-1");
+    expect(cls?.teacherId).toBe("-436");
+    expect(timetable.teachers.some((t) => t.id === cls?.teacherId)).toBe(true);
+  });
+
   it("fills `short` for teachers, who have no `name` at this school", () => {
     const teacher = timetable.teachers.find((t) => t.id === "-403");
     expect(teacher?.short).toBe("Abrama Ivita");
