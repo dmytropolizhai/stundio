@@ -1,8 +1,8 @@
-import type { ResolvedLesson } from "../../lib/edupage/index.ts";
-import { Badge, LessonCard } from "../../ds/index.ts";
-import { STATUS_TREATMENT, isChanged, subjectTone } from "../theme/index.ts";
+import type { ResolvedLesson } from "@/lib/edupage";
+import { Badge, LessonCard } from "@/ds";
+import { STATUS_TREATMENT, isChanged, subjectTone } from "@/ui/theme";
 import { StatusDot } from "./Badge.tsx";
-import { useT } from "../i18n/index.ts";
+import { useT } from "@/ui/i18n";
 
 /**
  * One lesson in the day list.
@@ -34,7 +34,12 @@ export const LessonRow = ({
   showTime: boolean;
   /** The day's building, passed only when it isn't the school's main building. */
   building?: string;
-  onOpen: () => void;
+  /**
+   * Omitted by the onboarding tour, which renders these cards as an illustration: without a
+   * handler the DS card drops its cursor and press-scale, so a sample lesson doesn't advertise
+   * a tap that leads nowhere.
+   */
+  onOpen?: () => void;
 }) => {
   const t = useT();
   const teachers = lesson.teachers.map((x) => x.short).join(", ");
@@ -66,7 +71,7 @@ export const LessonRow = ({
         indicator={
           !live && isChanged(lesson.status) ? <StatusDot status={lesson.status} /> : undefined
         }
-        onClick={onOpen}
+        {...(onOpen === undefined ? {} : { onClick: onOpen })}
         data-testid={`lesson-${lesson.period}`}
       />
 
