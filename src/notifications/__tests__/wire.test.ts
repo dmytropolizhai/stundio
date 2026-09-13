@@ -9,18 +9,26 @@ const rescheduleLessonReminders = vi.hoisted(() => vi.fn().mockResolvedValue(und
 const notifySubstitutionsChanged = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const notifyAppUpdate = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const hasNotificationPermission = vi.hoisted(() => vi.fn().mockResolvedValue(true));
+const tapHandlers = vi.hoisted(() => [] as ((extra: unknown) => void)[]);
+const onNotificationTap = vi.hoisted(() =>
+  vi.fn((handler: (extra: unknown) => void) => {
+    tapHandlers.push(handler);
+    return vi.fn();
+  }),
+);
 
 vi.mock("../localNotifications.ts", () => ({
   rescheduleLessonReminders,
   notifySubstitutionsChanged,
   notifyAppUpdate,
   hasNotificationPermission,
+  onNotificationTap,
 }));
 
 const checkForUpdate = vi.hoisted(() => vi.fn());
 vi.mock("../../lib/version/index.ts", () => ({ checkForUpdate }));
 
-const { wireNotifications, notifyOnChanges, checkForAppUpdateNotification } =
+const { wireNotifications, wireNotificationTaps, notifyOnChanges, checkForAppUpdateNotification } =
   await import("../wire.ts");
 
 const DATE = "2026-09-09";
@@ -48,6 +56,8 @@ beforeEach(() => {
   notifySubstitutionsChanged.mockClear();
   notifyAppUpdate.mockClear();
   hasNotificationPermission.mockClear();
+  onNotificationTap.mockClear();
+  tapHandlers.length = 0;
   checkForUpdate.mockReset();
 });
 
@@ -92,6 +102,27 @@ describe("notifyOnChanges", () => {
     const store = makeStore();
     notifyOnChanges(store, { changedDates: [today] } as never, true);
     expect(notifySubstitutionsChanged).toHaveBeenCalledTimes(1);
+    expect(notifySubstitutionsChanged).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      today,
+    );
+  });
+
+  it("targets the nearest future changed date when today itself didn't change", () => {
+    const store = makeStore();
+    const laterDate = new Date(new Date(`${today}T12:00:00Z`).getTime() + 2 * 86_400_000)
+      .toISOString()
+      .slice(0, 10);
+    const evenLaterDate = new Date(new Date(`${today}T12:00:00Z`).getTime() + 5 * 86_400_000)
+      .toISOString()
+      .slice(0, 10);
+    notifyOnChanges(store, { changedDates: [evenLaterDate, laterDate] } as never, true);
+    expect(notifySubstitutionsChanged).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      laterDate,
+    );
   });
 
   it("stays quiet when nothing on or after today changed", () => {
@@ -144,5 +175,28 @@ describe("checkForAppUpdateNotification", () => {
     });
     await checkForAppUpdateNotification(store);
     expect(notifyAppUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe("wireNotificationTaps", () => {
+  it("routes a lesson-reminder tap to the day tab on the lesson's date", () => {
+    const store = makeStore();
+    wireNotificationTaps(store);
+    tapHandlers[0]?.({ kind: "lesson", date: "2026-09-09" });
+    expect(store.getState().pendingNavigation).toEqual({ tab: "day", date: "2026-09-09" });
+  });
+
+  it("routes a substitutions-changed tap to the day tab on the changed date", () => {
+    const store = makeStore();
+    wireNotificationTaps(store);
+    tapHandlers[0]?.({ kind: "substitutionsChanged", date: "2026-09-10" });
+    expect(store.getState().pendingNavigation).toEqual({ tab: "day", date: "2026-09-10" });
+  });
+
+  it("routes an app-update tap to the settings tab", () => {
+    const store = makeStore();
+    wireNotificationTaps(store);
+    tapHandlers[0]?.({ kind: "appUpdate" });
+    expect(store.getState().pendingNavigation).toEqual({ tab: "settings" });
   });
 });
