@@ -60,11 +60,11 @@ const SampleDay = ({ lessons }: { lessons: ResolvedLesson[] }) => (
  * the app opens on — reads as the front of the deck.
  */
 const SCREENS = [
-  { src: settingsScreen, x: -96, rotate: -15, scale: 0.86 },
-  { src: subjectsScreen, x: 96, rotate: 15, scale: 0.86 },
-  { src: weekScreen, x: -44, rotate: -6.5, scale: 0.93 },
-  { src: weekScreen, x: 44, rotate: 6.5, scale: 0.93 },
-  { src: dayScreen, x: 0, rotate: 0, scale: 1 },
+  { id: "settings", src: settingsScreen, x: -96, rotate: -15, scale: 0.86 },
+  { id: "subjects", src: subjectsScreen, x: 96, rotate: 15, scale: 0.86 },
+  { id: "week-left", src: weekScreen, x: -44, rotate: -6.5, scale: 0.93 },
+  { id: "week-right", src: weekScreen, x: 44, rotate: 6.5, scale: 0.93 },
+  { id: "day", src: dayScreen, x: 0, rotate: 0, scale: 1 },
 ];
 
 export const AppScreensArt = () => {
@@ -73,7 +73,7 @@ export const AppScreensArt = () => {
   return (
     <div aria-hidden="true" className="relative h-48 w-full">
       {SCREENS.map((screen, i) => (
-        <div key={screen.src} className="absolute inset-0 flex items-center justify-center">
+        <div key={screen.id} className="absolute inset-0 flex items-center justify-center">
           <motion.img
             src={screen.src}
             alt=""
