@@ -90,13 +90,48 @@ tt_num 1169  2026-09-01  TIC 01.09.2026. (01.09 - 04.09.2026)
 tt_num 1172  2026-09-01  Galvenā ēka 01.09.2026. (01.09 - 04.09.2026)
 tt_num 1174  2026-09-07  TIC 07.09.2026. (07.09 - 11.09.2026)
 tt_num 1175  2026-09-07  Galvenā ēka 07.09.2026. (07.09 - 11.09.2026)   ← default_num
+tt_num 1176  2026-09-14  TIC 14.09.2026. (14.09 - 18.09.2026)
+tt_num 1177  2026-09-14  TIC Olaine 14.09.2026. (14.09 - 18.09.2026)    ← new building, week 3
+tt_num 1178  2026-09-14  Galvenā ēka 14.09.2026. (14.09 - 18.09.2026)
 ```
 
 - `default_num` = current week, main building.
 - Client picks `tt_num` by: newest `datefrom` ≤ target date, matching chosen building.
-  A class lives in one building per week, but the app should let the user pick / remember it.
+- ⚠️ **The set of buildings is open.** "TIC Olaine" appeared in the 14.09 week with no warning
+  and 14 classes that exist in *no other* timetable. Never hard-code the list: enumerate whatever
+  `getTTViewerData` returns (`listBuildings` / `selectTimetables`).
 - `ResolvedDay.stale = true` when no `tt_num` covers the target date's week yet.
 - `text` parsing: building = leading token before the date; `validTo` from the `( … - … )` range.
+
+### Pointer rows, and the automatic-building merge
+
+A class is at **one building per day**, and each building's timetable carries, for every class
+that is elsewhere that day, a single **pointer row**: one card at the first period whose subject
+is literally the other building's street address, with no teacher, no classroom, and
+`durationperiods` covering the whole school day.
+
+```
+tt 1178 (Galvenā ēka)  AV1-1  Mon p1  "Tehnoloģiju un inovāciju centrs Dārzciema ielā"  (span 7)
+tt 1176 (TIC)          AV1-1  Mon p1  "Remonta pamati" … the real lessons
+tt 1176 (TIC)          AV1-1  Tue p1  "Kr.Valdemāra iela 1C"                           (span 7)
+tt 1178 (Galvenā ēka)  AV1-1  Tue p1  "Latviešu valoda I un Literatūra I" … the real lessons
+```
+
+So a single `tt_num` is never the whole answer when the user has not pinned a building:
+
+1. `selectTimetables(metas, date)` → one selection **per building**.
+2. `sync` caches every one of them (a `tt_num` never changes in place, so this is once per week).
+3. `resolveDayAcross(sources, …)` resolves the class's weekday in each source, **drops** sources
+   whose day is nothing but pointer rows as soon as another source has a real lesson, merges the
+   rest, de-duplicates, and applies the substitution feed **once** over the merged list.
+
+There is no way to tell a pointer row from a genuinely teacher-less lesson ("Prakse", "Valsts
+aizsardzība") by shape alone — the discriminator is that another building really does publish
+that class's day. Hence "drop only when something else has substance"; otherwise the address row
+is kept, since it is then all the user has.
+
+`ResolvedLesson.building` records the source per lesson and `ResolvedDay.buildings` lists them in
+lesson order, which is what the UI labels cards with and announces above the day.
 
 ---
 

@@ -47,6 +47,22 @@ describe("DayView", () => {
     expect(screen.getByText("Šodien")).toBeDefined();
   });
 
+  it("says nothing about the building on an ordinary main-building day", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+    expect(screen.queryByTestId("day-building")).toBeNull();
+  });
+
+  it("calls the building out, once up top and again on each card, when it is not the main one", async () => {
+    // The fixture server answers every tt_num with the same week, so pinning TIC gives a day
+    // whose lessons are real but published under the annex — the case automatic mode merges.
+    const harness = await bootHarness({ building: "TIC" });
+    renderDay(harness);
+
+    expect(screen.getByTestId("day-building").textContent).toContain("Cita ēka: TIC");
+    expect(screen.getAllByText("TIC").length).toBeGreaterThan(0);
+  });
+
   it("keeps cancelled lessons visible with the school's own wording", async () => {
     // A1-2 is the harness default and has real cancellations that day (resolve.test.ts).
     const harness = await bootHarness();

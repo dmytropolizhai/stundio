@@ -53,7 +53,7 @@ export const LessonSheet = ({
             />
             <Field label={t("lesson.room")} value={lesson.rooms.map((x) => x.short).join(", ")} />
             <Field label={t("lesson.group")} value={lesson.group ?? ""} />
-            <Field label={t("lesson.building")} value={day?.building ?? ""} />
+            <Field label={t("lesson.building")} value={lesson.building ?? day?.building ?? ""} />
 
             {lesson.original != null && (
               <>

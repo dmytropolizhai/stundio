@@ -16,7 +16,7 @@ import {
   cn,
 } from "@/ds";
 import { LessonRow } from "../components/LessonRow.tsx";
-import { offMainBuilding } from "@/ui/theme";
+import { offMainBuilding, buildingNotice, lessonBuilding } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -84,6 +84,7 @@ export const DayView = ({
   const day = useAppStore((s) => s.resolvedDay(date));
 
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
+  const buildings = useMemo(() => (day === null ? null : buildingNotice(day)), [day]);
   const isToday = date === now.date;
 
   /*
@@ -154,7 +155,7 @@ export const DayView = ({
       }
 
       const live = progress.current === lesson;
-      const building = offMainBuilding(day, lesson.subject);
+      const building = lessonBuilding(day, lesson);
       items.push({
         key: `${lesson.period}-${lesson.subject?.id ?? "x"}-${lesson.group ?? ""}`,
         node: (
@@ -202,6 +203,26 @@ export const DayView = ({
         {day.stale && (
           <Card tone="amber" radius="lg" className="mt-3 font-text text-caption">
             {t("day.stale")}
+          </Card>
+        )}
+
+        {/*
+          Which building the day happens in is the one fact a student cannot recover once they
+          are standing outside the wrong one, so it is stated once up front as well as on each
+          card — and a day split across buildings names them in the order they are attended.
+        */}
+        {buildings !== null && (
+          <Card
+            tone="sunken"
+            radius="lg"
+            elevation="none"
+            className="mt-3 flex items-center gap-2 font-text text-caption text-fg"
+            data-testid="day-building"
+          >
+            <Icon name="building-2" size={16} className="shrink-0 text-muted" />
+            {buildings.length === 1
+              ? t("day.buildingOther", { building: buildings[0] ?? "" })
+              : t("day.buildingMixed", { buildings: buildings.join(" → ") })}
           </Card>
         )}
 

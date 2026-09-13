@@ -46,7 +46,8 @@ describe("a cold first sync", () => {
     expect(outcome.status).toBe("idle");
     expect(outcome.lastSyncAt).not.toBeNull();
     expect(server.calls.list).toBe(1);
-    expect(server.calls.timetable).toBe(1);
+    // One per building: automatic mode resolves the day across all of them (MODEL.md §3).
+    expect(server.calls.timetable).toBe(2); // 1175 (Galvenā ēka) + 1174 (TIC)
     expect(server.calls.substitutions).toBe(2); // today + next school day
     expect(outcome.refreshedDates).toEqual(["2026-09-09", "2026-09-10"]);
   });
@@ -142,6 +143,7 @@ describe("the cached-week rule", () => {
     });
     const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
     expect(outcome.fetchedTtNum).toBe("1174"); // TIC, not the 1175 default
+    expect(server.calls.timetable).toBe(1); // and only TIC — a pinned building needs no merge
   });
 });
 
@@ -151,10 +153,11 @@ describe("weekend sync", () => {
   it("also ensures next week's timetable, not just the one covering today", async () => {
     const outcome = await engineAt(`${SATURDAY}T08:00:00Z`).sync({ date: SATURDAY });
 
-    expect(outcome.fetchedTtNum).toBe("1172"); // the week covering Saturday
-    expect(server.calls.timetable).toBe(2); // 1172 (today) + 1175 (next week)
-    expect(await cache.getTimetable("1172")).not.toBeNull();
-    expect(await cache.getTimetable("1175")).not.toBeNull();
+    expect(outcome.fetchedTtNum).toBe("1172"); // the week covering Saturday, main building
+    expect(server.calls.timetable).toBe(4); // both buildings, this week and next
+    for (const num of ["1169", "1172", "1174", "1175"]) {
+      expect(await cache.getTimetable(num)).not.toBeNull();
+    }
   });
 
   it("does not double-fetch once both weeks are already cached", async () => {
@@ -165,9 +168,9 @@ describe("weekend sync", () => {
     expect(server.calls.timetable).toBe(0);
   });
 
-  it("skips the extra fetch on a weekday", async () => {
+  it("skips the next-week fetch on a weekday", async () => {
     await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE }); // DATE is a Wednesday
-    expect(server.calls.timetable).toBe(1);
+    expect(server.calls.timetable).toBe(2); // this week only, one per building
   });
 });
 

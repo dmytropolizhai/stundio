@@ -78,6 +78,9 @@ These are enforced by lint, tests, or CI — breaking one breaks the build:
   rejection and disables Framer Motion animations. Parser tests read the real fixtures in `data/`.
 - **Cache-first, always.** The UI renders from cache synchronously; the network catches up
   underneath. Refresh happens on open, on resume, and on pull-to-refresh — never by polling.
+- **The building list is open, and a day can span two of them.** Never hard-code building names:
+  enumerate what EduPage publishes (`selectTimetables`). With no building pinned, a day is merged
+  across every building's timetable and the address-only "pointer" rows are dropped — MODEL.md §3.
 - **The timezone is always `Europe/Riga`.** Use `todayInRiga` / the `rigaClock` helpers; never
   device-local date maths.
 - **Chrome is translated (LV/EN/RU/UA); school-written text is not.** Substitution `raw` strings

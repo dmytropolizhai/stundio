@@ -53,3 +53,36 @@ export const listBuildings = (metas: readonly TimetableMeta[]): Building[] => [
 export const MAIN_BUILDING: Building = "Galvenā ēka";
 
 export const isMainBuilding = (building: Building): boolean => building === MAIN_BUILDING;
+
+/**
+ * One selection per building for `date` — what automatic building mode resolves against.
+ *
+ * RVT publishes a class's week in exactly one building's timetable and leaves a pointer in the
+ * others (see `resolveDayAcross`), and it adds buildings mid-year without warning ("TIC Olaine"
+ * appeared in week 1176/1177/1178). Enumerating whatever `metas` actually contains is what makes
+ * both facts a non-event: a new building is just another entry here.
+ *
+ * Pinning a building narrows this to that one. `MAIN_BUILDING` sorts first so it stays the
+ * primary source of a merged day whenever it contributes at all.
+ */
+export const selectTimetables = (
+  metas: readonly TimetableMeta[],
+  date: ISODate,
+  building?: Building,
+): TimetableSelection[] => {
+  if (building !== undefined) {
+    const one = selectTimetable(metas, date, building);
+    return one === null ? [] : [one];
+  }
+
+  const buildings = listBuildings(metas);
+  // A school that never labels its timetables ends up here: fall back to the flat pick.
+  if (buildings.length === 0) {
+    const one = selectTimetable(metas, date);
+    return one === null ? [] : [one];
+  }
+
+  return buildings
+    .sort((a, b) => Number(isMainBuilding(b)) - Number(isMainBuilding(a)) || a.localeCompare(b))
+    .flatMap((b) => selectTimetable(metas, date, b) ?? []);
+};

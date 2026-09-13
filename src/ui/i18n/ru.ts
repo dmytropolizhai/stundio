@@ -51,6 +51,8 @@ export const ru: Dict = {
   "day.noData": "Нет сохранённых данных",
   "day.noDataHint": "Подключись к интернету, чтобы скачать расписание.",
   "day.stale": "Расписание на эту неделю ещё не опубликовано — показываем прошлое.",
+  "day.buildingOther": "Другой корпус: {building}",
+  "day.buildingMixed": "Несколько корпусов: {buildings}",
   "day.notes": "Объявления",
   "day.free": "Окно",
   "day.finished": "Уроки закончились",
@@ -58,6 +60,7 @@ export const ru: Dict = {
 
   "week.previousWeek": "Предыдущая неделя",
   "week.nextWeek": "Следующая неделя",
+  "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Обзор",
   "week.overview.lessons": "{n} уроков",
   "week.overview.lessonsUp": "+{n} по сравнению с прошлой неделей",

@@ -17,7 +17,7 @@ import {
   fetchTimetableList,
   normalizeTimetable,
   parseDaySubstitutions,
-  selectTimetable,
+  selectTimetables,
   toTimetableMeta,
   type Building,
   type HttpClient,
@@ -164,16 +164,28 @@ export const createSyncEngine = (deps: SyncDeps) => {
     const settings = await cache.getSettings();
     const building = request.building ?? settings.building ?? undefined;
 
-    const selection = selectTimetable(metas, date, building ?? undefined);
-    const fetchedTtNum = selection === null ? null : await ensureTimetable(selection.meta, errors);
+    /*
+     * Every building's week, not just one: in automatic mode the class's lessons sit in
+     * whichever building published them and the rest only carry a pointer row (MODEL.md §3),
+     * so resolving a day needs all of them cached. Pinning a building narrows this to one.
+     * `ensureTimetable` is a no-op once a tt_num is cached, and a tt_num never changes in
+     * place, so this costs one extra fetch per building per week — never per open.
+     */
+    const selections = selectTimetables(metas, date, building ?? undefined);
+    const fetched: string[] = [];
+    for (const selection of selections) {
+      const num = await ensureTimetable(selection.meta, errors);
+      if (num !== null) fetched.push(num);
+    }
+    const fetchedTtNum = fetched[0] ?? null;
 
     // On a weekend `date` (today, by default) resolves to the week that just ended — the
     // week the user actually opens the app to see is the next one. Without this, that
     // timetable is only ever fetched once the user forces a refresh from the next-week view.
     if (isWeekend(date)) {
-      const upcoming = selectTimetable(metas, nextSchoolDay(date), building ?? undefined);
-      if (upcoming !== null && upcoming.meta.ttNum !== selection?.meta.ttNum) {
-        await ensureTimetable(upcoming.meta, errors);
+      const current = new Set(selections.map((s) => s.meta.ttNum));
+      for (const upcoming of selectTimetables(metas, nextSchoolDay(date), building ?? undefined)) {
+        if (!current.has(upcoming.meta.ttNum)) await ensureTimetable(upcoming.meta, errors);
       }
     }
 

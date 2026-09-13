@@ -136,6 +136,39 @@ describe("WeekView", () => {
     expect(screen.getAllByTestId("week-cell").length).toBeGreaterThan(0);
   });
 
+  it("says nothing about buildings when the whole week is in the main one", async () => {
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByTestId("week-buildings")).toBeNull();
+  });
+
+  it("lists which weekdays are in another building", async () => {
+    const harness = await bootHarness({ building: "TIC" });
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    // Every fixture weekday resolves to the pinned annex, so it names them all.
+    const note = screen.getByTestId("week-buildings").textContent ?? "";
+    expect(note).toContain("TIC:");
+    expect(note.split(",").length).toBeGreaterThan(1);
+  });
+
   it("opens a lesson sheet from a cell", async () => {
     const harness = await bootHarness();
     wrap(

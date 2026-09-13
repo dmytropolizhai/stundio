@@ -32,7 +32,16 @@ export {
   isMainBuilding,
   listBuildings,
   selectTimetable,
+  selectTimetables,
   type TimetableSelection,
 } from "./select.ts";
 export { otherRatio, parseDaySubstitutions } from "./substitutions.ts";
-export { resolveDay, weekdayOf, type ResolveOptions } from "./resolve.ts";
+export {
+  classWeekLessons,
+  resolveDay,
+  resolveDayAcross,
+  weekdayOf,
+  type ClassWeekLesson,
+  type DaySource,
+  type ResolveOptions,
+} from "./resolve.ts";

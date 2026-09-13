@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { FIXTURES, readJsonFixture } from "./fixtures.ts";
-import { listBuildings, selectTimetable } from "../select.ts";
+import { listBuildings, selectTimetable, selectTimetables } from "../select.ts";
 import { toTimetableMeta } from "../normalize.ts";
 import type { RawTimetableListEntry } from "../client.ts";
 
@@ -61,5 +61,44 @@ describe("selectTimetable", () => {
   it("ignores the weekend gap inside a covered week", () => {
     // validTo is Friday; Saturday is not covered and must be reported as stale.
     expect(selectTimetable(metas, "2026-09-12", "Galvenā ēka")?.stale).toBe(true);
+  });
+});
+
+describe("selectTimetables (automatic building mode)", () => {
+  it("returns one selection per building, main building first", () => {
+    const picks = selectTimetables(metas, "2026-09-09");
+    expect(picks.map((p) => p.meta.ttNum)).toEqual(["1175", "1174"]);
+  });
+
+  it("narrows to the pinned building", () => {
+    expect(selectTimetables(metas, "2026-09-09", "TIC").map((p) => p.meta.ttNum)).toEqual(["1174"]);
+  });
+
+  it("picks up a building that appears mid-year without any code change", () => {
+    // RVT really did add "TIC Olaine" in the 14.09 week — the app must not need a release.
+    const withNew = [
+      ...metas,
+      toTimetableMeta(
+        {
+          tt_num: "1177",
+          text: "TIC Olaine 14.09.2026. (14. 09. - 18. 09. 2026)",
+          datefrom: "2026-09-14",
+          year: 2026,
+        },
+        "2026-09-14T00:00:00.000Z",
+      ),
+    ];
+    const picks = selectTimetables(withNew, "2026-09-16");
+    expect(picks.map((p) => p.meta.building)).toEqual(["Galvenā ēka", "TIC", "TIC Olaine"]);
+    expect(picks.find((p) => p.meta.ttNum === "1177")?.stale).toBe(false);
+  });
+
+  it("falls back to a flat pick when no timetable is labelled with a building", () => {
+    const unlabelled = metas.map((m) => ({ ...m, building: "" }));
+    expect(selectTimetables(unlabelled, "2026-09-09")).toHaveLength(1);
+  });
+
+  it("returns nothing when there is nothing published", () => {
+    expect(selectTimetables([], "2026-09-09")).toEqual([]);
   });
 });
