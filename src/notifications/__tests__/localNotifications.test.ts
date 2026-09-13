@@ -11,6 +11,8 @@ const getPending = vi.hoisted(() => vi.fn());
 const createChannel = vi.hoisted(() => vi.fn());
 const checkPermissions = vi.hoisted(() => vi.fn());
 const requestPermissions = vi.hoisted(() => vi.fn());
+const remove = vi.hoisted(() => vi.fn());
+const addListener = vi.hoisted(() => vi.fn().mockResolvedValue({ remove }));
 
 vi.mock("@capacitor/local-notifications", () => ({
   LocalNotifications: {
@@ -20,6 +22,7 @@ vi.mock("@capacitor/local-notifications", () => ({
     createChannel,
     checkPermissions,
     requestPermissions,
+    addListener,
   },
 }));
 
@@ -28,6 +31,7 @@ const {
   hasNotificationPermission,
   notifyAppUpdate,
   notifySubstitutionsChanged,
+  onNotificationTap,
   rescheduleLessonReminders,
 } = await import("../localNotifications.ts");
 
@@ -53,6 +57,8 @@ beforeEach(() => {
   createChannel.mockReset();
   checkPermissions.mockReset();
   requestPermissions.mockReset();
+  addListener.mockClear().mockResolvedValue({ remove });
+  remove.mockClear();
 });
 
 describe("ensureNotificationPermission", () => {
@@ -121,16 +127,63 @@ describe("rescheduleLessonReminders", () => {
 
 describe("one-shot notifications", () => {
   it("notifySubstitutionsChanged schedules a single fixed-id notification", async () => {
-    await notifySubstitutionsChanged("title", "body");
+    await notifySubstitutionsChanged("title", "body", "2026-09-09");
     expect(schedule).toHaveBeenCalledWith({
-      notifications: [{ id: 1, title: "title", body: "body", channelId: "schedule" }],
+      notifications: [
+        {
+          id: 1,
+          title: "title",
+          body: "body",
+          channelId: "schedule",
+          extra: { kind: "substitutionsChanged", date: "2026-09-09" },
+        },
+      ],
     });
   });
 
   it("notifyAppUpdate schedules a single fixed-id notification", async () => {
     await notifyAppUpdate("title", "body");
     expect(schedule).toHaveBeenCalledWith({
-      notifications: [{ id: 2, title: "title", body: "body", channelId: "schedule" }],
+      notifications: [
+        {
+          id: 2,
+          title: "title",
+          body: "body",
+          channelId: "schedule",
+          extra: { kind: "appUpdate" },
+        },
+      ],
     });
+  });
+});
+
+describe("onNotificationTap", () => {
+  it("invokes the handler with the tapped notification's extra payload", () => {
+    const handler = vi.fn();
+    onNotificationTap(handler);
+
+    expect(addListener).toHaveBeenCalledWith("localNotificationActionPerformed", expect.any(Function));
+    const [, listener] = addListener.mock.calls[0] as [string, (action: unknown) => void];
+    listener({ notification: { extra: { kind: "appUpdate" } } });
+
+    expect(handler).toHaveBeenCalledWith({ kind: "appUpdate" });
+  });
+
+  it("ignores a tap on a notification with no extra payload", () => {
+    const handler = vi.fn();
+    onNotificationTap(handler);
+
+    const [, listener] = addListener.mock.calls[0] as [string, (action: unknown) => void];
+    listener({ notification: {} });
+
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("removes the underlying listener once unsubscribed", async () => {
+    const dispose = onNotificationTap(vi.fn());
+    dispose();
+    await Promise.resolve();
+
+    expect(remove).toHaveBeenCalled();
   });
 });

@@ -12,6 +12,7 @@ import {
   checkForAppUpdateNotification,
   notifyOnChanges,
   wireNotifications,
+  wireNotificationTaps,
 } from "../notifications/index.ts";
 import { createAnalyticsClient, capacitorHttp as analyticsHttp } from "../lib/analytics/index.ts";
 
@@ -35,6 +36,7 @@ export const bootApp: Boot = async () => {
   void store.getState().refresh();
 
   const notifications = wireNotifications(store);
+  const notificationTaps = wireNotificationTaps(store);
   // A cached timetable list means this device has synced before — gates the "schedule
   // changed" notification off the very first, baseline-less sync.
   const hadPreviousSync = (await cache.getTimetableList()) !== null;
@@ -51,6 +53,7 @@ export const bootApp: Boot = async () => {
   const dispose = () => {
     disposeResume();
     notifications.dispose();
+    notificationTaps.dispose();
   };
   return { store, dispose };
 };

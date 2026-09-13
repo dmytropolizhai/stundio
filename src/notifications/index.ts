@@ -7,4 +7,9 @@ export {
   openNotificationSettings,
   rescheduleLessonReminders,
 } from "./localNotifications.ts";
-export { wireNotifications, notifyOnChanges, checkForAppUpdateNotification } from "./wire.ts";
+export {
+  wireNotifications,
+  wireNotificationTaps,
+  notifyOnChanges,
+  checkForAppUpdateNotification,
+} from "./wire.ts";
