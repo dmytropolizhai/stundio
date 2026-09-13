@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { Icon } from "./icon.tsx";
+import { Icon } from "@/ds";
 import { cn, pressable } from "../../lib/utils.ts";
 
 /** The six subject accents plus brand. A subject keeps its tone everywhere in the app. */
@@ -164,7 +164,7 @@ export const LessonCard = ({
           <span
             className={cn(
               "flex size-10 shrink-0 items-center justify-center rounded-full",
-              "font-text text-micro font-bold tracking-label",
+              "font-text",
               filled ? "bg-current/15" : cn(RAIL[tone], "text-black"),
               cancelled && "line-through",
             )}
