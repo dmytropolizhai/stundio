@@ -341,7 +341,7 @@ export const WeekView = ({
           void refresh({ date, force: true });
         }}
       >
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26">
+        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
           <TopBar
             title={
               <div className="flex items-center gap-0.5">

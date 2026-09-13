@@ -113,7 +113,7 @@ export const SubjectsView = () => {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26">
+      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
         <TopBar title={t("subjects.title")} />
         {body()}
       </div>
