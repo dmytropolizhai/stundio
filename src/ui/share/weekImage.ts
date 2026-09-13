@@ -14,7 +14,13 @@ import {
   type ShareLegendEntry,
   type ShareLink,
 } from "@/lib/share";
-import { buildingNotice, lessonBuilding, subjectCode, subjectTone } from "@/ui/theme";
+import {
+  buildingNotice,
+  lessonBuilding,
+  subjectCode,
+  subjectTone,
+  type SubjectTone,
+} from "@/ui/theme";
 import {
   formatDayMonth,
   formatWeekdayShort,
@@ -62,6 +68,8 @@ export type WeekImageInput = {
   theme: ShareTheme;
   lang: Lang;
   t: Translate;
+  /** Same overrides the day and week views use, so a shared card matches the app on-screen. */
+  subjectColorOverrides?: Record<string, SubjectTone>;
 };
 
 const roomsOf = (lesson: ResolvedLesson): string =>
@@ -70,8 +78,13 @@ const roomsOf = (lesson: ResolvedLesson): string =>
     .filter((short) => short !== "")
     .join(", ");
 
-const toCell = (day: ResolvedDay, lesson: ResolvedLesson, theme: ShareTheme): ShareCell => {
-  const tone = theme.tones[subjectTone(lesson.subject)];
+const toCell = (
+  day: ResolvedDay,
+  lesson: ResolvedLesson,
+  theme: ShareTheme,
+  subjectColorOverrides: Record<string, SubjectTone>,
+): ShareCell => {
+  const tone = theme.tones[subjectTone(lesson.subject, subjectColorOverrides)];
   const detail = roomsOf(lesson);
   const building = lessonBuilding(day, lesson);
 
@@ -93,7 +106,11 @@ const toCell = (day: ResolvedDay, lesson: ResolvedLesson, theme: ShareTheme): Sh
  * name, and useless on an image, where there is nothing to tap. Sorted by code so a reader
  * scanning from a cell finds the line quickly.
  */
-const subjectKey = (days: (ResolvedDay | null)[], theme: ShareTheme): ShareLegendEntry[] => {
+const subjectKey = (
+  days: (ResolvedDay | null)[],
+  theme: ShareTheme,
+  subjectColorOverrides: Record<string, SubjectTone>,
+): ShareLegendEntry[] => {
   const byLabel = new Map<string, ShareLegendEntry>();
 
   for (const day of days) {
@@ -104,7 +121,7 @@ const subjectKey = (days: (ResolvedDay | null)[], theme: ShareTheme): ShareLegen
       // Nothing to explain when there is no name behind the code.
       if (name === "" || name === label || byLabel.has(label)) continue;
 
-      const tone = theme.tones[subjectTone(lesson.subject)];
+      const tone = theme.tones[subjectTone(lesson.subject, subjectColorOverrides)];
       byLabel.set(label, { label, name, fill: tone.fill, ink: tone.ink });
     }
   }
@@ -150,6 +167,7 @@ export const buildWeekImageData = ({
   theme,
   lang,
   t,
+  subjectColorOverrides = {},
 }: WeekImageInput): ShareImageData => {
   const first = dates[0];
   const last = dates[dates.length - 1];
@@ -160,7 +178,9 @@ export const buildWeekImageData = ({
     end: slot.end,
     cells: days.map((day) => {
       const lesson = day?.lessons.find((l) => l.period === slot.period);
-      return day === null || lesson === undefined ? null : toCell(day, lesson, theme);
+      return day === null || lesson === undefined
+        ? null
+        : toCell(day, lesson, theme, subjectColorOverrides);
     }),
   }));
 
@@ -174,7 +194,7 @@ export const buildWeekImageData = ({
       date: formatDayMonth(date, lang),
     })),
     rows,
-    legend: subjectKey(days, theme),
+    legend: subjectKey(days, theme, subjectColorOverrides),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
     link: appLink(),

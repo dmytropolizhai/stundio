@@ -1,4 +1,10 @@
-export type { AppCache, CachedTimetableList, Settings, SubjectNote } from "./types.ts";
+export type {
+  AppCache,
+  CachedTimetableList,
+  Settings,
+  SubjectColorTone,
+  SubjectNote,
+} from "./types.ts";
 export { DEFAULT_SETTINGS } from "./types.ts";
 export { createMemoryCache } from "./memory.ts";
 export {

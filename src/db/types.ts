@@ -12,6 +12,13 @@ export type CachedTimetableList = {
   fetchedAt: ISODateTime;
 };
 
+/**
+ * One of the Studio DS's six subject accent tones (`ui/theme/colors.ts`'s `SubjectTone`).
+ * Duplicated as a literal here rather than imported, the same way `theme` and `lang` are: `db/`
+ * stays below `ui/` in the layering (CLAUDE.md), so the six names are the contract between them.
+ */
+export type SubjectColorTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime";
+
 export type Settings = {
   selectedClassId: string | null;
   building: Building | null;
@@ -23,6 +30,19 @@ export type Settings = {
   mergeConsecutiveLessons: boolean;
   /** Day view: show each lesson's start/end time alongside its number. */
   showTime: boolean;
+  /** Unfilled shows the subject accent only as a rail; filled tints the whole lesson card. */
+  lessonCardStyle: "outline" | "filled";
+  /** Corner radius for cards, chosen from the DS's own rounder end of the scale. */
+  cardRadius: "xl" | "2xl";
+  /** Shadow depth for cards and other elevated chrome. */
+  cardElevation: "soft" | "bold";
+  /** Forces every DS transition/animation to near-zero, independent of the OS preference. */
+  reduceMotion: boolean;
+  /**
+   * Per-subject accent overrides, keyed the same way `subjectTone` keys its hash (lowercased
+   * `short`/`name`/`id`). A subject not present here keeps its deterministic auto-assigned tone.
+   */
+  subjectColorOverrides: Record<string, SubjectColorTone>;
   /** Minutes before a lesson to notify at; 0 turns the reminder off. */
   notifyLessonReminderMinutes: number;
   /** Notify when today's or tomorrow's substitutions change after the initial load. */
@@ -43,6 +63,11 @@ export const DEFAULT_SETTINGS: Settings = {
   lang: "lv",
   mergeConsecutiveLessons: false,
   showTime: false,
+  lessonCardStyle: "outline",
+  cardRadius: "xl",
+  cardElevation: "soft",
+  reduceMotion: false,
+  subjectColorOverrides: {},
   notifyLessonReminderMinutes: 10,
   notifySubstitutionChanges: true,
   notifyAppUpdates: true,

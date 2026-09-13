@@ -46,6 +46,15 @@ export type AppState = {
   setLang: (lang: Settings["lang"]) => Promise<void>;
   setMergeConsecutiveLessons: (merge: boolean) => Promise<void>;
   setShowTime: (showTime: boolean) => Promise<void>;
+  setLessonCardStyle: (style: Settings["lessonCardStyle"]) => Promise<void>;
+  setCardRadius: (radius: Settings["cardRadius"]) => Promise<void>;
+  setCardElevation: (elevation: Settings["cardElevation"]) => Promise<void>;
+  setReduceMotion: (reduceMotion: boolean) => Promise<void>;
+  /** `tone` of `null` clears the override, returning the subject to its auto-assigned tone. */
+  setSubjectColorOverride: (
+    subjectKey: string,
+    tone: Settings["subjectColorOverrides"][string] | null,
+  ) => Promise<void>;
   setNotifyLessonReminderMinutes: (minutes: number) => Promise<void>;
   setNotifySubstitutionChanges: (enabled: boolean) => Promise<void>;
   setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
@@ -157,6 +166,16 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setLang: (lang) => persist({ lang }),
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
       setShowTime: (showTime) => persist({ showTime }),
+      setLessonCardStyle: (lessonCardStyle) => persist({ lessonCardStyle }),
+      setCardRadius: (cardRadius) => persist({ cardRadius }),
+      setCardElevation: (cardElevation) => persist({ cardElevation }),
+      setReduceMotion: (reduceMotion) => persist({ reduceMotion }),
+      setSubjectColorOverride: (subjectKey, tone) => {
+        const next = { ...get().settings.subjectColorOverrides };
+        if (tone === null) delete next[subjectKey];
+        else next[subjectKey] = tone;
+        return persist({ subjectColorOverrides: next });
+      },
       setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>
         persist({ notifyLessonReminderMinutes }),
       setNotifySubstitutionChanges: (notifySubstitutionChanges) =>

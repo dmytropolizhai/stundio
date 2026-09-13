@@ -23,6 +23,7 @@ export const SubjectsView = () => {
   const t = useT();
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
+  const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const { subjects, teachers } = useSubjects();
   const notes = useAppStore((s) => s.notes);
   const [openSubject, setOpenSubject] = useState<SubjectRef | null>(null);
@@ -47,7 +48,7 @@ export const SubjectsView = () => {
             return (
               <Card
                 key={subject.id}
-                tone={subjectTone(subject)}
+                tone={subjectTone(subject, subjectColorOverrides)}
                 className="min-w-0 text-left"
                 data-testid={`subject-${subject.id}`}
                 onClick={() => {

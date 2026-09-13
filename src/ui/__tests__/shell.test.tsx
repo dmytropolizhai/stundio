@@ -6,7 +6,7 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { StoreContext } from "../../store/index.ts";
 import { TabBar } from "../components/TabBar.tsx";
-import { useTheme } from "../theme/index.ts";
+import { useCustomization, useTheme } from "../theme/index.ts";
 import { bootHarness, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
@@ -38,9 +38,19 @@ const Themed = () => {
   return <span>themed</span>;
 };
 
+const Customized = () => {
+  useCustomization();
+  return <span>customized</span>;
+};
+
 afterEach(() => {
   vi.unstubAllGlobals();
-  document.documentElement.classList.remove("dark");
+  document.documentElement.classList.remove(
+    "dark",
+    "radius-2xl",
+    "elevation-bold",
+    "reduce-motion",
+  );
 });
 
 describe("TabBar", () => {
@@ -104,5 +114,32 @@ describe("useTheme", () => {
     wrap(harness, <Themed />);
     expect(screen.getByText("themed")).toBeDefined();
     expect(document.documentElement.classList.contains("dark")).toBe(false);
+  });
+});
+
+describe("useCustomization", () => {
+  it("defaults to none of the classes set", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <Customized />);
+    expect(document.documentElement.classList.contains("radius-2xl")).toBe(false);
+    expect(document.documentElement.classList.contains("elevation-bold")).toBe(false);
+    expect(document.documentElement.classList.contains("reduce-motion")).toBe(false);
+  });
+
+  it("toggles each class as the matching setting changes", async () => {
+    const harness = await bootHarness({
+      cardRadius: "2xl",
+      cardElevation: "bold",
+      reduceMotion: true,
+    });
+    wrap(harness, <Customized />);
+    expect(document.documentElement.classList.contains("radius-2xl")).toBe(true);
+    expect(document.documentElement.classList.contains("elevation-bold")).toBe(true);
+    expect(document.documentElement.classList.contains("reduce-motion")).toBe(true);
+
+    await act(async () => {
+      await harness.store.getState().setCardRadius("xl");
+    });
+    expect(document.documentElement.classList.contains("radius-2xl")).toBe(false);
   });
 });

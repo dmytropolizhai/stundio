@@ -16,6 +16,30 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
+ * Customization settings (`useCustomization`) — bounded to the DS's own scale, the same way
+ * `dark.css` is: `.radius-2xl` moves the standard card radius to the DS's own hero-card step,
+ * `.elevation-bold` swaps the standard card shadow for the DS's own raised one, and
+ * `.reduce-motion` is an explicit, always-on version of the DS's own `prefers-reduced-motion`
+ * block (`ds/tokens/motion.css`). No value here is new — every option is a DS token, just
+ * applied somewhere the DS itself doesn't put it by default.
+ */
+:root.radius-2xl {
+  --radius-xl: var(--radius-2xl);
+}
+
+:root.elevation-bold {
+  --shadow-card: var(--shadow-raised);
+}
+
+:root.reduce-motion {
+  --dur-fast: 1ms;
+  --dur-base: 1ms;
+  --dur-slow: 1ms;
+  --press-scale: 1;
+  --press-scale-tile: 1;
+}
+
+/*
  * DS tokens → Tailwind utilities.
  *
  * `inline` is load-bearing: the generated utilities emit `var(--brand)` rather than baking in the

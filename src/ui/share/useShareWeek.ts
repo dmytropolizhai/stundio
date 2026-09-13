@@ -31,6 +31,7 @@ export const useShareWeek = (
   const resolvedDay = useAppStore((s) => s.resolvedDay);
   const substitutions = useAppStore((s) => s.substitutions);
   const trackEvent = useAppStore((s) => s.trackEvent);
+  const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
 
   const dates = useMemo(() => weekDates(date), [date]);
 
@@ -69,6 +70,7 @@ export const useShareWeek = (
         theme,
         lang,
         t,
+        subjectColorOverrides,
       });
 
       const { dataUrl } = renderShareImage(data, { palette: theme.palette });
@@ -85,7 +87,7 @@ export const useShareWeek = (
     } catch (error) {
       setStatus(isCancel(error) ? "idle" : "error");
     }
-  }, [dates, days, lang, selected, t, timetables, trackEvent]);
+  }, [dates, days, lang, selected, t, timetables, trackEvent, subjectColorOverrides]);
 
   const share = useCallback(() => {
     void run();
