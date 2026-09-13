@@ -95,7 +95,7 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
 
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
-      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26">
+      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
         <TopBar title={t("settings.title")} />
 
         <Section title={t("settings.class")}>

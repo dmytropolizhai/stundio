@@ -295,7 +295,7 @@ export const DayView = ({
               onDateChange(addDays(date, -1));
             }
           }}
-          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-26 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         >
           <TopBar
             title={
