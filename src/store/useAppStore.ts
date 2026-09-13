@@ -19,10 +19,10 @@ import {
   type ISODateTime,
   type ResolvedDay,
   type Timetable,
-} from "../lib/edupage/index.ts";
-import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "../db/index.ts";
-import type { SyncEngine, SyncOutcome, SyncStatus } from "../sync/index.ts";
-import { noopAnalytics, type AnalyticsClient } from "../lib/analytics/index.ts";
+} from "@/lib/edupage";
+import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
+import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
+import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 
 /**
  * Where a tapped notification wants the app to go. Set by the notification-tap listener
@@ -60,6 +60,10 @@ export type AppState = {
   /** Not user-facing — the update-notification wiring marks a version as already announced. */
   setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
   setAnalyticsEnabled: (enabled: boolean) => Promise<void>;
+  setShareLang: (lang: Settings["shareLang"]) => Promise<void>;
+  setShareLangSyncWithApp: (sync: boolean) => Promise<void>;
+  /** Not user-facing — `useShareWeek` marks the one-time language prompt as already shown. */
+  setShareLangPromptShown: (shown: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
@@ -176,6 +180,9 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
         persist({ lastNotifiedUpdateVersion }),
       setAnalyticsEnabled: (analyticsEnabled) => persist({ analyticsEnabled }),
+      setShareLang: (shareLang) => persist({ shareLang }),
+      setShareLangSyncWithApp: (shareLangSyncWithApp) => persist({ shareLangSyncWithApp }),
+      setShareLangPromptShown: (shareLangPromptShown) => persist({ shareLangPromptShown }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {

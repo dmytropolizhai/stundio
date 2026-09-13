@@ -10,7 +10,7 @@ import { useAppStore } from "@/store";
 import { findClassTeacher, type ISODate } from "@/lib/edupage";
 import { weekDates } from "@/lib/schedule";
 import { dataUrlToBase64, renderShareImage, shareImage } from "@/lib/share";
-import { useT, useLang } from "@/ui/i18n";
+import { translate, useLang } from "@/ui/i18n";
 import { shareTheme } from "./palette.ts";
 import { buildWeekImageData, weekShareFileName, weekShareText } from "./weekImage.ts";
 
@@ -21,16 +21,35 @@ const isCancel = (error: unknown): boolean => error instanceof Error && error.na
 
 export const useShareWeek = (
   date: ISODate,
-): { share: () => void; status: ShareWeekStatus; disabled: boolean } => {
-  const t = useT();
+): {
+  share: () => void;
+  status: ShareWeekStatus;
+  disabled: boolean;
+  /** The one-time "which language to share in" prompt — render `ShareLanguageDialog` off this. */
+  languagePrompt: { open: boolean; onDone: () => void };
+} => {
   const lang = useLang();
   const [status, setStatus] = useState<ShareWeekStatus>("idle");
+  const [promptOpen, setPromptOpen] = useState(false);
 
   const classId = useAppStore((s) => s.settings.selectedClassId);
   const timetables = useAppStore((s) => s.timetables);
   const resolvedDay = useAppStore((s) => s.resolvedDay);
   const substitutions = useAppStore((s) => s.substitutions);
   const trackEvent = useAppStore((s) => s.trackEvent);
+  const shareLang = useAppStore((s) => s.settings.shareLang);
+  const shareLangSyncWithApp = useAppStore((s) => s.settings.shareLangSyncWithApp);
+  const shareLangPromptShown = useAppStore((s) => s.settings.shareLangPromptShown);
+  const setShareLangPromptShown = useAppStore((s) => s.setShareLangPromptShown);
+
+  /** The share image/message travels in its own language — separate from the app's chrome. */
+  const effectiveLang = shareLangSyncWithApp ? lang : shareLang;
+  const shareT = useMemo(
+    () =>
+      (key: Parameters<typeof translate>[1], params?: Parameters<typeof translate>[2]) =>
+        translate(effectiveLang, key, params),
+    [effectiveLang],
+  );
 
   const dates = useMemo(() => weekDates(date), [date]);
 
@@ -67,8 +86,8 @@ export const useShareWeek = (
         className: selected.short,
         classTeacher: findClassTeacher(Object.values(timetables), selected.id)?.short ?? null,
         theme,
-        lang,
-        t,
+        lang: effectiveLang,
+        t: shareT,
       });
 
       const { dataUrl } = renderShareImage(data, { palette: theme.palette });
@@ -76,8 +95,8 @@ export const useShareWeek = (
       await shareImage({
         base64: dataUrlToBase64(dataUrl),
         fileName: weekShareFileName(selected.short, dates[0]),
-        title: t("share.title", { class: selected.short }),
-        text: weekShareText(selected.short, data.period, t),
+        title: shareT("share.title", { class: selected.short }),
+        text: weekShareText(selected.short, data.period, shareT),
       });
 
       trackEvent("share_week");
@@ -85,11 +104,26 @@ export const useShareWeek = (
     } catch (error) {
       setStatus(isCancel(error) ? "idle" : "error");
     }
-  }, [dates, days, lang, selected, t, timetables, trackEvent]);
+  }, [dates, days, effectiveLang, selected, shareT, timetables, trackEvent]);
 
   const share = useCallback(() => {
+    if (!shareLangPromptShown) {
+      setPromptOpen(true);
+      return;
+    }
     void run();
-  }, [run]);
+  }, [run, shareLangPromptShown]);
 
-  return { share, status, disabled: selected === null || status === "working" };
+  const dismissLanguagePrompt = useCallback(() => {
+    setPromptOpen(false);
+    void setShareLangPromptShown(true);
+    void run();
+  }, [run, setShareLangPromptShown]);
+
+  return {
+    share,
+    status,
+    disabled: selected === null || status === "working",
+    languagePrompt: { open: promptOpen, onDone: dismissLanguagePrompt },
+  };
 };

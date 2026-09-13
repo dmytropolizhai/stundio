@@ -75,8 +75,13 @@ export const ua: Dict = {
   "share.working": "Створюємо зображення…",
   "share.error": "Не вдалося створити зображення",
   "share.title": "Розклад {class}",
-  "share.message": "Розклад {class} {period}",
+  "share.message":
+    "{class} розклад {period} \\nХочете зробити користування EduPage зручнішим? Завітайте на: https://github.com/dmytropolizhai/stundio",
   "share.image.classTeacher": "Класний керівник",
+  "share.image.appLabel": "Зручніший EduPage на телефоні",
+  "share.language.title": "Якою мовою поділитися?",
+  "share.language.sync": "Синхронізувати зображення з мовою застосунку",
+  "share.language.continue": "Продовжити",
 
   "lesson.teacher": "Учитель",
   "lesson.room": "Кабінет",
@@ -122,6 +127,10 @@ export const ua: Dict = {
   "settings.buildingAuto": "Автоматично",
   "settings.theme": "Зовнішній вигляд",
   "settings.language": "Мова",
+  "settings.share": "Поширення",
+  "settings.shareSyncLang": "Синхронізувати з мовою застосунку",
+  "settings.shareSyncLangHint": "Зображення та повідомлення матимуть мову, обрану в застосунку.",
+  "settings.shareLanguage": "Мова зображення",
   "settings.week": "Вигляд тижня",
   "settings.mergeLessons": "Об'єднувати однакові уроки",
   "settings.mergeLessonsHint":

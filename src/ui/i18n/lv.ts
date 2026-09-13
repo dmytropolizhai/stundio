@@ -81,8 +81,13 @@ export const lv = {
   "share.working": "Sagatavo attēlu…",
   "share.error": "Neizdevās sagatavot attēlu",
   "share.title": "{class} stundu saraksts",
-  "share.message": "{class} stundu saraksts {period}",
+  "share.message":
+    "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://github.com/dmytropolizhai/stundio",
   "share.image.classTeacher": "Klases audzinātājs",
+  "share.image.appLabel": "Labāka EduPage pieredze tālrunī",
+  "share.language.title": "Kādā valodā kopīgot?",
+  "share.language.sync": "Sinhronizēt kopīgoto attēlu ar lietotnes valodu",
+  "share.language.continue": "Turpināt",
 
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",
@@ -128,6 +133,11 @@ export const lv = {
   "settings.buildingAuto": "Automātiski",
   "settings.theme": "Noformējums",
   "settings.language": "Valoda",
+  "settings.share": "Kopīgošana",
+  "settings.shareSyncLang": "Sinhronizēt ar lietotnes valodu",
+  "settings.shareSyncLangHint":
+    "Kopīgotais attēls un ziņa izmantos to pašu valodu, kas iestatīta lietotnē.",
+  "settings.shareLanguage": "Kopīgotā attēla valoda",
   "settings.week": "Nedēļas skats",
   "settings.mergeLessons": "Apvienot vienādas stundas",
   "settings.mergeLessonsHint":

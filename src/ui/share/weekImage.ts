@@ -32,10 +32,7 @@ import type { ShareTheme } from "./palette.ts";
  * that travels beside the image carries the real URL, where it is a tappable link and length
  * costs nothing.
  */
-const APP_URL = "https://shorturl.at/pPrzh";
-const APP_URL_LABEL = "shorturl.at/pPrzh";
-const RELEASES_URL = "https://github.com/dmytropolizhai/stundio/releases";
-
+const APP_URL = "github.com/dmytropolizhai/stundio";
 /**
  * The "get the app" block: a scannable code plus the same address in words.
  *
@@ -44,11 +41,12 @@ const RELEASES_URL = "https://github.com/dmytropolizhai/stundio/releases";
  * (`encodeQr`); if a URL ever outgrows what that encoder handles, the card silently keeps the
  * words and drops the square rather than failing to render at all.
  */
-const appLink = (): ShareLink => {
+const appLink = (t: Translate): ShareLink => {
+  const label = t("share.image.appLabel");
   try {
-    return { label: APP_URL_LABEL, qr: encodeQr(APP_URL) };
+    return { label, qr: encodeQr(APP_URL) };
   } catch {
-    return { label: APP_URL_LABEL, qr: null };
+    return { label, qr: null };
   }
 };
 
@@ -177,13 +175,13 @@ export const buildWeekImageData = ({
     legend: subjectKey(days, theme),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
-    link: appLink(),
+    link: appLink(t),
   };
 };
 
 /** The message the image travels with — the school week in words, plus where to get the app. */
 export const weekShareText = (className: string, period: string, t: Translate): string =>
-  `${t("share.message", { class: className, period })}\n${RELEASES_URL}`;
+  `${t("share.message", { class: className, period })}\n`;
 
 /** `stundio-A1-2-2026-09-07.png` — a name that still means something in a downloads folder. */
 export const weekShareFileName = (className: string, monday: ISODate | undefined): string => {

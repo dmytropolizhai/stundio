@@ -23,6 +23,7 @@ import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { useWeekOverview } from "../hooks/useWeekOverview.ts";
 import { useShareWeek } from "../share/useShareWeek.ts";
+import { ShareLanguageDialog } from "../share/ShareLanguageDialog.tsx";
 import { formatWeekdayLong, formatWeekdayShort, formatWeekRange, useLang, useT } from "@/ui/i18n";
 
 const periodNum = (p: string): number => {
@@ -390,6 +391,11 @@ export const WeekView = ({
         onClose={() => {
           setOpen(null);
         }}
+      />
+
+      <ShareLanguageDialog
+        open={shareWeek.languagePrompt.open}
+        onDone={shareWeek.languagePrompt.onDone}
       />
     </div>
   );
