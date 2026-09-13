@@ -16,7 +16,7 @@ import {
   cn,
 } from "@/ds";
 import { LessonRow } from "../components/LessonRow.tsx";
-import { offMainBuilding } from "../theme/index.ts";
+import { offMainBuilding } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
