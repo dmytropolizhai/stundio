@@ -178,6 +178,8 @@ export const ru: Dict = {
   "customization.lessonStyle.outline": "Контур",
   "customization.lessonStyle.filled": "Заливка",
   "customization.radius": "Скругление углов",
+  "customization.radius.compact": "Компактное",
+  "customization.radius.balanced": "Среднее",
   "customization.radius.standard": "Стандартное",
   "customization.radius.rounder": "Более круглое",
   "customization.elevation": "Глубина карточек",

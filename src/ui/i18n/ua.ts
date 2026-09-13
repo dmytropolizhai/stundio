@@ -179,6 +179,8 @@ export const ua: Dict = {
   "customization.lessonStyle.outline": "Контур",
   "customization.lessonStyle.filled": "Заливка",
   "customization.radius": "Заокруглення кутів",
+  "customization.radius.compact": "Компактне",
+  "customization.radius.balanced": "Середнє",
   "customization.radius.standard": "Стандартне",
   "customization.radius.rounder": "Більш округле",
   "customization.elevation": "Глибина карток",

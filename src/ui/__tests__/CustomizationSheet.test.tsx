@@ -37,12 +37,23 @@ describe("CustomizationSheet", () => {
     expect(harness.store.getState().settings.lessonCardStyle).toBe("filled");
   });
 
-  it("persists the corner radius", async () => {
+  it("persists the corner radius, stepping through the slider", async () => {
     const harness = await openSheetHarness();
+    expect(harness.store.getState().settings.cardRadius).toBe("xl");
+
+    const slider = screen.getByRole("slider", { name: "Stūru noapaļojums" });
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Vairāk noapaļots"));
+      fireEvent.keyDown(slider, { key: "ArrowRight" });
     });
     expect(harness.store.getState().settings.cardRadius).toBe("2xl");
+
+    await clickAndSettle(() => {
+      fireEvent.keyDown(slider, { key: "ArrowLeft" });
+    });
+    await clickAndSettle(() => {
+      fireEvent.keyDown(slider, { key: "ArrowLeft" });
+    });
+    expect(harness.store.getState().settings.cardRadius).toBe("lg");
   });
 
   it("persists the card depth", async () => {

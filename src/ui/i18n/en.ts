@@ -177,6 +177,8 @@ export const en: Dict = {
   "customization.lessonStyle.outline": "Outline",
   "customization.lessonStyle.filled": "Filled",
   "customization.radius": "Corner radius",
+  "customization.radius.compact": "Compact",
+  "customization.radius.balanced": "Balanced",
   "customization.radius.standard": "Standard",
   "customization.radius.rounder": "Extra round",
   "customization.elevation": "Card depth",

@@ -21,6 +21,7 @@ export { Chip, type ChipProps } from "./components/ui/chip.tsx";
 export { Badge, type BadgeProps } from "./components/ui/badge.tsx";
 export { Card, type CardProps } from "./components/ui/card.tsx";
 export { Switch, type SwitchProps } from "./components/ui/switch.tsx";
+export { Slider, type SliderProps } from "./components/ui/slider.tsx";
 export { TextField, type TextFieldProps } from "./components/ui/text-field.tsx";
 export {
   SelectField,

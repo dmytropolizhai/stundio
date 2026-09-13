@@ -14,6 +14,9 @@ export const useCustomization = (): void => {
 
   useEffect(() => {
     const root = document.documentElement;
+    // "xl" is the DS's own card default and needs no override — only the other three steps do.
+    root.classList.toggle("radius-md", cardRadius === "md");
+    root.classList.toggle("radius-lg", cardRadius === "lg");
     root.classList.toggle("radius-2xl", cardRadius === "2xl");
     root.classList.toggle("elevation-bold", cardElevation === "bold");
     root.classList.toggle("reduce-motion", reduceMotion);

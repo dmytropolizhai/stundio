@@ -17,12 +17,21 @@
 
 /*
  * Customization settings (`useCustomization`) — bounded to the DS's own scale, the same way
- * `dark.css` is: `.radius-2xl` moves the standard card radius to the DS's own hero-card step,
- * `.elevation-bold` swaps the standard card shadow for the DS's own raised one, and
- * `.reduce-motion` is an explicit, always-on version of the DS's own `prefers-reduced-motion`
- * block (`ds/tokens/motion.css`). No value here is new — every option is a DS token, just
- * applied somewhere the DS itself doesn't put it by default.
+ * `dark.css` is: `.radius-*` moves the standard card radius to one of the Card component's own
+ * other three radius steps (`.radius-xl`, the DS's card default, needs no class), `.elevation-bold`
+ * swaps the standard card shadow for the DS's own raised one, and `.reduce-motion` is an explicit,
+ * always-on version of the DS's own `prefers-reduced-motion` block (`ds/tokens/motion.css`). No
+ * value here is new — every option is a DS token, just applied somewhere the DS itself doesn't
+ * put it by default.
  */
+:root.radius-md {
+  --radius-xl: var(--radius-md);
+}
+
+:root.radius-lg {
+  --radius-xl: var(--radius-lg);
+}
+
 :root.radius-2xl {
   --radius-xl: var(--radius-2xl);
 }

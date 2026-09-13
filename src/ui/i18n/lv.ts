@@ -183,6 +183,8 @@ export const lv = {
   "customization.lessonStyle.outline": "Kontūra",
   "customization.lessonStyle.filled": "Aizpildīta",
   "customization.radius": "Stūru noapaļojums",
+  "customization.radius.compact": "Kompakts",
+  "customization.radius.balanced": "Vidējs",
   "customization.radius.standard": "Standarta",
   "customization.radius.rounder": "Vairāk noapaļots",
   "customization.elevation": "Kartīšu dziļums",

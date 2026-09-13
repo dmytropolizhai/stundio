@@ -1,10 +1,13 @@
-import { BottomSheet, LessonCard, SegmentedTabs, Switch, cn } from "@/ds";
+import { BottomSheet, LessonCard, SegmentedTabs, Slider, Switch, cn } from "@/ds";
 import { useAppStore } from "@/store";
 import type { Settings, SubjectColorTone } from "@/db";
 import { SUBJECT_TONES, subjectTone, subjectToneKey } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 import { useSubjects } from "../hooks/useSubjects.ts";
 import { Row, Section } from "./SettingsView.tsx";
+
+/** The Card component's own four radius steps, softest to roundest. */
+const RADIUS_STEPS = ["md", "lg", "xl", "2xl"] as const;
 
 const TONE_BG: Record<SubjectColorTone, string> = {
   amber: "bg-amber",
@@ -100,6 +103,14 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
     { key: "dark", label: t("theme.dark") },
   ];
 
+  const radiusLabels: Record<Settings["cardRadius"], string> = {
+    md: t("customization.radius.compact"),
+    lg: t("customization.radius.balanced"),
+    xl: t("customization.radius.standard"),
+    "2xl": t("customization.radius.rounder"),
+  };
+  const radiusIndex = RADIUS_STEPS.indexOf(settings.cardRadius);
+
   return (
     <BottomSheet open={open} onClose={onClose} title={t("customization.title")}>
       <div className="no-scrollbar max-h-[75vh] overflow-y-auto overscroll-contain">
@@ -148,15 +159,21 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
 
         <Section title={t("customization.radius")}>
           <Row>
-            <SegmentedTabs
+            <div className="mb-2.5 flex items-center justify-between">
+              <p className="font-text text-caption text-muted">{t("customization.radius")}</p>
+              <p className="font-text text-caption font-bold text-strong">
+                {radiusLabels[settings.cardRadius]}
+              </p>
+            </div>
+            <Slider
               label={t("customization.radius")}
-              value={settings.cardRadius}
-              items={[
-                { key: "xl", label: t("customization.radius.standard") },
-                { key: "2xl", label: t("customization.radius.rounder") },
-              ]}
-              onChange={(value) => {
-                void setCardRadius(value);
+              valueText={radiusLabels[settings.cardRadius]}
+              min={0}
+              max={RADIUS_STEPS.length - 1}
+              value={radiusIndex}
+              onChange={(next) => {
+                const step = RADIUS_STEPS[next];
+                if (step !== undefined) void setCardRadius(step);
               }}
             />
           </Row>

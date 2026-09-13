@@ -32,8 +32,8 @@ export type Settings = {
   showTime: boolean;
   /** Unfilled shows the subject accent only as a rail; filled tints the whole lesson card. */
   lessonCardStyle: "outline" | "filled";
-  /** Corner radius for cards, chosen from the DS's own rounder end of the scale. */
-  cardRadius: "xl" | "2xl";
+  /** Corner radius for cards — one of the Card component's own four radius steps. */
+  cardRadius: "md" | "lg" | "xl" | "2xl";
   /** Shadow depth for cards and other elevated chrome. */
   cardElevation: "soft" | "bold";
   /** Forces every DS transition/animation to near-zero, independent of the OS preference. */
