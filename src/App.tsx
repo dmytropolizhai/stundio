@@ -91,6 +91,8 @@ const Shell = () => {
 
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const trackEvent = useAppStore((s) => s.trackEvent);
+  const pendingNavigation = useAppStore((s) => s.pendingNavigation);
+  const clearPendingNavigation = useAppStore((s) => s.clearPendingNavigation);
   const [tab, setTab] = useState<Tab>("day");
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
@@ -98,6 +100,16 @@ const Shell = () => {
   useEffect(() => {
     trackEvent(`view_${tab}`);
   }, [tab, trackEvent]);
+
+  // A tapped notification (lesson reminder, substitution change, app update) — sent here by
+  // `wireNotificationTaps` rather than acted on directly, since only the shell owns tab/date.
+  useEffect(() => {
+    if (pendingNavigation === null) return;
+    if (pendingNavigation.tab === "day") setDate(pendingNavigation.date);
+    setTab(pendingNavigation.tab);
+    setPicking(false);
+    clearPendingNavigation();
+  }, [pendingNavigation, clearPendingNavigation]);
 
   if (selectedClassId === null) return <Onboarding />;
 

@@ -24,6 +24,14 @@ import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 
+
+/**
+ * Where a tapped notification wants the app to go. Set by the notification-tap listener
+ * (`notifications/wire.ts`), consumed once by the shell (`App.tsx`) and cleared — the store
+ * doesn't know or care what kind of notification produced it.
+ */
+export type NotificationNavigationTarget = { tab: "day"; date: ISODate } | { tab: "settings" };
+
 export type AppState = {
   ready: boolean;
   settings: Settings;
@@ -36,6 +44,7 @@ export type AppState = {
   syncStatus: SyncStatus;
   lastSyncAt: ISODateTime | null;
   lastError: string | null;
+  pendingNavigation: NotificationNavigationTarget | null;
 
   hydrate: () => Promise<void>;
   refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<SyncOutcome>;
@@ -63,8 +72,14 @@ export type AppState = {
   /** Not user-facing — the update-notification wiring marks a version as already announced. */
   setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
   setAnalyticsEnabled: (enabled: boolean) => Promise<void>;
+  setShareLang: (lang: Settings["shareLang"]) => Promise<void>;
+  setShareLangSyncWithApp: (sync: boolean) => Promise<void>;
+  /** Not user-facing — `useShareWeek` marks the one-time language prompt as already shown. */
+  setShareLangPromptShown: (shown: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
+  setPendingNavigation: (target: NotificationNavigationTarget) => void;
+  clearPendingNavigation: () => void;
   /** No-op when the user has opted out. Screen views, manual refreshes — nothing PII-bearing. */
   trackEvent: (event: string) => void;
   resolvedDay: (date: ISODate, classId?: string) => ResolvedDay | null;
@@ -141,6 +156,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       syncStatus: "idle",
       lastSyncAt: null,
       lastError: null,
+      pendingNavigation: null,
 
       hydrate: readCache,
 
@@ -195,6 +211,9 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
         persist({ lastNotifiedUpdateVersion }),
       setAnalyticsEnabled: (analyticsEnabled) => persist({ analyticsEnabled }),
+      setShareLang: (shareLang) => persist({ shareLang }),
+      setShareLangSyncWithApp: (shareLangSyncWithApp) => persist({ shareLangSyncWithApp }),
+      setShareLangPromptShown: (shareLangPromptShown) => persist({ shareLangPromptShown }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {
@@ -214,6 +233,12 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         delete notes[subject];
         set({ notes });
         await cache.deleteNote(subject);
+      },
+      setPendingNavigation: (target) => {
+        set({ pendingNavigation: target });
+      },
+      clearPendingNavigation: () => {
+        set({ pendingNavigation: null });
       },
       trackEvent: (event) => {
         if (get().settings.analyticsEnabled) analytics.track(event);

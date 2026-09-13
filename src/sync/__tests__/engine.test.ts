@@ -5,9 +5,9 @@
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { createFakeServer, type FakeServer } from "./fakeServer.ts";
-import { createMemoryCache, DEFAULT_SETTINGS } from "../../db/index.ts";
-import { createSyncEngine, schoolYearOf, todayInRiga, LIST_MAX_AGE_MS } from "../engine.ts";
-import type { AppCache } from "../../db/index.ts";
+import { createMemoryCache, DEFAULT_SETTINGS } from "@/db";
+import { createSyncEngine, schoolYearOf, todayInRiga, LIST_MAX_AGE_MS } from "@/sync";
+import type { AppCache } from "@/db";
 
 const DATE = "2026-09-09";
 const at = (iso: string) => () => new Date(iso);

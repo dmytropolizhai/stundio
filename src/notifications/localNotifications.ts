@@ -8,10 +8,20 @@
  *   - app updates: a single fixed id, one-shot per version (caller dedupes via Settings)
  */
 import { registerPlugin } from "@capacitor/core";
-import { LocalNotifications } from "@capacitor/local-notifications";
-import type { ResolvedLesson } from "../lib/edupage/index.ts";
-import type { LessonReminder } from "../lib/schedule/index.ts";
+import { LocalNotifications, type ActionPerformed } from "@capacitor/local-notifications";
+import type { ISODate, ResolvedLesson } from "../lib/edupage/index.ts";
+import { rigaClock, type LessonReminder } from "../lib/schedule/index.ts";
 import { translate, type Lang } from "../ui/i18n/index.ts";
+
+/**
+ * Carried in each notification's `extra` and read back in `onNotificationTap` once the user
+ * taps it — this is the only thing that tells the tap listener what the notification was about,
+ * since by then it's just an OS notification record.
+ */
+export type NotificationExtra =
+  | { kind: "lesson"; date: ISODate }
+  | { kind: "substitutionsChanged"; date: ISODate }
+  | { kind: "appUpdate" };
 
 /**
  * Backed by `AppSettingsPlugin.java` — once the OS permission is denied, `requestPermissions()`
@@ -114,20 +124,61 @@ export const rescheduleLessonReminders = async (
       body: lessonBody(r.lesson),
       channelId: "schedule",
       schedule: { at: r.fireAt, allowWhileIdle: true },
+      // `fireAt` is minutes-before the lesson start, so it still lands on the lesson's own day.
+      extra: { kind: "lesson", date: rigaClock(r.fireAt).date } satisfies NotificationExtra,
     })),
   });
 };
 
-export const notifySubstitutionsChanged = async (title: string, body: string): Promise<void> => {
+export const notifySubstitutionsChanged = async (
+  title: string,
+  body: string,
+  date: ISODate,
+): Promise<void> => {
   await ensureChannel();
   await LocalNotifications.schedule({
-    notifications: [{ id: CHANGE_ID, title, body, channelId: "schedule" }],
+    notifications: [
+      {
+        id: CHANGE_ID,
+        title,
+        body,
+        channelId: "schedule",
+        extra: { kind: "substitutionsChanged", date } satisfies NotificationExtra,
+      },
+    ],
   });
 };
 
 export const notifyAppUpdate = async (title: string, body: string): Promise<void> => {
   await ensureChannel();
   await LocalNotifications.schedule({
-    notifications: [{ id: UPDATE_ID, title, body, channelId: "schedule" }],
+    notifications: [
+      {
+        id: UPDATE_ID,
+        title,
+        body,
+        channelId: "schedule",
+        extra: { kind: "appUpdate" } satisfies NotificationExtra,
+      },
+    ],
   });
+};
+
+/**
+ * Fires once for every tap on one of our notifications — including the tap that cold-launches
+ * the app, which Capacitor queues until this listener is registered. Returns an unsubscribe;
+ * `addListener` itself is async, so the handle isn't available until the next microtask, but
+ * callers never need to await this — nothing here is used before it settles.
+ */
+export const onNotificationTap = (handler: (extra: NotificationExtra) => void): (() => void) => {
+  const handle = LocalNotifications.addListener(
+    "localNotificationActionPerformed",
+    (action: ActionPerformed) => {
+      const extra = action.notification.extra as NotificationExtra | undefined;
+      if (extra !== undefined) handler(extra);
+    },
+  );
+  return () => {
+    void handle.then((h) => h.remove());
+  };
 };

@@ -12,7 +12,9 @@ import {
   hasNotificationPermission,
   notifyAppUpdate,
   notifySubstitutionsChanged,
+  onNotificationTap,
   rescheduleLessonReminders,
+  type NotificationExtra,
 } from "./localNotifications.ts";
 
 const UPDATE_OWNER = "dmytropolizhai";
@@ -66,12 +68,37 @@ export const notifyOnChanges = (
   const { settings } = store.getState();
   if (!hadPreviousSync || !settings.notifySubstitutionChanges) return;
   const today = rigaClock().date;
-  if (!outcome.changedDates.includes(today) && !outcome.changedDates.some((d) => d > today)) return;
+  // Today if it changed, otherwise the nearest day still ahead — the day the tap should open.
+  const target = outcome.changedDates.includes(today)
+    ? today
+    : outcome.changedDates.filter((d) => d > today).sort().at(0);
+  if (target === undefined) return;
 
   void notifySubstitutionsChanged(
     translate(settings.lang, "notification.changed.title"),
     translate(settings.lang, "notification.changed.body"),
+    target,
   );
+};
+
+/**
+ * Registers the tap listener once and keeps it registered for the life of the app — unlike
+ * `wireNotifications`, there's nothing to resubscribe on store changes.
+ */
+export const wireNotificationTaps = (store: Store): { dispose: () => void } => {
+  const dispose = onNotificationTap((extra: NotificationExtra) => {
+    const { setPendingNavigation } = store.getState();
+    switch (extra.kind) {
+      case "lesson":
+      case "substitutionsChanged":
+        setPendingNavigation({ tab: "day", date: extra.date });
+        break;
+      case "appUpdate":
+        setPendingNavigation({ tab: "settings" });
+        break;
+    }
+  });
+  return { dispose };
 };
 
 /** One check per app open (mirrors `useUpdateCheck`), but this path can also fire a notification. */
