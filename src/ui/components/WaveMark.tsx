@@ -49,8 +49,8 @@ export const WaveMark = ({ level, size = 144, className }: WaveMarkProps) => {
   const mask = {
     width: size,
     height: size,
-    maskImage: "url(/Mark.svg)",
-    WebkitMaskImage: "url(/Mark.svg)",
+    maskImage: "url(/mark.svg)",
+    WebkitMaskImage: "url(/mark.svg)",
     maskSize: "contain",
     WebkitMaskSize: "contain",
     maskPosition: "center",
@@ -69,7 +69,7 @@ export const WaveMark = ({ level, size = 144, className }: WaveMarkProps) => {
           snapping. The bob lives one node deeper because it owns `transform` too.
         */}
         <div
-          className="absolute inset-0 transition-transform duration-[900ms] ease-[var(--ease-standard)] motion-reduce:transition-none"
+          className="absolute inset-0 transition-transform duration-900 ease-standard motion-reduce:transition-none"
           style={{ transform: `translateY(${String(100 - level)}%)` }}
         >
           <div className="absolute inset-0 animate-wave-bob">

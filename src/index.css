@@ -120,14 +120,14 @@
   --color-brand-deep: var(--brand-deep);
   --color-brand-tint: var(--brand-tint);
   /*
-   * The DS's Studio Electric, exposed as a utility colour. `--brand` in this product is *ink*,
-   * not blue (colors.css), and it is only ever legible against `--brand-deep` — so the splash,
-   * which sits on `--bg-app` in both themes, needs the one hue the DS keeps for full-bleed
-   * brand moments. `--bg-hero` is that hue; `-lift` is the step above it, used for the wave's
+   * The splash wave's fill. `--brand` in this product is *ink*, not the DS's Studio Electric
+   * blue (colors.css) — so the wave uses ink too, via the same `--text-strong` / `--text-muted`
+   * aliases the rest of the app reads for ink, which already flip per theme to stay legible
+   * against `--bg-app` in both. `-lift` is the second, softer tone, used for the wave's
    * trailing crest so the water has two tones instead of a flat slab.
    */
-  --color-hero: var(--bg-hero);
-  --color-hero-lift: var(--blue-400);
+  --color-hero: var(--text-strong);
+  --color-hero-lift: var(--text-muted);
 
   --color-app: var(--bg-app);
   --color-inverse: var(--bg-inverse);
