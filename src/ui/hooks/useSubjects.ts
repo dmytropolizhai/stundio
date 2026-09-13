@@ -1,12 +1,15 @@
 /**
- * The selected class's subject catalogue, derived from the cached timetable.
+ * The selected class's subject catalogue, derived from the cached timetables.
  *
- * There is one timetable per building, and a class lives in exactly one of them, so this picks
- * the newest cached timetable that actually contains the class rather than merging across all of
- * them — merging would double every lesson count for a class that appears in two published weeks.
+ * Scoped to the newest published *week* that contains the class, never to all cached weeks —
+ * merging weeks would double every lesson count. Within that week every building counts, because
+ * a class can be listed in more than one and its lessons live wherever they were published;
+ * `classWeekLessons` is what drops the address pointer rows that would otherwise show up here as
+ * a subject called "Tehnoloģiju un inovāciju centrs Dārzciema ielā".
  */
 import { useMemo } from "react";
 import { useAppStore } from "../../store/index.ts";
+import { classWeekLessons } from "../../lib/edupage/index.ts";
 import type { SubjectRef, TeacherRef, Timetable } from "../../lib/edupage/index.ts";
 
 export type SubjectSummary = {
@@ -22,12 +25,13 @@ export type TeacherSummary = {
   subjects: SubjectRef[];
 };
 
-/** Newest published timetable that contains the class, by `validFrom`. */
-const timetableFor = (timetables: Record<string, Timetable>, classId: string): Timetable | null => {
+/** Every timetable of the newest published week that contains the class, one per building. */
+const weekFor = (timetables: Record<string, Timetable>, classId: string): Timetable[] => {
   const candidates = Object.values(timetables)
     .filter((t) => t.classes.some((c) => c.id === classId))
     .sort((a, b) => a.meta.validFrom.localeCompare(b.meta.validFrom));
-  return candidates.at(-1) ?? null;
+  const newest = candidates.at(-1)?.meta.validFrom;
+  return newest === undefined ? [] : candidates.filter((t) => t.meta.validFrom === newest);
 };
 
 export type SubjectCatalogue = {
@@ -43,56 +47,67 @@ export const useSubjects = (): SubjectCatalogue => {
 
   return useMemo(() => {
     if (classId === null) return EMPTY;
-    const timetable = timetableFor(timetables, classId);
-    if (timetable === null) return EMPTY;
+    const week = weekFor(timetables, classId);
+    if (week.length === 0) return EMPTY;
 
-    const subjectsById = new Map(timetable.subjects.map((s) => [s.id, s]));
-    const teachersById = new Map(timetable.teachers.map((t) => [t.id, t]));
-
+    /*
+     * Keyed on labels, not ids: an id only means something inside the timetable it came from,
+     * and this catalogue can span two buildings' weeks. Labels are also what survives a weekly
+     * republish, which is the same reason `subjectTone` keys on them.
+     */
+    const subjectRefs = new Map<string, SubjectRef>();
+    const teacherRefs = new Map<string, TeacherRef>();
     const counts = new Map<string, number>();
     /* Sets, because a class can meet the same teacher for the same subject many times a week. */
     const subjectTeachers = new Map<string, Set<string>>();
     const teacherSubjects = new Map<string, Set<string>>();
 
-    for (const lesson of timetable.lessons) {
-      if (!lesson.classIds.includes(classId)) continue;
-      counts.set(lesson.subjectId, (counts.get(lesson.subjectId) ?? 0) + 1);
+    for (const { lesson, timetable } of classWeekLessons(week, classId)) {
+      const subject = timetable.subjects.find((s) => s.id === lesson.subjectId);
+      if (subject === undefined) continue;
+      const subjectKey = subject.name === "" ? subject.short : subject.name;
+      if (!subjectRefs.has(subjectKey)) subjectRefs.set(subjectKey, subject);
+      counts.set(subjectKey, (counts.get(subjectKey) ?? 0) + 1);
 
-      let forSubject = subjectTeachers.get(lesson.subjectId);
+      let forSubject = subjectTeachers.get(subjectKey);
       if (forSubject === undefined) {
         forSubject = new Set();
-        subjectTeachers.set(lesson.subjectId, forSubject);
+        subjectTeachers.set(subjectKey, forSubject);
       }
+
       for (const teacherId of lesson.teacherIds) {
-        forSubject.add(teacherId);
-        let forTeacher = teacherSubjects.get(teacherId);
+        const teacher = timetable.teachers.find((t) => t.id === teacherId);
+        if (teacher === undefined) continue;
+        const teacherKey = teacher.short === "" ? teacher.name : teacher.short;
+        if (!teacherRefs.has(teacherKey)) teacherRefs.set(teacherKey, teacher);
+
+        forSubject.add(teacherKey);
+        let forTeacher = teacherSubjects.get(teacherKey);
         if (forTeacher === undefined) {
           forTeacher = new Set();
-          teacherSubjects.set(teacherId, forTeacher);
+          teacherSubjects.set(teacherKey, forTeacher);
         }
-        forTeacher.add(lesson.subjectId);
+        forTeacher.add(subjectKey);
       }
     }
 
-    const byId = <T>(map: Map<string, T>, ids: Iterable<string>): T[] =>
-      [...ids].map((id) => map.get(id)).filter((x): x is T => x !== undefined);
+    const byKey = <T>(map: Map<string, T>, keys: Iterable<string>): T[] =>
+      [...keys].map((key) => map.get(key)).filter((x): x is T => x !== undefined);
 
     /* Busiest subject first: it is the one the timetable is really about. */
     const subjects: SubjectSummary[] = [...counts.entries()]
-      .flatMap(([subjectId, count]) => {
-        const subject = subjectsById.get(subjectId);
+      .flatMap(([key, count]) => {
+        const subject = subjectRefs.get(key);
         if (subject === undefined) return [];
-        return [
-          { subject, count, teachers: byId(teachersById, subjectTeachers.get(subjectId) ?? []) },
-        ];
+        return [{ subject, count, teachers: byKey(teacherRefs, subjectTeachers.get(key) ?? []) }];
       })
       .sort((a, b) => b.count - a.count || a.subject.short.localeCompare(b.subject.short, "lv"));
 
     const teachers: TeacherSummary[] = [...teacherSubjects.entries()]
-      .flatMap(([teacherId, subjectIds]) => {
-        const teacher = teachersById.get(teacherId);
+      .flatMap(([key, subjectKeys]) => {
+        const teacher = teacherRefs.get(key);
         if (teacher === undefined) return [];
-        return [{ teacher, subjects: byId(subjectsById, subjectIds) }];
+        return [{ teacher, subjects: byKey(subjectRefs, subjectKeys) }];
       })
       .sort((a, b) => a.teacher.short.localeCompare(b.teacher.short, "lv"));
 

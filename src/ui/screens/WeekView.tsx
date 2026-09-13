@@ -3,8 +3,16 @@ import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { weekDates } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import { Card, IconButton, TopBar, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
-import { offMainBuilding, subjectCode, subjectTone } from "@/ui/theme";
+import {
+  Card,
+  Icon,
+  IconButton,
+  TopBar,
+  WeekGrid,
+  type WeekGridCell,
+  type WeekGridPeriod,
+} from "@/ds";
+import { buildingNotice, lessonBuilding, subjectCode, subjectTone } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -92,6 +100,28 @@ export const WeekView = ({
     [dates, lang, now.date],
   );
 
+  /*
+   * Which days are somewhere else, grouped by building. The grid marks those cells with a
+   * hairline ring, but a 40px cell cannot say *where* — and "which days do I go to the annex"
+   * is the question a week view is opened with, so it gets one plain line under the grid.
+   */
+  const buildingDays = useMemo(() => {
+    const byBuilding = new Map<string, string[]>();
+
+    days.forEach((day, i) => {
+      const d = dates[i];
+      if (day === null || d === undefined) return;
+      for (const building of buildingNotice(day) ?? []) {
+        byBuilding.set(building, [
+          ...(byBuilding.get(building) ?? []),
+          formatWeekdayShort(d, lang),
+        ]);
+      }
+    });
+
+    return [...byBuilding.entries()];
+  }, [days, dates, lang]);
+
   /* The grid speaks in codes; this is what turns a tapped cell back into a real lesson. */
   const lessonAt = useMemo(() => {
     const map = new Map<string, { lesson: ResolvedLesson; day: ResolvedDay }>();
@@ -128,7 +158,7 @@ export const WeekView = ({
             start = lesson.start;
           }
 
-          const building = offMainBuilding(day, lesson.subject);
+          const building = lessonBuilding(day, lesson);
 
           cells[d] = {
             short: subjectCode(lesson.subject),
@@ -181,6 +211,23 @@ export const WeekView = ({
             }
           }}
         />
+
+        {buildingDays.length > 0 && (
+          <Card
+            tone="sunken"
+            radius="lg"
+            elevation="none"
+            className="mt-4 flex flex-col gap-1 font-text text-caption text-fg"
+            data-testid="week-buildings"
+          >
+            {buildingDays.map(([building, weekdays]) => (
+              <span key={building} className="flex items-center gap-2">
+                <Icon name="building-2" size={16} className="shrink-0 text-muted" />
+                {t("week.buildingDays", { building, days: weekdays.join(", ") })}
+              </span>
+            ))}
+          </Card>
+        )}
 
         {overview !== null && (
           <div className="mt-6">

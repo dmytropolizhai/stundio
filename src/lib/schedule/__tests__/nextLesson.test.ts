@@ -27,6 +27,7 @@ const day = (lessons: ResolvedLesson[], date = "2026-09-09"): ResolvedDay => ({
   weekday: "wed",
   classId: "-927",
   building: "TIC",
+  buildings: ["TIC"],
   ttNum: "1175",
   lessons,
   notes: [],

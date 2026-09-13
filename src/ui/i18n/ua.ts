@@ -51,6 +51,8 @@ export const ua: Dict = {
   "day.noData": "Ще нічого не збережено",
   "day.noDataHint": "Підключіться до інтернету один раз, щоб завантажити розклад.",
   "day.stale": "Розклад на цей тиждень ще не опубліковано — показуємо попередній.",
+  "day.buildingOther": "Інший корпус: {building}",
+  "day.buildingMixed": "Кілька корпусів: {buildings}",
   "day.notes": "Оголошення",
   "day.free": "Вільний урок",
   "day.finished": "Уроки закінчилися",
@@ -58,6 +60,7 @@ export const ua: Dict = {
 
   "week.previousWeek": "Попередній тиждень",
   "week.nextWeek": "Наступний тиждень",
+  "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Огляд",
   "week.overview.lessons": "{n} уроків",
   "week.overview.lessonsUp": "+{n} порівняно з минулим тижнем",

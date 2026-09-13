@@ -51,6 +51,8 @@ export const en: Dict = {
   "day.noData": "Nothing cached yet",
   "day.noDataHint": "Go online once to download the timetable.",
   "day.stale": "This week's timetable is not published yet — showing the previous one.",
+  "day.buildingOther": "Different building: {building}",
+  "day.buildingMixed": "Several buildings: {buildings}",
   "day.notes": "Announcements",
   "day.free": "Free period",
   "day.finished": "Lessons are over",
@@ -58,6 +60,7 @@ export const en: Dict = {
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",
+  "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Overview",
   "week.overview.lessons": "{n} lessons",
   "week.overview.lessonsUp": "+{n} vs last week",

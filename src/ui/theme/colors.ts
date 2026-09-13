@@ -9,7 +9,9 @@
  */
 import {
   isMainBuilding,
+  type Building,
   type ResolvedDay,
+  type ResolvedLesson,
   type ResolvedStatus,
   type SubjectRef,
 } from "../../lib/edupage/index.ts";
@@ -85,27 +87,42 @@ export const subjectCode = (subject: SubjectRef | null): string => {
 };
 
 /**
- * RVT sometimes sends a whole class day at the TIC annex as a single "lesson" whose subject is
- * literally the annex's own street address — not a real subject, and published under the class's
- * *main*-building timetable rather than as a `building`-level republish. `ResolvedDay.building`
- * reads "Galvenā ēka" for a day like that, so `isMainBuilding` alone misses it; this matches the
- * one known address text instead.
+ * RVT sometimes sends a whole class day at another building as a single "lesson" whose subject
+ * is literally that building's street address. `resolveDayAcross` drops those pointers as soon
+ * as the building holding the real lessons is cached; this covers the case where it is not
+ * (offline, first run) and the address row is still all the user has.
  */
 const TIC_ANNEX_ADDRESS = "Tehnoloģiju un inovāciju centrs Dārzciema ielā";
 
 /**
- * The building to show for a lesson, or `undefined` when it is (as far as the app can tell) the
- * school's main building — the two cases automatic building mode can silently produce: the day's
- * published timetable itself came from the "TIC" annex (`day.building`), or the day is nominally
- * in the main building but this one lesson is the annex-address placeholder above.
+ * The building to show on a lesson, or `undefined` when saying it would add nothing.
+ *
+ * Automatic building mode merges a day from every building that published it (MODEL.md §3), so
+ * the answer is per-lesson: `lesson.building` first, the day's primary building as the fallback
+ * for anything the merge did not tag. A day that mixes buildings labels *every* lesson — on a
+ * day with travel in it, "which of these is the one in the other building" is the question.
  */
-export const offMainBuilding = (
-  day: Pick<ResolvedDay, "building">,
-  subject: SubjectRef | null,
+export const lessonBuilding = (
+  day: Pick<ResolvedDay, "building" | "buildings">,
+  lesson: Pick<ResolvedLesson, "building" | "subject">,
 ): string | undefined => {
-  if (!isMainBuilding(day.building)) return day.building;
-  const name = (subject?.name ?? subject?.short ?? "").trim();
+  const building = lesson.building ?? day.building;
+  if (day.buildings.length > 1) return building;
+  if (!isMainBuilding(building)) return building;
+
+  const name = (lesson.subject?.name ?? lesson.subject?.short ?? "").trim();
   return name === TIC_ANNEX_ADDRESS ? "TIC" : undefined;
+};
+
+/**
+ * The buildings a day should be announced with, or `null` when it is an ordinary main-building
+ * day. A mixed day returns all of them in lesson order, because the travel between them is the
+ * part worth knowing before leaving home.
+ */
+export const buildingNotice = (day: Pick<ResolvedDay, "buildings">): Building[] | null => {
+  if (day.buildings.length > 1) return [...day.buildings];
+  const only = day.buildings[0];
+  return only === undefined || isMainBuilding(only) ? null : [only];
 };
 
 /**

@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { FIXTURE_DATE, FIXTURES, readFixture, readJsonFixture } from "./fixtures.ts";
 import { normalizeTimetable, toTimetableMeta, type RawTables } from "../normalize.ts";
 import { parseDaySubstitutions } from "../substitutions.ts";
-import { resolveDay, weekdayOf } from "../resolve.ts";
+import { classWeekLessons, resolveDay, resolveDayAcross, weekdayOf } from "../resolve.ts";
 import type { DaySubstitutions, Timetable } from "../types.ts";
 
 type RawRegular = { r: { dbiAccessorRes: { tables: { id: string; data_rows?: unknown[] }[] } } };
@@ -164,5 +164,238 @@ describe("resolveDay — degenerate inputs", () => {
 
   it("returns an empty day for a weekend", () => {
     expect(resolveDay(timetable, null, classId("DT3-2"), "2026-09-12").lessons).toEqual([]);
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * resolveDayAcross — automatic building mode (MODEL.md §3)
+ * ------------------------------------------------------------------ */
+
+const PERIODS = [
+  { period: "1", name: "1", start: "08:30", end: "09:10" },
+  { period: "2", name: "2", start: "09:20", end: "10:00" },
+];
+
+/**
+ * A one-class, one-day timetable. Small on purpose: the cross-building rules are about which
+ * *source* wins, so hand-built sources say more here than the 122-class fixture would.
+ */
+const fakeTimetable = (
+  building: string,
+  ttNum: string,
+  lessons: { period: string; subject: string; teacher?: string; room?: string; span?: number }[],
+): Timetable => ({
+  meta: {
+    ttNum,
+    building,
+    validFrom: "2026-09-07",
+    validTo: "2026-09-11",
+    label: `${building} 07.09.2026.`,
+    schoolYear: 2026,
+    fetchedAt: "2026-09-09T00:00:00.000Z",
+  },
+  periods: PERIODS,
+  classes: [{ id: "c1", name: "AV1-1", short: "AV1-1", color: null }],
+  teachers: lessons
+    .filter((l) => l.teacher !== undefined)
+    .map((l) => ({ id: `t:${l.teacher ?? ""}`, name: "", short: l.teacher ?? "", color: null })),
+  subjects: lessons.map((l) => ({ id: `s:${l.subject}`, name: l.subject, short: l.subject })),
+  rooms: lessons
+    .filter((l) => l.room !== undefined)
+    .map((l) => ({ id: `r:${l.room ?? ""}`, name: l.room ?? "", short: l.room ?? "" })),
+  lessons: lessons.map((l, i) => ({
+    id: `${ttNum}-${String(i)}`,
+    classIds: ["c1"],
+    groups: [],
+    subjectId: `s:${l.subject}`,
+    teacherIds: l.teacher === undefined ? [] : [`t:${l.teacher}`],
+    roomIds: l.room === undefined ? [] : [`r:${l.room}`],
+    day: "wed",
+    period: l.period,
+    periodSpan: l.span ?? 1,
+    weekMask: "1",
+    termMask: "1",
+  })),
+});
+
+/** What the main building publishes for a class that is at the annex that day. */
+const pointerDay = fakeTimetable("Galvenā ēka", "1175", [
+  { period: "1", subject: "Tehnoloģiju un inovāciju centrs Dārzciema ielā", span: 7 },
+]);
+const annexDay = fakeTimetable("TIC", "1174", [
+  { period: "1", subject: "Remonta pamati", teacher: "Kalns A", room: "12" },
+  { period: "2", subject: "Demontāža un montāža", teacher: "Kalns A", room: "12" },
+]);
+const olaineDay = fakeTimetable("TIC Olaine", "1177", [
+  { period: "1", subject: "Ķīmija I", teacher: "Ozols B", room: "3" },
+]);
+
+describe("resolveDayAcross", () => {
+  it("drops the pointer row and shows the building that actually has the lessons", () => {
+    const day = resolveDayAcross(
+      [{ timetable: pointerDay }, { timetable: annexDay }],
+      null,
+      "c1",
+      FIXTURE_DATE,
+    );
+
+    expect(day.lessons.map((l) => l.subject?.short)).toEqual([
+      "Remonta pamati",
+      "Demontāža un montāža",
+    ]);
+    expect(day.building).toBe("TIC");
+    expect(day.buildings).toEqual(["TIC"]);
+    expect(day.ttNum).toBe("1174");
+  });
+
+  it("tags every lesson with the building it came from", () => {
+    const day = resolveDayAcross(
+      [{ timetable: pointerDay }, { timetable: annexDay }],
+      null,
+      "c1",
+      FIXTURE_DATE,
+    );
+    expect(day.lessons.every((l) => l.building === "TIC")).toBe(true);
+  });
+
+  it("keeps the pointer when no other building has that day — it is all the user has", () => {
+    const day = resolveDayAcross([{ timetable: pointerDay }], null, "c1", FIXTURE_DATE);
+    expect(day.lessons).toHaveLength(1);
+    expect(day.building).toBe("Galvenā ēka");
+  });
+
+  it("resolves a class that only exists in a building added mid-year", () => {
+    const day = resolveDayAcross(
+      [{ timetable: pointerDay }, { timetable: annexDay }, { timetable: olaineDay }],
+      null,
+      "c1",
+      FIXTURE_DATE,
+    );
+    // Both annexes have real lessons for this class, so both contribute.
+    expect(day.buildings).toEqual(["TIC", "TIC Olaine"]);
+    expect(day.lessons.map((l) => l.building)).toEqual(["TIC", "TIC Olaine", "TIC"]);
+  });
+
+  it("merges two buildings without duplicating a lesson they both publish", () => {
+    const day = resolveDayAcross(
+      [
+        { timetable: annexDay },
+        {
+          timetable: { ...annexDay, meta: { ...annexDay.meta, ttNum: "1176", building: "TIC 2" } },
+        },
+      ],
+      null,
+      "c1",
+      FIXTURE_DATE,
+    );
+    expect(day.lessons).toHaveLength(2);
+    expect(day.buildings).toEqual(["TIC"]);
+  });
+
+  it("applies a substitution once, not once per source", () => {
+    const cancelled: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [
+        {
+          date: FIXTURE_DATE,
+          className: "AV1-1",
+          group: null,
+          periods: [1],
+          isOriginalSlot: false,
+          kind: "cancelled",
+          subject: null,
+          subjectFrom: null,
+          teacher: null,
+          teacherFrom: null,
+          room: null,
+          roomFrom: null,
+          movedFromPeriod: null,
+          movedToPeriod: null,
+          movedFromDate: null,
+          movedToDate: null,
+          raw: "Atcelts",
+        },
+        {
+          date: FIXTURE_DATE,
+          className: "AV1-1",
+          group: null,
+          periods: [2],
+          isOriginalSlot: false,
+          kind: "added",
+          subject: "Sports",
+          subjectFrom: null,
+          teacher: null,
+          teacherFrom: null,
+          room: null,
+          roomFrom: null,
+          movedFromPeriod: null,
+          movedToPeriod: null,
+          movedFromDate: null,
+          movedToDate: null,
+          raw: "Added",
+        },
+      ],
+    };
+
+    const day = resolveDayAcross(
+      [{ timetable: pointerDay }, { timetable: annexDay }, { timetable: olaineDay }],
+      cancelled,
+      "c1",
+      FIXTURE_DATE,
+    );
+
+    expect(day.lessons.filter((l) => l.status === "added")).toHaveLength(1);
+    expect(day.lessons.filter((l) => l.status === "cancelled").length).toBeGreaterThan(0);
+  });
+
+  it("takes its staleness from the source that leads the day", () => {
+    const day = resolveDayAcross(
+      [
+        { timetable: pointerDay, stale: true },
+        { timetable: annexDay, stale: false },
+      ],
+      null,
+      "c1",
+      FIXTURE_DATE,
+    );
+    expect(day.stale).toBe(false);
+  });
+
+  it("returns an empty day when no source has anything", () => {
+    const day = resolveDayAcross([], null, "c1", FIXTURE_DATE);
+    expect(day.lessons).toEqual([]);
+    expect(day.buildings).toEqual([]);
+  });
+});
+
+describe("classWeekLessons", () => {
+  it("drops the pointer row from the week the subject catalogue is built on", () => {
+    const week = classWeekLessons([pointerDay, annexDay], "c1");
+    expect(
+      week.map(
+        ({ lesson, timetable }) => timetable.subjects.find((s) => s.id === lesson.subjectId)?.short,
+      ),
+    ).toEqual(["Remonta pamati", "Demontāža un montāža"]);
+  });
+
+  it("keeps a class's lessons from every building it is taught in", () => {
+    const week = classWeekLessons([annexDay, olaineDay], "c1");
+    expect(week.map(({ timetable }) => timetable.meta.building)).toEqual([
+      "TIC",
+      "TIC",
+      "TIC Olaine",
+    ]);
+  });
+
+  it("counts a lesson two buildings both publish only once", () => {
+    const copy = { ...annexDay, meta: { ...annexDay.meta, ttNum: "1176", building: "TIC 2" } };
+    expect(classWeekLessons([annexDay, copy], "c1")).toHaveLength(2);
+  });
+
+  it("keeps a teacher-less lesson when it is the only thing that week", () => {
+    expect(classWeekLessons([pointerDay], "c1")).toHaveLength(1);
   });
 });

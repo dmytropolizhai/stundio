@@ -59,7 +59,8 @@ describe("refresh", () => {
     expect(state.syncStatus).toBe("idle");
     expect(state.lastSyncAt).toBe("2026-09-09T08:00:00.000Z");
     expect(state.metas).toHaveLength(4);
-    expect(Object.keys(state.timetables)).toEqual(["1175"]);
+    // Both buildings' weeks: automatic mode merges them into one day (MODEL.md §3).
+    expect(Object.keys(state.timetables)).toEqual(["1174", "1175"]);
     expect(state.substitutions[DATE]?.items).toHaveLength(55);
   });
 
@@ -206,15 +207,22 @@ describe("settings", () => {
     expect(await cache.getSettings()).toMatchObject({ theme: "dark", lang: "ru" });
   });
 
-  it("re-resolves after the building changes", async () => {
+  it("re-resolves against the pinned building", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });
     await store.getState().setClass(classIdOf(store, "A1-2"));
-    expect(store.getState().resolvedDay(DATE)).not.toBeNull();
 
-    // TIC's week (1174) was never fetched, so there is nothing to resolve against.
+    // Automatic: the main building leads, and the merge holds no duplicate of a lesson the
+    // (fixture-identical) TIC week repeats.
+    const auto = store.getState().resolvedDay(DATE);
+    expect(auto?.building).toBe("Galvenā ēka");
+    expect(auto?.ttNum).toBe("1175");
+
     await store.getState().setBuilding("TIC");
-    expect(store.getState().resolvedDay(DATE)).toBeNull();
+    const tic = store.getState().resolvedDay(DATE);
+    expect(tic?.building).toBe("TIC");
+    expect(tic?.ttNum).toBe("1174");
+    expect(tic?.lessons).toHaveLength(auto?.lessons.length ?? -1);
   });
 });
 

@@ -143,14 +143,22 @@ export type ResolvedLesson = {
   status: ResolvedStatus;
   changeNote: string | null; // human summary when status !== "normal" (from Substitution.raw)
   original?: { teachers?: TeacherRef[]; rooms?: RoomRef[]; period?: string } | null;
+  /**
+   * The building whose published timetable this lesson came from. Set on every resolved lesson,
+   * and the only reliable per-lesson answer in automatic building mode, where one day can be
+   * merged from several buildings' timetables (see `resolveDayAcross`).
+   */
+  building?: Building;
 };
 
 export type ResolvedDay = {
   date: ISODate;
   weekday: Weekday;
   classId: string;
-  building: Building;
-  ttNum: string; // base timetable used
+  building: Building; // primary source — the first building that contributed lessons
+  /** Every building that contributed a lesson to this day, primary first. Usually one. */
+  buildings: Building[];
+  ttNum: string; // base timetable used (the primary one)
   lessons: ResolvedLesson[]; // sorted by period; cancelled kept with status "cancelled"
   notes: string[]; // pass-through of DaySubstitutions.notes
   stale: boolean; // true if base ttNum.validFrom week != date's week

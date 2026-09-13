@@ -57,6 +57,8 @@ export const lv = {
   "day.noData": "Nav saglabātu datu",
   "day.noDataHint": "Pievienojies internetam, lai lejupielādētu sarakstu.",
   "day.stale": "Šai nedēļai saraksts vēl nav publicēts — rādām iepriekšējo.",
+  "day.buildingOther": "Cita ēka: {building}",
+  "day.buildingMixed": "Vairākas ēkas: {buildings}",
   "day.notes": "Paziņojumi",
   "day.free": "Brīvstunda",
   "day.finished": "Stundas beigušās",
@@ -64,6 +66,7 @@ export const lv = {
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",
+  "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Pārskats",
   "week.overview.lessons": "{n} stundas",
   "week.overview.lessonsUp": "+{n} salīdzinot ar iepriekšējo nedēļu",

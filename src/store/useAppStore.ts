@@ -9,12 +9,13 @@
 // through React context, which is exactly what `createStore` + `useStore` is for.
 import { createStore } from "zustand/vanilla";
 import {
-  resolveDay,
-  selectTimetable,
+  resolveDayAcross,
+  selectTimetables,
   toTimetableMeta,
   type Building,
   type DaySubstitutions,
   type ISODate,
+  type DaySource,
   type ISODateTime,
   type ResolvedDay,
   type Timetable,
@@ -171,18 +172,29 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         const id = classId ?? state.settings.selectedClassId;
         if (id === null || id === undefined) return null;
 
-        const selection = selectTimetable(state.metas, date, state.settings.building ?? undefined);
-        if (selection === null) return null;
-
-        const timetable = state.timetables[selection.meta.ttNum];
-        if (timetable === undefined) return null;
+        /*
+         * One source per building, not one overall: in automatic mode a class's lessons live in
+         * whichever building published them, and the other buildings only carry a pointer row
+         * (`resolveDayAcross`). A building the user pinned narrows this to a single source.
+         */
+        const sources: DaySource[] = selectTimetables(
+          state.metas,
+          date,
+          state.settings.building ?? undefined,
+        ).flatMap((selection) => {
+          const timetable = state.timetables[selection.meta.ttNum];
+          // Not cached yet — `sync` fetches it; until then the other buildings still resolve.
+          return timetable === undefined ? [] : [{ timetable, stale: selection.stale }];
+        });
+        if (sources.length === 0) return null;
 
         const subs = state.substitutions[date] ?? null;
-        const key = `${selection.meta.ttNum}|${id}|${date}|${subs?.fetchedAt ?? "none"}`;
+        const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
+        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}`;
         const hit = memo.get(key);
         if (hit !== undefined) return hit;
 
-        return memo.set(key, resolveDay(timetable, subs, id, date, { stale: selection.stale }));
+        return memo.set(key, resolveDayAcross(sources, subs, id, date));
       },
     };
   });
