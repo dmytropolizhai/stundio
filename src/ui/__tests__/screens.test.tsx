@@ -79,9 +79,9 @@ describe("WeekGrid merge", () => {
   const lvl: WeekGridCell = { short: "LVL", tone: "pink" };
   const mat: WeekGridCell = { short: "MAT", tone: "mint" };
   const periods: WeekGridPeriod<string>[] = [
-    { period: 1, start: "08:30", cells: { mon: lvl } },
-    { period: 2, start: "09:15", cells: { mon: lvl, tue: mat } },
-    { period: 3, start: "10:10", cells: { mon: lvl } },
+    { period: 1, start: "08:30", end: "09:15", cells: { mon: lvl } },
+    { period: 2, start: "09:15", end: "10:10", cells: { mon: lvl, tue: mat } },
+    { period: 3, start: "10:10", end: "10:55", cells: { mon: lvl } },
   ];
 
   it("keeps a run of identical lessons as separate cells by default", () => {
@@ -101,9 +101,9 @@ describe("WeekGrid merge", () => {
 
   it("does not merge across a gap or a different subject", () => {
     const gappy: WeekGridPeriod<string>[] = [
-      { period: 1, start: "08:30", cells: { mon: lvl } },
-      { period: 2, start: "09:15", cells: {} },
-      { period: 3, start: "10:10", cells: { mon: lvl } },
+      { period: 1, start: "08:30", end: "09:15", cells: { mon: lvl } },
+      { period: 2, start: "09:15", end: "10:10", cells: {} },
+      { period: 3, start: "10:10", end: "10:55", cells: { mon: lvl } },
     ];
     render(<WeekGrid days={days} periods={gappy} mergeConsecutive />);
     expect(screen.getAllByTestId("week-cell")).toHaveLength(2);
