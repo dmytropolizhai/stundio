@@ -36,11 +36,9 @@ const SubjectColorRow = ({
   const isCustom = overrides[tokenKey] !== undefined;
 
   return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="min-w-0 flex-1 truncate font-text text-caption font-bold text-strong">
-        {label}
-      </span>
-      <div className="flex items-center gap-2">
+    <div className="py-1">
+      <p className="mb-1 font-text text-caption font-bold text-strong">{label}</p>
+      <div className="-ml-2.5 flex items-center">
         {SUBJECT_TONES.map((option) => (
           <button
             key={option}
@@ -50,12 +48,17 @@ const SubjectColorRow = ({
             onClick={() => {
               void setOverride(tokenKey, option);
             }}
-            className={cn(
-              "size-6 shrink-0 cursor-pointer rounded-full",
-              TONE_BG[option],
-              tone === option && "inset-ring-2 inset-ring-strong",
-            )}
-          />
+            className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
+          >
+            <span
+              aria-hidden="true"
+              className={cn(
+                "block size-6.5 rounded-full",
+                TONE_BG[option],
+                tone === option && "inset-ring-2 inset-ring-strong",
+              )}
+            />
+          </button>
         ))}
         <button
           type="button"
@@ -63,7 +66,7 @@ const SubjectColorRow = ({
           onClick={() => {
             void setOverride(tokenKey, null);
           }}
-          className="ml-1 shrink-0 font-text text-micro font-bold text-muted underline decoration-dotted disabled:opacity-30 disabled:no-underline"
+          className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted underline decoration-dotted disabled:opacity-30 disabled:no-underline"
         >
           {t("customization.subjectColors.reset")}
         </button>
