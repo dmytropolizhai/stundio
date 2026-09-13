@@ -193,4 +193,5 @@ export const ru: Dict = {
   "customization.subjectColors.reset": "Авто",
   "customization.subjectColors.empty": "Выбери класс, чтобы настроить цвета предметов.",
   "customization.preview.subject": "Пример предмета",
+  "customization.reset": "Сбросить настройки",
 };

@@ -5,9 +5,9 @@
  */
 import { describe, expect, it } from "vitest";
 import { fireEvent, render, renderHook, screen, within } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { SettingsView } from "../screens/SettingsView.tsx";
-import { subjectToneKey } from "../theme/index.ts";
+import { subjectToneKey } from "@/ui/theme";
 import { useSubjects } from "../hooks/useSubjects.ts";
 import { bootHarness, clickAndSettle, type Harness } from "./harness.tsx";
 
@@ -100,6 +100,39 @@ describe("CustomizationSheet", () => {
       fireEvent.click(row.getByText("Auto"));
     });
     expect(harness.store.getState().settings.subjectColorOverrides[key]).toBeUndefined();
+  });
+
+  it("resets every customization setting back to its default", async () => {
+    const harness = await openSheetHarness();
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("Aizpildīta"));
+    });
+    const slider = screen.getByRole("slider", { name: "Stūru noapaļojums" });
+    await clickAndSettle(() => {
+      fireEvent.keyDown(slider, { key: "ArrowRight" });
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("Izteikts"));
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Mazāk animāciju" }));
+    });
+    const settings = harness.store.getState().settings;
+    expect(settings.lessonCardStyle).toBe("filled");
+    expect(settings.cardRadius).toBe("2xl");
+    expect(settings.cardElevation).toBe("bold");
+    expect(settings.reduceMotion).toBe(true);
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("Atjaunot noklusējumu"));
+    });
+    const reset = harness.store.getState().settings;
+    expect(reset.lessonCardStyle).toBe("outline");
+    expect(reset.cardRadius).toBe("xl");
+    expect(reset.cardElevation).toBe("soft");
+    expect(reset.reduceMotion).toBe(false);
+    expect(reset.subjectColorOverrides).toEqual({});
   });
 
   it("says so when no class is selected", async () => {

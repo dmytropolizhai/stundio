@@ -1,4 +1,4 @@
-import { BottomSheet, LessonCard, SegmentedTabs, Slider, Switch, cn } from "@/ds";
+import { BottomSheet, Button, LessonCard, SegmentedTabs, Switch, cn, Slider } from "@/ds";
 import { useAppStore } from "@/store";
 import type { Settings, SubjectColorTone } from "@/db";
 import { SUBJECT_TONES, subjectTone, subjectToneKey } from "@/ui/theme";
@@ -21,7 +21,7 @@ const TONE_BG: Record<SubjectColorTone, string> = {
 /**
  * One subject's accent picker: six DS tones plus a reset back to the auto-assigned one.
  *
- * Only ever assigns one of the six fixed tones — never an arbitrary colour — so a customized
+ * Only ever assigns one of the six fixed tones — never an arbitrary color — so a customized
  * subject keeps the same contrast guarantee an auto-assigned one has (`ui/theme/colors.ts`).
  */
 const SubjectColorRow = ({
@@ -69,7 +69,7 @@ const SubjectColorRow = ({
           onClick={() => {
             void setOverride(tokenKey, null);
           }}
-          className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted underline decoration-dotted disabled:opacity-30 disabled:no-underline"
+          className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted decoration-dotted disabled:opacity-30 disabled:no-underline"
         >
           {t("customization.subjectColors.reset")}
         </button>
@@ -82,9 +82,9 @@ const SubjectColorRow = ({
  * "Customization" — the sheet opened from Settings.
  *
  * Every option here is one of the Studio DS's own pre-approved values (a token, a documented
- * component variant), never a free colour or size picker: the design stays recognizably Stundio
+ * component variant), never a free color or size picker: the design stays recognizably Stundio
  * whatever combination someone picks (see the design discussion this screen came out of).
- * Theme, radius and depth apply globally through `useCustomization`/`useTheme`, so the live
+ * Theme, radius, and depth apply globally through `useCustomization`/`useTheme`, so the live
  * preview below is just the real components rendered here — no separate preview plumbing needed.
  */
 export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
@@ -95,6 +95,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
   const setCardRadius = useAppStore((s) => s.setCardRadius);
   const setCardElevation = useAppStore((s) => s.setCardElevation);
   const setReduceMotion = useAppStore((s) => s.setReduceMotion);
+  const resetCustomization = useAppStore((s) => s.resetCustomization);
   const { subjects } = useSubjects();
 
   const themes: { key: Settings["theme"]; label: string }[] = [
@@ -112,7 +113,23 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
   const radiusIndex = RADIUS_STEPS.indexOf(settings.cardRadius);
 
   return (
-    <BottomSheet open={open} onClose={onClose} title={t("customization.title")}>
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      title={t("customization.title")}
+      footer={
+        <Button
+          variant="outline"
+          size="sm"
+          block
+          onClick={() => {
+            void resetCustomization();
+          }}
+        >
+          {t("customization.reset")}
+        </Button>
+      }
+    >
       <div className="no-scrollbar max-h-[75vh] overflow-y-auto overscroll-contain">
         <div className="mb-5">
           <LessonCard
@@ -171,9 +188,12 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
               min={0}
               max={RADIUS_STEPS.length - 1}
               value={radiusIndex}
-              onChange={(next) => {
+              onChange={(next: number) => {
                 const step = RADIUS_STEPS[next];
-                if (step !== undefined) void setCardRadius(step);
+
+                if (step !== undefined) {
+                  void setCardRadius(step);
+                }
               }}
             />
           </Row>

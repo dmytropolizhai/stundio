@@ -198,6 +198,7 @@ export const lv = {
   "customization.subjectColors.reset": "Auto",
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
+  "customization.reset": "Atjaunot noklusējumu",
 } as const;
 
 export type Dict = Record<keyof typeof lv, string>;

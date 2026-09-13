@@ -19,10 +19,10 @@ import {
   type ISODateTime,
   type ResolvedDay,
   type Timetable,
-} from "../lib/edupage/index.ts";
-import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "../db/index.ts";
-import type { SyncEngine, SyncOutcome, SyncStatus } from "../sync/index.ts";
-import { noopAnalytics, type AnalyticsClient } from "../lib/analytics/index.ts";
+} from "@/lib/edupage";
+import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
+import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
+import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 
 export type AppState = {
   ready: boolean;
@@ -55,6 +55,8 @@ export type AppState = {
     subjectKey: string,
     tone: Settings["subjectColorOverrides"][string] | null,
   ) => Promise<void>;
+  /** Restores every Customization sheet setting — not the rest of `Settings` — to its default. */
+  resetCustomization: () => Promise<void>;
   setNotifyLessonReminderMinutes: (minutes: number) => Promise<void>;
   setNotifySubstitutionChanges: (enabled: boolean) => Promise<void>;
   setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
@@ -176,6 +178,15 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         else next[subjectKey] = tone;
         return persist({ subjectColorOverrides: next });
       },
+      resetCustomization: () =>
+        persist({
+          theme: DEFAULT_SETTINGS.theme,
+          lessonCardStyle: DEFAULT_SETTINGS.lessonCardStyle,
+          cardRadius: DEFAULT_SETTINGS.cardRadius,
+          cardElevation: DEFAULT_SETTINGS.cardElevation,
+          reduceMotion: DEFAULT_SETTINGS.reduceMotion,
+          subjectColorOverrides: { ...DEFAULT_SETTINGS.subjectColorOverrides },
+        }),
       setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>
         persist({ notifyLessonReminderMinutes }),
       setNotifySubstitutionChanges: (notifySubstitutionChanges) =>

@@ -192,4 +192,5 @@ export const en: Dict = {
   "customization.subjectColors.reset": "Auto",
   "customization.subjectColors.empty": "Pick a class to customize its subject colours.",
   "customization.preview.subject": "Sample subject",
+  "customization.reset": "Reset to defaults",
 };

@@ -194,4 +194,5 @@ export const ua: Dict = {
   "customization.subjectColors.reset": "Авто",
   "customization.subjectColors.empty": "Вибери клас, щоб налаштувати кольори предметів.",
   "customization.preview.subject": "Приклад предмета",
+  "customization.reset": "Скинути налаштування",
 };
