@@ -83,6 +83,7 @@ export const lv = {
   "share.title": "{class} stundu saraksts",
   "share.message": "{class} stundu saraksts {period}",
   "share.image.classTeacher": "Klases audzinātājs",
+  "share.image.appLabel": "Labāka EduPage pieredze tālrunī",
 
   "lesson.teacher": "Skolotājs",
   "lesson.room": "Kabinets",

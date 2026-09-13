@@ -77,6 +77,7 @@ export const ru: Dict = {
   "share.title": "Расписание {class}",
   "share.message": "Расписание {class} {period}",
   "share.image.classTeacher": "Классный руководитель",
+  "share.image.appLabel": "Удобный EduPage на телефоне",
 
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",

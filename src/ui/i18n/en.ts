@@ -75,8 +75,9 @@ export const en: Dict = {
   "share.working": "Making the image…",
   "share.error": "Could not create the image",
   "share.title": "{class} timetable",
-  "share.message": "{class} timetable {period}",
+  "share.message": "{class} timetable {period} \nBetter experience for EduPage",
   "share.image.classTeacher": "Form teacher",
+  "share.image.appLabel": "Better EduPage experience on phone",
 
   "lesson.teacher": "Teacher",
   "lesson.room": "Room",

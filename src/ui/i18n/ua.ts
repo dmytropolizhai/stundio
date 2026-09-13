@@ -77,6 +77,7 @@ export const ua: Dict = {
   "share.title": "Розклад {class}",
   "share.message": "Розклад {class} {period}",
   "share.image.classTeacher": "Класний керівник",
+  "share.image.appLabel": "Зручніший EduPage на телефоні",
 
   "lesson.teacher": "Учитель",
   "lesson.room": "Кабінет",
