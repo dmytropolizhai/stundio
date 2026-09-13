@@ -5,8 +5,8 @@
  * building's — so the merge is also what tells the picker which building a class sits in.
  */
 import { useMemo } from "react";
-import { useAppStore } from "../../store/index.ts";
-import type { Building, ClassRef } from "../../lib/edupage/index.ts";
+import { useAppStore } from "@/store";
+import type { Building, ClassRef } from "@/lib/edupage";
 
 export type ClassOption = ClassRef & { buildings: Building[] };
 
@@ -19,11 +19,13 @@ export const useClasses = (): ClassOption[] => {
     const byId = new Map<string, ClassOption>();
     for (const timetable of Object.values(timetables)) {
       for (const cls of timetable.classes) {
-        const existing = byId.get(cls.id);
-        if (existing === undefined) {
-          byId.set(cls.id, { ...cls, buildings: [timetable.meta.building] });
-        } else if (!existing.buildings.includes(timetable.meta.building)) {
-          existing.buildings.push(timetable.meta.building);
+        if (cls.name !== "" && cls.short !== "") {
+          const existing = byId.get(cls.id);
+          if (existing === undefined) {
+            byId.set(cls.id, { ...cls, buildings: [timetable.meta.building] });
+          } else if (!existing.buildings.includes(timetable.meta.building)) {
+            existing.buildings.push(timetable.meta.building);
+          }
         }
       }
     }
