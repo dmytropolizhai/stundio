@@ -68,6 +68,8 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
   const setNotifySubstitutionChanges = useAppStore((s) => s.setNotifySubstitutionChanges);
   const setNotifyAppUpdates = useAppStore((s) => s.setNotifyAppUpdates);
   const setAnalyticsEnabled = useAppStore((s) => s.setAnalyticsEnabled);
+  const setShareLang = useAppStore((s) => s.setShareLang);
+  const setShareLangSyncWithApp = useAppStore((s) => s.setShareLangSyncWithApp);
   const refresh = useAppStore((s) => s.refresh);
   const {
     result: update,
@@ -156,6 +158,38 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               }}
             />
           </Row>
+        </Section>
+
+        <Section title={t("settings.share")}>
+          <Row className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">
+                {t("settings.shareSyncLang")}
+              </p>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("settings.shareSyncLangHint")}
+              </p>
+            </div>
+            <Switch
+              aria-label={t("settings.shareSyncLang")}
+              checked={settings.shareLangSyncWithApp}
+              onChange={(checked) => {
+                void setShareLangSyncWithApp(checked);
+              }}
+            />
+          </Row>
+          {!settings.shareLangSyncWithApp && (
+            <Row>
+              <SegmentedTabs
+                label={t("settings.shareLanguage")}
+                value={settings.shareLang}
+                items={LANGS.map((key) => ({ key, label: LANG_NAMES[key] }))}
+                onChange={(value) => {
+                  void setShareLang(value);
+                }}
+              />
+            </Row>
+          )}
         </Section>
 
         <Section title={t("settings.week")}>

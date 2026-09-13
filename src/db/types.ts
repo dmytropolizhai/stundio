@@ -33,6 +33,12 @@ export type Settings = {
   lastNotifiedUpdateVersion: string | null;
   /** Anonymous usage analytics (Plausible). No cookies, no persistent id — opt-out, not opt-in. */
   analyticsEnabled: boolean;
+  /** Language for the shareable week image/message; ignored while `shareLangSyncWithApp` is on. */
+  shareLang: "lv" | "en" | "ru" | "ua";
+  /** Keep the share image/message language matched to `lang` — the default. */
+  shareLangSyncWithApp: boolean;
+  /** Whether the one-time "which language to share in" prompt has already been shown. */
+  shareLangPromptShown: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -48,6 +54,9 @@ export const DEFAULT_SETTINGS: Settings = {
   notifyAppUpdates: true,
   lastNotifiedUpdateVersion: null,
   analyticsEnabled: true,
+  shareLang: "lv",
+  shareLangSyncWithApp: true,
+  shareLangPromptShown: false,
 };
 
 export type SubjectNote = {

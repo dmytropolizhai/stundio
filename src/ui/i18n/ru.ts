@@ -75,9 +75,13 @@ export const ru: Dict = {
   "share.working": "Создаём изображение…",
   "share.error": "Не удалось создать изображение",
   "share.title": "Расписание {class}",
-  "share.message": "Расписание {class} {period}",
+  "share.message":
+    "{class} расписание {period} \nХотите сделать использование EduPage удобнее? Загляните на: https://github.com/dmytropolizhai/stundio",
   "share.image.classTeacher": "Классный руководитель",
   "share.image.appLabel": "Удобный EduPage на телефоне",
+  "share.language.title": "На каком языке поделиться?",
+  "share.language.sync": "Синхронизировать изображение с языком приложения",
+  "share.language.continue": "Продолжить",
 
   "lesson.teacher": "Преподаватель",
   "lesson.room": "Кабинет",
@@ -123,6 +127,10 @@ export const ru: Dict = {
   "settings.buildingAuto": "Автоматически",
   "settings.theme": "Оформление",
   "settings.language": "Язык",
+  "settings.share": "Публикация",
+  "settings.shareSyncLang": "Синхронизировать с языком приложения",
+  "settings.shareSyncLangHint": "Изображение и сообщение будут на языке, установленном в приложении.",
+  "settings.shareLanguage": "Язык изображения",
   "settings.week": "Просмотр недели",
   "settings.mergeLessons": "Объединять одинаковые уроки",
   "settings.mergeLessonsHint":
