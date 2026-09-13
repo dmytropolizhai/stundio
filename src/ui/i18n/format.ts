@@ -32,6 +32,11 @@ export const formatWeekdayShort = (date: ISODate, lang: Lang): string =>
 export const formatWeekdayLong = (date: ISODate, lang: Lang): string =>
   fmt(lang, { weekday: "long" }).format(toDate(date));
 
+/** "9. septembris 2026" — a release date in the what's-new sheet. No weekday: which day of
+ * the week a release landed on is noise. */
+export const formatReleaseDate = (date: ISODate, lang: Lang): string =>
+  fmt(lang, { day: "numeric", month: "long", year: "numeric" }).format(toDate(date));
+
 /** "9.09." — under the weekday in the pager. */
 export const formatDayMonth = (date: ISODate, lang: Lang): string =>
   fmt(lang, { day: "numeric", month: "numeric" }).format(toDate(date));

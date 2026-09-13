@@ -51,6 +51,12 @@ export type Settings = {
   notifyAppUpdates: boolean;
   /** Latest release tag already notified about — prevents repeat pings for the same version. */
   lastNotifiedUpdateVersion: string | null;
+  /**
+   * The *installed* build whose release notes this device has already been shown. Distinct
+   * from `lastNotifiedUpdateVersion`, which tracks a remote tag the user was told about but
+   * may never have installed. `null` means "never marked" — see `entriesSince`.
+   */
+  lastSeenChangelogVersion: string | null;
   /** Anonymous usage analytics (Plausible). No cookies, no persistent id — opt-out, not opt-in. */
   analyticsEnabled: boolean;
   /** Language for the shareable week image/message; ignored while `shareLangSyncWithApp` is on. */
@@ -78,6 +84,7 @@ export const DEFAULT_SETTINGS: Settings = {
   notifySubstitutionChanges: true,
   notifyAppUpdates: true,
   lastNotifiedUpdateVersion: null,
+  lastSeenChangelogVersion: null,
   analyticsEnabled: true,
   shareLang: "lv",
   shareLangSyncWithApp: true,

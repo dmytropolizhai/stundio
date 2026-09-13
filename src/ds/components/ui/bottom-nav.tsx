@@ -71,7 +71,9 @@ export const BottomNav = <K extends string>({
             )}
           >
             <Icon name={item.icon} size={23} />
-            <span className={cn("text-micro font-black", !active && "font-normal")}>{item.label}</span>
+            <span className={cn("text-micro font-black", !active && "font-normal")}>
+              {item.label}
+            </span>
           </button>
         );
       })}

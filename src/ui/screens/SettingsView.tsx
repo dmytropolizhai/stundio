@@ -54,7 +54,13 @@ export const Row = ({ children, className = "" }: { children: ReactNode; classNa
  * Theme, language and building are all small closed sets, so all three use the DS segmented
  * control rather than three different shapes of picker.
  */
-export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
+export const SettingsView = ({
+  onPickClass,
+  onShowWhatsNew,
+}: {
+  onPickClass: () => void;
+  onShowWhatsNew: () => void;
+}) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
   const notifyPermissionDenied = useNotificationPermissionDenied();
@@ -366,6 +372,17 @@ export const SettingsView = ({ onPickClass }: { onPickClass: () => void }) => {
               <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
                 {t("settings.reportIssueAction")}
               </a>
+            </Button>
+          </Row>
+          <Row className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">{t("settings.whatsNew")}</p>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("settings.whatsNewHint")}
+              </p>
+            </div>
+            <Button size="sm" icon="info" onClick={onShowWhatsNew}>
+              {t("settings.whatsNewAction")}
             </Button>
           </Row>
           <Row className="flex flex-wrap items-center justify-between gap-3">

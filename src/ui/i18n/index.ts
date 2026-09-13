@@ -43,12 +43,14 @@ export const useT = (): Translate => {
 
 export type { Dict, MessageKey } from "./lv.ts";
 export type { Lang } from "./format.ts";
+export { CHANGELOG, type ChangelogEntry } from "./changelog.ts";
 export {
   formatClock,
   formatDayMonth,
   formatDuration,
   formatLongDate,
   formatRange,
+  formatReleaseDate,
   formatWeekdayLong,
   formatWeekdayShort,
   formatWeekRange,
