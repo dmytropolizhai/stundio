@@ -33,6 +33,8 @@ const timetable = (ttNum: string): Timetable => ({
   lessons: [],
 });
 
+const NOW = "2026-09-09T00:00:00.000Z";
+
 const substitutions = (date: string): DaySubstitutions => ({
   date,
   mode: "classes",
@@ -51,6 +53,7 @@ const freshIdbCache = (): AppCache => {
       d.createObjectStore("timetables");
       d.createObjectStore("substitutions");
       d.createObjectStore("settings");
+      d.createObjectStore("notes");
     },
   });
   return createIdbCache(db);
@@ -143,10 +146,31 @@ describe.each(implementations)("AppCache — %s", (_name, make) => {
     await cache.putTimetable(timetable("1175"));
     await cache.putSubstitutions(substitutions("2026-09-09"));
     await cache.putSettings({ ...DEFAULT_SETTINGS, selectedClassId: "-927" });
+    await cache.putNote({ subject: "Matemātika", text: "Bring calculator", updatedAt: NOW });
     await cache.clear();
 
     expect(await cache.listTimetableNums()).toEqual([]);
     expect(await cache.getSubstitutions("2026-09-09")).toBeNull();
     expect(await cache.getSettings()).toEqual(DEFAULT_SETTINGS);
+    expect(await cache.getNote("Matemātika")).toBeNull();
+  });
+
+  it("stores, updates and deletes a note per subject", async () => {
+    expect(await cache.getNote("Matemātika")).toBeNull();
+
+    await cache.putNote({ subject: "Matemātika", text: "Bring calculator", updatedAt: NOW });
+    expect(await cache.getNote("Matemātika")).toEqual({
+      subject: "Matemātika",
+      text: "Bring calculator",
+      updatedAt: NOW,
+    });
+    expect(await cache.listNoteSubjects()).toEqual(["Matemātika"]);
+
+    await cache.putNote({ subject: "Matemātika", text: "Bring ruler too", updatedAt: NOW });
+    expect((await cache.getNote("Matemātika"))?.text).toBe("Bring ruler too");
+
+    await cache.deleteNote("Matemātika");
+    expect(await cache.getNote("Matemātika")).toBeNull();
+    expect(await cache.listNoteSubjects()).toEqual([]);
   });
 });

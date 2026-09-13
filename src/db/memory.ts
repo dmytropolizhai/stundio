@@ -7,6 +7,7 @@ import {
   type AppCache,
   type CachedTimetableList,
   type Settings,
+  type SubjectNote,
 } from "./types.ts";
 import type { DaySubstitutions, ISODate, Timetable } from "../lib/edupage/index.ts";
 
@@ -15,6 +16,7 @@ export const createMemoryCache = (): AppCache => {
   let settings: Settings = { ...DEFAULT_SETTINGS };
   const timetables = new Map<string, Timetable>();
   const substitutions = new Map<ISODate, DaySubstitutions>();
+  const notes = new Map<string, SubjectNote>();
 
   return {
     getTimetableList: () => Promise.resolve(list),
@@ -53,11 +55,23 @@ export const createMemoryCache = (): AppCache => {
       return Promise.resolve();
     },
 
+    getNote: (subject) => Promise.resolve(notes.get(subject) ?? null),
+    putNote: (note) => {
+      notes.set(note.subject, note);
+      return Promise.resolve();
+    },
+    deleteNote: (subject) => {
+      notes.delete(subject);
+      return Promise.resolve();
+    },
+    listNoteSubjects: () => Promise.resolve([...notes.keys()]),
+
     clear: () => {
       list = null;
       settings = { ...DEFAULT_SETTINGS };
       timetables.clear();
       substitutions.clear();
+      notes.clear();
       return Promise.resolve();
     },
   };

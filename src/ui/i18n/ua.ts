@@ -104,6 +104,9 @@ export const ua: Dict = {
   "subjects.teachers": "Учителі",
   "subjects.empty": "Немає предметів",
   "subjects.emptyHint": "Предмети з'являться після завантаження розкладу.",
+  "subjects.note.placeholder": "Нотатка для цього предмета…",
+  "subjects.note.save": "Зберегти",
+  "subjects.note.badge": "Є нотатка",
 
   "settings.title": "Налаштування",
   "settings.class": "Моя група",

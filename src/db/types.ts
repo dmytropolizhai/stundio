@@ -50,6 +50,13 @@ export const DEFAULT_SETTINGS: Settings = {
   analyticsEnabled: true,
 };
 
+export type SubjectNote = {
+  /** Subject label — see `useSubjects.ts`: `name || short`, the app's stable cross-week key. */
+  subject: string;
+  text: string;
+  updatedAt: ISODateTime;
+};
+
 export type AppCache = {
   getTimetableList: () => Promise<CachedTimetableList | null>;
   putTimetableList: (list: CachedTimetableList) => Promise<void>;
@@ -71,6 +78,11 @@ export type AppCache = {
 
   getSettings: () => Promise<Settings>;
   putSettings: (settings: Settings) => Promise<void>;
+
+  getNote: (subject: string) => Promise<SubjectNote | null>;
+  putNote: (note: SubjectNote) => Promise<void>;
+  deleteNote: (subject: string) => Promise<void>;
+  listNoteSubjects: () => Promise<string[]>;
 
   clear: () => Promise<void>;
 };

@@ -110,6 +110,9 @@ export const lv = {
   "subjects.teachers": "Skolotāji",
   "subjects.empty": "Nav priekšmetu",
   "subjects.emptyHint": "Priekšmeti parādīsies, kad būs lejupielādēts saraksts.",
+  "subjects.note.placeholder": "Piezīme šim priekšmetam…",
+  "subjects.note.save": "Saglabāt",
+  "subjects.note.badge": "Ir piezīme",
 
   "settings.title": "Iestatījumi",
   "settings.class": "Mana grupa",
