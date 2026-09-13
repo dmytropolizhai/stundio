@@ -3,7 +3,7 @@
  * are looking at). No router — four tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { AppStoreProvider, useAppStore } from "@/store";
 import { todayInRiga } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
@@ -14,6 +14,7 @@ import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
 import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
+import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
 import { useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 
@@ -29,11 +30,17 @@ const SettingsView = lazy(() =>
   import("./ui/screens/SettingsView.tsx").then((m) => ({ default: m.SettingsView })),
 );
 
-const Splash = () => (
-  <div className="flex h-full items-center justify-center bg-brand-deep">
-    <span className="u-wordmark text-brand">stundio.</span>
-  </div>
-);
+/**
+ * Renders nothing; its only job is to tell the splash that the store hydrated. It sits inside
+ * `AppStoreProvider`'s children, which the provider only mounts once boot resolves — so its
+ * first effect *is* "the app is ready", with no extra state threaded through the provider.
+ */
+const BootSignal = ({ onReady }: { onReady: () => void }) => {
+  useEffect(() => {
+    onReady();
+  }, [onReady]);
+  return null;
+};
 
 /**
  * First run: no class chosen yet, so onboarding *is* the app until one is picked.
@@ -161,9 +168,23 @@ const Shell = () => {
 };
 
 export default function App() {
+  const [ready, setReady] = useState(false);
+  const markReady = useCallback(() => {
+    setReady(true);
+  }, []);
+
   return (
-    <AppStoreProvider fallback={<Splash />}>
-      <Shell />
-    </AppStoreProvider>
+    <>
+      <AppStoreProvider>
+        <BootSignal onReady={markReady} />
+        <Shell />
+      </AppStoreProvider>
+      {/*
+        Sits *over* the shell rather than in the provider's `fallback` slot: the splash owns its
+        own exit (top out, then fade), and a fallback would be torn out the frame boot lands.
+        It removes itself once the fade is done, so there is no permanent overlay node.
+      */}
+      <SplashScreen ready={ready} />
+    </>
   );
 }

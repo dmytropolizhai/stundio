@@ -119,6 +119,16 @@
   --color-brand-strong: var(--brand-strong);
   --color-brand-deep: var(--brand-deep);
   --color-brand-tint: var(--brand-tint);
+  /*
+   * The DS's Studio Electric, exposed as a utility colour. `--brand` in this product is *ink*,
+   * not blue (colors.css), and it is only ever legible against `--brand-deep` — so the splash,
+   * which sits on `--bg-app` in both themes, needs the one hue the DS keeps for full-bleed
+   * brand moments. `--bg-hero` is that hue; `-lift` is the step above it, used for the wave's
+   * trailing crest so the water has two tones instead of a flat slab.
+   */
+  --color-hero: var(--bg-hero);
+  --color-hero-lift: var(--blue-400);
+
   --color-app: var(--bg-app);
   --color-inverse: var(--bg-inverse);
   --color-card: var(--surface-card);
@@ -206,6 +216,17 @@
   --animate-scrim-in: studio-scrim-in var(--dur-fast) var(--ease-standard);
   --animate-time-in: studio-time-in var(--dur-base) var(--ease-standard) both;
   --animate-popover-in: studio-popover-in var(--dur-fast) var(--ease-standard);
+
+  /*
+   * The splash's wave fill. Two motions, never one: `drift` scrolls a crest sideways (each
+   * crest svg is 200% wide and holds two full periods, so a -50% shift is seamless), `bob`
+   * rides the whole body up and down a hair so the surface keeps moving while the fill level
+   * is held. Both are linear/ease-in-out and infinite — this is an idle state, not an
+   * entrance, so no spring.
+   */
+  --animate-wave-drift: studio-wave-drift 3.2s linear infinite;
+  --animate-wave-drift-slow: studio-wave-drift 5.1s linear infinite reverse;
+  --animate-wave-bob: studio-wave-bob 2.6s ease-in-out infinite alternate;
 }
 
 @keyframes studio-shimmer {
@@ -252,6 +273,24 @@
 
 /* The lesson card's time reveal: grows from nothing on its own axis (`origin-top` /
    `origin-bottom`, set per span), never bounces — see The Tabular Time Rule. */
+@keyframes studio-wave-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes studio-wave-bob {
+  from {
+    transform: translateY(-1.5%);
+  }
+  to {
+    transform: translateY(1.5%);
+  }
+}
+
 @keyframes studio-time-in {
   from {
     transform: scale(0);
