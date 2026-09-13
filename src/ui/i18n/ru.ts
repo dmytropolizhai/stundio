@@ -104,6 +104,9 @@ export const ru: Dict = {
   "subjects.teachers": "Учителя",
   "subjects.empty": "Нет предметов",
   "subjects.emptyHint": "Предметы появятся после загрузки расписания.",
+  "subjects.note.placeholder": "Заметка по предмету…",
+  "subjects.note.save": "Сохранить",
+  "subjects.note.badge": "Есть заметка",
 
   "settings.title": "Настройки",
   "settings.class": "Моя группа",

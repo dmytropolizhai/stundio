@@ -104,6 +104,9 @@ export const en: Dict = {
   "subjects.teachers": "Teachers",
   "subjects.empty": "No subjects",
   "subjects.emptyHint": "Subjects appear once the timetable is downloaded.",
+  "subjects.note.placeholder": "Note for this subject…",
+  "subjects.note.save": "Save",
+  "subjects.note.badge": "Has a note",
 
   "settings.title": "Settings",
   "settings.class": "My group",

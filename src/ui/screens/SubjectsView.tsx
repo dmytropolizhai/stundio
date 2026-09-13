@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useAppStore } from "@/store";
 import { Card, TopBar } from "@/ds";
 import { subjectCode, subjectTone } from "@/ui/theme";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { useSubjects } from "../hooks/useSubjects.ts";
+import { SubjectNoteSheet } from "./SubjectNoteSheet.tsx";
 import { useT } from "@/ui/i18n";
+import type { SubjectRef } from "@/lib/edupage";
 
 /**
  * Everything the class is taught, and who teaches it.
@@ -21,6 +24,8 @@ export const SubjectsView = () => {
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const { subjects, teachers } = useSubjects();
+  const notes = useAppStore((s) => s.notes);
+  const [openSubject, setOpenSubject] = useState<SubjectRef | null>(null);
 
   const body = () => {
     if (!ready) return <DaySkeleton rows={4} />;
@@ -36,30 +41,45 @@ export const SubjectsView = () => {
     return (
       <>
         <div className="mb-7 grid grid-cols-2 gap-3">
-          {subjects.map(({ subject, count, teachers: taughtBy }) => (
-            <Card
-              key={subject.id}
-              tone={subjectTone(subject)}
-              className="min-w-0"
-              data-testid={`subject-${subject.id}`}
-            >
-              <div className="flex items-center justify-between">
-                {/* The derived code, not `short` — RVT fills `short` with the full name. */}
-                <span className="font-text text-micro font-bold tracking-label uppercase opacity-75">
-                  {subjectCode(subject)}
-                </span>
-                <span className="font-data text-caption font-bold tabular-nums">
-                  {t("subjects.perWeek", { n: count })}
-                </span>
-              </div>
-              <div className="mt-2.5 mb-1.5 font-display text-[26px] leading-[.95] font-black break-words">
-                {subject.name === "" ? subject.short : subject.name}
-              </div>
-              <div className="font-text text-caption opacity-80">
-                {taughtBy.map((x) => x.short).join(", ")}
-              </div>
-            </Card>
-          ))}
+          {subjects.map(({ subject, count, teachers: taughtBy }) => {
+            const subjectKey = subject.name === "" ? subject.short : subject.name;
+            const hasNote = (notes[subjectKey]?.text ?? "") !== "";
+            return (
+              <Card
+                key={subject.id}
+                tone={subjectTone(subject)}
+                className="min-w-0 text-left"
+                data-testid={`subject-${subject.id}`}
+                onClick={() => {
+                  setOpenSubject(subject);
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  {/* The derived code, not `short` — RVT fills `short` with the full name. */}
+                  <span className="font-text text-micro font-bold tracking-label uppercase opacity-75">
+                    {subjectCode(subject)}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    {hasNote && (
+                      <span
+                        aria-label={t("subjects.note.badge")}
+                        className="size-1.5 rounded-full bg-current opacity-75"
+                      />
+                    )}
+                    <span className="font-data text-caption font-bold tabular-nums">
+                      {t("subjects.perWeek", { n: count })}
+                    </span>
+                  </span>
+                </div>
+                <div className="mt-2.5 mb-1.5 font-display text-[26px] leading-[.95] font-black break-words">
+                  {subjectKey}
+                </div>
+                <div className="font-text text-caption opacity-80">
+                  {taughtBy.map((x) => x.short).join(", ")}
+                </div>
+              </Card>
+            );
+          })}
         </div>
 
         {teachers.length > 0 && (
@@ -97,6 +117,12 @@ export const SubjectsView = () => {
         <TopBar title={t("subjects.title")} />
         {body()}
       </div>
+      <SubjectNoteSheet
+        subject={openSubject}
+        onClose={() => {
+          setOpenSubject(null);
+        }}
+      />
     </div>
   );
 };
