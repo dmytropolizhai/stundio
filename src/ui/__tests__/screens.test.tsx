@@ -357,7 +357,7 @@ describe("WeekView", () => {
 describe("SettingsView", () => {
   it("writes the language through to the cache and re-renders in it", async () => {
     const harness = await bootHarness();
-    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("English"));
@@ -369,7 +369,7 @@ describe("SettingsView", () => {
 
   it("persists the theme choice", async () => {
     const harness = await bootHarness();
-    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("Tumšs"));
@@ -379,7 +379,7 @@ describe("SettingsView", () => {
 
   it("persists the week-view merge preference", async () => {
     const harness = await bootHarness();
-    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(false);
     await clickAndSettle(() => {
@@ -390,7 +390,7 @@ describe("SettingsView", () => {
 
   it("persists the show-time preference", async () => {
     const harness = await bootHarness();
-    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     expect(harness.store.getState().settings.showTime).toBe(false);
     await clickAndSettle(() => {
@@ -401,7 +401,7 @@ describe("SettingsView", () => {
 
   it("offers a building override once more than one building is cached", async () => {
     const harness = await bootHarness();
-    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     const auto = screen.queryByText("Automātiski");
     // The fixture list carries both buildings, so the control is present.
@@ -415,7 +415,7 @@ describe("SettingsView", () => {
 
   it("refreshes on demand", async () => {
     const harness = await bootHarness();
-    wrap(harness, <SettingsView onPickClass={vi.fn()} />);
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
     const before = harness.server.calls.substitutions;
 
     await clickAndSettle(() => {
@@ -427,7 +427,7 @@ describe("SettingsView", () => {
   it("names the current class and routes to the picker", async () => {
     const harness = await bootHarness();
     const onPickClass = vi.fn();
-    wrap(harness, <SettingsView onPickClass={onPickClass} />);
+    wrap(harness, <SettingsView onPickClass={onPickClass} onShowWhatsNew={vi.fn()} />);
 
     // Twice now: once as the header eyebrow, once as the value of the class row.
     expect(screen.getAllByText("A1-2").length).toBeGreaterThan(0);

@@ -135,6 +135,7 @@ describe("the cached-week rule", () => {
       notifySubstitutionChanges: true,
       notifyAppUpdates: true,
       lastNotifiedUpdateVersion: null,
+      lastSeenChangelogVersion: null,
       theme: "system",
       lang: "lv",
       mergeConsecutiveLessons: false,
