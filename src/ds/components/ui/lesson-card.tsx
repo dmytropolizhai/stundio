@@ -46,7 +46,7 @@ const lessonCardVariants = cva(
       { filled: true, tone: "pink", class: "bg-pink text-pink-ink" },
       { filled: true, tone: "mint", class: "bg-mint text-mint-ink" },
       { filled: true, tone: "lime", class: "bg-lime text-lime-ink" },
-      { filled: true, tone: "brand", class: "bg-brand text-white" },
+      { filled: true, tone: "brand", class: "bg-brand text-on-brand" },
     ],
     defaultVariants: {
       filled: false,
