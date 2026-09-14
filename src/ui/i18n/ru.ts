@@ -30,6 +30,56 @@ export const ru: Dict = {
   "onboarding.intro.step4.body":
     "Напоминание перед уроком и сигнал, если поменялись замены — и больше ничего.",
 
+  "onboarding.customization.title": "Настройте свой Stundio",
+  "onboarding.customization.subtitle":
+    "Настройте приложение под себя и познакомьтесь с полезными функциями.",
+  "onboarding.customization.progress": "Шаг настройки {step} из {total}",
+  "onboarding.customization.skip": "Пропустить",
+  "onboarding.customization.next": "Далее",
+  "onboarding.customization.back": "Назад",
+  "onboarding.customization.finish": "Выбрать группу",
+
+  "onboarding.customization.step1.badge": "Оформление и тема",
+  "onboarding.customization.step1.title": "Внешний вид приложения",
+  "onboarding.customization.step1.body":
+    "Темная тема для вечера, светлая для яркого дня и 6 акцентных цветов.",
+  "onboarding.customization.step1.themeLabel": "Тема",
+  "onboarding.customization.step1.accentLabel": "Акцентный цвет",
+
+  "onboarding.customization.step2.badge": "Карточки занятий",
+  "onboarding.customization.step2.title": "Карточки уроков на ваш вкус",
+  "onboarding.customization.step2.body":
+    "Выберите заливку карточек, радиус скругления и глубину теней.",
+  "onboarding.customization.step2.styleLabel": "Стиль карточек",
+  "onboarding.customization.step2.radiusLabel": "Скругление углов",
+  "onboarding.customization.step2.elevationLabel": "Тени карточек",
+
+  "onboarding.customization.step3.badge": "Удобство расписания",
+  "onboarding.customization.step3.title": "Отображайте то, что важно",
+  "onboarding.customization.step3.body":
+    "Показывайте точное время уроков, объединяйте сдвоенные пары и выделяйте предметы цветом.",
+  "onboarding.customization.step3.showTime": "Показывать время начала и конца уроков",
+  "onboarding.customization.step3.mergeLessons": "Объединять одинаковые уроки подряд",
+  "onboarding.customization.step3.colorCoding": "Цветовое кодирование предметов",
+
+  "onboarding.customization.step4.badge": "Особые возможности",
+  "onboarding.customization.step4.title": "Уведомления и суперсилы",
+  "onboarding.customization.step4.body":
+    "Напоминания перед уроками, оповещения о заменах и надежная работа офлайн.",
+  "onboarding.customization.step4.reminderLabel": "Напоминание перед уроком",
+  "onboarding.customization.step4.substitutionLabel": "Уведомлять о заменах и отменах",
+  "onboarding.customization.step4.offlineTitle": "100% офлайн-режим",
+  "onboarding.customization.step4.offlineBody":
+    "Расписание хранится на устройстве и доступно даже без интернета.",
+  "onboarding.customization.step4.widgetTitle": "Виджет на рабочий стол",
+  "onboarding.customization.step4.widgetBody":
+    "Узнавайте текущий урок и кабинет прямо на главном экране Android.",
+  "onboarding.customization.step4.shareTitle": "Делитесь с одногруппниками",
+  "onboarding.customization.step4.shareBody":
+    "Экспортируйте расписание на неделю в виде карточки с QR-кодом.",
+  "settings.customizationGuide": "Гид по настройке",
+  "settings.customizationGuideAction": "Открыть",
+
   "class.search": "Поиск класса…",
   "class.none": "Классы не найдены",
   "class.favorites": "Избранное",

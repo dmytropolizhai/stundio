@@ -10,6 +10,7 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
 import { CustomizationSheet } from "./CustomizationSheet.tsx";
+import { OnboardingCustomization } from "./OnboardingCustomization.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 import { REPO_URL, reportIssueUrl, suggestFeatureUrl } from "@/ui/feedback.ts";
 
@@ -48,6 +49,7 @@ export const SettingsView = ({
 }) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
+  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
   const notifyPermissionDenied = useNotificationPermissionDenied();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
@@ -96,6 +98,14 @@ export const SettingsView = ({
     { key: "dark", label: t("theme.dark") },
   ];
 
+  if (walkthroughOpen) {
+    return (
+      <div className="fixed inset-0 z-50 flex h-full flex-col bg-bg">
+        <OnboardingCustomization onDone={() => setWalkthroughOpen(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
       <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
@@ -130,6 +140,23 @@ export const SettingsView = ({
             </span>
             <Icon name="chevron-right" size={16} className="text-muted" />
           </button>
+          <div className="border-t border-hairline">
+            <button
+              type="button"
+              onClick={() => {
+                setWalkthroughOpen(true);
+              }}
+              className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent px-4 py-3.5 text-left"
+            >
+              <span className="font-text text-body font-bold text-strong">
+                {t("settings.customizationGuide")}
+              </span>
+              <span className="inline-flex items-center gap-1 font-text text-caption font-bold text-link">
+                {t("settings.customizationGuideAction")}
+                <Icon name="chevron-right" size={16} />
+              </span>
+            </button>
+          </div>
         </Section>
 
         {buildings.length > 1 && (

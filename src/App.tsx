@@ -12,6 +12,7 @@ import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
 import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
 import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
+import { OnboardingCustomization } from "./ui/screens/OnboardingCustomization.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
 import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
@@ -53,9 +54,9 @@ const BootSignal = ({ onReady }: { onReady: () => void }) => {
  * and one oversized headline — hands off to the class picker. It is the only place in the app
  * that goes edge-to-edge in blue.
  */
-const Onboarding = () => {
+export const Onboarding = () => {
   const t = useT();
-  const [step, setStep] = useState<"language" | "intro" | "picker">("language");
+  const [step, setStep] = useState<"language" | "intro" | "customization" | "picker">("language");
 
   if (step === "language") {
     return (
@@ -68,7 +69,15 @@ const Onboarding = () => {
   if (step === "intro") {
     return (
       <div className="flex h-full flex-col">
-        <OnboardingIntro onDone={() => setStep("picker")} />
+        <OnboardingIntro onDone={() => setStep("customization")} onSkip={() => setStep("picker")} />
+      </div>
+    );
+  }
+
+  if (step === "customization") {
+    return (
+      <div className="flex h-full flex-col">
+        <OnboardingCustomization onBack={() => setStep("intro")} onDone={() => setStep("picker")} />
       </div>
     );
   }

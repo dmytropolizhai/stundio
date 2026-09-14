@@ -36,6 +36,56 @@ export const lv = {
   "onboarding.intro.step4.body":
     "Atgādinājums pirms stundas un ziņa, ja mainās aizvietojumi — nekas cits.",
 
+  "onboarding.customization.title": "Pielāgo savu Stundio",
+  "onboarding.customization.subtitle": "Izvēlies sev ērtāko izskatu un iepazīsti īpašās funkcijas.",
+  "onboarding.customization.progress": "Pielāgošanas solis {step} no {total}",
+  "onboarding.customization.skip": "Izlaist",
+  "onboarding.customization.next": "Tālāk",
+  "onboarding.customization.back": "Atpakaļ",
+  "onboarding.customization.finish": "Izvēlies savu klasi",
+
+  "onboarding.customization.step1.badge": "Izskats un tēma",
+  "onboarding.customization.step1.title": "Pielāgo lietotnes stilu",
+  "onboarding.customization.step1.body":
+    "Tumšais režīms vakaros, gaišais saulainās dienās un 6 akcentkrāsas.",
+  "onboarding.customization.step1.themeLabel": "Tēma",
+  "onboarding.customization.step1.accentLabel": "Akcentkrāsa",
+
+  "onboarding.customization.step2.badge": "Stundu kartītes",
+  "onboarding.customization.step2.title": "Stundu izskats pēc tavas gaumes",
+  "onboarding.customization.step2.body":
+    "Izvēlies kartīšu aizpildījumu, stūru noapaļojumu un ēnu dziļumu.",
+  "onboarding.customization.step2.styleLabel": "Kartīšu stils",
+  "onboarding.customization.step2.radiusLabel": "Stūru noapaļojums",
+  "onboarding.customization.step2.elevationLabel": "Kartīšu ēnas",
+
+  "onboarding.customization.step3.badge": "Saraksta pārskatāmība",
+  "onboarding.customization.step3.title": "Rādi to, kas tev svarīgs",
+  "onboarding.customization.step3.body":
+    "Rādi precīzus stundu laikus, apvieno dubultstundas un iezīmē priekšmetus ar krāsām.",
+  "onboarding.customization.step3.showTime": "Rādīt stundu sākuma un beigu laikus",
+  "onboarding.customization.step3.mergeLessons": "Apvienot secīgas vienādas stundas",
+  "onboarding.customization.step3.colorCoding": "Priekšmetu krāsu kodēšana",
+
+  "onboarding.customization.step4.badge": "Īpašās funkcijas",
+  "onboarding.customization.step4.title": "Viedie paziņojumi un iespējas",
+  "onboarding.customization.step4.body":
+    "Atgādinājumi pirms stundām, izmaiņu paziņojumi un bezsaistes režīms.",
+  "onboarding.customization.step4.reminderLabel": "Atgādinājums pirms stundas",
+  "onboarding.customization.step4.substitutionLabel":
+    "Paziņot par aizvietojumiem un atceltām stundām",
+  "onboarding.customization.step4.offlineTitle": "100% bezsaistes režīms",
+  "onboarding.customization.step4.offlineBody":
+    "Stundu saraksts saglabāts tavā ierīcē — strādā arī bez interneta.",
+  "onboarding.customization.step4.widgetTitle": "Sākuma ekrāna logrīks",
+  "onboarding.customization.step4.widgetBody":
+    "Uzzini nākamo stundu un kabinetu tieši no Android sākuma ekrāna.",
+  "onboarding.customization.step4.shareTitle": "Kopīgo ar klasesbiedriem",
+  "onboarding.customization.step4.shareBody":
+    "Eksportē nedēļas sarakstu kā skaistu attēlu ar QR kodu.",
+  "settings.customizationGuide": "Pielāgošanas ceļvedis",
+  "settings.customizationGuideAction": "Atvērt",
+
   "class.search": "Meklēt klasi…",
   "class.none": "Nav atrasta neviena klase",
   "class.favorites": "Izlase",

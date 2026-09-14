@@ -30,6 +30,56 @@ export const ua: Dict = {
   "onboarding.intro.step4.body":
     "Нагадування перед уроком і сигнал, якщо змінилися заміни — і більше нічого.",
 
+  "onboarding.customization.title": "Налаштуйте свій Stundio",
+  "onboarding.customization.subtitle":
+    "Оберіть зручний вигляд і ознайомтеся з корисними функціями.",
+  "onboarding.customization.progress": "Крок налаштування {step} з {total}",
+  "onboarding.customization.skip": "Пропустити",
+  "onboarding.customization.next": "Далі",
+  "onboarding.customization.back": "Назад",
+  "onboarding.customization.finish": "Обрати групу",
+
+  "onboarding.customization.step1.badge": "Оформлення та тема",
+  "onboarding.customization.step1.title": "Зовнішній вигляд застосунку",
+  "onboarding.customization.step1.body":
+    "Темна тема для вечора, світла для сонячного дня та 6 акцентних кольорів.",
+  "onboarding.customization.step1.themeLabel": "Тема",
+  "onboarding.customization.step1.accentLabel": "Акцентний колір",
+
+  "onboarding.customization.step2.badge": "Картки занять",
+  "onboarding.customization.step2.title": "Картки уроків на ваш смак",
+  "onboarding.customization.step2.body":
+    "Оберіть заливку карток, радіус заокруглення та глибину тіней.",
+  "onboarding.customization.step2.styleLabel": "Стиль карток",
+  "onboarding.customization.step2.radiusLabel": "Заокруглення кутів",
+  "onboarding.customization.step2.elevationLabel": "Тіні карток",
+
+  "onboarding.customization.step3.badge": "Зручність розкладу",
+  "onboarding.customization.step3.title": "Відображайте те, що важливо",
+  "onboarding.customization.step3.body":
+    "Показуйте точний час занять, об'єднуйте спарені пари та виділяйте предмети кольором.",
+  "onboarding.customization.step3.showTime": "Показувати час початку та завершення уроків",
+  "onboarding.customization.step3.mergeLessons": "Об'єднувати однакові уроки поспіль",
+  "onboarding.customization.step3.colorCoding": "Кольорове кодування предметів",
+
+  "onboarding.customization.step4.badge": "Особливі можливості",
+  "onboarding.customization.step4.title": "Сповіщення та суперсили",
+  "onboarding.customization.step4.body":
+    "Нагадування перед уроками, сповіщення про заміни та надійна робота офлайн.",
+  "onboarding.customization.step4.reminderLabel": "Нагадування перед уроком",
+  "onboarding.customization.step4.substitutionLabel": "Сповіщати про заміни та скасування",
+  "onboarding.customization.step4.offlineTitle": "100% офлайн-режим",
+  "onboarding.customization.step4.offlineBody":
+    "Розклад зберігається на пристрої й доступний навіть без інтернету.",
+  "onboarding.customization.step4.widgetTitle": "Віджет на головний екран",
+  "onboarding.customization.step4.widgetBody":
+    "Дізнавайтеся поточний урок та кабінет просто з головного екрана Android.",
+  "onboarding.customization.step4.shareTitle": "Діліться з одногрупниками",
+  "onboarding.customization.step4.shareBody":
+    "Експортуйте розклад на тиждень як картку з QR-кодом.",
+  "settings.customizationGuide": "Гід із налаштування",
+  "settings.customizationGuideAction": "Відкрити",
+
   "class.search": "Пошук класів…",
   "class.none": "Класи не знайдено",
   "class.favorites": "Обрані",
