@@ -44,6 +44,12 @@ export const lv = {
   "class.favorite.add": "Pievienot izlasei",
   "class.favorite.remove": "Noņemt no izlases",
 
+  "subgroup.title": "Kurā {class} pusgrupā tu esi?",
+  "subgroup.subtitle":
+    "Klase ir sadalīta pusgrupās — izvēlies savējo, lai redzētu tikai savas stundas.",
+  "subgroup.option": "{label}. pusgrupa",
+  "subgroup.skip": "Izlaist — rādīt abas pusgrupas",
+
   "day.today": "Šodien",
   "day.jumpToday": "Uz šodienu",
   "day.openCalendar": "Izvēlēties datumu",
@@ -130,6 +136,8 @@ export const lv = {
   "settings.change": "Mainīt",
   "settings.building": "Ēka",
   "settings.buildingAuto": "Automātiski",
+  "settings.subgroup": "Pusgrupa",
+  "settings.subgroupAll": "Abas",
   "settings.customization": "Izskats",
   "settings.customizationOpen": "Pielāgot lietotnes izskatu",
   "settings.theme": "Noformējums",

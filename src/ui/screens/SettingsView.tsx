@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useAppStore } from "@/store";
-import { listBuildings } from "@/lib/edupage";
+import { listBuildings, listSubgroups } from "@/lib/edupage";
 import type { Settings } from "@/db";
 import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "@/ds";
 import { ensureNotificationPermission, openNotificationSettings } from "@/notifications";
@@ -66,9 +66,11 @@ export const SettingsView = ({
   const notifyPermissionDenied = useNotificationPermissionDenied();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
+  const timetables = useAppStore((s) => s.timetables);
   const settings = useAppStore((s) => s.settings);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const setBuilding = useAppStore((s) => s.setBuilding);
+  const setSubgroup = useAppStore((s) => s.setSubgroup);
   const setTheme = useAppStore((s) => s.setTheme);
   const setLang = useAppStore((s) => s.setLang);
   const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
@@ -89,6 +91,11 @@ export const SettingsView = ({
   const install = useUpdateInstall();
 
   const buildings = useMemo(() => listBuildings(metas), [metas]);
+  const subgroups = useMemo(
+    () =>
+      selectedClass === null ? [] : listSubgroups(Object.values(timetables), selectedClass.id),
+    [timetables, selectedClass],
+  );
 
   const reminderOptions: { key: string; label: string }[] = [
     { key: "0", label: t("settings.notifyLessonReminderOff") },
@@ -152,6 +159,24 @@ export const SettingsView = ({
                 ]}
                 onChange={(value) => {
                   void setBuilding(value === "" ? null : value);
+                }}
+              />
+            </Row>
+          </Section>
+        )}
+
+        {subgroups.length > 1 && (
+          <Section title={t("settings.subgroup")}>
+            <Row>
+              <SegmentedTabs
+                label={t("settings.subgroup")}
+                value={settings.subgroup ?? ""}
+                items={[
+                  { key: "", label: t("settings.subgroupAll") },
+                  ...subgroups.map((g) => ({ key: g, label: g })),
+                ]}
+                onChange={(value) => {
+                  void setSubgroup(value === "" ? null : value);
                 }}
               />
             </Row>

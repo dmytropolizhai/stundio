@@ -22,6 +22,12 @@ export type SubjectColorTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "li
 export type Settings = {
   selectedClassId: string | null;
   building: Building | null;
+  /**
+   * The user's pusgrupa within a divided class — one of `listSubgroups`'s labels for the
+   * selected class, or `null` to show every division merged (the pre-subgroup-support
+   * behaviour, and the right default for a class that isn't split at all).
+   */
+  subgroup: string | null;
   /** Class ids the user pinned; notifications in Phase 4 key off these. */
   favorites: string[];
   theme: "system" | "light" | "dark";
@@ -70,6 +76,7 @@ export type Settings = {
 export const DEFAULT_SETTINGS: Settings = {
   selectedClassId: null,
   building: null,
+  subgroup: null,
   favorites: [],
   theme: "system",
   lang: "lv",

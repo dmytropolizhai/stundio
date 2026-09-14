@@ -44,6 +44,7 @@ const EMPTY: SubjectCatalogue = { subjects: [], teachers: [] };
 export const useSubjects = (): SubjectCatalogue => {
   const timetables = useAppStore((s) => s.timetables);
   const classId = useAppStore((s) => s.settings.selectedClassId);
+  const subgroup = useAppStore((s) => s.settings.subgroup);
 
   return useMemo(() => {
     if (classId === null) return EMPTY;
@@ -62,7 +63,7 @@ export const useSubjects = (): SubjectCatalogue => {
     const subjectTeachers = new Map<string, Set<string>>();
     const teacherSubjects = new Map<string, Set<string>>();
 
-    for (const { lesson, timetable } of classWeekLessons(week, classId)) {
+    for (const { lesson, timetable } of classWeekLessons(week, classId, undefined, subgroup)) {
       const subject = timetable.subjects.find((s) => s.id === lesson.subjectId);
       if (subject === undefined) continue;
       const subjectKey = subject.name === "" ? subject.short : subject.name;
@@ -112,5 +113,5 @@ export const useSubjects = (): SubjectCatalogue => {
       .sort((a, b) => a.teacher.short.localeCompare(b.teacher.short, "lv"));
 
     return { subjects, teachers };
-  }, [timetables, classId]);
+  }, [timetables, classId, subgroup]);
 };

@@ -38,6 +38,11 @@ export const en: Dict = {
   "class.favorite.add": "Add to favorites",
   "class.favorite.remove": "Remove from favorites",
 
+  "subgroup.title": "Which {class} subgroup are you in?",
+  "subgroup.subtitle": "This class is split into subgroups — pick yours to see only your lessons.",
+  "subgroup.option": "Subgroup {label}",
+  "subgroup.skip": "Skip — show both subgroups",
+
   "day.today": "Today",
   "day.jumpToday": "Go to today",
   "day.openCalendar": "Choose a date",
@@ -124,6 +129,8 @@ export const en: Dict = {
   "settings.change": "Change",
   "settings.building": "Building",
   "settings.buildingAuto": "Automatic",
+  "settings.subgroup": "Subgroup",
+  "settings.subgroupAll": "Both",
   "settings.customization": "Customization",
   "settings.customizationOpen": "Personalize the app's look",
   "settings.theme": "Appearance",

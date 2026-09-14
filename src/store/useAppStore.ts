@@ -49,6 +49,8 @@ export type AppState = {
   refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<SyncOutcome>;
   setClass: (classId: string | null) => Promise<void>;
   setBuilding: (building: Building | null) => Promise<void>;
+  /** `null` shows every division merged — only meaningful for the currently selected class. */
+  setSubgroup: (subgroup: string | null) => Promise<void>;
   toggleFavorite: (classId: string) => Promise<void>;
   setTheme: (theme: Settings["theme"]) => Promise<void>;
   setLang: (lang: Settings["lang"]) => Promise<void>;
@@ -179,8 +181,10 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         return outcome;
       },
 
-      setClass: (classId) => persist({ selectedClassId: classId }),
+      // A subgroup label from the previous class means nothing for the new one, so it resets.
+      setClass: (classId) => persist({ selectedClassId: classId, subgroup: null }),
       setBuilding: (building) => persist({ building }),
+      setSubgroup: (subgroup) => persist({ subgroup }),
       setTheme: (theme) => persist({ theme }),
       setLang: (lang) => persist({ lang }),
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
@@ -277,12 +281,13 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         if (sources.length === 0) return null;
 
         const subs = state.substitutions[date] ?? null;
+        const subgroup = state.settings.subgroup;
         const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
-        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}`;
+        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}|${subgroup ?? ""}`;
         const hit = memo.get(key);
         if (hit !== undefined) return hit;
 
-        return memo.set(key, resolveDayAcross(sources, subs, id, date));
+        return memo.set(key, resolveDayAcross(sources, subs, id, date, { subgroup }));
       },
     };
   });

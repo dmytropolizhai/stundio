@@ -38,6 +38,12 @@ export const ru: Dict = {
   "class.favorite.add": "Добавить в избранное",
   "class.favorite.remove": "Убрать из избранного",
 
+  "subgroup.title": "В какой подгруппе {class} ты учишься?",
+  "subgroup.subtitle":
+    "Этот класс разделён на подгруппы — выбери свою, чтобы видеть только свои уроки.",
+  "subgroup.option": "Подгруппа {label}",
+  "subgroup.skip": "Пропустить — показывать обе подгруппы",
+
   "day.today": "Сегодня",
   "day.jumpToday": "К сегодня",
   "day.openCalendar": "Выбрать дату",
@@ -124,6 +130,8 @@ export const ru: Dict = {
   "settings.change": "Изменить",
   "settings.building": "Корпус",
   "settings.buildingAuto": "Автоматически",
+  "settings.subgroup": "Подгруппа",
+  "settings.subgroupAll": "Обе",
   "settings.customization": "Персонализация",
   "settings.customizationOpen": "Настроить внешний вид",
   "settings.theme": "Оформление",
