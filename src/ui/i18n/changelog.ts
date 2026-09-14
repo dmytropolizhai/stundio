@@ -26,6 +26,48 @@ export type ChangelogEntry = {
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: "v1.1.11-lacplesis",
+    date: "2026-09-14",
+    lines: {
+      lv: [
+        "Pievienota lietotnē iebūvēta atsauksmju un ieteikumu iesniegšanas forma.",
+        "Pievienots interaktīvs krāsu aplis (Color Wheel) priekšmetu toņu brīvai pielāgošanai.",
+        "Izveidota īpaša melnbalta zīmola identitāte tumšajam motīvam.",
+        "Pievienoti 3 Android sākuma ekrāna logrīki: Nākamā stunda (2×1), Laika atskaite un Dienas saraksts (4×2).",
+        "Pievienota fona sinhronizācija, izmantojot Android WorkManager.",
+        "Nedēļas skatā apvienotajām stundām ieviesta šūnu apvienošana (cell spanning).",
+        "Veikti veiktspējas uzlabojumi un animāciju optimizācija dienas skatā.",
+      ],
+      en: [
+        "Added an in-app feedback and feature suggestion submission sheet.",
+        "Added an interactive Color Wheel for custom subject tone customization.",
+        "Introduced a dedicated black-and-white brand identity for dark mode.",
+        "Added 3 native Android home-screen widgets: Next Lesson (2×1), Countdown, and All-Day Schedule (4×2).",
+        "Added background refresh via Android WorkManager.",
+        "Added structural cell spanning for multi-period combined lessons in Week view.",
+        "Day view performance and swipe animation optimizations.",
+      ],
+      ru: [
+        "Добавлена встроенная форма отправки отзывов и предложений.",
+        "Добавлен интерактивный цветовой круг (Color Wheel) для настройки оттенков предметов.",
+        "Создана контрастная черно-белая айдентика для темной темы.",
+        "Добавлены 3 виджета для домашнего экрана Android: Следующий урок (2×1), Обратный отсчет и Расписание на день (4×2).",
+        "Добавлено фоновое обновление через Android WorkManager.",
+        "В недельном расписании спаренные уроки теперь визуально объединяются в одну ячейку.",
+        "Оптимизирована производительность и анимация свайпа в дневном просмотре.",
+      ],
+      ua: [
+        "Додано вбудовану форму надсилання відгуків та пропозицій у додатку.",
+        "Додано інтерактивне колірне коло (Color Wheel) для налаштування кольорів предметів.",
+        "Створено контрастну чорно-білу айдентику для темної теми.",
+        "Додано 3 віджети для головного екрана Android: Наступний урок (2×1), Зворотний відлік та Розклад на день (4×2).",
+        "Додано фонове оновлення через Android WorkManager.",
+        "У тижневому перегляді спарені уроки тепер візуально об'єднуються у спільну комірку.",
+        "Оптимізовано продуктивність та анімацію свайпу в перегляді дня.",
+      ],
+    },
+  },
+  {
     version: "v1.1.0-dzintars",
     date: "2026-09-13",
     lines: {
