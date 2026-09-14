@@ -3,6 +3,10 @@ package com.dmytropolizhai.stundio.widget;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.TimeZone;
 import org.json.JSONObject;
 
 /**
@@ -12,6 +16,11 @@ import org.json.JSONObject;
  * lesson is "current", how many minutes are left, how that reads in Latvian — all of it is
  * decided once, in `src/lib/schedule/` + `src/lib/widget/payload.ts`, and arrives here as
  * finished text. Anything computed on this side would be a second, drifting implementation.
+ *
+ * `date` and `updatedAtMillis` are the one exception: {@link NextLessonWidget} needs them to
+ * decide whether a cached payload is still trustworthy to show (WorkManager can only re-render
+ * what is here, never re-fetch or re-derive it), and comparing two timestamps is calendar
+ * arithmetic, not schedule logic — it never touches EduPage's data shape.
  *
  * `SharedPreferences` rather than a file because the widget process may read this long after
  * the WebView is gone, and the blob is a few hundred bytes.
@@ -30,13 +39,31 @@ public final class WidgetPayload {
     public final String countdown;
     /** Parsed `#RRGGBB`, or null to use the widget's own accent. */
     public final Integer accent;
+    /** The Riga-local `YYYY-MM-DD` this payload describes, verbatim from `WidgetPayload.date`. */
+    public final String date;
+    /** `updatedAt` parsed to epoch millis, or null if the ISO string could not be parsed. */
+    public final Long updatedAtMillis;
+    /** Whole minutes from `updatedAt` until this payload stops being true, or null. */
+    public final Integer minutesUntilChange;
 
-    private WidgetPayload(String label, String title, String subtitle, String countdown, Integer accent) {
+    private WidgetPayload(
+        String label,
+        String title,
+        String subtitle,
+        String countdown,
+        Integer accent,
+        String date,
+        Long updatedAtMillis,
+        Integer minutesUntilChange
+    ) {
         this.label = label;
         this.title = title;
         this.subtitle = subtitle;
         this.countdown = countdown;
         this.accent = accent;
+        this.date = date;
+        this.updatedAtMillis = updatedAtMillis;
+        this.minutesUntilChange = minutesUntilChange;
     }
 
     private static SharedPreferences prefs(Context context) {
@@ -62,7 +89,10 @@ public final class WidgetPayload {
                 object.optString("title", ""),
                 object.optString("subtitle", ""),
                 object.optString("countdown", ""),
-                parseColor(object.optString("accent", ""))
+                parseColor(object.optString("accent", "")),
+                object.optString("date", ""),
+                parseIsoInstant(object.optString("updatedAt", "")),
+                object.isNull("minutesUntilChange") ? null : optIntOrNull(object, "minutesUntilChange")
             );
         } catch (Exception e) {
             // A half-written or future-shaped blob must not crash the launcher's host process.
@@ -70,11 +100,32 @@ public final class WidgetPayload {
         }
     }
 
+    private static Integer optIntOrNull(JSONObject object, String key) {
+        return object.has(key) ? object.optInt(key) : null;
+    }
+
     private static Integer parseColor(String hex) {
         if (hex == null || hex.length() != 7 || hex.charAt(0) != '#') return null;
         try {
             return Color.parseColor(hex);
         } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * `updatedAt` is always `Date#toISOString()` output — fixed millisecond precision, "Z"
+     * suffix — so a single strict pattern is enough; no need for `java.time` (unavailable
+     * below API 26 without desugaring, and `minSdkVersion` here is 23).
+     */
+    private static Long parseIsoInstant(String iso) {
+        if (iso == null || iso.isEmpty()) return null;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        format.setLenient(false);
+        try {
+            return format.parse(iso).getTime();
+        } catch (ParseException e) {
             return null;
         }
     }

@@ -14,6 +14,13 @@
 
     <string name="widget_name">Nākamā stunda</string>
     <string name="widget_description">Kas notiek tagad un kas ir nākamā.</string>
-    <!-- Shown before JS has ever published: no cache, nothing to be right or wrong about. -->
+    <!-- Shown before JS has ever published, and once a cached payload's own boundary has
+         passed without a fresh sync (WidgetScheduler / NextLessonWidget#isFresh) — either way
+         there is nothing cached left that is still true to show. -->
     <string name="widget_empty_title">Atver Stundio</string>
+    <!-- "Atjaunināts pirms %s" — %s is one of the three durations below, already formatted. -->
+    <string name="widget_updated_prefix">Atjaunināts pirms %s</string>
+    <string name="widget_updated_minutes">%d min</string>
+    <string name="widget_updated_hours">%d h</string>
+    <string name="widget_updated_days">%d d</string>
 </resources>
