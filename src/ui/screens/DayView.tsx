@@ -1,5 +1,5 @@
-import { Fragment, useMemo, useRef, useState, type ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { dayProgress, minutesOf } from "@/lib/schedule";
@@ -88,21 +88,34 @@ export const DayView = ({
   const isToday = date === now.date;
 
   /*
-   * Swiping replaced the day strip (CLAUDE.md widget note aside, this is app-only UI). `dragX`
-   * gives live finger-tracking feedback during the gesture; `enterDir` remembers which way we
-   * just paged so the *next* day's content can slide in from the side it logically arrived from.
+   * Swiping replaced the day strip (CLAUDE.md widget note aside, this is app-only UI). `x` is a
+   * Framer Motion value (not React state) tracking live finger position during the gesture —
+   * writing to it on every `touchmove` skips React's render/reconciliation entirely, which
+   * matters once a day has enough lessons that a render pass is no longer free. `enterDir`
+   * remembers which way we just paged so the *next* day's content can slide in from the side it
+   * logically arrived from.
    */
   const reduceMotion = useReducedMotion() ?? false;
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const enterDir = useRef<1 | -1>(1);
-  const [dragX, setDragX] = useState(0);
-  const [dragging, setDragging] = useState(false);
+  const x = useMotionValue(0);
+
+  useEffect(() => {
+    x.set(reduceMotion ? 0 : enterDir.current * 16);
+    const controls = animate(x, 0, {
+      duration: reduceMotion ? 0.001 : 0.24,
+      ease: [0.2, 0.8, 0.2, 1],
+    });
+    return () => {
+      controls.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- x is a stable MotionValue
+  }, [date, reduceMotion]);
 
   const onSwipeStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
     if (touch === undefined) return;
     touchStart.current = { x: touch.clientX, y: touch.clientY };
-    setDragging(true);
   };
 
   const onSwipeMove = (e: React.TouchEvent) => {
@@ -113,23 +126,26 @@ export const DayView = ({
     const dy = touch.clientY - start.y;
     // A steeper vertical drag is the list scrolling — leave it alone.
     if (Math.abs(dy) > Math.abs(dx)) return;
-    setDragX(dx);
+    x.set(dx);
   };
 
   const onSwipeEnd = () => {
     const started = touchStart.current !== null;
     touchStart.current = null;
-    setDragging(false);
-    if (started) {
-      if (dragX <= -SWIPE_THRESHOLD_PX) {
-        enterDir.current = 1;
-        onDateChange(addDays(date, 1));
-      } else if (dragX >= SWIPE_THRESHOLD_PX) {
-        enterDir.current = -1;
-        onDateChange(addDays(date, -1));
-      }
+    const dx = x.get();
+    if (started && dx <= -SWIPE_THRESHOLD_PX) {
+      enterDir.current = 1;
+      x.set(0);
+      onDateChange(addDays(date, 1));
+      return;
     }
-    setDragX(0);
+    if (started && dx >= SWIPE_THRESHOLD_PX) {
+      enterDir.current = -1;
+      x.set(0);
+      onDateChange(addDays(date, -1));
+      return;
+    }
+    animate(x, 0, { duration: reduceMotion ? 0.001 : 0.2, ease: [0.2, 0.8, 0.2, 1] });
   };
 
   const rows = useMemo(() => {
@@ -288,13 +304,10 @@ export const DayView = ({
           role="group"
           tabIndex={0}
           aria-label={t("day.pageHint")}
-          initial={{ opacity: 0, x: reduceMotion ? 0 : enterDir.current * 16 }}
-          animate={{ opacity: 1, x: dragging ? dragX : 0 }}
-          transition={{
-            duration: dragging ? 0 : reduceMotion ? 0.001 : 0.24,
-            ease: [0.2, 0.8, 0.2, 1],
-          }}
-          style={{ touchAction: "pan-y" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: reduceMotion ? 0.001 : 0.24 }}
+          style={{ touchAction: "pan-y", x }}
           onTouchStart={onSwipeStart}
           onTouchMove={onSwipeMove}
           onTouchEnd={onSwipeEnd}
