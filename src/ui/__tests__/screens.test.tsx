@@ -36,7 +36,20 @@ describe("ClassPicker", () => {
     expect(screen.getByText("Nav atrasta neviena klase")).toBeDefined();
   });
 
-  it("remembers the pick and tells the caller", async () => {
+  it("remembers the pick and tells the caller, for a class with no subgroups", async () => {
+    const harness = await bootHarness({ selectedClassId: null });
+    const onPicked = vi.fn();
+    wrap(harness, <ClassPicker onPicked={onPicked} />);
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("A1-1"));
+    });
+
+    expect(onPicked).toHaveBeenCalled();
+    expect(harness.store.getState().settings.selectedClassId).not.toBeNull();
+  });
+
+  it("asks which subgroup before committing a divided class, and lets the user skip", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
     wrap(harness, <ClassPicker onPicked={onPicked} />);
@@ -45,8 +58,41 @@ describe("ClassPicker", () => {
       fireEvent.click(screen.getByText("DT3-2"));
     });
 
+    // Not committed yet — the app shell treats a set class as "onboarding done", so it must
+    // wait for the subgroup question.
+    expect(onPicked).not.toHaveBeenCalled();
+    expect(harness.store.getState().settings.selectedClassId).toBeNull();
+    expect(screen.getByText("1. pusgrupa")).toBeDefined();
+    expect(screen.getByText("2. pusgrupa")).toBeDefined();
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("Izlaist — rādīt abas pusgrupas"));
+    });
+
     expect(onPicked).toHaveBeenCalled();
-    expect(harness.store.getState().settings.selectedClassId).not.toBeNull();
+    expect(harness.store.getState().settings.selectedClassId).toBe(
+      classIdOf(harness.store, "DT3-2"),
+    );
+    expect(harness.store.getState().settings.subgroup).toBeNull();
+  });
+
+  it("stores the chosen subgroup for a divided class", async () => {
+    const harness = await bootHarness({ selectedClassId: null });
+    const onPicked = vi.fn();
+    wrap(harness, <ClassPicker onPicked={onPicked} />);
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("DT3-2"));
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("1. pusgrupa"));
+    });
+
+    expect(onPicked).toHaveBeenCalled();
+    expect(harness.store.getState().settings.selectedClassId).toBe(
+      classIdOf(harness.store, "DT3-2"),
+    );
+    expect(harness.store.getState().settings.subgroup).toBe("1");
   });
 
   it("pins favourites above the rest", async () => {

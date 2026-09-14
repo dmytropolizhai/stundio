@@ -291,4 +291,41 @@ describe("resolvedDay memoisation", () => {
     expect(day?.classId).toBe(id);
     expect(store.getState().settings.selectedClassId).toBeNull();
   });
+
+  it("invalidates when the subgroup changes", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "DT3-2"));
+
+    const merged = store.getState().resolvedDay(DATE);
+    await store.getState().setSubgroup("1");
+    const groupOne = store.getState().resolvedDay(DATE);
+
+    expect(groupOne).not.toBe(merged);
+    expect(groupOne?.lessons.length).toBeLessThan(merged?.lessons.length ?? 0);
+  });
+});
+
+describe("setSubgroup", () => {
+  it("persists and survives a restart", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "DT3-2"));
+    await store.getState().setSubgroup("2");
+    expect(store.getState().settings.subgroup).toBe("2");
+
+    const restarted = makeStore();
+    await restarted.getState().hydrate();
+    expect(restarted.getState().settings.subgroup).toBe("2");
+  });
+
+  it("resets to null when the class changes", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "DT3-2"));
+    await store.getState().setSubgroup("1");
+
+    await store.getState().setClass(classIdOf(store, "A1-2"));
+    expect(store.getState().settings.subgroup).toBeNull();
+  });
 });

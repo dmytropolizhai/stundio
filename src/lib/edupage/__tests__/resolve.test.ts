@@ -6,7 +6,13 @@ import { describe, expect, it } from "vitest";
 import { FIXTURE_DATE, FIXTURES, readFixture, readJsonFixture } from "./fixtures.ts";
 import { normalizeTimetable, toTimetableMeta, type RawTables } from "../normalize.ts";
 import { parseDaySubstitutions } from "../substitutions.ts";
-import { classWeekLessons, resolveDay, resolveDayAcross, weekdayOf } from "../resolve.ts";
+import {
+  classWeekLessons,
+  listSubgroups,
+  resolveDay,
+  resolveDayAcross,
+  weekdayOf,
+} from "../resolve.ts";
 import type { DaySubstitutions, Timetable } from "../types.ts";
 
 type RawRegular = { r: { dbiAccessorRes: { tables: { id: string; data_rows?: unknown[] }[] } } };
@@ -164,6 +170,37 @@ describe("resolveDay — degenerate inputs", () => {
 
   it("returns an empty day for a weekend", () => {
     expect(resolveDay(timetable, null, classId("DT3-2"), "2026-09-12").lessons).toEqual([]);
+  });
+});
+
+/*
+ * DT3-2 is a real divided ("pusgrupa") class in the fixture: its lessons carry `groups`
+ * "1"/"2" for the split slots, alongside whole-class slots with no `groups` at all.
+ */
+describe("resolveDay — a divided class (pusgrupa)", () => {
+  const dt32 = classId("DT3-2");
+  const both = resolveDay(timetable, subs, dt32, FIXTURE_DATE);
+  const groupOne = resolveDay(timetable, subs, dt32, FIXTURE_DATE, { subgroup: "1" });
+  const groupTwo = resolveDay(timetable, subs, dt32, FIXTURE_DATE, { subgroup: "2" });
+
+  it("lists both subgroups' divided lessons when none is chosen", () => {
+    expect(listSubgroups([timetable], dt32)).toEqual(["1", "2"]);
+  });
+
+  it("drops the other subgroup's lessons once one is chosen", () => {
+    expect(groupOne.lessons.length).toBeLessThan(both.lessons.length);
+    expect(groupTwo.lessons.length).toBeLessThan(both.lessons.length);
+    expect(groupOne.lessons).not.toEqual(groupTwo.lessons);
+  });
+
+  it("keeps every whole-class lesson regardless of which subgroup is chosen", () => {
+    const wholeClassPeriods = timetable.lessons
+      .filter((l) => l.classIds.includes(dt32) && l.day === "wed" && l.groups.length === 0)
+      .map((l) => l.period);
+    for (const period of wholeClassPeriods) {
+      expect(groupOne.lessons.some((l) => l.period === period)).toBe(true);
+      expect(groupTwo.lessons.some((l) => l.period === period)).toBe(true);
+    }
   });
 });
 

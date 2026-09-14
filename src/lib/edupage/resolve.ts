@@ -50,6 +50,16 @@ const matchesWeek = (mask: string, weekIndex?: number): boolean => {
   return mask[weekIndex] === "1";
 };
 
+/**
+ * A divided class ("pusgrupa") publishes both halves' lessons in the same timetable, tagged
+ * with the division label in `Lesson.groups` — see MODEL.md §2. A whole-class lesson (`groups`
+ * empty) always applies; a divided one only applies to the subgroup the user picked. `subgroup`
+ * of `null`/`undefined` means "no subgroup chosen" — every division is shown, which is the
+ * pre-subgroup-support behaviour for a class the user hasn't disambiguated yet.
+ */
+const matchesSubgroup = (groups: readonly string[], subgroup: string | null | undefined): boolean =>
+  groups.length === 0 || subgroup == null || groups.includes(subgroup);
+
 const periodNum = (p: string): number => {
   const n = Number(p);
   return Number.isFinite(n) ? n : 0;
@@ -145,6 +155,7 @@ const baseEntries = (
   classId: string,
   weekday: Weekday,
   weekIndex: number | undefined,
+  subgroup: string | null | undefined,
 ): BaseEntry[] => {
   const subjects = new Map(timetable.subjects.map((s) => [s.id, s]));
   const teachers = new Map(timetable.teachers.map((t) => [t.id, t]));
@@ -154,7 +165,10 @@ const baseEntries = (
   return timetable.lessons
     .filter(
       (l) =>
-        l.classIds.includes(classId) && l.day === weekday && matchesWeek(l.weekMask, weekIndex),
+        l.classIds.includes(classId) &&
+        l.day === weekday &&
+        matchesWeek(l.weekMask, weekIndex) &&
+        matchesSubgroup(l.groups, subgroup),
     )
     .sort((a, b) => periodNum(a.period) - periodNum(b.period))
     .map((lesson) => {
@@ -219,6 +233,7 @@ export const classWeekLessons = (
   timetables: readonly Timetable[],
   classId: string,
   weekIndex?: number,
+  subgroup?: string | null,
 ): ClassWeekLesson[] => {
   const out: ClassWeekLesson[] = [];
 
@@ -227,7 +242,10 @@ export const classWeekLessons = (
       timetable.lessons
         .filter(
           (l) =>
-            l.classIds.includes(classId) && l.day === weekday && matchesWeek(l.weekMask, weekIndex),
+            l.classIds.includes(classId) &&
+            l.day === weekday &&
+            matchesWeek(l.weekMask, weekIndex) &&
+            matchesSubgroup(l.groups, subgroup),
         )
         .map((lesson) => ({ lesson, timetable })),
     );
@@ -255,6 +273,22 @@ export const classWeekLessons = (
   });
 };
 
+/**
+ * Distinct division labels a class's lessons are split into ("1"/"2" for a pusgrupa split),
+ * across every building that publishes the class — for the subgroup picker UI. A class with
+ * no divided lessons returns `[]`, which is how callers decide whether to ask at all.
+ */
+export const listSubgroups = (timetables: readonly Timetable[], classId: string): string[] => {
+  const labels = new Set<string>();
+  for (const timetable of timetables) {
+    for (const lesson of timetable.lessons) {
+      if (!lesson.classIds.includes(classId)) continue;
+      for (const group of lesson.groups) labels.add(group);
+    }
+  }
+  return [...labels].sort((a, b) => a.localeCompare(b, "lv"));
+};
+
 /* ------------------------------------------------------------------ *
  * resolveDay
  * ------------------------------------------------------------------ */
@@ -264,6 +298,8 @@ export type ResolveOptions = {
   weekIndex?: number;
   /** Override the computed staleness (e.g. when the caller already ran selectTimetable). */
   stale?: boolean;
+  /** The user's pusgrupa within a divided class; `null`/omitted shows every division. */
+  subgroup?: string | null;
 };
 
 /** One building's published week, as handed to `resolveDayAcross`. */
@@ -311,7 +347,7 @@ export const resolveDayAcross = (
 
   const perSource = sources.map((source) => ({
     source,
-    entries: baseEntries(source.timetable, classId, weekday, options.weekIndex),
+    entries: baseEntries(source.timetable, classId, weekday, options.weekIndex, options.subgroup),
   }));
 
   const substantive = perSource.filter((s) => s.entries.some((e) => !isPointer(e)));

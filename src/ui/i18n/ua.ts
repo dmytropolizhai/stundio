@@ -38,6 +38,11 @@ export const ua: Dict = {
   "class.favorite.add": "Додати до обраного",
   "class.favorite.remove": "Видалити з обраного",
 
+  "subgroup.title": "У якій підгрупі {class} ти навчаєшся?",
+  "subgroup.subtitle": "Цей клас поділено на підгрупи — обери свою, щоб бачити лише свої уроки.",
+  "subgroup.option": "Підгрупа {label}",
+  "subgroup.skip": "Пропустити — показувати обидві підгрупи",
+
   "day.today": "Сьогодні",
   "day.jumpToday": "Перейти до сьогодні",
   "day.openCalendar": "Обрати дату",
@@ -125,6 +130,8 @@ export const ua: Dict = {
   "settings.change": "Змінити",
   "settings.building": "Корпус",
   "settings.buildingAuto": "Автоматично",
+  "settings.subgroup": "Підгрупа",
+  "settings.subgroupAll": "Обидві",
   "settings.customization": "Персоналізація",
   "settings.customizationOpen": "Налаштувати вигляд",
   "settings.theme": "Зовнішній вигляд",
