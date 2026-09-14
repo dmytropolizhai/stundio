@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dark-system-mode override of `AppTheme.NoActionBarLaunch` — see values/styles.xml for what
+  every item does. A `values-night` style replaces the base one wholesale rather than merging
+  item-by-item, so every item is repeated here; the two `windowLight*Bars` flags are the only
+  ones that actually differ (light-content icons on a dark bar, matching
+  `drawable-night/splash.png`).
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <item name="android:background">@drawable/splash</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+    </style>
+</resources>
