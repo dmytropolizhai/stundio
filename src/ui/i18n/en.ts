@@ -229,6 +229,8 @@ export const en: Dict = {
   "customization.subjectColors.hint":
     "Tap a colour to reassign it; tap Auto to go back to the default.",
   "customization.subjectColors.reset": "Auto",
+  "customization.subjectColors.custom": "Custom color",
+  "customization.subjectColors.lightness": "Lightness",
   "customization.subjectColors.empty": "Pick a class to customize its subject colours.",
   "customization.preview.subject": "Sample subject",
   "customization.reset": "Reset to defaults",

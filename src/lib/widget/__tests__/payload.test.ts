@@ -209,3 +209,40 @@ describe("buildWidgetPayload — display details", () => {
     );
   });
 });
+
+describe("buildWidgetPayload — progress bar", () => {
+  it("is null before and after the live lesson, and a rounded percentage during it", () => {
+    expect(build({ now: at("00:00") }).progressPercent).toBeNull();
+    expect(build({ now: at("23:59") }).progressPercent).toBeNull();
+
+    const midpoint = minutesOf(FIRST.start)! + (minutesOf(FIRST.end)! - minutesOf(FIRST.start)!) / 2;
+    const payload = build({ now: { date: FIXTURE_DATE, minutes: midpoint } });
+    expect(payload.state).toBe("live");
+    expect(payload.progressPercent).toBe(50);
+  });
+});
+
+describe("buildWidgetPayload — the all-day list", () => {
+  it("is empty in every empty state", () => {
+    expect(build({ className: null }).today).toEqual([]);
+    expect(build({ day: null }).today).toEqual([]);
+  });
+
+  it("is empty for a day that is not today", () => {
+    expect(build({ now: at("09:00", "2026-09-10") }).today).toEqual([]);
+  });
+
+  it("lists every timed lesson, marking each done, live or upcoming from the clock", () => {
+    const before = build({ now: at(FIRST.start) }).today;
+    expect(before.length).toBeGreaterThan(0);
+    expect(before[0]).toMatchObject({
+      time: `${FIRST.start}–${FIRST.end}`,
+      title: FIRST.subject?.short,
+      state: "live",
+    });
+    expect(before.some((e) => e.state === "upcoming")).toBe(true);
+
+    const after = build({ now: at("23:59") }).today;
+    expect(after.every((e) => e.state === "done")).toBe(true);
+  });
+});

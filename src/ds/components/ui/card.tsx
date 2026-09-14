@@ -21,6 +21,9 @@ const cardVariants = cva("transition-transform duration-(--dur-instant) ease-(--
       pink: "bg-pink text-pink-ink",
       mint: "bg-mint text-mint-ink",
       lime: "bg-lime text-lime-ink",
+      /** Colour comes from the caller's `style` (`ui/theme/colors.ts`'s `subjectAccent`) — a
+       *  user-picked hex has no Tailwind class to reach for. */
+      custom: "",
     },
     radius: { md: "rounded-md", lg: "rounded-lg", xl: "rounded-xl", "2xl": "rounded-2xl" },
     elevation: { none: "shadow-none", card: "shadow-card", raised: "shadow-raised" },
@@ -32,7 +35,7 @@ const cardVariants = cva("transition-transform duration-(--dur-instant) ease-(--
   defaultVariants: { tone: "surface", radius: "xl", elevation: "card", interactive: false },
 });
 
-const TINTED = ["amber", "sky", "lilac", "pink", "mint", "lime"] as const;
+const TINTED = ["amber", "sky", "lilac", "pink", "mint", "lime", "custom"] as const;
 
 export type CardProps = ComponentPropsWithoutRef<"div"> &
   Pick<VariantProps<typeof cardVariants>, "tone" | "radius" | "elevation">;

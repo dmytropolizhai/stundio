@@ -19,6 +19,13 @@ export type CachedTimetableList = {
  */
 export type SubjectColorTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime";
 
+/**
+ * A subject's colour override: one of the six DS tones, or a user-picked `#rrggbb` hex from the
+ * customization sheet's colour wheel. A hex value bypasses the DS's pre-shipped ink pairing —
+ * `ui/theme/colors.ts`'s `subjectAccent` computes a readable ink for it on the fly instead.
+ */
+export type SubjectColorValue = SubjectColorTone | `#${string}`;
+
 export type Settings = {
   selectedClassId: string | null;
   building: Building | null;
@@ -62,7 +69,7 @@ export type Settings = {
    * `short`/`name`/`id`). A subject not present here keeps its deterministic auto-assigned tone.
    * Ignored while `subjectColorCodingEnabled` is off.
    */
-  subjectColorOverrides: Record<string, SubjectColorTone>;
+  subjectColorOverrides: Record<string, SubjectColorValue>;
   /** Minutes before a lesson to notify at; 0 turns the reminder off. */
   notifyLessonReminderMinutes: number;
   /** Notify when today's or tomorrow's substitutions change after the initial load. */

@@ -237,6 +237,8 @@ export const lv = {
   "customization.subjectColors.hint":
     'Pieskaries krāsai, lai to mainītu; pieskaries "Auto", lai atgrieztos pie noklusējuma.',
   "customization.subjectColors.reset": "Auto",
+  "customization.subjectColors.custom": "Pielāgota krāsa",
+  "customization.subjectColors.lightness": "Gaišums",
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",

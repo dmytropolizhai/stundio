@@ -13,7 +13,7 @@ import {
   type WeekGridCell,
   type WeekGridPeriod,
 } from "@/ds";
-import { buildingNotice, lessonBuilding, subjectCode, subjectTone } from "@/ui/theme";
+import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -147,14 +147,18 @@ export const WeekView = ({
           if (lesson === undefined) return;
 
           const building = lessonBuilding(day, lesson);
+          const accent = subjectAccent(lesson.subject, subjectColorOverrides, colorCodingEnabled);
 
           cells[d] = {
             short: subjectCode(lesson.subject),
             name: lesson.subject?.name ?? lesson.subject?.short ?? "",
-            tone: subjectTone(lesson.subject, subjectColorOverrides, colorCodingEnabled),
+            tone: accent.tone,
             cancelled: lesson.status === "cancelled",
             span: lesson.span,
             ...(building === undefined ? {} : { building }),
+            ...(accent.tone === "custom"
+              ? { accentColor: { fill: accent.fill, ink: accent.ink } }
+              : {}),
           };
         });
 

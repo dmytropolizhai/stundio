@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppStore } from "@/store";
 import { Card, TopBar } from "@/ds";
-import { subjectCode, subjectTone } from "@/ui/theme";
+import { subjectCode, subjectAccent } from "@/ui/theme";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { useSubjects } from "../hooks/useSubjects.ts";
@@ -46,10 +46,16 @@ export const SubjectsView = () => {
           {subjects.map(({ subject, count, teachers: taughtBy }) => {
             const subjectKey = subject.name === "" ? subject.short : subject.name;
             const hasNote = (notes[subjectKey]?.text ?? "") !== "";
+            const accent = subjectAccent(subject, subjectColorOverrides, colorCodingEnabled);
             return (
               <Card
                 key={subject.id}
-                tone={subjectTone(subject, subjectColorOverrides, colorCodingEnabled)}
+                tone={accent.tone}
+                style={
+                  accent.tone === "custom"
+                    ? { backgroundColor: accent.fill, color: accent.ink }
+                    : undefined
+                }
                 className="min-w-0 text-left"
                 data-testid={`subject-${subject.id}`}
                 onClick={() => {

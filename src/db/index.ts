@@ -3,6 +3,7 @@ export type {
   CachedTimetableList,
   Settings,
   SubjectColorTone,
+  SubjectColorValue,
   SubjectNote,
 } from "./types.ts";
 export { DEFAULT_SETTINGS } from "./types.ts";

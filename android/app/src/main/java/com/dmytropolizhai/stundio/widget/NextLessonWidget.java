@@ -11,9 +11,6 @@ import android.widget.RemoteViews;
 import androidx.core.content.ContextCompat;
 import com.dmytropolizhai.stundio.MainActivity;
 import com.dmytropolizhai.stundio.R;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,22 +19,21 @@ import java.util.concurrent.TimeUnit;
  * It never touches the network and never computes anything about the *timetable*: it draws
  * whatever JS last wrote through `StundioWidgetPlugin`. If that is nothing, it says so. The one
  * thing it does compute locally is whether that cached payload is still trustworthy to show —
- * see {@link #isFresh}: a countdown frozen mid-way through a passed lesson boundary is a lie,
- * and this widget would rather admit it is behind than keep repeating one.
+ * see {@link WidgetFreshness#isFresh}: a countdown frozen mid-way through a passed lesson
+ * boundary is a lie, and this widget would rather admit it is behind than keep repeating one.
  *
  * Three things update it — the plugin's poke right after a sync, `updatePeriodMillis` in
  * `res/xml/next_lesson_widget_info.xml` (Android's own floor, ~30 min, a last-resort net), and
  * {@link WidgetScheduler}'s WorkManager jobs, which call {@link #refresh(Context)} on the same
- * seam. `refresh` also re-arms those jobs on every call so a JS publish, a periodic tick, and a
- * boundary tick all keep the schedule pointed at the payload's *current* boundary.
+ * seam via {@link WidgetRefresher}. Re-arming those jobs is `WidgetRefresher`'s job, not this
+ * class's, since the schedule depends on the one shared payload, not on any single widget kind.
  */
 public class NextLessonWidget extends AppWidgetProvider {
 
     /**
-     * Re-renders every placed tile from the cached payload and re-arms the background refresh
-     * jobs for whatever that payload now says. The single entry point for anything outside this
-     * class — the plugin after a sync, and both WorkManager jobs. Safe to call when no widget is
-     * placed (the id array is simply empty, and the reschedule call is itself a no-op then).
+     * Re-renders every placed tile from the cached payload. Safe to call when no tile is
+     * placed (the id array is simply empty). Called by {@link WidgetRefresher#refreshAll} and,
+     * directly, by this provider's own lifecycle callbacks below.
      */
     public static void refresh(Context context) {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
@@ -45,7 +41,6 @@ public class NextLessonWidget extends AppWidgetProvider {
         for (int id : ids) {
             manager.updateAppWidget(id, render(context));
         }
-        WidgetScheduler.scheduleAll(context);
     }
 
     @Override
@@ -78,7 +73,7 @@ public class NextLessonWidget extends AppWidgetProvider {
             views.setViewVisibility(R.id.widget_label, View.GONE);
             views.setViewVisibility(R.id.widget_subtitle, View.GONE);
             views.setViewVisibility(R.id.widget_countdown, View.GONE);
-        } else if (isFresh(payload)) {
+        } else if (WidgetFreshness.isFresh(payload)) {
             views.setTextViewText(R.id.widget_title, payload.title);
             setOrHide(views, R.id.widget_label, payload.label);
             setOrHide(views, R.id.widget_subtitle, payload.subtitle);
@@ -94,32 +89,13 @@ public class NextLessonWidget extends AppWidgetProvider {
             setOrHide(views, R.id.widget_subtitle, staleSubtitle(context, payload));
         }
 
-        int accent = payload == null || !isFresh(payload) || payload.accent == null
+        int accent = payload == null || !WidgetFreshness.isFresh(payload) || payload.accent == null
             ? ContextCompat.getColor(context, R.color.widget_accent)
             : payload.accent;
         views.setInt(R.id.widget_accent, "setColorFilter", accent);
 
         views.setOnClickPendingIntent(R.id.widget_root, openApp(context));
         return views;
-    }
-
-    /**
-     * True when the payload's own claims still hold: it describes today (Riga-local — the app's
-     * one timezone rule, MODEL.md), and, if it carries a `minutesUntilChange` boundary, that
-     * boundary has not passed yet. A payload with no boundary (e.g. "done for today") stays
-     * fresh until the day itself rolls over.
-     */
-    private static boolean isFresh(WidgetPayload payload) {
-        if (payload.updatedAtMillis == null || !todayInRiga().equals(payload.date)) return false;
-        if (payload.minutesUntilChange == null) return true;
-        long boundaryMillis = payload.updatedAtMillis + TimeUnit.MINUTES.toMillis(payload.minutesUntilChange);
-        return System.currentTimeMillis() < boundaryMillis;
-    }
-
-    private static String todayInRiga() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("Europe/Riga"));
-        return format.format(new java.util.Date());
     }
 
     /** "Atjaunināts pirms 5 min" — the real `updatedAt`, never a blank line or a stale claim. */

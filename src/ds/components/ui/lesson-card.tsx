@@ -3,8 +3,12 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { Icon } from "@/ds";
 import { cn, pressable } from "../../lib/utils.ts";
 
-/** The six subject accents plus brand. A subject keeps its tone everywhere in the app. */
-export type LessonTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime" | "brand";
+/**
+ * The six subject accents plus brand, plus `"custom"` for a user-picked hex the DS never shipped
+ * a class for — pass `accentColor` alongside it. A subject keeps its tone (or custom colour)
+ * everywhere in the app.
+ */
+export type LessonTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime" | "brand" | "custom";
 
 /**
  * Visual treatment, not the full domain vocabulary.
@@ -32,6 +36,7 @@ const lessonCardVariants = cva(
         mint: "",
         lime: "",
         brand: "",
+        custom: "",
       },
       cancelled: { true: "opacity-55", false: "" },
       interactive: {
@@ -57,8 +62,11 @@ const lessonCardVariants = cva(
   },
 );
 
-/** The 4px rail is the only place a subject's color appears on an unfilled card. */
-const RAIL: Record<LessonTone, string> = {
+/**
+ * The 4px rail is the only place a subject's color appears on an unfilled card. `custom` has no
+ * entry — a user-picked hex is applied as an inline style instead, alongside `accentColor`.
+ */
+const RAIL: Record<Exclude<LessonTone, "custom">, string> = {
   amber: "bg-amber",
   sky: "bg-sky",
   lilac: "bg-lilac",
@@ -85,6 +93,8 @@ export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
      */
     building?: ReactNode;
     tone?: LessonTone;
+    /** Required alongside `tone="custom"` — the fill/ink pair a fixed tone gets for free. */
+    accentColor?: { fill: string; ink: string };
     status?: LessonStatus;
     /** The status chip. The app supplies its own `Badge` so all six statuses survive. */
     badge?: ReactNode;
@@ -112,16 +122,19 @@ export const LessonCard = ({
   room,
   building,
   tone = "sky",
+  accentColor,
   status = "normal",
   filled = false,
   badge,
   indicator,
   timeVisible = true,
   onClick,
+  style,
   ...props
 }: LessonCardProps) => {
   const cancelled = status === "cancelled";
   const interactive = onClick !== undefined;
+  const custom = tone === "custom" ? accentColor : undefined;
 
   /* On a filled card the ink pair carries every string; on white the DS splits strong vs. muted. */
   const meta = filled ? "opacity-75" : "text-muted";
@@ -138,6 +151,11 @@ export const LessonCard = ({
           "inset-ring-2 inset-ring-strong-border",
         className,
       )}
+      style={
+        filled && custom !== undefined
+          ? { ...style, backgroundColor: custom.fill, color: custom.ink }
+          : style
+      }
       {...props}
     >
       {indicator !== undefined && <span className="absolute top-3 right-3">{indicator}</span>}
@@ -165,9 +183,12 @@ export const LessonCard = ({
             className={cn(
               "flex size-10 shrink-0 items-center justify-center rounded-full",
               "font-text",
-              filled ? "bg-current/15" : cn(RAIL[tone], "text-black"),
+              filled
+                ? "bg-current/15"
+                : cn(tone === "custom" ? "" : cn(RAIL[tone], "text-black")),
               cancelled && "line-through",
             )}
+            style={!filled && custom !== undefined ? { backgroundColor: custom.fill, color: custom.ink } : undefined}
           >
             {period}
           </span>

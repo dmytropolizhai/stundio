@@ -11,11 +11,13 @@
     <color name="widget_text_muted">#5B6070</color>
     <!-- blue-500, "Studio Electric" — the fallback rail when a subject has no colour. -->
     <color name="widget_accent">#1E3AFF</color>
+    <!-- The countdown widget's progress-bar track (the unfilled portion). -->
+    <color name="widget_track">#E4E7EF</color>
 
     <string name="widget_name">Nākamā stunda</string>
     <string name="widget_description">Kas notiek tagad un kas ir nākamā.</string>
     <!-- Shown before JS has ever published, and once a cached payload's own boundary has
-         passed without a fresh sync (WidgetScheduler / NextLessonWidget#isFresh) — either way
+         passed without a fresh sync (WidgetScheduler / WidgetFreshness#isFresh) — either way
          there is nothing cached left that is still true to show. -->
     <string name="widget_empty_title">Atver Stundio</string>
     <!-- "Atjaunināts pirms %s" — %s is one of the three durations below, already formatted. -->
@@ -23,4 +25,12 @@
     <string name="widget_updated_minutes">%d min</string>
     <string name="widget_updated_hours">%d h</string>
     <string name="widget_updated_days">%d d</string>
+
+    <string name="countdown_widget_name">Laiks līdz beigām</string>
+    <string name="countdown_widget_description">Liels atskaites laiks līdz stundas beigām vai sākumam.</string>
+
+    <string name="all_day_widget_name">Šodiena</string>
+    <string name="all_day_widget_description">Visas šodienas stundas vienā sarakstā.</string>
+    <!-- Shown when the payload is fresh but every lesson today has already ended. -->
+    <string name="widget_all_day_done">Šodien stundu vairs nav</string>
 </resources>

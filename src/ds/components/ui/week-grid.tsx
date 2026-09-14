@@ -7,6 +7,8 @@ export type WeekGridCell = {
   /** Unabbreviated subject name. Not drawn — it is what assistive tech announces. */
   name?: string;
   tone?: LessonTone;
+  /** Required alongside `tone: "custom"` — the fill/ink pair a fixed tone gets for free. */
+  accentColor?: { fill: string; ink: string };
   cancelled?: boolean;
   /**
    * The lesson's building, set only when it is not the school's main building. Draws a hairline
@@ -58,7 +60,8 @@ export type WeekGridProps<K extends string = string> = {
   mergeConsecutive?: boolean;
 };
 
-const TONE_BG: Record<LessonTone, string> = {
+/** `custom` has no entry — a user-picked hex is applied as an inline style instead. */
+const TONE_BG: Record<Exclude<LessonTone, "custom">, string> = {
   amber: "bg-amber",
   sky: "bg-sky",
   lilac: "bg-lilac",
@@ -73,6 +76,7 @@ type Placement = { cell: WeekGridCell; span: number } | "covered";
 const sameCell = (a: WeekGridCell, b: WeekGridCell): boolean =>
   a.short === b.short &&
   (a.tone ?? "sky") === (b.tone ?? "sky") &&
+  (a.tone !== "custom" || a.accentColor?.fill === b.accentColor?.fill) &&
   (a.cancelled ?? false) === (b.cancelled ?? false) &&
   (a.building ?? "") === (b.building ?? "");
 
@@ -245,11 +249,14 @@ export const WeekGrid = <K extends string>({
             style={{
               gridColumn,
               gridRow: span === 1 ? gridRow : `${String(gridRow)} / span ${String(span)}`,
+              ...(cell.tone === "custom" && cell.accentColor !== undefined
+                ? { backgroundColor: cell.accentColor.fill, color: cell.accentColor.ink }
+                : {}),
             }}
             className={cn(
               "truncate rounded-sm border-0 px-1.5",
-              "font-text text-caption font-bold text-ink-900",
-              TONE_BG[cell.tone ?? "sky"],
+              "font-text text-caption font-bold",
+              cell.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[cell.tone ?? "sky"]),
               cell.cancelled === true && "opacity-40 line-through",
               cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
               onSelect === undefined ? "cursor-default" : "cursor-pointer",
