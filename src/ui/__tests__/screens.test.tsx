@@ -379,7 +379,7 @@ describe("WeekView", () => {
     });
 
     it("paints the card and passes it to the share sheet, with the class on it", async () => {
-      const harness = await bootHarness();
+      const harness = await bootHarness({ shareLangPromptShown: true });
       const ctx = drawingContext();
       stubCanvas(ctx);
 
@@ -398,12 +398,12 @@ describe("WeekView", () => {
       expect(drawn.some((text) => text.startsWith("–"))).toBe(true); // a lesson's end time
 
       const sent = share.mock.calls[0]?.[0] as { text: string; files: File[] };
-      expect(sent.text).toContain("https://github.com/dmytropolizhai/stundio/releases");
+      expect(sent.text).toContain("https://bit.ly/stundio");
       expect(sent.files[0]?.name).toContain("a1-2");
     });
 
     it("tells the user when the card cannot be drawn at all", async () => {
-      const harness = await bootHarness();
+      const harness = await bootHarness({ shareLangPromptShown: true });
       stubCanvas(null);
 
       renderWeek(harness);
@@ -413,7 +413,7 @@ describe("WeekView", () => {
     });
 
     it("stays quiet when the share sheet is dismissed — that is not a failure", async () => {
-      const harness = await bootHarness();
+      const harness = await bootHarness({ shareLangPromptShown: true });
       stubCanvas(drawingContext());
 
       const abort = Object.assign(new Error("cancelled"), { name: "AbortError" });
