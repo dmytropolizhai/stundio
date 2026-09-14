@@ -63,6 +63,10 @@ export const en: Dict = {
   "day.free": "Free period",
   "day.finished": "Lessons are over",
   "day.now": "Now",
+  "day.feedbackPrompt.title": "Got an idea?",
+  "day.feedbackPrompt.body": "Tell us what to add or fix in Stundio.",
+  "day.feedbackPrompt.action": "Suggest",
+  "day.feedbackPrompt.dismiss": "Dismiss",
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",
@@ -197,6 +201,8 @@ export const en: Dict = {
   "settings.whatsNewAction": "View",
   "settings.reportIssue": "Found a bug?",
   "settings.reportIssueAction": "Report",
+  "settings.suggestFeature": "Got an idea?",
+  "settings.suggestFeatureAction": "Suggest",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
 
   "theme.system": "System",

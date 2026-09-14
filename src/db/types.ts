@@ -92,6 +92,10 @@ export type Settings = {
   shareLangSyncWithApp: boolean;
   /** Whether the one-time "which language to share in" prompt has already been shown. */
   shareLangPromptShown: boolean;
+  /** Launches counted so far — drives the home-screen feedback prompt's "more than 3" gate. */
+  appOpenCount: number;
+  /** Closed the home-screen feedback card. The Settings entry stays reachable regardless. */
+  feedbackPromptDismissed: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -119,6 +123,8 @@ export const DEFAULT_SETTINGS: Settings = {
   shareLang: "lv",
   shareLangSyncWithApp: true,
   shareLangPromptShown: false,
+  appOpenCount: 0,
+  feedbackPromptDismissed: false,
 };
 
 export type SubjectNote = {

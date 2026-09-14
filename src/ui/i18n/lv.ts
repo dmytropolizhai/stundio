@@ -70,6 +70,10 @@ export const lv = {
   "day.free": "Brīvstunda",
   "day.finished": "Stundas beigušās",
   "day.now": "Tagad",
+  "day.feedbackPrompt.title": "Ir ideja?",
+  "day.feedbackPrompt.body": "Pastāsti, ko Stundio vajadzētu pievienot vai labot.",
+  "day.feedbackPrompt.action": "Ieteikt",
+  "day.feedbackPrompt.dismiss": "Aizvērt",
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",
@@ -204,6 +208,8 @@ export const lv = {
   "settings.whatsNewAction": "Apskatīt",
   "settings.reportIssue": "Pamanīji kļūdu?",
   "settings.reportIssueAction": "Ziņot",
+  "settings.suggestFeature": "Ir ideja?",
+  "settings.suggestFeatureAction": "Ieteikt",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
 
   "theme.system": "Kā sistēmā",

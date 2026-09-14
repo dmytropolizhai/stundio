@@ -90,6 +90,9 @@ export type AppState = {
   setShareLangSyncWithApp: (sync: boolean) => Promise<void>;
   /** Not user-facing — `useShareWeek` marks the one-time language prompt as already shown. */
   setShareLangPromptShown: (shown: boolean) => Promise<void>;
+  /** Not user-facing — `boot.ts` calls this once per launch, alongside the `app_open` event. */
+  recordAppOpen: () => Promise<void>;
+  setFeedbackPromptDismissed: (dismissed: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
@@ -245,6 +248,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setShareLang: (shareLang) => persist({ shareLang }),
       setShareLangSyncWithApp: (shareLangSyncWithApp) => persist({ shareLangSyncWithApp }),
       setShareLangPromptShown: (shareLangPromptShown) => persist({ shareLangPromptShown }),
+      recordAppOpen: () => persist({ appOpenCount: get().settings.appOpenCount + 1 }),
+      setFeedbackPromptDismissed: (feedbackPromptDismissed) => persist({ feedbackPromptDismissed }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {

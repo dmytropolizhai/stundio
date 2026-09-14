@@ -64,6 +64,10 @@ export const ru: Dict = {
   "day.free": "Окно",
   "day.finished": "Уроки закончились",
   "day.now": "Сейчас",
+  "day.feedbackPrompt.title": "Есть идея?",
+  "day.feedbackPrompt.body": "Расскажи, что добавить или исправить в Stundio.",
+  "day.feedbackPrompt.action": "Предложить",
+  "day.feedbackPrompt.dismiss": "Закрыть",
 
   "week.previousWeek": "Предыдущая неделя",
   "week.nextWeek": "Следующая неделя",
@@ -199,6 +203,8 @@ export const ru: Dict = {
   "settings.whatsNewAction": "Смотреть",
   "settings.reportIssue": "Нашли ошибку?",
   "settings.reportIssueAction": "Сообщить",
+  "settings.suggestFeature": "Есть идея?",
+  "settings.suggestFeatureAction": "Предложить",
   "settings.madeBy": "Dmytro Polizhai сделал с ❤︎",
 
   "theme.system": "Как в системе",

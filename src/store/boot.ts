@@ -36,6 +36,7 @@ export const bootApp: Boot = async () => {
   // Paint from cache first; the network catches up underneath.
   await store.getState().hydrate();
   store.getState().trackEvent("app_open");
+  void store.getState().recordAppOpen();
 
   const notifications = wireNotifications(store);
   const notificationTaps = wireNotificationTaps(store);

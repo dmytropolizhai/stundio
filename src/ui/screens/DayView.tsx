@@ -19,6 +19,7 @@ import { LessonRow } from "../components/LessonRow.tsx";
 import { buildingNotice, lessonBuilding } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
+import { FeedbackPrompt } from "../components/FeedbackPrompt.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
@@ -429,6 +430,8 @@ export const DayView = ({
               </Button>
             </div>
           )}
+
+          <FeedbackPrompt />
 
           {body()}
         </div>
