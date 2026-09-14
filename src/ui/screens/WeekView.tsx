@@ -3,10 +3,10 @@ import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
+import { Icon } from "@/ds/components/ui/icon";
 import {
   Button,
   Card,
-  Icon,
   IconButton,
   TopBar,
   WeekGrid,

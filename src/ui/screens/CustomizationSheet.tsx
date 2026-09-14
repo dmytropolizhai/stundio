@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { BottomSheet, Button, ColorWheel, LessonCard, SegmentedTabs, Switch, cn, Slider } from "@/ds";
+import { LessonCard } from "@/ds/components/ui/lesson-card";
+import { BottomSheet, Button, ColorWheel, SegmentedTabs, Switch, cn, Slider } from "@/ds";
 import { useAppStore } from "@/store";
 import type { Settings, SubjectColorTone } from "@/db";
 import type { SubjectRef } from "@/lib/edupage";

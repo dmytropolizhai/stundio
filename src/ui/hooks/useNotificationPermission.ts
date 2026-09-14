@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { isNotificationPermissionDenied } from "@/notifications";
+import { isNotificationPermissionDenied } from "@/notifications/localNotifications";
 
 /**
  * Tracks whether the OS notification permission is actively denied, as opposed to never asked.
