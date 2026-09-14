@@ -1,7 +1,7 @@
 {
   "name": "stundio",
   "private": true,
-  "version": "v1.1.0-dzintars",
+  "version": "v1.1.11-lacplesis",
   "type": "module",
   "engines": {
     "node": ">=20"
