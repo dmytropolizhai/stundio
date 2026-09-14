@@ -63,6 +63,26 @@ describe("DayView", () => {
     expect(screen.getAllByText("TIC").length).toBeGreaterThan(0);
   });
 
+  const RAIL_CLASSES = ["bg-amber", "bg-sky", "bg-lilac", "bg-pink", "bg-mint", "bg-lime"];
+  const railTonesUsed = (container: HTMLElement): Set<string> =>
+    new Set(
+      [...container.querySelectorAll("span")]
+        .flatMap((span) => span.className.split(" "))
+        .filter((cls) => RAIL_CLASSES.includes(cls)),
+    );
+
+  it("colours the subject rail with more than one tone by default", async () => {
+    const harness = await bootHarness();
+    const { container } = renderDay(harness);
+    expect(railTonesUsed(container).size).toBeGreaterThan(1);
+  });
+
+  it("falls the subject rail back to one neutral tone with colour-coding off", async () => {
+    const harness = await bootHarness({ subjectColorCodingEnabled: false });
+    const { container } = renderDay(harness);
+    expect(railTonesUsed(container)).toEqual(new Set(["bg-sky"]));
+  });
+
   it("keeps cancelled lessons visible with the school's own wording", async () => {
     // A1-2 is the harness default and has real cancellations that day (resolve.test.ts).
     const harness = await bootHarness();

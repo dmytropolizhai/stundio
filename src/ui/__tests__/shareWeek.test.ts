@@ -15,7 +15,7 @@ import type { Translate } from "../i18n/index.ts";
 
 const t: Translate = (key, params) => translate("lv", key, params);
 
-const buildFor = async (short: string) => {
+const buildFor = async (short: string, options: { subjectColorCodingEnabled?: boolean } = {}) => {
   const { store } = await bootHarness();
   const classId = classIdOf(store, short);
   const dates = weekDates(FIXTURE_DATE);
@@ -29,6 +29,7 @@ const buildFor = async (short: string) => {
     theme: shareTheme(),
     lang: "lv",
     t,
+    ...options,
   });
 };
 
@@ -73,6 +74,31 @@ describe("buildWeekImageData", () => {
       expect(cell.ink).toMatch(/^#/);
     }
     expect(cells.some((cell) => (cell.detail ?? "") !== "")).toBe(true);
+  });
+
+  it("collapses every cell and legend entry to the neutral tone with colour-coding off", async () => {
+    const withCoding = await buildFor("A1-2");
+    const withoutCoding = await buildFor("A1-2", { subjectColorCodingEnabled: false });
+    const neutral = shareTheme().tones.sky;
+
+    const cells = withoutCoding.rows.flatMap((row) => row.cells).filter((cell) => cell !== null);
+    expect(cells.length).toBeGreaterThan(0);
+    for (const cell of cells) {
+      expect(cell.fill).toBe(neutral.fill);
+      expect(cell.ink).toBe(neutral.ink);
+    }
+    for (const entry of withoutCoding.legend) {
+      expect(entry.fill).toBe(neutral.fill);
+    }
+
+    // Sanity: the fixture week actually uses more than one tone normally, so this is testing the
+    // switch, not a fixture that happens to be all-sky already.
+    const withCodingFills = new Set(
+      withCoding.rows
+        .flatMap((row) => row.cells)
+        .flatMap((cell) => (cell === null ? [] : [cell.fill])),
+    );
+    expect(withCodingFills.size).toBeGreaterThan(1);
   });
 
   it("says which days are at another building, in words", () => {

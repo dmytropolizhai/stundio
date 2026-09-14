@@ -191,6 +191,9 @@ export const ua: Dict = {
 
   "customization.title": "Персоналізація",
   "customization.theme": "Зовнішній вигляд",
+  "customization.accent": "Акцентний колір",
+  "customization.accent.hint": "Колір для виділень — сьогоднішньої дати, вибраної опції.",
+  "customization.accent.reset": "За замовчуванням",
   "customization.lessonStyle": "Картки уроків",
   "customization.lessonStyle.hint": "Як колір предмета показано в списку дня.",
   "customization.lessonStyle.outline": "Контур",
@@ -206,6 +209,9 @@ export const ua: Dict = {
   "customization.reduceMotion": "Менше анімації",
   "customization.reduceMotion.hint": "Вимикає переходи й анімації в застосунку.",
   "customization.subjectColors": "Кольори предметів",
+  "customization.subjectColors.enabled": "Кольорове кодування предметів",
+  "customization.subjectColors.enabled.hint":
+    "Вимкнено — кожен предмет показаний одним нейтральним кольором у списку дня й на тижні.",
   "customization.subjectColors.hint":
     "Торкнися кольору, щоб призначити його; торкнися «Авто», щоб повернути типовий колір.",
   "customization.subjectColors.reset": "Авто",

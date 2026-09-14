@@ -131,7 +131,8 @@ export const ru: Dict = {
   "settings.language": "Язык",
   "settings.share": "Публикация",
   "settings.shareSyncLang": "Синхронизировать с языком приложения",
-  "settings.shareSyncLangHint": "Изображение и сообщение будут на языке, установленном в приложении.",
+  "settings.shareSyncLangHint":
+    "Изображение и сообщение будут на языке, установленном в приложении.",
   "settings.shareLanguage": "Язык изображения",
   "settings.week": "Просмотр недели",
   "settings.mergeLessons": "Объединять одинаковые уроки",
@@ -190,6 +191,9 @@ export const ru: Dict = {
 
   "customization.title": "Персонализация",
   "customization.theme": "Оформление",
+  "customization.accent": "Акцентный цвет",
+  "customization.accent.hint": "Цвет для выделений — сегодняшней даты, выбранной опции.",
+  "customization.accent.reset": "По умолчанию",
   "customization.lessonStyle": "Карточки уроков",
   "customization.lessonStyle.hint": "Как цвет предмета показан в списке дня.",
   "customization.lessonStyle.outline": "Контур",
@@ -205,6 +209,9 @@ export const ru: Dict = {
   "customization.reduceMotion": "Меньше анимации",
   "customization.reduceMotion.hint": "Отключает переходы и анимации в приложении.",
   "customization.subjectColors": "Цвета предметов",
+  "customization.subjectColors.enabled": "Цветовая маркировка предметов",
+  "customization.subjectColors.enabled.hint":
+    "Если выключено, каждый предмет показан одним нейтральным цветом в списке дня и на неделе.",
   "customization.subjectColors.hint":
     "Нажми на цвет, чтобы назначить его; нажми «Авто», чтобы вернуть цвет по умолчанию.",
   "customization.subjectColors.reset": "Авто",

@@ -46,7 +46,19 @@ export const subjectToneKey = (subject: SubjectRef | null): string =>
   (subject?.short ?? subject?.name ?? subject?.id ?? "").trim().toLowerCase();
 
 /**
- * A subject's accent: a user-chosen override first, the deterministic hash otherwise.
+ * The tone every subject renders as once colour-coding is switched off
+ * (`Settings.subjectColorCodingEnabled`). Not a new value outside the DS's six — just the same
+ * one already used as the hashing fallback for a subject-less lesson, so "off" reads as "every
+ * lesson looks like the empty-subject case" rather than introducing a seventh colour to reason
+ * about.
+ */
+const NEUTRAL_TONE: SubjectTone = "sky";
+
+/**
+ * A subject's accent: a user-chosen override first, the deterministic hash otherwise — unless
+ * colour-coding is off, in which case every subject collapses to `NEUTRAL_TONE` and the hash and
+ * `overrides` are never consulted. The hashing scheme stays the deterministic default either way
+ * (DESIGN RULES): `enabled` and `overrides` are opt-in layers on top of it, never a replacement.
  *
  * `overrides` only ever maps a key to one of the same six DS tones (`Settings.subjectColorOverrides`),
  * so a customized subject is still exactly as full-contrast and on-brand as an auto-assigned one.
@@ -54,10 +66,12 @@ export const subjectToneKey = (subject: SubjectRef | null): string =>
 export const subjectTone = (
   subject: SubjectRef | null,
   overrides: Record<string, SubjectTone> = {},
+  enabled = true,
 ): SubjectTone => {
+  if (!enabled) return NEUTRAL_TONE;
   const key = subjectToneKey(subject);
-  if (key === "") return "sky";
-  return overrides[key] ?? SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? "sky";
+  if (key === "") return NEUTRAL_TONE;
+  return overrides[key] ?? SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? NEUTRAL_TONE;
 };
 
 /*

@@ -88,6 +88,32 @@ describe("SubjectsView", () => {
     expect(screen.getAllByText(shown).length).toBeGreaterThan(0);
   });
 
+  it("colours subject tiles with more than one tone by default", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SubjectsView />);
+
+    const tones = new Set(
+      screen
+        .getAllByTestId(/^subject-/)
+        .flatMap((card) => card.className.split(" "))
+        .filter((cls) =>
+          ["bg-amber", "bg-sky", "bg-lilac", "bg-pink", "bg-mint", "bg-lime"].includes(cls),
+        ),
+    );
+    expect(tones.size).toBeGreaterThan(1);
+  });
+
+  it("falls every subject tile back to one neutral tone with colour-coding off", async () => {
+    const harness = await bootHarness({ subjectColorCodingEnabled: false });
+    wrap(harness, <SubjectsView />);
+
+    const cards = screen.getAllByTestId(/^subject-/);
+    expect(cards.length).toBeGreaterThan(0);
+    for (const card of cards) {
+      expect(card.className.split(" ")).toContain("bg-sky");
+    }
+  });
+
   it("asks for a class instead of rendering an empty grid", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     wrap(harness, <SubjectsView />);

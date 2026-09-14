@@ -169,6 +169,44 @@ describe("WeekView", () => {
     expect(note.split(",").length).toBeGreaterThan(1);
   });
 
+  it("colours cells with more than one tone by default", async () => {
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+    const tones = new Set(
+      screen
+        .getAllByTestId("week-cell")
+        .flatMap((cell) => cell.className.split(" "))
+        .filter((cls) => cls.startsWith("bg-")),
+    );
+    expect(tones.size).toBeGreaterThan(1);
+  });
+
+  it("falls every cell back to one neutral tone with colour-coding off", async () => {
+    const harness = await bootHarness({ subjectColorCodingEnabled: false });
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+    const cells = screen.getAllByTestId("week-cell");
+    expect(cells.length).toBeGreaterThan(0);
+    for (const cell of cells) {
+      expect(cell.className.split(" ")).toContain("bg-sky");
+    }
+  });
+
   it("opens a lesson sheet from a cell", async () => {
     const harness = await bootHarness();
     wrap(
