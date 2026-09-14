@@ -4,12 +4,12 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
-import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "../../ds/index.ts";
+import { StoreContext } from "@/store";
+import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { ClassPicker } from "../screens/ClassPicker.tsx";
 import { WeekView } from "../screens/WeekView.tsx";
 import { SettingsView } from "../screens/SettingsView.tsx";
-import { applyTheme, resolveTheme } from "../theme/index.ts";
+import { applyTheme, resolveTheme } from "@/ui/theme";
 import { bootHarness, classIdOf, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>

@@ -76,7 +76,7 @@ export const ua: Dict = {
   "share.error": "Не вдалося створити зображення",
   "share.title": "Розклад {class}",
   "share.message":
-    "{class} розклад {period} \\nХочете зробити користування EduPage зручнішим? Завітайте на: https://github.com/dmytropolizhai/stundio",
+    "{class} розклад {period} \nХочете зробити користування EduPage зручнішим? Завітайте на: https://bit.ly/stundio",
   "share.image.classTeacher": "Класний керівник",
   "share.image.appLabel": "Зручніший EduPage на телефоні",
   "share.language.title": "Якою мовою поділитися?",

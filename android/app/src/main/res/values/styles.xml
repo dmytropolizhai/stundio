@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -15,8 +15,36 @@
         <item name="android:background">@null</item>
     </style>
 
-
+    <!--
+      MainActivity's actual, permanent theme (AndroidManifest.xml) — there is no post-splash
+      theme swap, so its edge-to-edge/system-bar items apply for the app's whole lifetime, not
+      just the launch frame.
+    -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+
+        <!--
+          Edge-to-edge (PLAN.md Phase 4): both bars are transparent so the WebView's own themed
+          background shows through underneath them; `MainActivity`'s
+          `WindowCompat.setDecorFitsSystemWindows(false)` is the other half. `env(safe-area-inset-*)`
+          (src/index.css) is what keeps app chrome — TabBar, DayView's header, the DS bottom
+          sheet — out from under them and the gesture pill.
+        -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
+        <!-- We already guarantee icon contrast via windowLight*Bars below; the system's own
+             scrim would otherwise double up on top of that. -->
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+
+        <!--
+          Best-guess bar-icon colour for the instant between process start and the JS theme
+          resolving (`SystemBarsPlugin`, called from `src/ui/theme/useTheme.ts`): follow the
+          *system* dark mode, the same guess `drawable-night/splash.png` already makes for the
+          splash art itself. `values-night/styles.xml` overrides both to false for a dark system.
+        -->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 </resources>

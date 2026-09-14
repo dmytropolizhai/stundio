@@ -34,25 +34,24 @@ import type { ShareTheme } from "./palette.ts";
  * Where a reader of the shared image gets the app.
  *
  * The card carries the short link because it has to survive being scanned *and* typed out by
- * hand, and because a QR of the full releases URL is a denser symbol for no gain. The message
- * that travels beside the image carries the real URL, where it is a tappable link and length
- * costs nothing.
+ * hand, and because a QR of a long URL is a denser symbol for no gain. It is the same
+ * `https://bit.ly/stundio` link the message beside the image carries, so the two hand-offs point
+ * at exactly one address.
  */
-const APP_URL = "github.com/dmytropolizhai/stundio";
+const APP_URL = "https://bit.ly/stundio";
 /**
  * The "get the app" block: a scannable code plus the same address in words.
  *
  * Both, not either — the likeliest reader is looking at this on the very phone that would do
  * the scanning, and a camera cannot read its own screen. The code is generated on the device
- * (`encodeQr`); if a URL ever outgrows what that encoder handles, the card silently keeps the
+ * (`encodeQr`); if the URL ever outgrows what that encoder handles, the card silently keeps the
  * words and drops the square rather than failing to render at all.
  */
-const appLink = (t: Translate): ShareLink => {
-  const label = t("share.image.appLabel");
+const appLink = (): ShareLink => {
   try {
-    return { label, qr: encodeQr(APP_URL) };
+    return { label: APP_URL, qr: encodeQr(APP_URL) };
   } catch {
-    return { label, qr: null };
+    return { label: APP_URL, qr: null };
   }
 };
 
@@ -202,7 +201,7 @@ export const buildWeekImageData = ({
     legend: subjectKey(days, theme, subjectColorOverrides, subjectColorCodingEnabled),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
-    link: appLink(t),
+    link: appLink(),
   };
 };
 
