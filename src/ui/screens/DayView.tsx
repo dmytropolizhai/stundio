@@ -99,17 +99,24 @@ export const DayView = ({
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const enterDir = useRef<1 | -1>(1);
   const x = useMotionValue(0);
+  const opacity = useMotionValue(1);
 
   useEffect(() => {
     x.set(reduceMotion ? 0 : enterDir.current * 16);
-    const controls = animate(x, 0, {
+    opacity.set(reduceMotion ? 1 : 0);
+    const xControls = animate(x, 0, {
+      duration: reduceMotion ? 0.001 : 0.24,
+      ease: [0.2, 0.8, 0.2, 1],
+    });
+    const opacityControls = animate(opacity, 1, {
       duration: reduceMotion ? 0.001 : 0.24,
       ease: [0.2, 0.8, 0.2, 1],
     });
     return () => {
-      controls.stop();
+      xControls.stop();
+      opacityControls.stop();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- x is a stable MotionValue
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- x/opacity are stable MotionValues
   }, [date, reduceMotion]);
 
   const onSwipeStart = (e: React.TouchEvent) => {
@@ -300,14 +307,10 @@ export const DayView = ({
           there is no visible control for either, so `aria-label` is the only place that says so.
         */}
         <motion.div
-          key={date}
           role="group"
           tabIndex={0}
           aria-label={t("day.pageHint")}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: reduceMotion ? 0.001 : 0.24 }}
-          style={{ touchAction: "pan-y", x }}
+          style={{ touchAction: "pan-y", x, opacity }}
           onTouchStart={onSwipeStart}
           onTouchMove={onSwipeMove}
           onTouchEnd={onSwipeEnd}
