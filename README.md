@@ -13,14 +13,23 @@ That’s why the app is **local-first**. Your timetable is stored on your device
 ## What it does
 
 * **Day view** — See today’s lessons in one place. The current lesson is highlighted with a live progress bar, free periods appear as gaps, and cancelled lessons stay visible but are crossed out.
-* **Week view** — A Monday-to-Friday overview for quickly comparing your schedule across the week.
+* **Week view** — A Monday-to-Friday overview for quickly comparing your schedule across the week, with structural spanning for double periods and direct day navigation.
 * **Substitutions** — EduPage publishes things like room changes, teacher changes, and cancellations as Latvian HTML. Stundio parses that information and attaches it directly to the affected lesson instead of creating a separate changes feed.
+* **Home-screen widgets (Android)** — Three native home-screen widgets keeping your schedule a glance away:
+  * **Next Lesson (2×1)** — The current or upcoming lesson with its room, teacher, start/end times, and status.
+  * **Countdown** — Dedicated time-remaining counter and visual progress bar until the next bell.
+  * **All-Day Schedule (4×2)** — Scrollable schedule of today's full timetable and room assignments.
+  Widgets stay fresh via app syncs, lesson transition alarms, and periodic Android WorkManager tasks.
+* **Customization & Themes** — Personalize your experience:
+  * Pick from preset pastel accents or use the interactive **Color Wheel** to assign custom colors to any subject.
+  * Toggle monochrome mode if you prefer a clean, neutral look.
+  * Light, dark (with dedicated high-contrast black/white styling), or system theme.
+* **Subgroup switcher** — Classes with split groups (e.g., 1. grupa / 2. grupa) can filter the timetable to show only their assigned group's lessons.
+* **In-app feedback** — Report bugs or submit feature suggestions directly inside the app without third-party forms.
 * **Share your week as an image** — Turn the week view into a picture: your class, your form teacher, every lesson with its start and end time, and a note about which days are at another building. Under the grid, every subject code is spelled out in full, and it ends with a QR code so whoever you send it to can scan it and get the app. The image is drawn on your own device and passed straight to Android's share sheet, so it works offline and nothing is uploaded anywhere.
 * **Class picker** — Save your favourite classes and switch between them whenever you need to. Your selection is stored on the device.
-* **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh, or return to the app. There’s no constant polling in the background.
-* **Three languages** — The app interface is available in Latvian, English, and Russian. Substitution notes from the school are kept exactly as published and clearly marked as school-provided text.
-* **Light and dark mode**.
-* **Home-screen widget** *(planned, Android only)* — See your next lesson without even opening the app. This is also the main reason Stundio exists as a native app rather than just a website. See [PLAN.md](PLAN.md) for the current status.
+* **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh, or return to the app. Offline detection warns when network is unavailable without blocking access to cached schedules.
+* **Four languages** — The app interface is available in Latvian, English, Russian, and Ukrainian. Substitution notes from the school are kept exactly as published and clearly marked as school-provided text.
 
 ## What it is not
 
@@ -33,21 +42,24 @@ Stundio isn't trying to be a replacement for EduPage.
 
 ## Project status
 
-The core of the app is already built: scraping, parsing, offline caching, syncing, and the full UI are all in place and covered by an extensive automated test suite.
+Phases 0 through 4 are complete:
+- Core scraper, parser, offline caching, and synchronization.
+- Full UI (Day, Week, Subjects, Class Picker, Settings, Lesson Sheet, Subgroups).
+- Customization: custom color wheel, subject color overrides, and theme controls.
+- Android packaging, edge-to-edge system bars, local change notifications, and background refresh via WorkManager.
+- Native Android home-screen widgets (Next Lesson 2×1, Countdown, and All-Day 4×2 list).
 
-The main thing that hasn't happened yet is testing it on an actual Android device or emulator. The development machine doesn't currently have the Android SDK or JDK installed.
+Next up is Phase 5 (Google Play closed testing track and public release preparation) and Phase 7 (iOS PWA on Vercel).
 
-Packaging, the Android home-screen widget, and the iOS version are still ahead.
-
-For the detailed roadmap and current progress, see [PLAN.md](PLAN.md). For an explanation of how the EduPage scraping works, see [MODEL.md](MODEL.md).
+For the detailed roadmap and progress history, see [PLAN.md](PLAN.md). For an explanation of how the EduPage scraping works, see [MODEL.md](MODEL.md).
 
 ## Installing on Android
 
-There isn't a Play Store release yet. For now, the current version (`v0.0.1-alpha`) is available as an APK through [GitHub Releases](https://github.com/dmytropolizhai/stundio/releases).
+There isn't a Play Store release yet. Releases (APK) are available through [GitHub Releases](https://github.com/dmytropolizhai/stundio/releases).
 
 ### Option A — Download the release APK
 
-1. Open the [Releases page](https://github.com/dmytropolizhai/stundio/releases) and download the `.apk` from the latest release. Currently, that's `v0.0.1-alpha`.
+1. Open the [Releases page](https://github.com/dmytropolizhai/stundio/releases) and download the latest `.apk` (e.g. `v1.1.0`).
 2. Open the downloaded APK on your Android phone.
 3. Android will warn you that the app comes from an unknown source. That's expected because it isn't distributed through the Play Store yet.
 4. Allow installation from the app you're using to open the APK when Android asks.
