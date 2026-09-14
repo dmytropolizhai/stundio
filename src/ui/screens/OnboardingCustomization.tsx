@@ -98,7 +98,6 @@ export const OnboardingCustomization = ({
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
 
-  const currentMeta = STEP_METAS[step] ?? STEP_METAS[0]!;
   const isLast = step === TOTAL_STEPS - 1;
 
   const advance = () => {
@@ -176,7 +175,7 @@ export const OnboardingCustomization = ({
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6 pt-[var(--app-inset-top)]">
+    <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6 pt-(--app-inset-top)">
       {/* Top navigation: back, progress, skip */}
       <header className="flex items-center justify-between pt-3 pb-2">
         <div className="w-10">
@@ -190,9 +189,6 @@ export const OnboardingCustomization = ({
             />
           )}
         </div>
-        <span className="font-text text-micro font-bold tracking-label text-muted uppercase">
-          {t("onboarding.customization.progress", { step: step + 1, total: TOTAL_STEPS })}
-        </span>
         <div className="flex w-10 justify-end">
           <Button variant="ghost" size="sm" onClick={onDone}>
             {t("onboarding.customization.skip")}
@@ -224,19 +220,6 @@ export const OnboardingCustomization = ({
         }}
         className="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain focus-visible:outline-2 focus-visible:outline-brand"
       >
-        {/* Step header */}
-        <div className="pt-2 pb-4 text-center">
-          <span className="inline-block rounded-pill bg-brand-surface px-2.5 py-1 font-text text-micro font-bold tracking-label text-brand-strong uppercase">
-            {t(currentMeta.badge)}
-          </span>
-          <h1 className="mt-2.5 font-display text-title tracking-display text-strong">
-            {t(currentMeta.title)}
-          </h1>
-          <p className="mx-auto mt-1.5 max-w-72 font-text text-body text-muted">
-            {t(currentMeta.body)}
-          </p>
-        </div>
-
         {/* ------------------------------------------------------------------ */}
         {/* Step 1: Appearance & Themes (Dark/Light/System + 6 DS Accents)     */}
         {/* ------------------------------------------------------------------ */}
