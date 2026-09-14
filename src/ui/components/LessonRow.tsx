@@ -1,7 +1,7 @@
 import { memo } from "react";
 import type { ResolvedLesson } from "@/lib/edupage";
 import { Badge, LessonCard } from "@/ds";
-import { STATUS_TREATMENT, isChanged, subjectTone, type SubjectTone } from "@/ui/theme";
+import { STATUS_TREATMENT, isChanged, subjectAccent } from "@/ui/theme";
 import { StatusDot } from "./Badge.tsx";
 import { useT } from "@/ui/i18n";
 
@@ -11,7 +11,7 @@ type LessonRowProps = {
   progress?: number;
   showTime: boolean;
   building?: string;
-  subjectColorOverrides: Record<string, SubjectTone>;
+  subjectColorOverrides: Record<string, string>;
   colorCodingEnabled: boolean;
   filled: boolean;
   onOpen?: () => void;
@@ -35,6 +35,7 @@ export const LessonRow = memo(
     const rooms = lesson.rooms.map((x) => x.short).join(", ");
 
     const status = live ? "now" : STATUS_TREATMENT[lesson.status];
+    const accent = subjectAccent(lesson.subject, subjectColorOverrides, colorCodingEnabled);
 
     return (
       <li className="relative">
@@ -46,7 +47,8 @@ export const LessonRow = memo(
           {...(teachers === "" ? {} : { teacher: teachers })}
           {...(rooms === "" ? {} : { room: rooms })}
           {...(building === undefined ? {} : { building })}
-          tone={subjectTone(lesson.subject, subjectColorOverrides, colorCodingEnabled)}
+          tone={accent.tone}
+          {...(accent.tone === "custom" ? { accentColor: { fill: accent.fill, ink: accent.ink } } : {})}
           filled={filled}
           status={status}
           timeVisible={showTime}

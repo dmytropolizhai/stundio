@@ -15,7 +15,7 @@ import {
   type ResolvedStatus,
   type SubjectRef,
 } from "../../lib/edupage/index.ts";
-import type { BadgeProps, LessonStatus, LessonTone } from "../../ds/index.ts";
+import { isHexColor, readableInk, type BadgeProps, type LessonStatus, type LessonTone } from "../../ds/index.ts";
 
 /** The six subject accents, in DS order. `brand` is reserved for "now" and is not assignable. */
 export const SUBJECT_TONES = ["amber", "sky", "lilac", "pink", "mint", "lime"] as const;
@@ -55,23 +55,57 @@ export const subjectToneKey = (subject: SubjectRef | null): string =>
 const NEUTRAL_TONE: SubjectTone = "sky";
 
 /**
- * A subject's accent: a user-chosen override first, the deterministic hash otherwise — unless
+ * A subject's *tone*: a user-chosen override first, the deterministic hash otherwise — unless
  * colour-coding is off, in which case every subject collapses to `NEUTRAL_TONE` and the hash and
  * `overrides` are never consulted. The hashing scheme stays the deterministic default either way
  * (DESIGN RULES): `enabled` and `overrides` are opt-in layers on top of it, never a replacement.
  *
- * `overrides` only ever maps a key to one of the same six DS tones (`Settings.subjectColorOverrides`),
- * so a customized subject is still exactly as full-contrast and on-brand as an auto-assigned one.
+ * `overrides` (`Settings.subjectColorOverrides`) maps a key to one of the six DS tones *or* a
+ * user-picked `#rrggbb` hex; a hex override still falls through to the deterministic tone here,
+ * because this function only ever returns one of the six — call `subjectAccent` for the version
+ * that actually carries the custom colour through.
  */
 export const subjectTone = (
   subject: SubjectRef | null,
-  overrides: Record<string, SubjectTone> = {},
+  overrides: Record<string, string> = {},
   enabled = true,
 ): SubjectTone => {
   if (!enabled) return NEUTRAL_TONE;
   const key = subjectToneKey(subject);
   if (key === "") return NEUTRAL_TONE;
-  return overrides[key] ?? SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? NEUTRAL_TONE;
+  const override = overrides[key];
+  if (override !== undefined && !isHexColor(override)) return override as SubjectTone;
+  return SUBJECT_TONES[hash(key) % SUBJECT_TONES.length] ?? NEUTRAL_TONE;
+};
+
+/**
+ * A subject's full visual accent: one of the six DS tones (their own pre-shipped, contrast-
+ * checked ink pair), or — when the override is a user-picked hex from the `ColorWheel` — that
+ * exact colour paired with a readable ink computed on the fly (`ds/lib/color.ts`'s
+ * `readableInk`). This is the "auto text colour" trade-off from the product decision to allow
+ * arbitrary RGB per subject: unlike the six fixed tones, a wild pick is not guaranteed 4.5:1.
+ *
+ * Every render call site (`Card`, `LessonCard`, `WeekGrid`, the shared week image) takes this
+ * over `subjectTone` alone so a custom colour actually reaches the screen instead of silently
+ * falling back to a DS tone class that doesn't exist for it.
+ */
+export type SubjectAccent =
+  | { tone: SubjectTone }
+  | { tone: "custom"; fill: string; ink: string };
+
+export const subjectAccent = (
+  subject: SubjectRef | null,
+  overrides: Record<string, string> = {},
+  enabled = true,
+): SubjectAccent => {
+  if (!enabled) return { tone: NEUTRAL_TONE };
+  const key = subjectToneKey(subject);
+  if (key === "") return { tone: NEUTRAL_TONE };
+  const override = overrides[key];
+  if (override !== undefined && isHexColor(override)) {
+    return { tone: "custom", fill: override, ink: readableInk(override) };
+  }
+  return { tone: subjectTone(subject, overrides, enabled) };
 };
 
 /*

@@ -12,6 +12,7 @@
  */
 
 export { cn } from "./lib/utils.ts";
+export { isHexColor, readableInk } from "./lib/color.ts";
 
 /* core */
 export { Icon, type IconName, type IconProps } from "./components/ui/icon.tsx";
@@ -22,6 +23,7 @@ export { Badge, type BadgeProps } from "./components/ui/badge.tsx";
 export { Card, type CardProps } from "./components/ui/card.tsx";
 export { Switch, type SwitchProps } from "./components/ui/switch.tsx";
 export { Slider, type SliderProps } from "./components/ui/slider.tsx";
+export { ColorWheel, type ColorWheelProps } from "./components/ui/color-wheel.tsx";
 export { TextField, type TextFieldProps } from "./components/ui/text-field.tsx";
 export {
   SelectField,

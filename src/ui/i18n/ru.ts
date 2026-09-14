@@ -231,6 +231,8 @@ export const ru: Dict = {
   "customization.subjectColors.hint":
     "Нажми на цвет, чтобы назначить его; нажми «Авто», чтобы вернуть цвет по умолчанию.",
   "customization.subjectColors.reset": "Авто",
+  "customization.subjectColors.custom": "Свой цвет",
+  "customization.subjectColors.lightness": "Яркость",
   "customization.subjectColors.empty": "Выбери класс, чтобы настроить цвета предметов.",
   "customization.preview.subject": "Пример предмета",
   "customization.reset": "Сбросить настройки",

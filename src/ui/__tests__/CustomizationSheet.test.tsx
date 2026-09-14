@@ -206,6 +206,30 @@ describe("CustomizationSheet", () => {
     expect(reset.subjectColorCodingEnabled).toBe(true);
   });
 
+  it("assigns a subject a free custom colour and reads it back through the DS render path", async () => {
+    const harness = await openSheetHarness();
+    const { result } = renderHook(() => useSubjects(), { wrapper: wrapper(harness) });
+    const first = result.current.subjects[0];
+    if (first === undefined) throw new Error("fixture class has no subjects");
+
+    const label = first.subject.name || first.subject.short;
+    const key = subjectToneKey(first.subject);
+    const row = within(screen.getByText(label).closest("div") as HTMLElement);
+
+    await clickAndSettle(() => {
+      fireEvent.click(row.getByRole("button", { name: "Pielāgota krāsa" }));
+    });
+    const stored = harness.store.getState().settings.subjectColorOverrides[key];
+    expect(stored).toMatch(/^#[0-9a-f]{6}$/i);
+    // The wheel opens right away for a freshly-picked custom colour.
+    expect(screen.getByRole("slider", { name: "Pielāgota krāsa" })).toBeDefined();
+
+    await clickAndSettle(() => {
+      fireEvent.click(row.getByText("Auto"));
+    });
+    expect(harness.store.getState().settings.subjectColorOverrides[key]).toBeUndefined();
+  });
+
   it("says so when no class is selected", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     await openSheet(harness);

@@ -11,6 +11,7 @@ import {
   SUBJECT_TONES,
   buildingNotice,
   lessonBuilding,
+  subjectAccent,
   subjectCode,
   subjectTone,
   subjectToneKey,
@@ -80,6 +81,44 @@ describe("subjectTone", () => {
     ];
     const used = new Set(names.map((short) => subjectTone(subject({ short }))));
     expect(used.size).toBeGreaterThan(2);
+  });
+});
+
+describe("subjectAccent", () => {
+  it("falls back to a DS tone when there is no override", () => {
+    const accent = subjectAccent(subject({ short: "MAT" }));
+    expect(accent.tone).not.toBe("custom");
+    expect(SUBJECT_TONES).toContain(accent.tone);
+  });
+
+  it("falls back to a DS tone for a preset override", () => {
+    const short = "DTB";
+    const overrides = { [subjectToneKey(subject({ short }))]: "lime" };
+    expect(subjectAccent(subject({ short }), overrides)).toEqual({ tone: "lime" });
+  });
+
+  it("carries a custom hex override through as-is, with a computed readable ink", () => {
+    const short = "PRG";
+    const overrides = { [subjectToneKey(subject({ short }))]: "#123456" };
+    expect(subjectAccent(subject({ short }), overrides)).toEqual({
+      tone: "custom",
+      fill: "#123456",
+      ink: "#ffffff",
+    });
+  });
+
+  it("picks a dark ink for a light custom colour and a light ink for a dark one", () => {
+    const light = subjectAccent(subject({ short: "X" }), { x: "#ffffff" });
+    const dark = subjectAccent(subject({ short: "X" }), { x: "#000000" });
+    if (light.tone !== "custom" || dark.tone !== "custom") throw new Error("expected custom");
+    expect(light.ink).toBe("#0b0c10");
+    expect(dark.ink).toBe("#ffffff");
+  });
+
+  it("ignores a custom override while colour-coding is off", () => {
+    const short = "ANG";
+    const overrides = { [subjectToneKey(subject({ short }))]: "#ff00ff" };
+    expect(subjectAccent(subject({ short }), overrides, false)).toEqual({ tone: "sky" });
   });
 });
 
