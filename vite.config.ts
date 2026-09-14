@@ -19,11 +19,18 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: true,
-    // The remaining main chunk is vendor code (react-dom, framer-motion, radix, date-fns)
-    // all required by DayView, the tab shown at launch — WeekView/SubjectsView/SettingsView
-    // are already code-split via React.lazy in App.tsx. Further chunking reorders bytes
-    // without shrinking them, so the default 500 kB warning is just noise here.
-    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        // Split heavy vendor libraries into stable, separately-cached chunks.
+        // The default 600 kB limit is no longer needed once the main chunk is only app code.
+        manualChunks(id) {
+          if (id.includes("node_modules/react-dom")) return "react-dom";
+          if (id.includes("node_modules/framer-motion")) return "framer-motion";
+          if (id.includes("node_modules/lucide-react")) return "lucide";
+          if (id.includes("node_modules/@radix-ui")) return "radix";
+        },
+      },
+    },
   },
   server: {
     // `host: true` so a phone on the same Wi-Fi can open the dev server.

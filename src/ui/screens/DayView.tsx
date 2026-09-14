@@ -1,20 +1,10 @@
-import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Fragment, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { dayProgress, minutesOf } from "@/lib/schedule";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
-import {
-  Button,
-  Calendar,
-  Card,
-  Icon,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  TopBar,
-  cn,
-} from "@/ds";
+import { Button, Card, Icon, TopBar } from "@/ds";
 import { LessonRow } from "../components/LessonRow.tsx";
 import { buildingNotice, lessonBuilding } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
@@ -23,9 +13,16 @@ import { FeedbackPrompt } from "../components/FeedbackPrompt.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
-import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { formatDuration, formatDayMonth, localeTag, useLang, useT } from "@/ui/i18n";
+import { formatDuration, formatDayMonth, useLang, useT } from "@/ui/i18n";
+
+// Only mounted on tap — keep Radix Dialog + Popover out of the initial bundle.
+const LessonSheet = lazy(() =>
+  import("./LessonSheet.tsx").then((m) => ({ default: m.LessonSheet })),
+);
+const DatePicker = lazy(() =>
+  import("../components/DatePicker.tsx").then((m) => ({ default: m.DatePicker })),
+);
 
 const SWIPE_THRESHOLD_PX = 56;
 const GAP_MIN_MINUTES = 20;
@@ -353,54 +350,19 @@ export const DayView = ({
         >
           <TopBar
             title={
-              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label={t("day.openCalendar")}
-                    className="inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)"
-                  >
-                    <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
-
-                    <Icon
-                      name="chevron-down"
-                      size={22}
-                      className={cn(
-                        "text-muted transition-transform duration-(--dur-fast) ease-standard",
-                        calendarOpen && "rotate-180",
-                      )}
-                    />
-                  </button>
-                </PopoverTrigger>
-
-                <PopoverContent>
-                  <Calendar
-                    value={date}
-                    today={now.date}
-                    locale={localeTag(lang)}
-                    prevMonthLabel={t("day.previousMonth")}
-                    nextMonthLabel={t("day.nextMonth")}
-                    onSelect={(picked) => {
-                      onDateChange(picked);
-                      setCalendarOpen(false);
-                    }}
-                  />
-
-                  <div className="mt-2 flex justify-center">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      data-testid="calendar-jump-today"
-                      onClick={() => {
-                        onDateChange(now.date);
-                        setCalendarOpen(false);
-                      }}
-                    >
-                      {t("day.jumpToday")}
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <Suspense
+                fallback={
+                  <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
+                }
+              >
+                <DatePicker
+                  date={date}
+                  today={now.date}
+                  open={calendarOpen}
+                  onOpenChange={setCalendarOpen}
+                  onSelect={onDateChange}
+                />
+              </Suspense>
             }
             actions={
               <>
@@ -437,13 +399,15 @@ export const DayView = ({
         </div>
       </PullToRefresh>
 
-      <LessonSheet
-        lesson={open}
-        day={day}
-        onClose={() => {
-          setOpen(null);
-        }}
-      />
+      <Suspense fallback={null}>
+        <LessonSheet
+          lesson={open}
+          day={day}
+          onClose={() => {
+            setOpen(null);
+          }}
+        />
+      </Suspense>
     </div>
   );
 };
