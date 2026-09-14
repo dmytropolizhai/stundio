@@ -4,10 +4,19 @@
  */
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { TabBar } from "../components/TabBar.tsx";
-import { useCustomization, useTheme } from "../theme/index.ts";
+import { useCustomization, useTheme } from "@/ui/theme";
 import { bootHarness, type Harness } from "./harness.tsx";
+
+// Capacitor itself is mocked (mirrors lib/share/__tests__/native.test.ts) — what these tests
+// check is that useTheme repaints the status/navigation bar icon colour on the one platform
+// that has the plugin, in step with the class it puts on <html>.
+const capacitorState = vi.hoisted(() => ({ platform: "web", setAppearance: vi.fn() }));
+vi.mock("@capacitor/core", () => ({
+  Capacitor: { getPlatform: () => capacitorState.platform },
+  registerPlugin: () => ({ setAppearance: capacitorState.setAppearance }),
+}));
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
   render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
@@ -50,7 +59,16 @@ afterEach(() => {
     "radius-2xl",
     "elevation-bold",
     "reduce-motion",
+    "accent-amber",
+    "accent-sky",
+    "accent-lilac",
+    "accent-pink",
+    "accent-mint",
+    "accent-lime",
   );
+  capacitorState.platform = "web";
+  capacitorState.setAppearance.mockReset();
+  capacitorState.setAppearance.mockResolvedValue(undefined);
 });
 
 describe("TabBar", () => {
@@ -115,6 +133,19 @@ describe("useTheme", () => {
     expect(screen.getByText("themed")).toBeDefined();
     expect(document.documentElement.classList.contains("dark")).toBe(false);
   });
+
+  it("repaints the status/navigation bar icons through SystemBars on Android", async () => {
+    capacitorState.platform = "android";
+    const harness = await bootHarness({ theme: "dark" });
+    wrap(harness, <Themed />);
+    expect(capacitorState.setAppearance).toHaveBeenCalledWith({ style: "dark" });
+  });
+
+  it("never reaches for SystemBars outside Android — there is no plugin to call", async () => {
+    const harness = await bootHarness({ theme: "dark" });
+    wrap(harness, <Themed />);
+    expect(capacitorState.setAppearance).not.toHaveBeenCalled();
+  });
 });
 
 describe("useCustomization", () => {
@@ -141,5 +172,31 @@ describe("useCustomization", () => {
       await harness.store.getState().setCardRadius("xl");
     });
     expect(document.documentElement.classList.contains("radius-2xl")).toBe(false);
+  });
+
+  it("leaves every accent class off for the default accent", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <Customized />);
+    for (const tone of ["amber", "sky", "lilac", "pink", "mint", "lime"]) {
+      expect(document.documentElement.classList.contains(`accent-${tone}`)).toBe(false);
+    }
+  });
+
+  it("sets exactly one accent class for a chosen accent, and moves it on change", async () => {
+    const harness = await bootHarness({ appAccent: "lilac" });
+    wrap(harness, <Customized />);
+    expect(document.documentElement.classList.contains("accent-lilac")).toBe(true);
+    expect(document.documentElement.classList.contains("accent-sky")).toBe(false);
+
+    await act(async () => {
+      await harness.store.getState().setAppAccent("mint");
+    });
+    expect(document.documentElement.classList.contains("accent-lilac")).toBe(false);
+    expect(document.documentElement.classList.contains("accent-mint")).toBe(true);
+
+    await act(async () => {
+      await harness.store.getState().setAppAccent("default");
+    });
+    expect(document.documentElement.classList.contains("accent-mint")).toBe(false);
   });
 });

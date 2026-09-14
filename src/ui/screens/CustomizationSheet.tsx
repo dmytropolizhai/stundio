@@ -79,6 +79,57 @@ const SubjectColorRow = ({
 };
 
 /**
+ * The app-wide accent picker: the same six DS tones as the subject picker, plus a reset to
+ * `"default"` — the DS's own ink-based emphasis colour, unchanged from before this setting
+ * existed. Lives at `Settings.appAccent`; applied globally by `useCustomization`, never at a
+ * call site.
+ */
+const AppAccentRow = () => {
+  const t = useT();
+  const appAccent = useAppStore((s) => s.settings.appAccent);
+  const setAppAccent = useAppStore((s) => s.setAppAccent);
+
+  return (
+    <Row>
+      <p className="mb-2.5 font-text text-caption text-muted">{t("customization.accent.hint")}</p>
+      <div className="-ml-2.5 flex items-center">
+        {SUBJECT_TONES.map((option) => (
+          <button
+            key={option}
+            type="button"
+            aria-label={option}
+            aria-pressed={appAccent === option}
+            onClick={() => {
+              void setAppAccent(option);
+            }}
+            className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
+          >
+            <span
+              aria-hidden="true"
+              className={cn(
+                "block size-6.5 rounded-full",
+                TONE_BG[option],
+                appAccent === option && "inset-ring-2 inset-ring-strong",
+              )}
+            />
+          </button>
+        ))}
+        <button
+          type="button"
+          disabled={appAccent === "default"}
+          onClick={() => {
+            void setAppAccent("default");
+          }}
+          className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted decoration-dotted disabled:opacity-30 disabled:no-underline"
+        >
+          {t("customization.accent.reset")}
+        </button>
+      </div>
+    </Row>
+  );
+};
+
+/**
  * "Customization" — the sheet opened from Settings.
  *
  * Every option here is one of the Studio DS's own pre-approved values (a token, a documented
@@ -95,6 +146,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
   const setCardRadius = useAppStore((s) => s.setCardRadius);
   const setCardElevation = useAppStore((s) => s.setCardElevation);
   const setReduceMotion = useAppStore((s) => s.setReduceMotion);
+  const setSubjectColorCodingEnabled = useAppStore((s) => s.setSubjectColorCodingEnabled);
   const resetCustomization = useAppStore((s) => s.resetCustomization);
   const { subjects } = useSubjects();
 
@@ -153,6 +205,10 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
               }}
             />
           </Row>
+        </Section>
+
+        <Section title={t("customization.accent")}>
+          <AppAccentRow />
         </Section>
 
         <Section title={t("customization.lessonStyle")}>
@@ -236,30 +292,55 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
         </Section>
 
         <Section title={t("customization.subjectColors")}>
-          {subjects.length === 0 ? (
-            <Row>
-              <p className="font-text text-caption text-muted">
-                {t("customization.subjectColors.empty")}
+          <Row className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">
+                {t("customization.subjectColors.enabled")}
               </p>
-            </Row>
-          ) : (
-            <>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("customization.subjectColors.enabled.hint")}
+              </p>
+            </div>
+            <Switch
+              aria-label={t("customization.subjectColors.enabled")}
+              checked={settings.subjectColorCodingEnabled}
+              onChange={(checked) => {
+                void setSubjectColorCodingEnabled(checked);
+              }}
+            />
+          </Row>
+
+          {/*
+           * Off, the per-subject list is hidden rather than left visible-but-inert: every one of
+           * these picks writes a `subjectColorOverrides` entry that `subjectTone` ignores while
+           * colour-coding is off (`ui/theme/colors.ts`), so showing it here would look live and
+           * do nothing.
+           */}
+          {settings.subjectColorCodingEnabled &&
+            (subjects.length === 0 ? (
               <Row>
                 <p className="font-text text-caption text-muted">
-                  {t("customization.subjectColors.hint")}
+                  {t("customization.subjectColors.empty")}
                 </p>
               </Row>
-              {subjects.map(({ subject }) => (
-                <Row key={subject.id}>
-                  <SubjectColorRow
-                    label={subject.name || subject.short}
-                    tokenKey={subjectToneKey(subject)}
-                    tone={subjectTone(subject, settings.subjectColorOverrides)}
-                  />
+            ) : (
+              <>
+                <Row>
+                  <p className="font-text text-caption text-muted">
+                    {t("customization.subjectColors.hint")}
+                  </p>
                 </Row>
-              ))}
-            </>
-          )}
+                {subjects.map(({ subject }) => (
+                  <Row key={subject.id}>
+                    <SubjectColorRow
+                      label={subject.name || subject.short}
+                      tokenKey={subjectToneKey(subject)}
+                      tone={subjectTone(subject, settings.subjectColorOverrides)}
+                    />
+                  </Row>
+                ))}
+              </>
+            ))}
         </Section>
       </div>
     </BottomSheet>

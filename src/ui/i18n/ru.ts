@@ -38,6 +38,12 @@ export const ru: Dict = {
   "class.favorite.add": "Добавить в избранное",
   "class.favorite.remove": "Убрать из избранного",
 
+  "subgroup.title": "В какой подгруппе {class} ты учишься?",
+  "subgroup.subtitle":
+    "Этот класс разделён на подгруппы — выбери свою, чтобы видеть только свои уроки.",
+  "subgroup.option": "Подгруппа {label}",
+  "subgroup.skip": "Пропустить — показывать обе подгруппы",
+
   "day.today": "Сегодня",
   "day.jumpToday": "К сегодня",
   "day.openCalendar": "Выбрать дату",
@@ -77,7 +83,7 @@ export const ru: Dict = {
   "share.error": "Не удалось создать изображение",
   "share.title": "Расписание {class}",
   "share.message":
-    "{class} расписание {period} \nХотите сделать использование EduPage удобнее? Загляните на: https://github.com/dmytropolizhai/stundio",
+    "{class} расписание {period} \nХотите сделать использование EduPage удобнее? Загляните на: https://bit.ly/stundio",
   "share.image.classTeacher": "Классный руководитель",
   "share.image.appLabel": "Удобный EduPage на телефоне",
   "share.language.title": "На каком языке поделиться?",
@@ -126,6 +132,8 @@ export const ru: Dict = {
   "settings.change": "Изменить",
   "settings.building": "Корпус",
   "settings.buildingAuto": "Автоматически",
+  "settings.subgroup": "Подгруппа",
+  "settings.subgroupAll": "Обе",
   "settings.customization": "Персонализация",
   "settings.customizationOpen": "Настроить внешний вид",
   "settings.theme": "Оформление",
@@ -158,6 +166,13 @@ export const ru: Dict = {
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",
   "notification.update.title": "Доступно обновление",
   "notification.update.body": "Stundio {version} готово к загрузке.",
+  "widget.now": "Сейчас",
+  "widget.next": "Далее",
+  "widget.done": "Уроков сегодня больше нет",
+  "widget.noClass": "Выбери класс",
+  "widget.noData": "Открой Stundio, чтобы обновить",
+  "widget.minutesLeft": "ещё {minutes} мин",
+  "widget.minutesUntil": "через {minutes} мин",
   "settings.data": "Данные",
   "settings.analytics": "Анонимная статистика использования",
   "settings.analyticsHint":
@@ -192,6 +207,9 @@ export const ru: Dict = {
 
   "customization.title": "Персонализация",
   "customization.theme": "Оформление",
+  "customization.accent": "Акцентный цвет",
+  "customization.accent.hint": "Цвет для выделений — сегодняшней даты, выбранной опции.",
+  "customization.accent.reset": "По умолчанию",
   "customization.lessonStyle": "Карточки уроков",
   "customization.lessonStyle.hint": "Как цвет предмета показан в списке дня.",
   "customization.lessonStyle.outline": "Контур",
@@ -207,6 +225,9 @@ export const ru: Dict = {
   "customization.reduceMotion": "Меньше анимации",
   "customization.reduceMotion.hint": "Отключает переходы и анимации в приложении.",
   "customization.subjectColors": "Цвета предметов",
+  "customization.subjectColors.enabled": "Цветовая маркировка предметов",
+  "customization.subjectColors.enabled.hint":
+    "Если выключено, каждый предмет показан одним нейтральным цветом в списке дня и на неделе.",
   "customization.subjectColors.hint":
     "Нажми на цвет, чтобы назначить его; нажми «Авто», чтобы вернуть цвет по умолчанию.",
   "customization.subjectColors.reset": "Авто",

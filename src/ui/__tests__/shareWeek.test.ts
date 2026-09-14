@@ -6,16 +6,16 @@
  */
 import { describe, expect, it } from "vitest";
 import { bootHarness, classIdOf, FIXTURE_DATE } from "./harness.tsx";
-import { findClassTeacher, type ResolvedDay } from "../../lib/edupage/index.ts";
-import { weekDates } from "../../lib/schedule/index.ts";
+import { findClassTeacher, type ResolvedDay } from "@/lib/edupage";
+import { weekDates } from "@/lib/schedule";
 import { shareTheme } from "../share/palette.ts";
 import { buildWeekImageData, weekShareFileName, weekShareText } from "../share/weekImage.ts";
-import { translate } from "../i18n/index.ts";
-import type { Translate } from "../i18n/index.ts";
+import { translate } from "@/ui/i18n";
+import type { Translate } from "@/ui/i18n";
 
 const t: Translate = (key, params) => translate("lv", key, params);
 
-const buildFor = async (short: string) => {
+const buildFor = async (short: string, options: { subjectColorCodingEnabled?: boolean } = {}) => {
   const { store } = await bootHarness();
   const classId = classIdOf(store, short);
   const dates = weekDates(FIXTURE_DATE);
@@ -29,6 +29,7 @@ const buildFor = async (short: string) => {
     theme: shareTheme(),
     lang: "lv",
     t,
+    ...options,
   });
 };
 
@@ -73,6 +74,31 @@ describe("buildWeekImageData", () => {
       expect(cell.ink).toMatch(/^#/);
     }
     expect(cells.some((cell) => (cell.detail ?? "") !== "")).toBe(true);
+  });
+
+  it("collapses every cell and legend entry to the neutral tone with colour-coding off", async () => {
+    const withCoding = await buildFor("A1-2");
+    const withoutCoding = await buildFor("A1-2", { subjectColorCodingEnabled: false });
+    const neutral = shareTheme().tones.sky;
+
+    const cells = withoutCoding.rows.flatMap((row) => row.cells).filter((cell) => cell !== null);
+    expect(cells.length).toBeGreaterThan(0);
+    for (const cell of cells) {
+      expect(cell.fill).toBe(neutral.fill);
+      expect(cell.ink).toBe(neutral.ink);
+    }
+    for (const entry of withoutCoding.legend) {
+      expect(entry.fill).toBe(neutral.fill);
+    }
+
+    // Sanity: the fixture week actually uses more than one tone normally, so this is testing the
+    // switch, not a fixture that happens to be all-sky already.
+    const withCodingFills = new Set(
+      withCoding.rows
+        .flatMap((row) => row.cells)
+        .flatMap((cell) => (cell === null ? [] : [cell.fill])),
+    );
+    expect(withCodingFills.size).toBeGreaterThan(1);
   });
 
   it("says which days are at another building, in words", () => {
@@ -128,7 +154,7 @@ describe("buildWeekImageData", () => {
   it("carries the way back to the app: a scannable code and the same address in words", async () => {
     const data = await buildFor("A1-2");
 
-    expect(data.link.label).toBe("shorturl.at/pPrzh");
+    expect(data.link.label).toBe("https://bit.ly/stundio");
     expect(data.link.qr).not.toBeNull();
     expect(data.brand).toBe("Stundio");
   });
@@ -156,7 +182,7 @@ describe("the message the image travels with", () => {
 
     expect(text).toContain("A1-2");
     expect(text).toContain("07.09.–11.09.");
-    expect(text).toContain("https://github.com/dmytropolizhai/stundio/releases");
+    expect(text).toContain("https://bit.ly/stundio");
   });
 
   it("names the file after the class and the Monday it starts on", () => {

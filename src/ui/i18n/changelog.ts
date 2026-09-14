@@ -29,55 +29,55 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     version: "v1.1.0-dzintars",
     date: "2026-09-13",
     lines: {
-      "lv": [
-        "Pievienots pielāgošanas panelis ar ierobežotiem izskata iestatījumiem (stūru noapaļošanas slīdnis, priekšmeta krāsas izvēle) un opciju \"Atiestatīt uz noklusējumu\".",
+      lv: [
+        'Pievienots pielāgošanas panelis ar ierobežotiem izskata iestatījumiem (stūru noapaļošanas slīdnis, priekšmeta krāsas izvēle) un opciju "Atiestatīt uz noklusējumu".',
         "Pievienots lietotnes izmaiņu žurnāls, kas parāda lietotājiem jaunumus pēc atjaunināšanas.",
         "Uzlaboti paziņojumi ar pieskāriena navigācijas apstrādi, pielāgotu ikonu un spraudņa plānošanas konfigurāciju.",
         "Uzlabots kopīgošanas panelis, pievienojot valodas izvēli un sinhronizācijas opcijas, kopīgojot stundu sarakstu.",
-        "Novērsta problēma, kurā teksta fragments \"tic\" parādījās nodarbību izvēles logā.",
+        'Novērsta problēma, kurā teksta fragments "tic" parādījās nodarbību izvēles logā.',
         "Pēdējā stundu saraksta karte tagad ir sasniedzama virs peldošās navigācijas joslas.",
         "Funkcija `useClasses` turpmāk izlaiž nodarbības ar tukšiem nosaukumiem vai īsajiem kodiem.",
         "Pārstrādāta EduPage kopīgošanas un lietotnes saišu apstrāde pareizai darbībai.",
         "Veikta apakšējās navigācijas joslas koda formatēšana ar Prettier.",
-        "Uzlabots pielāgošanas paneļa priekšmetu krāsu rindas vizuālais noformējums."
+        "Uzlabots pielāgošanas paneļa priekšmetu krāsu rindas vizuālais noformējums.",
       ],
-      "en": [
-        "Added a customization sheet with bounded appearance settings (corner-radius slider, subject colour picker) and a \"Reset to defaults\" option.",
+      en: [
+        'Added a customization sheet with bounded appearance settings (corner-radius slider, subject colour picker) and a "Reset to defaults" option.',
         "Added an in-app changelog that shows users what changed after an update.",
         "Improved push notifications with tap-to-navigate handling, a custom notification icon, and plugin scheduling configuration.",
         "Improved the share sheet by adding language selection when sharing a timetable, plus sync options.",
-        "Fixed an issue where the text fragment \"tic\" leaked into the class picker.",
+        'Fixed an issue where the text fragment "tic" leaked into the class picker.',
         "Fixed a scroll bug so the last timetable card is now reachable above the floating navigation bar.",
         "Updated `useClasses` to skip classes with empty names or short codes.",
         "Refactored EduPage share and app-link handling for correctness.",
         "Applied a Prettier formatting pass to the BottomNav component.",
-        "Polished the visual style of the subject-colour row in the customization sheet."
+        "Polished the visual style of the subject-colour row in the customization sheet.",
       ],
-      "ru": [
-        "Добавлена панель настройки с ограниченными параметрами внешнего вида (ползунок радиуса скругления углов, выбор цвета предмета) и кнопкой \"Сбросить по умолчанию\".",
+      ru: [
+        'Добавлена панель настройки с ограниченными параметрами внешнего вида (ползунок радиуса скругления углов, выбор цвета предмета) и кнопкой "Сбросить по умолчанию".',
         "Добавлен журнал изменений внутри приложения, который показывает список нововведений после обновления.",
         "Улучшены push-уведомления: добавлена обработка перехода по нажатию, кастомная иконка и конфигурация планирования через плагин.",
         "Улучшено меню шеринга: добавлена возможность выбора языка и параметры синхронизации при отправке расписания.",
-        "Исправлена ошибка, из-за которой отрывок текста \"tic\" попадал в окно выбора занятий.",
+        'Исправлена ошибка, из-за которой отрывок текста "tic" попадал в окно выбора занятий.',
         "Последняя карточка расписания теперь доступна для прокрутки и не перекрывается плавающей панелью навигации.",
         "Функция `useClasses` теперь пропускает занятия с пустыми названиями или короткими кодами.",
         "Переработана обработка EduPage-ссылок и шеринга для корректной работы.",
         "Выполнено форматирование кода нижней панели навигации с помощью Prettier.",
-        "Обновлен визуальный стиль строки выбора цвета предмета в панели настройки."
+        "Обновлен визуальный стиль строки выбора цвета предмета в панели настройки.",
       ],
-      "ua": [
-        "Додано панель налаштувань із обмеженими параметрами зовнішнього вигляду (повзунок радіуса заокруглення кутів, вибір кольору предмета) та кнопкою \"Скинути до початкових\".",
+      ua: [
+        'Додано панель налаштувань із обмеженими параметрами зовнішнього вигляду (повзунок радіуса заокруглення кутів, вибір кольору предмета) та кнопкою "Скинути до початкових".',
         "Додано журнал змін у додатку, який показує користувачам список нововведень після оновлення.",
         "Покращено push-сповіщення: додано обробку переходу за натисканням, власну іконку та конфігурацію планування через плагін.",
         "Покращено меню поширення: додано вибір мови та параметри синхронізації під час надсилання розкладу.",
-        "Виправлено помилку, через яку фрагмент тексту \"tic\" потрапляв у вікно вибору занять.",
+        'Виправлено помилку, через яку фрагмент тексту "tic" потрапляв у вікно вибору занять.',
         "Останню картку розкладу тепер можна прокрутити, і вона більше не перекривається плаваючою панеллю навігації.",
         "Функція `useClasses` відтепер пропускає заняття з порожніми назвами або короткими кодами.",
         "Перероблено обробку посилань та поширення EduPage для коректної роботи.",
         "Проведено форматування коду нижньої панелі навігації за допомогою Prettier.",
-        "Оновлено візуальний стиль рядка вибору кольору предмета в панелі налаштувань."
-      ]
-    }
+        "Оновлено візуальний стиль рядка вибору кольору предмета в панелі налаштувань.",
+      ],
+    },
   },
   {
     version: "v1.0.4-ozols",

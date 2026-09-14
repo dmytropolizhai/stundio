@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  These three feed `AppTheme` (styles.xml) — the application-level theme AppCompat widgets
+  outside the WebView (permission dialogs, the system file picker chrome, ...) fall back to.
+  Values are mirrored from src/ds/tokens/colors.css by hand: re-pull that file and update these
+  to match, rather than inventing a new hex here.
+-->
+<resources>
+    <!-- Mirrors blue-500 ("Studio Electric", the DS's one primary/brand blue). -->
+    <color name="colorPrimary">#1E3AFF</color>
+    <!-- Mirrors blue-700, the primary's darkest step in the DS scale. -->
+    <color name="colorPrimaryDark">#0F1FA0</color>
+    <!-- Mirrors blue-500 again — the DS has one brand blue, not a separate accent colour. -->
+    <color name="colorAccent">#1E3AFF</color>
+</resources>

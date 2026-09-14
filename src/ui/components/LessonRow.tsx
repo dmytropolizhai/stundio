@@ -44,6 +44,7 @@ export const LessonRow = ({
 }) => {
   const t = useT();
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
+  const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const filled = useAppStore((s) => s.settings.lessonCardStyle) === "filled";
   const teachers = lesson.teachers.map((x) => x.short).join(", ");
   const rooms = lesson.rooms.map((x) => x.short).join(", ");
@@ -61,7 +62,7 @@ export const LessonRow = ({
         {...(teachers === "" ? {} : { teacher: teachers })}
         {...(rooms === "" ? {} : { room: rooms })}
         {...(building === undefined ? {} : { building })}
-        tone={subjectTone(lesson.subject, subjectColorOverrides)}
+        tone={subjectTone(lesson.subject, subjectColorOverrides, colorCodingEnabled)}
         filled={filled}
         status={status}
         timeVisible={showTime}

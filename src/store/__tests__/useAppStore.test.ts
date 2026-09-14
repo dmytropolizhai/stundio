@@ -248,6 +248,41 @@ describe("settings", () => {
     expect(await cache.getSettings()).toMatchObject({ theme: "dark", lang: "ru" });
   });
 
+  it("persists the app accent and the colour-coding toggle", async () => {
+    const store = makeStore();
+    await store.getState().hydrate();
+
+    expect(store.getState().settings.appAccent).toBe("default");
+    expect(store.getState().settings.subjectColorCodingEnabled).toBe(true);
+
+    await store.getState().setAppAccent("lilac");
+    await store.getState().setSubjectColorCodingEnabled(false);
+
+    expect(store.getState().settings.appAccent).toBe("lilac");
+    expect(store.getState().settings.subjectColorCodingEnabled).toBe(false);
+    expect(await cache.getSettings()).toMatchObject({
+      appAccent: "lilac",
+      subjectColorCodingEnabled: false,
+    });
+  });
+
+  it("restores the accent, colour-coding and every other Customization setting on reset", async () => {
+    const store = makeStore();
+    await store.getState().hydrate();
+
+    await store.getState().setAppAccent("mint");
+    await store.getState().setSubjectColorCodingEnabled(false);
+    await store.getState().setSubjectColorOverride("prg", "lime");
+    await store.getState().setReduceMotion(true);
+
+    await store.getState().resetCustomization();
+
+    expect(store.getState().settings.appAccent).toBe("default");
+    expect(store.getState().settings.subjectColorCodingEnabled).toBe(true);
+    expect(store.getState().settings.subjectColorOverrides).toEqual({});
+    expect(store.getState().settings.reduceMotion).toBe(false);
+  });
+
   it("re-resolves against the pinned building", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });
@@ -331,5 +366,42 @@ describe("resolvedDay memoisation", () => {
     const day = store.getState().resolvedDay(DATE, id);
     expect(day?.classId).toBe(id);
     expect(store.getState().settings.selectedClassId).toBeNull();
+  });
+
+  it("invalidates when the subgroup changes", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "DT3-2"));
+
+    const merged = store.getState().resolvedDay(DATE);
+    await store.getState().setSubgroup("1");
+    const groupOne = store.getState().resolvedDay(DATE);
+
+    expect(groupOne).not.toBe(merged);
+    expect(groupOne?.lessons.length).toBeLessThan(merged?.lessons.length ?? 0);
+  });
+});
+
+describe("setSubgroup", () => {
+  it("persists and survives a restart", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "DT3-2"));
+    await store.getState().setSubgroup("2");
+    expect(store.getState().settings.subgroup).toBe("2");
+
+    const restarted = makeStore();
+    await restarted.getState().hydrate();
+    expect(restarted.getState().settings.subgroup).toBe("2");
+  });
+
+  it("resets to null when the class changes", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "DT3-2"));
+    await store.getState().setSubgroup("1");
+
+    await store.getState().setClass(classIdOf(store, "A1-2"));
+    expect(store.getState().settings.subgroup).toBeNull();
   });
 });

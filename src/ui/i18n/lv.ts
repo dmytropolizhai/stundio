@@ -44,6 +44,12 @@ export const lv = {
   "class.favorite.add": "Pievienot izlasei",
   "class.favorite.remove": "Noņemt no izlases",
 
+  "subgroup.title": "Kurā {class} pusgrupā tu esi?",
+  "subgroup.subtitle":
+    "Klase ir sadalīta pusgrupās — izvēlies savējo, lai redzētu tikai savas stundas.",
+  "subgroup.option": "{label}. pusgrupa",
+  "subgroup.skip": "Izlaist — rādīt abas pusgrupas",
+
   "day.today": "Šodien",
   "day.jumpToday": "Uz šodienu",
   "day.openCalendar": "Izvēlēties datumu",
@@ -83,7 +89,7 @@ export const lv = {
   "share.error": "Neizdevās sagatavot attēlu",
   "share.title": "{class} stundu saraksts",
   "share.message":
-    "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://github.com/dmytropolizhai/stundio",
+    "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://bit.ly/stundio",
   "share.image.classTeacher": "Klases audzinātājs",
   "share.image.appLabel": "Labāka EduPage pieredze tālrunī",
   "share.language.title": "Kādā valodā kopīgot?",
@@ -132,6 +138,8 @@ export const lv = {
   "settings.change": "Mainīt",
   "settings.building": "Ēka",
   "settings.buildingAuto": "Automātiski",
+  "settings.subgroup": "Pusgrupa",
+  "settings.subgroupAll": "Abas",
   "settings.customization": "Izskats",
   "settings.customizationOpen": "Pielāgot lietotnes izskatu",
   "settings.theme": "Noformējums",
@@ -163,6 +171,13 @@ export const lv = {
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",
   "notification.update.title": "Pieejams jauninājums",
   "notification.update.body": "Stundio {version} ir pieejama lejupielādei.",
+  "widget.now": "Tagad",
+  "widget.next": "Nākamā",
+  "widget.done": "Šodien stundu vairs nav",
+  "widget.noClass": "Izvēlies klasi",
+  "widget.noData": "Atver Stundio, lai atjaunotu",
+  "widget.minutesLeft": "vēl {minutes} min",
+  "widget.minutesUntil": "pēc {minutes} min",
   "settings.data": "Dati",
   "settings.analytics": "Anonīma lietošanas statistika",
   "settings.analyticsHint":
@@ -197,6 +212,10 @@ export const lv = {
 
   "customization.title": "Izskats",
   "customization.theme": "Noformējums",
+  "customization.accent": "Akcentkrāsa",
+  "customization.accent.hint":
+    "Krāsa izceltiem elementiem — šodienas datumam, izvēlētajām opcijām.",
+  "customization.accent.reset": "Noklusējuma",
   "customization.lessonStyle": "Stundu kartītes",
   "customization.lessonStyle.hint": "Kā priekšmeta krāsa parādās dienas sarakstā.",
   "customization.lessonStyle.outline": "Kontūra",
@@ -212,6 +231,9 @@ export const lv = {
   "customization.reduceMotion": "Mazāk animāciju",
   "customization.reduceMotion.hint": "Izslēdz lietotnes pārejas un animācijas.",
   "customization.subjectColors": "Priekšmetu krāsas",
+  "customization.subjectColors.enabled": "Priekšmetu krāsu kodēšana",
+  "customization.subjectColors.enabled.hint":
+    "Izslēdzot, katrs priekšmets stundu sarakstā un nedēļas skatā rāda vienu neitrālu krāsu.",
   "customization.subjectColors.hint":
     'Pieskaries krāsai, lai to mainītu; pieskaries "Auto", lai atgrieztos pie noklusējuma.',
   "customization.subjectColors.reset": "Auto",

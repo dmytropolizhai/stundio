@@ -38,6 +38,7 @@ export const useShareWeek = (
   const substitutions = useAppStore((s) => s.substitutions);
   const trackEvent = useAppStore((s) => s.trackEvent);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
+  const subjectColorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const shareLang = useAppStore((s) => s.settings.shareLang);
   const shareLangSyncWithApp = useAppStore((s) => s.settings.shareLangSyncWithApp);
   const shareLangPromptShown = useAppStore((s) => s.settings.shareLangPromptShown);
@@ -46,9 +47,8 @@ export const useShareWeek = (
   /** The share image/message travels in its own language — separate from the app's chrome. */
   const effectiveLang = shareLangSyncWithApp ? lang : shareLang;
   const shareT = useMemo(
-    () =>
-      (key: Parameters<typeof translate>[1], params?: Parameters<typeof translate>[2]) =>
-        translate(effectiveLang, key, params),
+    () => (key: Parameters<typeof translate>[1], params?: Parameters<typeof translate>[2]) =>
+      translate(effectiveLang, key, params),
     [effectiveLang],
   );
 
@@ -88,6 +88,7 @@ export const useShareWeek = (
         classTeacher: findClassTeacher(Object.values(timetables), selected.id)?.short ?? null,
         theme,
         subjectColorOverrides,
+        subjectColorCodingEnabled,
         lang: effectiveLang,
         t: shareT,
       });
@@ -106,7 +107,17 @@ export const useShareWeek = (
     } catch (error) {
       setStatus(isCancel(error) ? "idle" : "error");
     }
-  }, [dates, days, effectiveLang, selected, shareT, subjectColorOverrides, timetables, trackEvent]);
+  }, [
+    dates,
+    days,
+    effectiveLang,
+    selected,
+    shareT,
+    subjectColorOverrides,
+    subjectColorCodingEnabled,
+    timetables,
+    trackEvent,
+  ]);
 
   const share = useCallback(() => {
     if (!shareLangPromptShown) {

@@ -38,6 +38,11 @@ export const ua: Dict = {
   "class.favorite.add": "Додати до обраного",
   "class.favorite.remove": "Видалити з обраного",
 
+  "subgroup.title": "У якій підгрупі {class} ти навчаєшся?",
+  "subgroup.subtitle": "Цей клас поділено на підгрупи — обери свою, щоб бачити лише свої уроки.",
+  "subgroup.option": "Підгрупа {label}",
+  "subgroup.skip": "Пропустити — показувати обидві підгрупи",
+
   "day.today": "Сьогодні",
   "day.jumpToday": "Перейти до сьогодні",
   "day.openCalendar": "Обрати дату",
@@ -77,7 +82,7 @@ export const ua: Dict = {
   "share.error": "Не вдалося створити зображення",
   "share.title": "Розклад {class}",
   "share.message":
-    "{class} розклад {period} \\nХочете зробити користування EduPage зручнішим? Завітайте на: https://github.com/dmytropolizhai/stundio",
+    "{class} розклад {period} \nХочете зробити користування EduPage зручнішим? Завітайте на: https://bit.ly/stundio",
   "share.image.classTeacher": "Класний керівник",
   "share.image.appLabel": "Зручніший EduPage на телефоні",
   "share.language.title": "Якою мовою поділитися?",
@@ -126,6 +131,8 @@ export const ua: Dict = {
   "settings.change": "Змінити",
   "settings.building": "Корпус",
   "settings.buildingAuto": "Автоматично",
+  "settings.subgroup": "Підгрупа",
+  "settings.subgroupAll": "Обидві",
   "settings.customization": "Персоналізація",
   "settings.customizationOpen": "Налаштувати вигляд",
   "settings.theme": "Зовнішній вигляд",
@@ -158,6 +165,13 @@ export const ua: Dict = {
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
   "notification.update.title": "Доступне оновлення",
   "notification.update.body": "Stundio {version} готовий до завантаження.",
+  "widget.now": "Зараз",
+  "widget.next": "Далі",
+  "widget.done": "Уроків сьогодні більше немає",
+  "widget.noClass": "Обери клас",
+  "widget.noData": "Відкрий Stundio, щоб оновити",
+  "widget.minutesLeft": "ще {minutes} хв",
+  "widget.minutesUntil": "через {minutes} хв",
   "settings.data": "Дані",
   "settings.analytics": "Анонімна аналітика використання",
   "settings.analyticsHint":
@@ -192,6 +206,9 @@ export const ua: Dict = {
 
   "customization.title": "Персоналізація",
   "customization.theme": "Зовнішній вигляд",
+  "customization.accent": "Акцентний колір",
+  "customization.accent.hint": "Колір для виділень — сьогоднішньої дати, вибраної опції.",
+  "customization.accent.reset": "За замовчуванням",
   "customization.lessonStyle": "Картки уроків",
   "customization.lessonStyle.hint": "Як колір предмета показано в списку дня.",
   "customization.lessonStyle.outline": "Контур",
@@ -207,6 +224,9 @@ export const ua: Dict = {
   "customization.reduceMotion": "Менше анімації",
   "customization.reduceMotion.hint": "Вимикає переходи й анімації в застосунку.",
   "customization.subjectColors": "Кольори предметів",
+  "customization.subjectColors.enabled": "Кольорове кодування предметів",
+  "customization.subjectColors.enabled.hint":
+    "Вимкнено — кожен предмет показаний одним нейтральним кольором у списку дня й на тижні.",
   "customization.subjectColors.hint":
     "Торкнися кольору, щоб призначити його; торкнися «Авто», щоб повернути типовий колір.",
   "customization.subjectColors.reset": "Авто",

@@ -49,6 +49,48 @@
 }
 
 /*
+ * Global accent (`useCustomization`, `Settings.appAccent`) — same mechanism as the radius and
+ * elevation classes above. Picks one of the DS's six subject-accent token pairs
+ * (`ds/tokens/colors.css`) and uses it to retint `--brand-tint`/`--brand-strong` — the "selected
+ * / current" ink pair `today`'s date, the syncing spinner, a selected language or class, and a
+ * subject's initial swatch already read — plus `--focus-ring`. No new hex: every value here is
+ * one of the DS's own accent/ink pairs, the same pairing `subjectTone` uses, so contrast is
+ * exactly as proven there. `--brand` and `--brand-deep` are untouched: both pair with white text
+ * elsewhere (`Badge`'s `brand` tone, `Card`'s), which only the DS's own ink values are checked
+ * against — accepting one here would risk failing 4.5:1 with no way to verify it.
+ */
+:root.accent-amber {
+  --brand-tint: var(--accent-amber);
+  --brand-strong: var(--accent-amber-ink);
+  --focus-ring: var(--accent-amber-ink);
+}
+:root.accent-sky {
+  --brand-tint: var(--accent-sky);
+  --brand-strong: var(--accent-sky-ink);
+  --focus-ring: var(--accent-sky-ink);
+}
+:root.accent-lilac {
+  --brand-tint: var(--accent-lilac);
+  --brand-strong: var(--accent-lilac-ink);
+  --focus-ring: var(--accent-lilac-ink);
+}
+:root.accent-pink {
+  --brand-tint: var(--accent-pink);
+  --brand-strong: var(--accent-pink-ink);
+  --focus-ring: var(--accent-pink-ink);
+}
+:root.accent-mint {
+  --brand-tint: var(--accent-mint);
+  --brand-strong: var(--accent-mint-ink);
+  --focus-ring: var(--accent-mint-ink);
+}
+:root.accent-lime {
+  --brand-tint: var(--accent-lime);
+  --brand-strong: var(--accent-lime-ink);
+  --focus-ring: var(--accent-lime-ink);
+}
+
+/*
  * DS tokens → Tailwind utilities.
  *
  * `inline` is load-bearing: the generated utilities emit `var(--brand)` rather than baking in the

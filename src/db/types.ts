@@ -22,6 +22,12 @@ export type SubjectColorTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "li
 export type Settings = {
   selectedClassId: string | null;
   building: Building | null;
+  /**
+   * The user's pusgrupa within a divided class — one of `listSubgroups`'s labels for the
+   * selected class, or `null` to show every division merged (the pre-subgroup-support
+   * behaviour, and the right default for a class that isn't split at all).
+   */
+  subgroup: string | null;
   /** Class ids the user pinned; notifications in Phase 4 key off these. */
   favorites: string[];
   theme: "system" | "light" | "dark";
@@ -39,8 +45,22 @@ export type Settings = {
   /** Forces every DS transition/animation to near-zero, independent of the OS preference. */
   reduceMotion: boolean;
   /**
+   * App-wide accent, one of the DS's six subject-accent token pairs re-pointing the "selected /
+   * current" ink aliases (today's date, the syncing spinner, a selected option, …) — see
+   * `useCustomization`. `"default"` keeps those aliases exactly as `ds/tokens/colors.css` defines
+   * them, so an existing user who never opens the picker sees today's app unchanged.
+   */
+  appAccent: "default" | SubjectColorTone;
+  /**
+   * Whether a subject's timetable entries render in its assigned/overridden accent at all. Off
+   * falls every current consumer of `subjectTone()` back to one fixed neutral tone — the deter-
+   * ministic hashing and `subjectColorOverrides` stay intact underneath, just unused while off.
+   */
+  subjectColorCodingEnabled: boolean;
+  /**
    * Per-subject accent overrides, keyed the same way `subjectTone` keys its hash (lowercased
    * `short`/`name`/`id`). A subject not present here keeps its deterministic auto-assigned tone.
+   * Ignored while `subjectColorCodingEnabled` is off.
    */
   subjectColorOverrides: Record<string, SubjectColorTone>;
   /** Minutes before a lesson to notify at; 0 turns the reminder off. */
@@ -70,6 +90,7 @@ export type Settings = {
 export const DEFAULT_SETTINGS: Settings = {
   selectedClassId: null,
   building: null,
+  subgroup: null,
   favorites: [],
   theme: "system",
   lang: "lv",
@@ -79,6 +100,8 @@ export const DEFAULT_SETTINGS: Settings = {
   cardRadius: "xl",
   cardElevation: "soft",
   reduceMotion: false,
+  appAccent: "default",
+  subjectColorCodingEnabled: true,
   subjectColorOverrides: {},
   notifyLessonReminderMinutes: 10,
   notifySubstitutionChanges: true,

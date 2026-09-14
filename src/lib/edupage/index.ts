@@ -39,6 +39,7 @@ export {
 export { otherRatio, parseDaySubstitutions } from "./substitutions.ts";
 export {
   classWeekLessons,
+  listSubgroups,
   resolveDay,
   resolveDayAcross,
   weekdayOf,

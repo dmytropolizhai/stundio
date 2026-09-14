@@ -94,4 +94,40 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // And for lib/widget, where only the AppWidgetManager poke is native — the payload is pure.
+    files: ["src/lib/widget/**/*.ts"],
+    ignores: ["src/lib/widget/native.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@capacitor/*"],
+              message: "Only src/lib/widget/native.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // And for lib/systembars, where only the status/nav-bar bridge is native.
+    files: ["src/lib/systembars/**/*.ts"],
+    ignores: ["src/lib/systembars/native.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@capacitor/*"],
+              message: "Only src/lib/systembars/native.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

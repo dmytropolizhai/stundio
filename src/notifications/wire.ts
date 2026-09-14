@@ -71,7 +71,10 @@ export const notifyOnChanges = (
   // Today if it changed, otherwise the nearest day still ahead — the day the tap should open.
   const target = outcome.changedDates.includes(today)
     ? today
-    : outcome.changedDates.filter((d) => d > today).sort().at(0);
+    : outcome.changedDates
+        .filter((d) => d > today)
+        .sort()
+        .at(0);
   if (target === undefined) return;
 
   void notifySubstitutionsChanged(
