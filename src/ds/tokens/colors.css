@@ -44,7 +44,7 @@
   --status-offline: #5b6070;
 
   /* ——— Semantic aliases (use these in product code) ——— */
-  --brand: var(--ink-100);
+  --brand: var(--ink-900);
   --brand-strong: var(--ink-700);
   --brand-deep: var(--ink-900);
   --brand-tint: var(--ink-050);

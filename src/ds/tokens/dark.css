@@ -28,9 +28,12 @@
   --text-link: var(--blue-300);
   --text-link-hover: var(--blue-200);
 
-  /* Brand is ink, not blue — the tint and the focus ring still move here because both
-     are read against a dark ground. */
+  /* Brand is ink, not blue — the tint, the fill and the focus ring all move here because
+     they're read against a dark ground: a near-black fill from the light theme would sit flush
+     on the near-black --bg-app, so brand flips to a light ink with dark text instead. */
+  --brand: var(--ink-100);
   --brand-tint: #1c1e26;
+  --text-on-brand: var(--ink-900);
   --focus-ring: var(--ink-300);
 
   /* Status. The DS tunes these for white ground; on dark they are lifted to keep 4.5:1
