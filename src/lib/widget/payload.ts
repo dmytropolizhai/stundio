@@ -11,8 +11,13 @@
  * `src/widget/wire.ts`.
  */
 import type { ResolvedDay, ResolvedLesson } from "../edupage/index.ts";
-import { glanceLesson, type RigaClock } from "../schedule/index.ts";
-import { WIDGET_PAYLOAD_VERSION, type WidgetPayload, type WidgetStrings } from "./types.ts";
+import { dayProgress, glanceLesson, timedLessons, type RigaClock } from "../schedule/index.ts";
+import {
+  WIDGET_PAYLOAD_VERSION,
+  type WidgetDayEntry,
+  type WidgetPayload,
+  type WidgetStrings,
+} from "./types.ts";
 
 export type WidgetPayloadInput = {
   /** Today's resolved day, or null when nothing is cached for it. */
@@ -41,6 +46,10 @@ const titleOf = (lesson: ResolvedLesson): string => {
   return label === "" ? "—" : label;
 };
 
+/** A room's short code, falling back to its full name — "" when the lesson carries no room. */
+const roomOf = (lesson: ResolvedLesson): string =>
+  lesson.rooms.map((r) => (r.short === "" ? r.name : r.short)).find((n) => n !== "") ?? "";
+
 /**
  * Time range, room, class — in that order, dropping whatever is missing. The time range is
  * unconditional: `glanceLesson` only ever returns a lesson `timedLessons` accepted, so a slot
@@ -48,16 +57,33 @@ const titleOf = (lesson: ResolvedLesson): string => {
  */
 const subtitleOf = (lesson: ResolvedLesson, className: string): string => {
   const parts: string[] = [`${lesson.start}–${lesson.end}`];
-  const room = lesson.rooms.map((r) => (r.short === "" ? r.name : r.short)).find((n) => n !== "");
-  if (room !== undefined) parts.push(room);
+  const room = roomOf(lesson);
+  if (room !== "") parts.push(room);
   if (className !== "") parts.push(className);
   return parts.join(" · ");
+};
+
+/**
+ * Every timed lesson today, for the all-day widget's list — regardless of whether the day has
+ * started, is in progress, or is over. Empty for a day that is not `now`'s date: the all-day
+ * widget must not show another day's schedule under today's label.
+ */
+const dayEntries = (day: ResolvedDay, now: RigaClock): WidgetDayEntry[] => {
+  if (day.date !== now.date) return [];
+  return timedLessons(day.lessons).map(({ lesson, start, end }) => ({
+    time: `${lesson.start}–${lesson.end}`,
+    title: titleOf(lesson),
+    subtitle: roomOf(lesson),
+    accent: accentOf(lesson),
+    state: now.minutes >= end ? "done" : now.minutes >= start ? "live" : "upcoming",
+  }));
 };
 
 const empty = (
   state: WidgetPayload["state"],
   title: string,
   input: WidgetPayloadInput,
+  today: WidgetDayEntry[] = [],
 ): WidgetPayload => ({
   version: WIDGET_PAYLOAD_VERSION,
   updatedAt: (input.updatedAt ?? new Date()).toISOString(),
@@ -69,6 +95,8 @@ const empty = (
   countdown: "",
   accent: null,
   minutesUntilChange: null,
+  progressPercent: null,
+  today,
 });
 
 /**
@@ -83,9 +111,10 @@ export const buildWidgetPayload = (input: WidgetPayloadInput): WidgetPayload => 
   if (day === null) return empty("no-data", strings.noData, input);
 
   const glance = glanceLesson(day, now);
-  if (glance === null) return empty("done", strings.done, input);
+  if (glance === null) return empty("done", strings.done, input, dayEntries(day, now));
 
   const { lesson, live, minutes } = glance;
+  const progress = live ? dayProgress(day, now).progress : null;
   return {
     version: WIDGET_PAYLOAD_VERSION,
     updatedAt: (input.updatedAt ?? new Date()).toISOString(),
@@ -97,5 +126,7 @@ export const buildWidgetPayload = (input: WidgetPayloadInput): WidgetPayload => 
     countdown: live ? strings.minutesLeft(minutes) : strings.minutesUntil(minutes),
     accent: accentOf(lesson),
     minutesUntilChange: minutes,
+    progressPercent: progress === null ? null : Math.round(progress * 100),
+    today: dayEntries(day, now),
   };
 };

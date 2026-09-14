@@ -24,6 +24,22 @@ export type WidgetState =
 /** The widget's schema version. Bump when a field's meaning changes, never for additions. */
 export const WIDGET_PAYLOAD_VERSION = 1;
 
+/** Where a `WidgetDayEntry` sits relative to "now" — the all-day widget's only visual cue. */
+export type WidgetDayEntryState = "done" | "live" | "upcoming";
+
+/** One row of the all-day widget's list, already rendered, in schedule order. */
+export type WidgetDayEntry = {
+  /** "08:30–09:10", already assembled. */
+  time: string;
+  /** The subject, or an em dash — same rule as `WidgetPayload.title`. */
+  title: string;
+  /** Room short code, or "" when the lesson has none. */
+  subtitle: string;
+  /** `#RRGGBB` for the row's accent rail, from the subject's own colour. Null → widget default. */
+  accent: string | null;
+  state: WidgetDayEntryState;
+};
+
 export type WidgetPayload = {
   version: typeof WIDGET_PAYLOAD_VERSION;
   /** When JS last wrote this. The widget shows nothing from the network — only this. */
@@ -47,6 +63,10 @@ export type WidgetPayload = {
    * scheduler reads to decide when to ask for a re-render.
    */
   minutesUntilChange: number | null;
+  /** 0–100 through the live lesson, for the countdown widget's progress bar. Null outside "live". */
+  progressPercent: number | null;
+  /** Every timed lesson today, in schedule order. Empty in every empty state. */
+  today: WidgetDayEntry[];
 };
 
 /** Chrome, already translated by the caller — `src/lib/` never reaches into `src/ui/i18n`. */

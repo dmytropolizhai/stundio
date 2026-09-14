@@ -1,7 +1,7 @@
 package com.dmytropolizhai.stundio;
 
-import com.dmytropolizhai.stundio.widget.NextLessonWidget;
 import com.dmytropolizhai.stundio.widget.WidgetPayload;
+import com.dmytropolizhai.stundio.widget.WidgetRefresher;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -28,7 +28,7 @@ public class StundioWidgetPlugin extends Plugin {
 
         try {
             WidgetPayload.store(getContext(), payload);
-            NextLessonWidget.refresh(getContext());
+            WidgetRefresher.refreshAll(getContext());
             call.resolve();
         } catch (Exception e) {
             call.reject("Could not publish the widget payload: " + e.getMessage(), e);

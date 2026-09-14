@@ -54,8 +54,9 @@ final class WidgetScheduler {
 
     private static boolean hasPlacedWidgets(Context context) {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        int[] ids = manager.getAppWidgetIds(new ComponentName(context, NextLessonWidget.class));
-        return ids.length > 0;
+        return manager.getAppWidgetIds(new ComponentName(context, NextLessonWidget.class)).length > 0
+            || manager.getAppWidgetIds(new ComponentName(context, CountdownWidget.class)).length > 0
+            || manager.getAppWidgetIds(new ComponentName(context, AllDayWidget.class)).length > 0;
     }
 
     private static void schedulePeriodic(Context context) {

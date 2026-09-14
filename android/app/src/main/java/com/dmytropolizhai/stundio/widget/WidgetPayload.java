@@ -5,8 +5,11 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -45,6 +48,28 @@ public final class WidgetPayload {
     public final Long updatedAtMillis;
     /** Whole minutes from `updatedAt` until this payload stops being true, or null. */
     public final Integer minutesUntilChange;
+    /** 0–100 through the live lesson, for the countdown widget's progress bar. Null otherwise. */
+    public final Integer progressPercent;
+    /** Every timed lesson today, in schedule order. Never null — empty when there is none. */
+    public final List<DayEntry> today;
+
+    /** One row of {@link #today} — see `src/lib/widget/types.ts`'s `WidgetDayEntry`. */
+    public static final class DayEntry {
+        public final String time;
+        public final String title;
+        public final String subtitle;
+        public final Integer accent;
+        /** "done" | "live" | "upcoming". */
+        public final String state;
+
+        private DayEntry(String time, String title, String subtitle, Integer accent, String state) {
+            this.time = time;
+            this.title = title;
+            this.subtitle = subtitle;
+            this.accent = accent;
+            this.state = state;
+        }
+    }
 
     private WidgetPayload(
         String label,
@@ -54,7 +79,9 @@ public final class WidgetPayload {
         Integer accent,
         String date,
         Long updatedAtMillis,
-        Integer minutesUntilChange
+        Integer minutesUntilChange,
+        Integer progressPercent,
+        List<DayEntry> today
     ) {
         this.label = label;
         this.title = title;
@@ -64,6 +91,8 @@ public final class WidgetPayload {
         this.date = date;
         this.updatedAtMillis = updatedAtMillis;
         this.minutesUntilChange = minutesUntilChange;
+        this.progressPercent = progressPercent;
+        this.today = today;
     }
 
     private static SharedPreferences prefs(Context context) {
@@ -92,7 +121,9 @@ public final class WidgetPayload {
                 parseColor(object.optString("accent", "")),
                 object.optString("date", ""),
                 parseIsoInstant(object.optString("updatedAt", "")),
-                object.isNull("minutesUntilChange") ? null : optIntOrNull(object, "minutesUntilChange")
+                object.isNull("minutesUntilChange") ? null : optIntOrNull(object, "minutesUntilChange"),
+                object.isNull("progressPercent") ? null : optIntOrNull(object, "progressPercent"),
+                parseToday(object.optJSONArray("today"))
             );
         } catch (Exception e) {
             // A half-written or future-shaped blob must not crash the launcher's host process.
@@ -102,6 +133,24 @@ public final class WidgetPayload {
 
     private static Integer optIntOrNull(JSONObject object, String key) {
         return object.has(key) ? object.optInt(key) : null;
+    }
+
+    /** Missing or malformed rows are dropped rather than crashing the whole payload. */
+    private static List<DayEntry> parseToday(JSONArray array) {
+        List<DayEntry> entries = new ArrayList<>();
+        if (array == null) return entries;
+        for (int i = 0; i < array.length(); i += 1) {
+            JSONObject row = array.optJSONObject(i);
+            if (row == null) continue;
+            entries.add(new DayEntry(
+                row.optString("time", ""),
+                row.optString("title", ""),
+                row.optString("subtitle", ""),
+                parseColor(row.optString("accent", "")),
+                row.optString("state", "upcoming")
+            ));
+        }
+        return entries;
     }
 
     private static Integer parseColor(String hex) {

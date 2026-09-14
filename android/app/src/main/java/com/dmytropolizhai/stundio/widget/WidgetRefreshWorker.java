@@ -20,7 +20,7 @@ public final class WidgetRefreshWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        NextLessonWidget.refresh(getApplicationContext());
+        WidgetRefresher.refreshAll(getApplicationContext());
         return Result.success();
     }
 }
