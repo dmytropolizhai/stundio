@@ -140,23 +140,6 @@ export const SettingsView = ({
             </span>
             <Icon name="chevron-right" size={16} className="text-muted" />
           </button>
-          <div className="border-t border-hairline">
-            <button
-              type="button"
-              onClick={() => {
-                setWalkthroughOpen(true);
-              }}
-              className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent px-4 py-3.5 text-left"
-            >
-              <span className="font-text text-body font-bold text-strong">
-                {t("settings.customizationGuide")}
-              </span>
-              <span className="inline-flex items-center gap-1 font-text text-caption font-bold text-link">
-                {t("settings.customizationGuideAction")}
-                <Icon name="chevron-right" size={16} />
-              </span>
-            </button>
-          </div>
         </Section>
 
         {buildings.length > 1 && (

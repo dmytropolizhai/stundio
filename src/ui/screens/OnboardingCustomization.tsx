@@ -28,8 +28,6 @@ import type { Settings, SubjectColorTone } from "@/db";
 import { SUBJECT_TONES } from "@/ui/theme";
 import { ensureNotificationPermission } from "@/notifications";
 import { useT, type MessageKey } from "@/ui/i18n";
-import { reportIssueUrl, suggestFeatureUrl } from "@/ui/feedback.ts";
-import { useSelectedClass } from "../hooks/useClasses.ts";
 
 const TOTAL_STEPS = 5;
 const SWIPE_THRESHOLD_PX = 56;
@@ -87,7 +85,6 @@ export const OnboardingCustomization = ({
 }) => {
   const t = useT();
   const [step, setStep] = useState(0);
-  const selectedClass = useSelectedClass();
 
   const settings = useAppStore((s) => s.settings);
   const setTheme = useAppStore((s) => s.setTheme);
@@ -185,7 +182,7 @@ export const OnboardingCustomization = ({
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6 pt-[var(--app-inset-top)]">
+    <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6 pt-(--app-inset-top)">
       {/* Top navigation: back, progress, skip */}
       <header className="flex items-center justify-between pt-3 pb-2">
         <div className="w-10">
@@ -606,8 +603,8 @@ export const OnboardingCustomization = ({
                     </p>
                   </div>
                 </div>
-                <Button size="sm" icon="triangle-alert" asChild>
-                  <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
+                <Button size="sm" icon="triangle-alert" asChild disabled>
+                  <a target="_blank" rel="noreferrer">
                     {t("settings.reportIssueAction")}
                   </a>
                 </Button>
@@ -627,9 +624,8 @@ export const OnboardingCustomization = ({
                     </p>
                   </div>
                 </div>
-                <Button size="sm" icon="plus" asChild>
+                <Button size="sm" icon="plus" asChild disabled>
                   <a
-                    href={suggestFeatureUrl(selectedClass?.short)}
                     target="_blank"
                     rel="noreferrer"
                   >
