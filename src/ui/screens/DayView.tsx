@@ -26,10 +26,7 @@ import { LessonSheet } from "./LessonSheet.tsx";
 import { useNow } from "../hooks/useNow.ts";
 import { formatDuration, formatDayMonth, localeTag, useLang, useT } from "@/ui/i18n";
 
-/** How far a horizontal drag must travel before it counts as "change the day", not a scroll. */
 const SWIPE_THRESHOLD_PX = 56;
-
-/** A gap worth drawing. Anything shorter is just the change-over between lessons. */
 const GAP_MIN_MINUTES = 20;
 
 const Gap = ({ minutes, label }: { minutes: number; label: string }) => (
@@ -50,16 +47,6 @@ const NowMarker = ({ label }: { label: string }) => (
   </li>
 );
 
-/**
- * The home screen: one class, one day.
- *
- * Reads the store only — the store reads the cache and `sync/` refreshes underneath
- * (CLAUDE.md). Pull-to-refresh is the single user-initiated fetch, and even that goes
- * through `refresh({ force: true })` rather than touching the network here.
- *
- * Layout note: the header scrolls with the content rather than sticking, consistent with swipe
- * paging the whole block — header included — rather than a fixed piece above a scrolling list.
- */
 export const DayView = ({
   date,
   onDateChange,
@@ -72,93 +59,100 @@ export const DayView = ({
   const t = useT();
   const lang = useLang();
   const now = useNow();
+
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const showTime = useAppStore((s) => s.settings.showTime);
+  const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
+  const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
+  const filled = useAppStore((s) => s.settings.lessonCardStyle === "filled");
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
-  // `resolvedDay` is memoized inside the store, so calling it every render is cheap.
+
   const day = useAppStore((s) => s.resolvedDay(date));
 
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
+
   const buildings = useMemo(() => (day === null ? null : buildingNotice(day)), [day]);
+
   const isToday = date === now.date;
 
-  /*
-   * Swiping replaced the day strip (CLAUDE.md widget note aside, this is app-only UI). `x` is a
-   * Framer Motion value (not React state) tracking live finger position during the gesture —
-   * writing to it on every `touchmove` skips React's render/reconciliation entirely, which
-   * matters once a day has enough lessons that a render pass is no longer free. `enterDir`
-   * remembers which way we just paged so the *next* day's content can slide in from the side it
-   * logically arrived from.
-   */
   const reduceMotion = useReducedMotion() ?? false;
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const enterDir = useRef<1 | -1>(1);
   const x = useMotionValue(0);
-  const opacity = useMotionValue(1);
 
   useEffect(() => {
     x.set(reduceMotion ? 0 : enterDir.current * 16);
-    opacity.set(reduceMotion ? 1 : 0);
-    const xControls = animate(x, 0, {
+
+    const controls = animate(x, 0, {
       duration: reduceMotion ? 0.001 : 0.24,
       ease: [0.2, 0.8, 0.2, 1],
     });
-    const opacityControls = animate(opacity, 1, {
-      duration: reduceMotion ? 0.001 : 0.24,
-      ease: [0.2, 0.8, 0.2, 1],
-    });
-    return () => {
-      xControls.stop();
-      opacityControls.stop();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- x/opacity are stable MotionValues
-  }, [date, reduceMotion]);
+
+    return () => controls.stop();
+  }, [date, reduceMotion, x]);
 
   const onSwipeStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
+
     if (touch === undefined) return;
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
+
+    touchStart.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
   };
 
   const onSwipeMove = (e: React.TouchEvent) => {
     const start = touchStart.current;
     const touch = e.touches[0];
+
     if (start === null || touch === undefined) return;
+
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
-    // A steeper vertical drag is the list scrolling — leave it alone.
+
     if (Math.abs(dy) > Math.abs(dx)) return;
+
     x.set(dx);
   };
 
   const onSwipeEnd = () => {
     const started = touchStart.current !== null;
+
     touchStart.current = null;
+
     const dx = x.get();
+
     if (started && dx <= -SWIPE_THRESHOLD_PX) {
       enterDir.current = 1;
       x.set(0);
       onDateChange(addDays(date, 1));
       return;
     }
+
     if (started && dx >= SWIPE_THRESHOLD_PX) {
       enterDir.current = -1;
       x.set(0);
       onDateChange(addDays(date, -1));
       return;
     }
-    animate(x, 0, { duration: reduceMotion ? 0.001 : 0.2, ease: [0.2, 0.8, 0.2, 1] });
+
+    animate(x, 0, {
+      duration: reduceMotion ? 0.001 : 0.2,
+      ease: [0.2, 0.8, 0.2, 1],
+    });
   };
 
   const rows = useMemo(() => {
     if (day === null) return [];
+
     const items: { key: string; node: ReactNode }[] = [];
-    // The marker only belongs on the day you are actually living through.
+
     let markerDrawn = date !== now.date;
     let previousEnd: number | null = null;
 
@@ -174,11 +168,16 @@ export const DayView = ({
 
       if (!markerDrawn && start !== null && start > now.minutes) {
         markerDrawn = true;
-        items.push({ key: "now", node: <NowMarker label={t("day.now")} /> });
+
+        items.push({
+          key: "now",
+          node: <NowMarker label={t("day.now")} />,
+        });
       }
 
       const live = progress.current === lesson;
       const building = lessonBuilding(day, lesson);
+
       items.push({
         key: `${lesson.period}-${lesson.subject?.id ?? "x"}-${lesson.group ?? ""}`,
         node: (
@@ -186,6 +185,9 @@ export const DayView = ({
             lesson={lesson}
             live={live}
             showTime={showTime}
+            subjectColorOverrides={subjectColorOverrides}
+            colorCodingEnabled={colorCodingEnabled}
+            filled={filled}
             {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
             {...(building === undefined ? {} : { building })}
             onOpen={() => {
@@ -196,14 +198,30 @@ export const DayView = ({
       });
 
       const end = minutesOf(lesson.end);
-      if (end !== null) previousEnd = end;
+
+      if (end !== null) {
+        previousEnd = end;
+      }
     });
 
     return items;
-  }, [day, date, now.date, now.minutes, progress, showTime, t]);
+  }, [
+    day,
+    date,
+    now.date,
+    now.minutes,
+    progress,
+    showTime,
+    subjectColorOverrides,
+    colorCodingEnabled,
+    filled,
+    t,
+  ]);
 
   const body = (): ReactNode => {
-    if (!ready) return <DaySkeleton />;
+    if (!ready) {
+      return <DaySkeleton />;
+    }
 
     if (selectedClassId === null) {
       return (
@@ -214,9 +232,11 @@ export const DayView = ({
         />
       );
     }
+
     if (day === null) {
       return <StateMessage icon="cloud" title={t("day.noData")} hint={t("day.noDataHint")} />;
     }
+
     if (day.lessons.length === 0) {
       return <StateMessage icon="coffee" title={t("day.empty")} hint={t("day.emptyHint")} />;
     }
@@ -242,11 +262,6 @@ export const DayView = ({
           </Card>
         )}
 
-        {/*
-          Which building the day happens in is the one fact a student cannot recover once they
-          are standing outside the wrong one, so it is stated once up front as well as on each
-          card — and a day split across buildings names them in the order they are attended.
-        */}
         {buildings !== null && (
           <Card
             tone="sunken"
@@ -256,9 +271,14 @@ export const DayView = ({
             data-testid="day-building"
           >
             <Icon name="building-2" size={16} className="shrink-0 text-muted" />
+
             {buildings.length === 1
-              ? t("day.buildingOther", { building: buildings[0] ?? "" })
-              : t("day.buildingMixed", { buildings: buildings.join(" → ") })}
+              ? t("day.buildingOther", {
+                  building: buildings[0] ?? "",
+                })
+              : t("day.buildingMixed", {
+                  buildings: buildings.join(" → "),
+                })}
           </Card>
         )}
 
@@ -266,17 +286,24 @@ export const DayView = ({
           <p className="mt-3 text-center font-text text-caption text-muted">{t("day.finished")}</p>
         )}
 
-        <ul className="mt-3 flex flex-col gap-3">
+        <motion.ul
+          className="mt-3 flex flex-col gap-3"
+          style={{
+            x,
+            willChange: "transform",
+          }}
+        >
           {rows.map((row) => (
             <Fragment key={row.key}>{row.node}</Fragment>
           ))}
-        </ul>
+        </motion.ul>
 
         {day.notes.length > 0 && (
           <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
             <h2 className="u-eyebrow">
               {t("day.notes")} · {t("lesson.fromSchool")}
             </h2>
+
             <ul className="mt-1.5 flex flex-col gap-1">
               {day.notes.map((note) => (
                 <li key={note} className="font-text text-body text-fg">
@@ -297,20 +324,18 @@ export const DayView = ({
         label={t("sync.pull")}
         releaseLabel={t("sync.release")}
         onRefresh={() => {
-          void refresh({ date, force: true });
+          void refresh({
+            date,
+            force: true,
+          });
         }}
       >
-        {/*
-          104px of bottom padding so the last card clears the floating nav. Swipe replaced the
-          day strip: dragging left/right here pages the day, with a same-direction slide as the
-          feedback that it worked. Arrow keys do the same thing for anyone who can't swipe —
-          there is no visible control for either, so `aria-label` is the only place that says so.
-        */}
-        <motion.div
+        <div
+          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe"
           role="group"
           tabIndex={0}
           aria-label={t("day.pageHint")}
-          style={{ touchAction: "pan-y", x, opacity }}
+          style={{ touchAction: "pan-y" }}
           onTouchStart={onSwipeStart}
           onTouchMove={onSwipeMove}
           onTouchEnd={onSwipeEnd}
@@ -324,7 +349,6 @@ export const DayView = ({
               onDateChange(addDays(date, -1));
             }
           }}
-          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         >
           <TopBar
             title={
@@ -336,6 +360,7 @@ export const DayView = ({
                     className="inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)"
                   >
                     <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
+
                     <Icon
                       name="chevron-down"
                       size={22}
@@ -346,6 +371,7 @@ export const DayView = ({
                     />
                   </button>
                 </PopoverTrigger>
+
                 <PopoverContent>
                   <Calendar
                     value={date}
@@ -358,6 +384,7 @@ export const DayView = ({
                       setCalendarOpen(false);
                     }}
                   />
+
                   <div className="mt-2 flex justify-center">
                     <Button
                       variant="ghost"
@@ -377,7 +404,14 @@ export const DayView = ({
             actions={
               <>
                 <ClassBadge onClick={onPickClass} />
-                <SyncBadge onRetry={() => void refresh({ date, force: true })} />
+                <SyncBadge
+                  onRetry={() =>
+                    void refresh({
+                      date,
+                      force: true,
+                    })
+                  }
+                />
               </>
             }
           />
@@ -397,7 +431,7 @@ export const DayView = ({
           )}
 
           {body()}
-        </motion.div>
+        </div>
       </PullToRefresh>
 
       <LessonSheet
