@@ -163,28 +163,19 @@ export const WeekGrid = <K extends string>({
       // `h-10` here (not just on cells) keeps every row at least one lesson-cell tall, even a
       // row every day's lesson merges away from (see `placementsFor`) — otherwise that row
       // would collapse to the label text's own height and break the grid's vertical rhythm.
+      //
+      // `items-start` puts the label at the row's top edge rather than centred beside the
+      // lesson cell: it marks the boundary line where this period begins, not a caption for
+      // the cell it happens to sit next to — the same reasoning as the closing end-time label
+      // below, which this now matches instead of contradicting.
       <span
         key={`t-${period.period}`}
-        className="u-data flex h-10 items-center text-muted"
+        className="u-data flex h-10 items-start text-muted"
         style={{ gridColumn: 1, gridRow: rowIndex + 2 }}
       >
         {period.start}
       </span>
     ))}
-
-    {/*
-      Every other row's label is its *start* time — the next row down implies where it ends.
-      The last row has no next row, so without this the grid's final lesson (and any block that
-      merges into it) reads as if it stops at the last period's start rather than its actual end.
-    */}
-    {periods.length > 0 && (
-      <span
-        className="u-data flex h-4 items-start text-muted"
-        style={{ gridColumn: 1, gridRow: periods.length + 2 }}
-      >
-        {periods[periods.length - 1]?.end}
-      </span>
-    )}
 
     {days.map((day, colIndex) =>
       placementsFor(day, periods, mergeConsecutive).map((placement, rowIndex) => {
