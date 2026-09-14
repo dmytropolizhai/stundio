@@ -5,6 +5,7 @@
 import { useEffect } from "react";
 import { useAppStore } from "../../store/index.ts";
 import type { Settings } from "../../db/index.ts";
+import { nativeSystemBars } from "@/lib/systembars";
 
 export type Theme = Settings["theme"];
 
@@ -17,6 +18,9 @@ export const resolveTheme = (theme: Theme, systemDark: boolean): "light" | "dark
 
 export const applyTheme = (resolved: "light" | "dark"): void => {
   document.documentElement.classList.toggle("dark", resolved === "dark");
+  // Status/navigation bar icon colour (Android only — see lib/systembars/native.ts); a no-op
+  // everywhere else.
+  void nativeSystemBars()?.(resolved);
 };
 
 export const useTheme = (): void => {
