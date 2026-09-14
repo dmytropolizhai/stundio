@@ -156,7 +156,7 @@ describe("the message the image travels with", () => {
 
     expect(text).toContain("A1-2");
     expect(text).toContain("07.09.–11.09.");
-    expect(text).toContain("https://github.com/dmytropolizhai/stundio/releases");
+    expect(text).toContain("https://bit.ly/stundio");
   });
 
   it("names the file after the class and the Monday it starts on", () => {
