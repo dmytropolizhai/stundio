@@ -361,8 +361,14 @@ subject indices, and four reserved status colours.
 
 Six pastel accents, each shipped with a dark ink pair: **Amber** (`#ffb552` / `#5a3703`), **Sky**
 (`#9cc8f7` / `#0c3560`), **Lilac** (`#b79cff` / `#2c1470`), **Pink** (`#ffa3e0` / `#611349`),
-**Mint** (`#9fe3c0` / `#0b4a32`), **Lime** (`#d7f53c` / `#2e3a00`). A subject is assigned one by
-hashing its code, so the same subject is the same colour on every screen and every device.
+**Mint** (`#9fe3c0` / `#0b4a32`), **Lime** (`#d7f53c` / `#2e3a00`). A subject is assigned one by default
+by hashing its code (`subjectTone()`), so the same subject is the same colour on every screen and device.
+
+**Custom Tones & Color Wheel:** Users can customize subject colors via `CustomizationSheet`. An
+interactive SVG **Color Wheel** (`ColorWheel` component) allows selecting arbitrary RGB/HSV hues
+alongside the 6 preset pastel accents. Whenever a custom accent is chosen, high-contrast readable
+text ink is dynamically calculated via `readableInk()`. Users can also toggle monochrome mode to
+turn off subject color-coding entirely (falling back to a uniform neutral tone).
 
 ### Status
 
@@ -377,13 +383,20 @@ subject recognisable at a glance and to stay bound to it forever. They carry no 
 and no mood — using an accent to signal importance, urgency, or status is a misuse. Status has its
 own four colours; use those.
 
+**The Contrast Invariant Rule.** Any custom subject color selected through the Color Wheel must
+always be paired with a contrast-checked ink via `readableInk()`. An arbitrary user-selected
+background tint never renders with fixed unverified text contrast; it dynamically binds either
+dark ink (`#0b0c10`) or light ink (`#ffffff`) to guarantee legibility.
+
 **The One Voice Rule.** Studio Electric appears on at most one or two elements per screen. Its
 rarity is what makes the "now" ring read as *now*. A screen with three blue things has no primary
 action.
 
 **The Alias-Only Rule.** Dark mode re-points semantic aliases (`--bg-app`, `--surface-card`,
 `--text-muted`, …) and never a base palette step (`--blue-*`, `--ink-*`, `--accent-*`). A component
-that reaches for a base step directly will be wrong in one of the two themes.
+that reaches for a base step directly will be wrong in one of the two themes. In dark mode, `--brand`
+flips to `--ink-100` with `--text-on-brand` as `--ink-900`, giving dark mode its own black/white
+brand identity.
 
 **The Neutral Button Rule.** Every `Button` and `IconButton` variant, and every text-styled button
 control (e.g. the sync badge's retry action), is near-black, white, or transparent — none of them
@@ -521,9 +534,12 @@ rather than hints.
 
 ### Buttons
 
-- **Shape:** always a pill (`999px`). Three heights: 36 / 44 / 54px (`sm` / `md` / `lg`).
-- **Primary:** near-black fill, white text, `shadow-card` beneath it — neutral by design, no brand
-  glow. `inverse` is the identical treatment kept as its own name for callers on a light hero.
+- **Shape:** always a pill (`999px`). Three heights: 36 / 44 / 54px (`sm` / `md` / `lg`). Set in
+  semibold body (`font-semibold`).
+- **Primary:** near-black fill (`--brand`), white text (`--text-on-brand`), `shadow-card` beneath it —
+  neutral by design, no brand glow. In dark mode, `--brand` flips to light ink (`--ink-100`) and
+  `--text-on-brand` flips to dark ink (`--ink-900`), maintaining prominent contrast on dark ground.
+  `inverse` is the identical treatment kept as its own name for callers on a light hero.
 - **Variants:** `outline` (transparent with a 2px inset ring), `ghost` (transparent, near-black
   text, sunken tint on hover), `onBrand` (white fill, near-black text, for a callsite on the blue
   hero). None of the variants carry the brand blue any more — see The Neutral Button Rule.
@@ -544,7 +560,7 @@ rather than hints.
 
 - **Corner style:** 28px (`--radius-xl`) by default; 36px for hero and sheet.
 - **Background:** white on the cool paper ground; ten tones available (surface, sunken, brand, ink,
-  and the six subject accents, each with its ink pair).
+  and the six subject accents, each with its ink pair), plus custom tones with dynamic readable ink.
 - **Shadow strategy:** `shadow-card` at rest; tinted tones get none (see The Tinted-Card Rule).
 - **Border:** none. Ever.
 - **Internal padding:** 16px default.
@@ -609,13 +625,24 @@ the left edge, and one 40px cell per lesson at the 12px radius.
 - **Cells** carry the subject's accent as a full fill with the short subject code in bold caption —
   **the only place in the system where abbreviation is allowed.** The unabbreviated name rides along
   for assistive tech so a three-letter code is never the only thing announced.
+- **Cell Spanning:** When a lesson spans multiple consecutive periods, cells structurally span
+  across multiple period rows via `grid-row: span N`, preserving vertical time alignment while
+  eliminating redundant repeated cells.
 - **Cells keep their dark ink in both themes.** The accent fills are light pastels in dark mode too,
-  so near-black text stays the correct pairing.
+  so near-black text stays the correct pairing. Custom colors adapt ink via `readableInk()`.
 - **Empty cells** are sunken blocks — a non-text grey, never a place for a string like "—" or
   "free".
 - **Cancelled** cells are 40% opacity with a strikethrough, matching the day view.
 - **Today's column header** is electric; the others are muted. Headers are inert text by default and
   become tappable shortcuts into that day only when a handler is supplied.
+
+### Color Wheel & Custom Tone Controls
+
+Interactive SVG color picker component (`ColorWheel`) used in `CustomizationSheet`:
+- **Wheel:** 220px circular SVG with radial hue and saturation gradients, controlled by touch or mouse drag.
+- **Value Slider:** Horizontal brightness track beneath the wheel.
+- **Contrast Pair:** Dynamically updates `--subject-accent` and computes `--subject-ink` via `readableInk()`
+  so contrast is guaranteed before the tone is applied to cards, rows, and grid cells.
 
 ### Skeleton
 
@@ -649,12 +676,16 @@ refresh in brand when syncing, wifi-off in offline grey, triangle-alert in dange
 an optional tabular "12 min ago" detail. Every data screen carries one. Saying where the data came
 from and how old it is is a content rule of this system, not decoration.
 
-### Bottom Sheet
+### Bottom Sheet & Feedback Sheet
 
-The only modal in the system — the DS ships no Dialog, Toast, or Tooltip, and none should be added.
+The only modal surface in the system — the DS ships no Dialog, Toast, or Tooltip, and none should be added.
 36px top corners, white, `shadow-raised`, entering with a 24px rise on the spring easing over 240ms;
 the scrim is navy at 56% over an 8px blur, fading in over 160ms. Bottom padding reserves the safe-area
 inset.
+
+- **FeedbackSheet:** Used for in-app suggestions and bug reporting. Houses segmented chip toggles
+  ("suggestion" / "issue"), a clean textarea with character counter, and a pill submit button with
+  `send` and `check` feedback states.
 
 ### Empty State
 
@@ -686,6 +717,9 @@ for anything animating outside the tokens.
 - **Do** give the current lesson the 2px electric inset ring and nothing more.
 - **Do** keep cancelled lessons in place at 55% opacity with a strikethrough; they are information,
   not clutter.
+- **Do** compute contrasting text color via `readableInk()` whenever custom user subject colors are rendered.
+- **Do** support structural row spanning in `WeekGrid` for multi-period combined lessons.
+- **Do** set button label weight to semibold (`font-semibold`).
 - **Do** state data freshness on any screen that shows school data.
 - **Do** pair every fade with a small translate.
 - **Do** keep 44px as the floor for any hit target, and reserve the 64px nav height plus its 16px
@@ -697,6 +731,7 @@ for anything animating outside the tokens.
 
 - **Don't** use a subject accent to mean anything. It is an index (see The Index Rule); status has
   its own four colours.
+- **Don't** render a custom subject background color without verifying ink contrast via `readableInk()`.
 - **Don't** use EduPage's server-supplied subject hex, raw hex of any kind, or stock Tailwind palette
   colours (`slate-500`, `amber-100`).
 - **Don't** put a shadow under a tinted card, or a navy-tinted shadow anywhere in dark mode.

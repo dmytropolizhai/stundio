@@ -8,7 +8,7 @@
  * (a test renderer, a WebView that has not applied CSS yet).
  */
 import type { SharePalette } from "@/lib/share";
-import { SUBJECT_TONES, type SubjectTone } from "../theme/index.ts";
+import { SUBJECT_TONES, type SubjectAccent, type SubjectTone } from "../theme/index.ts";
 
 export type ToneColors = { fill: string; ink: string };
 export type ShareTheme = { palette: SharePalette; tones: Record<SubjectTone, ToneColors> };
@@ -77,3 +77,11 @@ export const shareTheme = (vars: Vars = getComputedStyle(document.documentElemen
 
   return { palette, tones };
 };
+
+/**
+ * A subject's fill/ink for the canvas painter: one of the six live theme tones, or — for a
+ * `ColorWheel` custom pick, which has no theme token to read — the exact colour `subjectAccent`
+ * already resolved (`ui/theme/colors.ts`), so a shared card matches the on-screen custom colour.
+ */
+export const accentFillInk = (accent: SubjectAccent, theme: ShareTheme): ToneColors =>
+  accent.tone === "custom" ? { fill: accent.fill, ink: accent.ink } : theme.tones[accent.tone];

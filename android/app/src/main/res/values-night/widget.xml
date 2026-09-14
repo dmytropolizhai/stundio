@@ -6,4 +6,5 @@
     <color name="widget_text_muted">#9BA2B4</color>
     <!-- blue-300, not blue-500: the primary does not carry enough contrast on the dark card. -->
     <color name="widget_accent">#7A8AFF</color>
+    <color name="widget_track">#2A2D38</color>
 </resources>

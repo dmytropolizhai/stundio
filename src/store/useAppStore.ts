@@ -47,8 +47,19 @@ export type AppState = {
 
   hydrate: () => Promise<void>;
   refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<SyncOutcome>;
+  /**
+   * The device's own connectivity (`lib/network`), wired in from `watchConnectivity` — not a
+   * second, parallel "offline" concept next to `syncStatus`. Losing connectivity sets
+   * `syncStatus` to `"offline"` immediately, without waiting for a fetch to fail; regaining it
+   * triggers a `refresh()`, whose outcome is what actually settles `syncStatus` afterwards (still
+   * `"offline"` if the network reports connected but the school is unreachable, `"idle"` once a
+   * sync actually lands). `syncStatus` stays the single source of truth the UI reads.
+   */
+  setConnectivity: (online: boolean) => void;
   setClass: (classId: string | null) => Promise<void>;
   setBuilding: (building: Building | null) => Promise<void>;
+  /** `null` shows every division merged — only meaningful for the currently selected class. */
+  setSubgroup: (subgroup: string | null) => Promise<void>;
   toggleFavorite: (classId: string) => Promise<void>;
   setTheme: (theme: Settings["theme"]) => Promise<void>;
   setLang: (lang: Settings["lang"]) => Promise<void>;
@@ -58,6 +69,8 @@ export type AppState = {
   setCardRadius: (radius: Settings["cardRadius"]) => Promise<void>;
   setCardElevation: (elevation: Settings["cardElevation"]) => Promise<void>;
   setReduceMotion: (reduceMotion: boolean) => Promise<void>;
+  setAppAccent: (accent: Settings["appAccent"]) => Promise<void>;
+  setSubjectColorCodingEnabled: (enabled: boolean) => Promise<void>;
   /** `tone` of `null` clears the override, returning the subject to its auto-assigned tone. */
   setSubjectColorOverride: (
     subjectKey: string,
@@ -77,6 +90,9 @@ export type AppState = {
   setShareLangSyncWithApp: (sync: boolean) => Promise<void>;
   /** Not user-facing — `useShareWeek` marks the one-time language prompt as already shown. */
   setShareLangPromptShown: (shown: boolean) => Promise<void>;
+  /** Not user-facing — `boot.ts` calls this once per launch, alongside the `app_open` event. */
+  recordAppOpen: () => Promise<void>;
+  setFeedbackPromptDismissed: (dismissed: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
@@ -179,8 +195,18 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         return outcome;
       },
 
-      setClass: (classId) => persist({ selectedClassId: classId }),
+      setConnectivity: (online) => {
+        if (online) {
+          void get().refresh();
+        } else {
+          set({ syncStatus: "offline" });
+        }
+      },
+
+      // A subgroup label from the previous class means nothing for the new one, so it resets.
+      setClass: (classId) => persist({ selectedClassId: classId, subgroup: null }),
       setBuilding: (building) => persist({ building }),
+      setSubgroup: (subgroup) => persist({ subgroup }),
       setTheme: (theme) => persist({ theme }),
       setLang: (lang) => persist({ lang }),
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
@@ -189,6 +215,9 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setCardRadius: (cardRadius) => persist({ cardRadius }),
       setCardElevation: (cardElevation) => persist({ cardElevation }),
       setReduceMotion: (reduceMotion) => persist({ reduceMotion }),
+      setAppAccent: (appAccent) => persist({ appAccent }),
+      setSubjectColorCodingEnabled: (subjectColorCodingEnabled) =>
+        persist({ subjectColorCodingEnabled }),
       setSubjectColorOverride: (subjectKey, tone) => {
         const next = { ...get().settings.subjectColorOverrides };
         if (tone === null) delete next[subjectKey];
@@ -202,6 +231,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           cardRadius: DEFAULT_SETTINGS.cardRadius,
           cardElevation: DEFAULT_SETTINGS.cardElevation,
           reduceMotion: DEFAULT_SETTINGS.reduceMotion,
+          appAccent: DEFAULT_SETTINGS.appAccent,
+          subjectColorCodingEnabled: DEFAULT_SETTINGS.subjectColorCodingEnabled,
           subjectColorOverrides: { ...DEFAULT_SETTINGS.subjectColorOverrides },
         }),
       setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>
@@ -217,6 +248,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setShareLang: (shareLang) => persist({ shareLang }),
       setShareLangSyncWithApp: (shareLangSyncWithApp) => persist({ shareLangSyncWithApp }),
       setShareLangPromptShown: (shareLangPromptShown) => persist({ shareLangPromptShown }),
+      recordAppOpen: () => persist({ appOpenCount: get().settings.appOpenCount + 1 }),
+      setFeedbackPromptDismissed: (feedbackPromptDismissed) => persist({ feedbackPromptDismissed }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {
@@ -277,12 +310,13 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         if (sources.length === 0) return null;
 
         const subs = state.substitutions[date] ?? null;
+        const subgroup = state.settings.subgroup;
         const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
-        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}`;
+        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}|${subgroup ?? ""}`;
         const hit = memo.get(key);
         if (hit !== undefined) return hit;
 
-        return memo.set(key, resolveDayAcross(sources, subs, id, date));
+        return memo.set(key, resolveDayAcross(sources, subs, id, date, { subgroup }));
       },
     };
   });

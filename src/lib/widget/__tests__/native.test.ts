@@ -26,6 +26,8 @@ const PAYLOAD: WidgetPayload = {
   countdown: "12 min left",
   accent: "#14C030",
   minutesUntilChange: 12,
+  progressPercent: 50,
+  today: [],
 };
 
 beforeEach(() => {

@@ -36,7 +36,20 @@ describe("ClassPicker", () => {
     expect(screen.getByText("Nav atrasta neviena klase")).toBeDefined();
   });
 
-  it("remembers the pick and tells the caller", async () => {
+  it("remembers the pick and tells the caller, for a class with no subgroups", async () => {
+    const harness = await bootHarness({ selectedClassId: null });
+    const onPicked = vi.fn();
+    wrap(harness, <ClassPicker onPicked={onPicked} />);
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("A1-1"));
+    });
+
+    expect(onPicked).toHaveBeenCalled();
+    expect(harness.store.getState().settings.selectedClassId).not.toBeNull();
+  });
+
+  it("asks which subgroup before committing a divided class, and lets the user skip", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
     wrap(harness, <ClassPicker onPicked={onPicked} />);
@@ -45,8 +58,41 @@ describe("ClassPicker", () => {
       fireEvent.click(screen.getByText("DT3-2"));
     });
 
+    // Not committed yet — the app shell treats a set class as "onboarding done", so it must
+    // wait for the subgroup question.
+    expect(onPicked).not.toHaveBeenCalled();
+    expect(harness.store.getState().settings.selectedClassId).toBeNull();
+    expect(screen.getByText("1. pusgrupa")).toBeDefined();
+    expect(screen.getByText("2. pusgrupa")).toBeDefined();
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("Izlaist — rādīt abas pusgrupas"));
+    });
+
     expect(onPicked).toHaveBeenCalled();
-    expect(harness.store.getState().settings.selectedClassId).not.toBeNull();
+    expect(harness.store.getState().settings.selectedClassId).toBe(
+      classIdOf(harness.store, "DT3-2"),
+    );
+    expect(harness.store.getState().settings.subgroup).toBeNull();
+  });
+
+  it("stores the chosen subgroup for a divided class", async () => {
+    const harness = await bootHarness({ selectedClassId: null });
+    const onPicked = vi.fn();
+    wrap(harness, <ClassPicker onPicked={onPicked} />);
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("DT3-2"));
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("1. pusgrupa"));
+    });
+
+    expect(onPicked).toHaveBeenCalled();
+    expect(harness.store.getState().settings.selectedClassId).toBe(
+      classIdOf(harness.store, "DT3-2"),
+    );
+    expect(harness.store.getState().settings.subgroup).toBe("1");
   });
 
   it("pins favourites above the rest", async () => {
@@ -167,6 +213,44 @@ describe("WeekView", () => {
     const note = screen.getByTestId("week-buildings").textContent ?? "";
     expect(note).toContain("TIC:");
     expect(note.split(",").length).toBeGreaterThan(1);
+  });
+
+  it("colours cells with more than one tone by default", async () => {
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+    const tones = new Set(
+      screen
+        .getAllByTestId("week-cell")
+        .flatMap((cell) => cell.className.split(" "))
+        .filter((cls) => cls.startsWith("bg-")),
+    );
+    expect(tones.size).toBeGreaterThan(1);
+  });
+
+  it("falls every cell back to one neutral tone with colour-coding off", async () => {
+    const harness = await bootHarness({ subjectColorCodingEnabled: false });
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+    const cells = screen.getAllByTestId("week-cell");
+    expect(cells.length).toBeGreaterThan(0);
+    for (const cell of cells) {
+      expect(cell.className.split(" ")).toContain("bg-sky");
+    }
   });
 
   it("opens a lesson sheet from a cell", async () => {
@@ -295,7 +379,7 @@ describe("WeekView", () => {
     });
 
     it("paints the card and passes it to the share sheet, with the class on it", async () => {
-      const harness = await bootHarness();
+      const harness = await bootHarness({ shareLangPromptShown: true });
       const ctx = drawingContext();
       stubCanvas(ctx);
 
@@ -314,12 +398,12 @@ describe("WeekView", () => {
       expect(drawn.some((text) => text.startsWith("–"))).toBe(true); // a lesson's end time
 
       const sent = share.mock.calls[0]?.[0] as { text: string; files: File[] };
-      expect(sent.text).toContain("https://github.com/dmytropolizhai/stundio/releases");
+      expect(sent.text).toContain("https://bit.ly/stundio");
       expect(sent.files[0]?.name).toContain("a1-2");
     });
 
     it("tells the user when the card cannot be drawn at all", async () => {
-      const harness = await bootHarness();
+      const harness = await bootHarness({ shareLangPromptShown: true });
       stubCanvas(null);
 
       renderWeek(harness);
@@ -329,7 +413,7 @@ describe("WeekView", () => {
     });
 
     it("stays quiet when the share sheet is dismissed — that is not a failure", async () => {
-      const harness = await bootHarness();
+      const harness = await bootHarness({ shareLangPromptShown: true });
       stubCanvas(drawingContext());
 
       const abort = Object.assign(new Error("cancelled"), { name: "AbortError" });

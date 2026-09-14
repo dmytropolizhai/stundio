@@ -13,7 +13,7 @@ import {
   type WeekGridCell,
   type WeekGridPeriod,
 } from "@/ds";
-import { buildingNotice, lessonBuilding, subjectCode, subjectTone } from "@/ui/theme";
+import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
@@ -62,6 +62,7 @@ export const WeekView = ({
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
+  const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
 
@@ -133,7 +134,7 @@ export const WeekView = ({
 
   const rows = useMemo<WeekGridPeriod<ISODate>[]>(
     () =>
-      periods.map(({ period, start, end }) => {
+      periods.map(({ period, start, end   }) => {
         const cells: Partial<Record<ISODate, WeekGridCell>> = {};
 
         days.forEach((day, i) => {
@@ -146,13 +147,18 @@ export const WeekView = ({
           if (lesson === undefined) return;
 
           const building = lessonBuilding(day, lesson);
+          const accent = subjectAccent(lesson.subject, subjectColorOverrides, colorCodingEnabled);
 
           cells[d] = {
             short: subjectCode(lesson.subject),
             name: lesson.subject?.name ?? lesson.subject?.short ?? "",
-            tone: subjectTone(lesson.subject, subjectColorOverrides),
+            tone: accent.tone,
             cancelled: lesson.status === "cancelled",
+            span: lesson.span,
             ...(building === undefined ? {} : { building }),
+            ...(accent.tone === "custom"
+              ? { accentColor: { fill: accent.fill, ink: accent.ink } }
+              : {}),
           };
         });
 
@@ -163,7 +169,7 @@ export const WeekView = ({
           cells,
         };
       }),
-    [periods, days, dates, subjectColorOverrides],
+    [periods, days, dates, subjectColorOverrides, colorCodingEnabled],
   );
 
   const body = () => {

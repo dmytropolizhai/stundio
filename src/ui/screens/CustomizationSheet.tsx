@@ -1,7 +1,9 @@
-import { BottomSheet, Button, LessonCard, SegmentedTabs, Switch, cn, Slider } from "@/ds";
+import { useState } from "react";
+import { BottomSheet, Button, ColorWheel, LessonCard, SegmentedTabs, Switch, cn, Slider } from "@/ds";
 import { useAppStore } from "@/store";
 import type { Settings, SubjectColorTone } from "@/db";
-import { SUBJECT_TONES, subjectTone, subjectToneKey } from "@/ui/theme";
+import type { SubjectRef } from "@/lib/edupage";
+import { SUBJECT_TONES, subjectAccent, subjectToneKey } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 import { useSubjects } from "../hooks/useSubjects.ts";
 import { Row, Section } from "./SettingsView.tsx";
@@ -18,25 +20,35 @@ const TONE_BG: Record<SubjectColorTone, string> = {
   lime: "bg-lime",
 };
 
+/** The default colour the wheel opens to for a subject that has never had a custom pick. */
+const DEFAULT_WHEEL_COLOR = "#3d7bf5";
+
 /**
- * One subject's accent picker: six DS tones plus a reset back to the auto-assigned one.
+ * One subject's accent picker: the six DS tones (their own contrast-checked ink pair), a free
+ * `ColorWheel` circle for "any RGB colour" — the product decision behind this control — and a
+ * reset back to the auto-assigned tone.
  *
- * Only ever assigns one of the six fixed tones — never an arbitrary color — so a customized
- * subject keeps the same contrast guarantee an auto-assigned one has (`ui/theme/colors.ts`).
+ * A wheel pick trades the DS's guaranteed 4.5:1 contrast for `subjectAccent`'s computed-on-the-fly
+ * ink (`ui/theme/colors.ts`): every render call site (`Card`, `LessonCard`, `WeekGrid`, the shared
+ * week image) already knows how to carry that pair through, so this is the only place a custom
+ * colour is actually chosen.
  */
 const SubjectColorRow = ({
   label,
   tokenKey,
-  tone,
+  subject,
 }: {
   label: string;
   tokenKey: string;
-  tone: SubjectColorTone;
+  subject: SubjectRef;
 }) => {
   const t = useT();
   const overrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const setOverride = useAppStore((s) => s.setSubjectColorOverride);
-  const isCustom = overrides[tokenKey] !== undefined;
+  const accent = subjectAccent(subject, overrides);
+  const isCustom = accent.tone === "custom";
+  const isOverridden = overrides[tokenKey] !== undefined;
+  const [wheelOpen, setWheelOpen] = useState(false);
 
   return (
     <div className="py-1">
@@ -47,8 +59,9 @@ const SubjectColorRow = ({
             key={option}
             type="button"
             aria-label={option}
-            aria-pressed={tone === option}
+            aria-pressed={!isCustom && accent.tone === option}
             onClick={() => {
+              setWheelOpen(false);
               void setOverride(tokenKey, option);
             }}
             className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
@@ -58,15 +71,39 @@ const SubjectColorRow = ({
               className={cn(
                 "block size-6.5 rounded-full",
                 TONE_BG[option],
-                tone === option && "inset-ring-2 inset-ring-strong",
+                !isCustom && accent.tone === option && "inset-ring-2 inset-ring-strong",
               )}
             />
           </button>
         ))}
         <button
           type="button"
-          disabled={!isCustom}
+          aria-label={t("customization.subjectColors.custom")}
+          aria-pressed={isCustom}
           onClick={() => {
+            setWheelOpen((open) => !isCustom || !open);
+            if (!isCustom) void setOverride(tokenKey, DEFAULT_WHEEL_COLOR);
+          }}
+          className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
+        >
+          <span
+            aria-hidden="true"
+            className={cn(
+              "block size-6.5 rounded-full",
+              isCustom && "inset-ring-2 inset-ring-strong",
+            )}
+            style={{
+              background: isCustom
+                ? accent.fill
+                : "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
+            }}
+          />
+        </button>
+        <button
+          type="button"
+          disabled={!isOverridden}
+          onClick={() => {
+            setWheelOpen(false);
             void setOverride(tokenKey, null);
           }}
           className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted decoration-dotted disabled:opacity-30 disabled:no-underline"
@@ -74,7 +111,71 @@ const SubjectColorRow = ({
           {t("customization.subjectColors.reset")}
         </button>
       </div>
+
+      {wheelOpen && isCustom && (
+        <div className="mt-3 mb-1">
+          <ColorWheel
+            value={accent.fill}
+            onChange={(hex) => {
+              void setOverride(tokenKey, hex);
+            }}
+            label={t("customization.subjectColors.custom")}
+            lightnessLabel={t("customization.subjectColors.lightness")}
+          />
+        </div>
+      )}
     </div>
+  );
+};
+
+/**
+ * The app-wide accent picker: the same six DS tones as the subject picker, plus a reset to
+ * `"default"` — the DS's own ink-based emphasis colour, unchanged from before this setting
+ * existed. Lives at `Settings.appAccent`; applied globally by `useCustomization`, never at a
+ * call site.
+ */
+const AppAccentRow = () => {
+  const t = useT();
+  const appAccent = useAppStore((s) => s.settings.appAccent);
+  const setAppAccent = useAppStore((s) => s.setAppAccent);
+
+  return (
+    <Row>
+      <p className="mb-2.5 font-text text-caption text-muted">{t("customization.accent.hint")}</p>
+      <div className="-ml-2.5 flex items-center">
+        {SUBJECT_TONES.map((option) => (
+          <button
+            key={option}
+            type="button"
+            aria-label={option}
+            aria-pressed={appAccent === option}
+            onClick={() => {
+              void setAppAccent(option);
+            }}
+            className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
+          >
+            <span
+              aria-hidden="true"
+              className={cn(
+                "block size-6.5 rounded-full",
+                TONE_BG[option],
+                appAccent === option && "inset-ring-2 inset-ring-strong",
+              )}
+            />
+          </button>
+        ))}
+        <button
+          type="button"
+          disabled={appAccent === "default"}
+          onClick={() => {
+            void setAppAccent("default");
+          }}
+          className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted decoration-dotted disabled:opacity-30 disabled:no-underline"
+        >
+          {t("customization.accent.reset")}
+        </button>
+      </div>
+    </Row>
   );
 };
 
@@ -95,6 +196,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
   const setCardRadius = useAppStore((s) => s.setCardRadius);
   const setCardElevation = useAppStore((s) => s.setCardElevation);
   const setReduceMotion = useAppStore((s) => s.setReduceMotion);
+  const setSubjectColorCodingEnabled = useAppStore((s) => s.setSubjectColorCodingEnabled);
   const resetCustomization = useAppStore((s) => s.resetCustomization);
   const { subjects } = useSubjects();
 
@@ -153,6 +255,10 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
               }}
             />
           </Row>
+        </Section>
+
+        <Section title={t("customization.accent")}>
+          <AppAccentRow />
         </Section>
 
         <Section title={t("customization.lessonStyle")}>
@@ -236,30 +342,55 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
         </Section>
 
         <Section title={t("customization.subjectColors")}>
-          {subjects.length === 0 ? (
-            <Row>
-              <p className="font-text text-caption text-muted">
-                {t("customization.subjectColors.empty")}
+          <Row className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-strong">
+                {t("customization.subjectColors.enabled")}
               </p>
-            </Row>
-          ) : (
-            <>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("customization.subjectColors.enabled.hint")}
+              </p>
+            </div>
+            <Switch
+              aria-label={t("customization.subjectColors.enabled")}
+              checked={settings.subjectColorCodingEnabled}
+              onChange={(checked) => {
+                void setSubjectColorCodingEnabled(checked);
+              }}
+            />
+          </Row>
+
+          {/*
+           * Off, the per-subject list is hidden rather than left visible-but-inert: every one of
+           * these picks writes a `subjectColorOverrides` entry that `subjectTone` ignores while
+           * colour-coding is off (`ui/theme/colors.ts`), so showing it here would look live and
+           * do nothing.
+           */}
+          {settings.subjectColorCodingEnabled &&
+            (subjects.length === 0 ? (
               <Row>
                 <p className="font-text text-caption text-muted">
-                  {t("customization.subjectColors.hint")}
+                  {t("customization.subjectColors.empty")}
                 </p>
               </Row>
-              {subjects.map(({ subject }) => (
-                <Row key={subject.id}>
-                  <SubjectColorRow
-                    label={subject.name || subject.short}
-                    tokenKey={subjectToneKey(subject)}
-                    tone={subjectTone(subject, settings.subjectColorOverrides)}
-                  />
+            ) : (
+              <>
+                <Row>
+                  <p className="font-text text-caption text-muted">
+                    {t("customization.subjectColors.hint")}
+                  </p>
                 </Row>
-              ))}
-            </>
-          )}
+                {subjects.map(({ subject }) => (
+                  <Row key={subject.id}>
+                    <SubjectColorRow
+                      label={subject.name || subject.short}
+                      tokenKey={subjectToneKey(subject)}
+                      subject={subject}
+                    />
+                  </Row>
+                ))}
+              </>
+            ))}
         </Section>
       </div>
     </BottomSheet>

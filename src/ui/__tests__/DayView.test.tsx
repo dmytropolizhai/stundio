@@ -4,7 +4,7 @@
  * shown verbatim, and every empty state says something.
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { StoreContext } from "../../store/index.ts";
 import { DayView } from "../screens/DayView.tsx";
 import { bootHarness, FIXTURE_DATE, type Harness } from "./harness.tsx";
@@ -61,6 +61,26 @@ describe("DayView", () => {
 
     expect(screen.getByTestId("day-building").textContent).toContain("Cita ēka: TIC");
     expect(screen.getAllByText("TIC").length).toBeGreaterThan(0);
+  });
+
+  const RAIL_CLASSES = ["bg-amber", "bg-sky", "bg-lilac", "bg-pink", "bg-mint", "bg-lime"];
+  const railTonesUsed = (container: HTMLElement): Set<string> =>
+    new Set(
+      [...container.querySelectorAll("span")]
+        .flatMap((span) => span.className.split(" "))
+        .filter((cls) => RAIL_CLASSES.includes(cls)),
+    );
+
+  it("colours the subject rail with more than one tone by default", async () => {
+    const harness = await bootHarness();
+    const { container } = renderDay(harness);
+    expect(railTonesUsed(container).size).toBeGreaterThan(1);
+  });
+
+  it("falls the subject rail back to one neutral tone with colour-coding off", async () => {
+    const harness = await bootHarness({ subjectColorCodingEnabled: false });
+    const { container } = renderDay(harness);
+    expect(railTonesUsed(container)).toEqual(new Set(["bg-sky"]));
   });
 
   it("keeps cancelled lessons visible with the school's own wording", async () => {
@@ -199,5 +219,25 @@ describe("DayView", () => {
     await vi.waitFor(() => {
       expect(harness.server.calls.substitutions).toBeGreaterThan(before);
     });
+  });
+
+  it("shows the offline banner once syncStatus says offline, and hides it once synced again", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+    expect(screen.queryByTestId("offline-banner")).toBeNull();
+
+    act(() => {
+      harness.store.getState().setConnectivity(false);
+    });
+    expect(screen.getByTestId("offline-banner")).toBeDefined();
+    expect(screen.getByText("Nav interneta pieslēguma — rādām saglabāto sarakstu.")).toBeDefined();
+
+    await act(async () => {
+      harness.store.getState().setConnectivity(true);
+      await vi.waitFor(() => {
+        expect(harness.store.getState().syncStatus).toBe("idle");
+      });
+    });
+    expect(screen.queryByTestId("offline-banner")).toBeNull();
   });
 });

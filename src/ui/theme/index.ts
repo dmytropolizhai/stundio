@@ -10,6 +10,8 @@ export {
   lessonBuilding,
   subjectCode,
   subjectTone,
+  subjectAccent,
   subjectToneKey,
   type SubjectTone,
+  type SubjectAccent,
 } from "./colors.ts";

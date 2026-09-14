@@ -50,6 +50,7 @@ export default defineConfig({
         "src/lib/schedule/**",
         "src/lib/share/**",
         "src/lib/version/**",
+        "src/lib/network/**",
         "src/lib/widget/**",
         "src/db/**",
         "src/widget/**",

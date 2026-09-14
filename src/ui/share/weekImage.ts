@@ -14,13 +14,7 @@ import {
   type ShareLegendEntry,
   type ShareLink,
 } from "@/lib/share";
-import {
-  buildingNotice,
-  lessonBuilding,
-  subjectCode,
-  subjectTone,
-  type SubjectTone,
-} from "@/ui/theme";
+import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
 import {
   formatDayMonth,
   formatWeekdayShort,
@@ -28,7 +22,7 @@ import {
   type Lang,
   type Translate,
 } from "@/ui/i18n";
-import type { ShareTheme } from "./palette.ts";
+import { accentFillInk, type ShareTheme } from "./palette.ts";
 
 /**
  * Where a reader of the shared image gets the app.
@@ -66,7 +60,9 @@ export type WeekImageInput = {
   lang: Lang;
   t: Translate;
   /** Same overrides the day and week views use, so a shared card matches the app on-screen. */
-  subjectColorOverrides?: Record<string, SubjectTone>;
+  subjectColorOverrides?: Record<string, string>;
+  /** Same switch the day and week views read — off collapses every cell to the neutral tone. */
+  subjectColorCodingEnabled?: boolean;
 };
 
 const roomsOf = (lesson: ResolvedLesson): string =>
@@ -79,9 +75,13 @@ const toCell = (
   day: ResolvedDay,
   lesson: ResolvedLesson,
   theme: ShareTheme,
-  subjectColorOverrides: Record<string, SubjectTone>,
+  subjectColorOverrides: Record<string, string>,
+  subjectColorCodingEnabled: boolean,
 ): ShareCell => {
-  const tone = theme.tones[subjectTone(lesson.subject, subjectColorOverrides)];
+  const tone = accentFillInk(
+    subjectAccent(lesson.subject, subjectColorOverrides, subjectColorCodingEnabled),
+    theme,
+  );
   const detail = roomsOf(lesson);
   const building = lessonBuilding(day, lesson);
 
@@ -106,7 +106,8 @@ const toCell = (
 const subjectKey = (
   days: (ResolvedDay | null)[],
   theme: ShareTheme,
-  subjectColorOverrides: Record<string, SubjectTone>,
+  subjectColorOverrides: Record<string, string>,
+  subjectColorCodingEnabled: boolean,
 ): ShareLegendEntry[] => {
   const byLabel = new Map<string, ShareLegendEntry>();
 
@@ -118,7 +119,10 @@ const subjectKey = (
       // Nothing to explain when there is no name behind the code.
       if (name === "" || name === label || byLabel.has(label)) continue;
 
-      const tone = theme.tones[subjectTone(lesson.subject, subjectColorOverrides)];
+      const tone = accentFillInk(
+        subjectAccent(lesson.subject, subjectColorOverrides, subjectColorCodingEnabled),
+        theme,
+      );
       byLabel.set(label, { label, name, fill: tone.fill, ink: tone.ink });
     }
   }
@@ -165,6 +169,7 @@ export const buildWeekImageData = ({
   lang,
   t,
   subjectColorOverrides = {},
+  subjectColorCodingEnabled = true,
 }: WeekImageInput): ShareImageData => {
   const first = dates[0];
   const last = dates[dates.length - 1];
@@ -177,7 +182,7 @@ export const buildWeekImageData = ({
       const lesson = day?.lessons.find((l) => l.period === slot.period);
       return day === null || lesson === undefined
         ? null
-        : toCell(day, lesson, theme, subjectColorOverrides);
+        : toCell(day, lesson, theme, subjectColorOverrides, subjectColorCodingEnabled);
     }),
   }));
 
@@ -191,7 +196,7 @@ export const buildWeekImageData = ({
       date: formatDayMonth(date, lang),
     })),
     rows,
-    legend: subjectKey(days, theme, subjectColorOverrides),
+    legend: subjectKey(days, theme, subjectColorOverrides, subjectColorCodingEnabled),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
     link: appLink(),

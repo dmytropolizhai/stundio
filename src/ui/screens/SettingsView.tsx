@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useAppStore } from "@/store";
-import { listBuildings } from "@/lib/edupage";
+import { listBuildings, listSubgroups } from "@/lib/edupage";
 import type { Settings } from "@/db";
 import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "@/ds";
 import { ensureNotificationPermission, openNotificationSettings } from "@/notifications";
@@ -10,23 +10,9 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
 import { CustomizationSheet } from "./CustomizationSheet.tsx";
+import { FeedbackSheet } from "../components/FeedbackSheet.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
-
-const REPO_URL = "https://github.com/dmytropolizhai/stundio";
-const REPORT_ISSUE_BASE = `${REPO_URL}/issues/new`;
-
-/** Prefills a GitHub issue with the details a bug report needs but a user won't think to add. */
-const reportIssueUrl = (className: string | undefined): string => {
-  const body = [
-    "**What happened:**",
-    "",
-    "",
-    "---",
-    `App version: ${__APP_VERSION__}`,
-    `Class: ${className ?? "none selected"}`,
-  ].join("\n");
-  return `${REPORT_ISSUE_BASE}?${new URLSearchParams({ labels: "bug", body }).toString()}`;
-};
+import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
 
 /** Also used by `CustomizationSheet`, which shares this screen's section/row look. */
 export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -63,12 +49,18 @@ export const SettingsView = ({
 }) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
+  const [feedbackState, setFeedbackState] = useState<{ open: boolean; type: FeedbackType }>({
+    open: false,
+    type: "suggestion",
+  });
   const notifyPermissionDenied = useNotificationPermissionDenied();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
+  const timetables = useAppStore((s) => s.timetables);
   const settings = useAppStore((s) => s.settings);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const setBuilding = useAppStore((s) => s.setBuilding);
+  const setSubgroup = useAppStore((s) => s.setSubgroup);
   const setTheme = useAppStore((s) => s.setTheme);
   const setLang = useAppStore((s) => s.setLang);
   const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
@@ -89,6 +81,11 @@ export const SettingsView = ({
   const install = useUpdateInstall();
 
   const buildings = useMemo(() => listBuildings(metas), [metas]);
+  const subgroups = useMemo(
+    () =>
+      selectedClass === null ? [] : listSubgroups(Object.values(timetables), selectedClass.id),
+    [timetables, selectedClass],
+  );
 
   const reminderOptions: { key: string; label: string }[] = [
     { key: "0", label: t("settings.notifyLessonReminderOff") },
@@ -152,6 +149,24 @@ export const SettingsView = ({
                 ]}
                 onChange={(value) => {
                   void setBuilding(value === "" ? null : value);
+                }}
+              />
+            </Row>
+          </Section>
+        )}
+
+        {subgroups.length > 1 && (
+          <Section title={t("settings.subgroup")}>
+            <Row>
+              <SegmentedTabs
+                label={t("settings.subgroup")}
+                value={settings.subgroup ?? ""}
+                items={[
+                  { key: "", label: t("settings.subgroupAll") },
+                  ...subgroups.map((g) => ({ key: g, label: g })),
+                ]}
+                onChange={(value) => {
+                  void setSubgroup(value === "" ? null : value);
                 }}
               />
             </Row>
@@ -368,10 +383,24 @@ export const SettingsView = ({
             <span className="font-text text-caption font-bold text-strong">
               {t("settings.reportIssue")}
             </span>
-            <Button size="sm" icon="triangle-alert" asChild>
-              <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
-                {t("settings.reportIssueAction")}
-              </a>
+            <Button
+              size="sm"
+              icon="triangle-alert"
+              onClick={() => setFeedbackState({ open: true, type: "bug" })}
+            >
+              {t("settings.reportIssueAction")}
+            </Button>
+          </Row>
+          <Row className="flex flex-wrap items-center justify-between gap-3">
+            <span className="font-text text-caption font-bold text-strong">
+              {t("settings.suggestFeature")}
+            </span>
+            <Button
+              size="sm"
+              icon="plus"
+              onClick={() => setFeedbackState({ open: true, type: "suggestion" })}
+            >
+              {t("settings.suggestFeatureAction")}
             </Button>
           </Row>
           <Row className="flex flex-wrap items-center justify-between gap-3">
@@ -461,6 +490,15 @@ export const SettingsView = ({
         onClose={() => {
           setCustomizing(false);
         }}
+      />
+
+      <FeedbackSheet
+        open={feedbackState.open}
+        type={feedbackState.type}
+        onClose={() => {
+          setFeedbackState((s) => ({ ...s, open: false }));
+        }}
+        className={selectedClass?.short}
       />
     </div>
   );

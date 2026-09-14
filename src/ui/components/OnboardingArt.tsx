@@ -46,7 +46,15 @@ const room = (short: string): ResolvedLesson["rooms"][number] => ({
 const SampleDay = ({ lessons }: { lessons: ResolvedLesson[] }) => (
   <ul className="m-0 flex w-full list-none flex-col gap-2.5 p-0 text-left">
     {lessons.map((l) => (
-      <LessonRow key={l.period} lesson={l} live={false} showTime />
+      <LessonRow
+        key={l.period}
+        lesson={l}
+        live={false}
+        showTime
+        subjectColorOverrides={{}}
+        colorCodingEnabled
+        filled={false}
+      />
     ))}
   </ul>
 );

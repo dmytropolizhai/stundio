@@ -12,7 +12,7 @@ import { cn } from "../../lib/utils.ts";
  */
 const buttonVariants = cva(
   [
-    "inline-flex items-center justify-center rounded-pill font-text font-bold",
+    "inline-flex items-center justify-center rounded-pill font-text font-semibold",
     "cursor-pointer border-0 whitespace-nowrap select-none",
     "transition-[background-color,color,box-shadow,transform] duration-(--dur-fast) ease-(--ease-standard)",
     "active:scale-(--press-scale) active:duration-(--dur-instant)",
@@ -21,8 +21,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-ink-900 text-white shadow-card hover:bg-ink-700",
-        inverse: "bg-ink-900 text-white shadow-card hover:bg-ink-700",
+        primary: "bg-brand text-on-brand shadow-card hover:bg-ink-700 dark:hover:bg-ink-200",
+        inverse: "bg-brand text-on-brand shadow-card hover:bg-ink-700 dark:hover:bg-ink-200",
         outline: "bg-transparent text-strong inset-ring-2 inset-ring-strong hover:bg-sunken",
         ghost: "bg-transparent text-strong hover:bg-sunken",
         onBrand: "bg-white text-strong hover:bg-ink-050",

@@ -1,16 +1,18 @@
 /**
- * Applies the bounded appearance settings (corner radius, shadow depth, reduced motion) to
- * `<html>` as classes, the same mechanism `useTheme` uses for `.dark`. Each class re-points a
- * handful of DS aliases in `index.css` — never a base token file — so every option is still
- * something the Studio DS itself would recognise (CLAUDE.md: `ds/tokens/*` stays generated).
+ * Applies the bounded appearance settings (corner radius, shadow depth, reduced motion, global
+ * accent) to `<html>` as classes, the same mechanism `useTheme` uses for `.dark`. Each class
+ * re-points a handful of DS aliases in `index.css` — never a base token file — so every option is
+ * still something the Studio DS itself would recognise (CLAUDE.md: `ds/tokens/*` stays generated).
  */
 import { useEffect } from "react";
 import { useAppStore } from "../../store/index.ts";
+import { SUBJECT_TONES } from "./colors.ts";
 
 export const useCustomization = (): void => {
   const cardRadius = useAppStore((s) => s.settings.cardRadius);
   const cardElevation = useAppStore((s) => s.settings.cardElevation);
   const reduceMotion = useAppStore((s) => s.settings.reduceMotion);
+  const appAccent = useAppStore((s) => s.settings.appAccent);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -20,5 +22,9 @@ export const useCustomization = (): void => {
     root.classList.toggle("radius-2xl", cardRadius === "2xl");
     root.classList.toggle("elevation-bold", cardElevation === "bold");
     root.classList.toggle("reduce-motion", reduceMotion);
-  }, [cardRadius, cardElevation, reduceMotion]);
+    // "default" needs no override — it is `colors.css`'s own ink-based emphasis colour.
+    for (const tone of SUBJECT_TONES) {
+      root.classList.toggle(`accent-${tone}`, appAccent === tone);
+    }
+  }, [cardRadius, cardElevation, reduceMotion, appAccent]);
 };

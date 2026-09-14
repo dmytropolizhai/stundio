@@ -7,6 +7,8 @@ export type WeekGridCell = {
   /** Unabbreviated subject name. Not drawn — it is what assistive tech announces. */
   name?: string;
   tone?: LessonTone;
+  /** Required alongside `tone: "custom"` — the fill/ink pair a fixed tone gets for free. */
+  accentColor?: { fill: string; ink: string };
   cancelled?: boolean;
   /**
    * The lesson's building, set only when it is not the school's main building. Draws a hairline
@@ -14,6 +16,13 @@ export type WeekGridCell = {
    * and folds into the cell's accessible label so the fact isn't colour-only.
    */
   building?: string;
+  /**
+   * Rows this one lesson structurally occupies (EduPage's `durationperiods` — a combined double
+   * lesson like a 2-period Sports block). Always rendered as one spanning cell, independent of
+   * `mergeConsecutive`, which is only for visually coalescing separately-scheduled identical
+   * lessons that merely happen to sit back-to-back. Defaults to 1.
+   */
+  span?: number;
 };
 
 export type WeekGridDay<K extends string = string> = {
@@ -51,7 +60,8 @@ export type WeekGridProps<K extends string = string> = {
   mergeConsecutive?: boolean;
 };
 
-const TONE_BG: Record<LessonTone, string> = {
+/** `custom` has no entry — a user-picked hex is applied as an inline style instead. */
+const TONE_BG: Record<Exclude<LessonTone, "custom">, string> = {
   amber: "bg-amber",
   sky: "bg-sky",
   lilac: "bg-lilac",
@@ -66,14 +76,20 @@ type Placement = { cell: WeekGridCell; span: number } | "covered";
 const sameCell = (a: WeekGridCell, b: WeekGridCell): boolean =>
   a.short === b.short &&
   (a.tone ?? "sky") === (b.tone ?? "sky") &&
+  (a.tone !== "custom" || a.accentColor?.fill === b.accentColor?.fill) &&
   (a.cancelled ?? false) === (b.cancelled ?? false) &&
   (a.building ?? "") === (b.building ?? "");
 
 /**
- * Placement per row for one day column. Without merging this is just each period's own cell;
- * with it, a run of adjacent rows carrying the identical cell collapses to one `span`-tall
- * placement, and the rows it absorbs come back as `"covered"` (render nothing — the spanning
- * cell above already fills that grid area).
+ * Placement per row for one day column.
+ *
+ * First pass: every cell always occupies its own structural `span` (a combined double lesson —
+ * EduPage's `durationperiods` — regardless of `mergeConsecutive`), and the rows it covers come
+ * back as `"covered"` (render nothing — the spanning cell above already fills that grid area).
+ *
+ * Second pass, only with `mergeConsecutive`: adjacent placements carrying an identical cell
+ * additionally coalesce into one taller placement — this is for two separately-scheduled
+ * lessons that merely happen to sit back-to-back, not a lesson's own structural span.
  */
 const placementsFor = <K extends string>(
   day: WeekGridDay<K>,
@@ -81,9 +97,7 @@ const placementsFor = <K extends string>(
   mergeConsecutive: boolean,
 ): (Placement | undefined)[] => {
   const raw = periods.map((p) => p.cells[day.key]);
-  if (!mergeConsecutive) {
-    return raw.map((cell) => (cell === undefined ? undefined : { cell, span: 1 }));
-  }
+
   const out = new Array<Placement | undefined>(raw.length).fill(undefined);
   let i = 0;
   while (i < raw.length) {
@@ -92,16 +106,34 @@ const placementsFor = <K extends string>(
       i += 1;
       continue;
     }
-    let span = 1;
-    while (i + span < raw.length) {
-      const next = raw[i + span];
-      if (next === undefined || !sameCell(cell, next)) break;
-      span += 1;
-    }
+    const span = Math.min(Math.max(1, cell.span ?? 1), raw.length - i);
     out[i] = { cell, span };
     for (let k = 1; k < span; k += 1) out[i + k] = "covered";
     i += span;
   }
+
+  if (!mergeConsecutive) return out;
+
+  i = 0;
+  while (i < out.length) {
+    const placement = out[i];
+    if (placement === undefined || placement === "covered") {
+      i += 1;
+      continue;
+    }
+    let { span } = placement;
+    let j = i + span;
+    while (j < out.length) {
+      const next = out[j];
+      if (next === undefined || next === "covered" || !sameCell(placement.cell, next.cell)) break;
+      for (let k = 0; k < next.span; k += 1) out[j + k] = "covered";
+      span += next.span;
+      j += next.span;
+    }
+    out[i] = { cell: placement.cell, span };
+    i += span;
+  }
+
   return out;
 };
 
@@ -163,28 +195,19 @@ export const WeekGrid = <K extends string>({
       // `h-10` here (not just on cells) keeps every row at least one lesson-cell tall, even a
       // row every day's lesson merges away from (see `placementsFor`) — otherwise that row
       // would collapse to the label text's own height and break the grid's vertical rhythm.
+      //
+      // `items-start` puts the label at the row's top edge rather than centred beside the
+      // lesson cell: it marks the boundary line where this period begins, not a caption for
+      // the cell it happens to sit next to — the same reasoning as the closing end-time label
+      // below, which this now matches instead of contradicting.
       <span
         key={`t-${period.period}`}
-        className="u-data flex h-10 items-center text-muted"
+        className="u-data flex h-10 items-start text-muted"
         style={{ gridColumn: 1, gridRow: rowIndex + 2 }}
       >
         {period.start}
       </span>
     ))}
-
-    {/*
-      Every other row's label is its *start* time — the next row down implies where it ends.
-      The last row has no next row, so without this the grid's final lesson (and any block that
-      merges into it) reads as if it stops at the last period's start rather than its actual end.
-    */}
-    {periods.length > 0 && (
-      <span
-        className="u-data flex h-4 items-start text-muted"
-        style={{ gridColumn: 1, gridRow: periods.length + 2 }}
-      >
-        {periods[periods.length - 1]?.end}
-      </span>
-    )}
 
     {days.map((day, colIndex) =>
       placementsFor(day, periods, mergeConsecutive).map((placement, rowIndex) => {
@@ -226,11 +249,14 @@ export const WeekGrid = <K extends string>({
             style={{
               gridColumn,
               gridRow: span === 1 ? gridRow : `${String(gridRow)} / span ${String(span)}`,
+              ...(cell.tone === "custom" && cell.accentColor !== undefined
+                ? { backgroundColor: cell.accentColor.fill, color: cell.accentColor.ink }
+                : {}),
             }}
             className={cn(
               "truncate rounded-sm border-0 px-1.5",
-              "font-text text-caption font-bold text-ink-900",
-              TONE_BG[cell.tone ?? "sky"],
+              "font-text text-caption font-bold",
+              cell.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[cell.tone ?? "sky"]),
               cell.cancelled === true && "opacity-40 line-through",
               cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
               onSelect === undefined ? "cursor-default" : "cursor-pointer",

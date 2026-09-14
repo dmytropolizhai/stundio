@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "../../store/index.ts";
 import { Card, Icon, IconButton, TextField } from "../../ds/index.ts";
+import { listSubgroups } from "../../lib/edupage/index.ts";
 import { useClasses, type ClassOption } from "../hooks/useClasses.ts";
 import { StateMessage } from "../components/StateMessage.tsx";
+import { SubgroupPicker } from "./SubgroupPicker.tsx";
 import { useT } from "../i18n/index.ts";
 
 /**
@@ -14,15 +16,21 @@ import { useT } from "../i18n/index.ts";
  *
  * The favourite marker is a colour change on a Lucide star, not a filled glyph: the DS uses
  * monochrome icons throughout and reserves fills for surfaces.
+ *
+ * A divided class ("pusgrupa") publishes both halves' lessons together, so picking one asks a
+ * follow-up question — which half is the user's — before `onPicked` fires. A class with no
+ * divided lessons skips straight through, unchanged from before subgroup support existed.
  */
 export const ClassPicker = ({ onPicked }: { onPicked?: () => void }) => {
   const t = useT();
   const classes = useClasses();
+  const timetables = useAppStore((s) => s.timetables);
   const selected = useAppStore((s) => s.settings.selectedClassId);
   const favorites = useAppStore((s) => s.settings.favorites);
   const setClass = useAppStore((s) => s.setClass);
   const toggleFavorite = useAppStore((s) => s.toggleFavorite);
   const [query, setQuery] = useState("");
+  const [askSubgroupFor, setAskSubgroupFor] = useState<ClassOption | null>(null);
 
   const matches = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -35,10 +43,32 @@ export const ClassPicker = ({ onPicked }: { onPicked?: () => void }) => {
   const pinned = matches.filter((c) => favorites.includes(c.id));
   const rest = matches.filter((c) => !favorites.includes(c.id));
 
-  const pick = (id: string) => {
-    void setClass(id);
+  /*
+   * `setClass` is deferred until the whole pick is final for a divided class: the app shell
+   * treats `selectedClassId !== null` as "onboarding is done" (`App.tsx`), so committing it
+   * before the subgroup question is answered would skip straight past that question.
+   */
+  const pick = (cls: ClassOption) => {
+    const subgroups = listSubgroups(Object.values(timetables), cls.id);
+    if (subgroups.length > 1) {
+      setAskSubgroupFor(cls);
+      return;
+    }
+    void setClass(cls.id);
     onPicked?.();
   };
+
+  if (askSubgroupFor !== null) {
+    return (
+      <SubgroupPicker
+        cls={askSubgroupFor}
+        onDone={() => {
+          setAskSubgroupFor(null);
+          onPicked?.();
+        }}
+      />
+    );
+  }
 
   const row = (cls: ClassOption, i: number) => {
     const isFavorite = favorites.includes(cls.id);
@@ -51,7 +81,7 @@ export const ClassPicker = ({ onPicked }: { onPicked?: () => void }) => {
         <button
           type="button"
           onClick={() => {
-            pick(cls.id);
+            pick(cls);
           }}
           aria-pressed={isSelected}
           className={`flex min-w-0 flex-1 cursor-pointer items-baseline gap-2 border-0 bg-transparent px-4 py-3.5 text-left ${

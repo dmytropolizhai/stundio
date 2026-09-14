@@ -1,7 +1,7 @@
 {
   "name": "stundio",
   "private": true,
-  "version": "v1.1.0-dzintars",
+  "version": "v1.1.11-lacplesis",
   "type": "module",
   "engines": {
     "node": ">=20"
@@ -24,6 +24,7 @@
     "@capacitor/app": "^7.0.0",
     "@capacitor/core": "^7.0.0",
     "@capacitor/local-notifications": "^7.0.7",
+    "@capacitor/network": "^7.0.2",
     "@date-fns/tz": "^1.2.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/manrope": "^5.3.0",

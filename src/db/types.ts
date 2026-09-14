@@ -19,9 +19,22 @@ export type CachedTimetableList = {
  */
 export type SubjectColorTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "lime";
 
+/**
+ * A subject's colour override: one of the six DS tones, or a user-picked `#rrggbb` hex from the
+ * customization sheet's colour wheel. A hex value bypasses the DS's pre-shipped ink pairing —
+ * `ui/theme/colors.ts`'s `subjectAccent` computes a readable ink for it on the fly instead.
+ */
+export type SubjectColorValue = SubjectColorTone | `#${string}`;
+
 export type Settings = {
   selectedClassId: string | null;
   building: Building | null;
+  /**
+   * The user's pusgrupa within a divided class — one of `listSubgroups`'s labels for the
+   * selected class, or `null` to show every division merged (the pre-subgroup-support
+   * behaviour, and the right default for a class that isn't split at all).
+   */
+  subgroup: string | null;
   /** Class ids the user pinned; notifications in Phase 4 key off these. */
   favorites: string[];
   theme: "system" | "light" | "dark";
@@ -39,10 +52,24 @@ export type Settings = {
   /** Forces every DS transition/animation to near-zero, independent of the OS preference. */
   reduceMotion: boolean;
   /**
+   * App-wide accent, one of the DS's six subject-accent token pairs re-pointing the "selected /
+   * current" ink aliases (today's date, the syncing spinner, a selected option, …) — see
+   * `useCustomization`. `"default"` keeps those aliases exactly as `ds/tokens/colors.css` defines
+   * them, so an existing user who never opens the picker sees today's app unchanged.
+   */
+  appAccent: "default" | SubjectColorTone;
+  /**
+   * Whether a subject's timetable entries render in its assigned/overridden accent at all. Off
+   * falls every current consumer of `subjectTone()` back to one fixed neutral tone — the deter-
+   * ministic hashing and `subjectColorOverrides` stay intact underneath, just unused while off.
+   */
+  subjectColorCodingEnabled: boolean;
+  /**
    * Per-subject accent overrides, keyed the same way `subjectTone` keys its hash (lowercased
    * `short`/`name`/`id`). A subject not present here keeps its deterministic auto-assigned tone.
+   * Ignored while `subjectColorCodingEnabled` is off.
    */
-  subjectColorOverrides: Record<string, SubjectColorTone>;
+  subjectColorOverrides: Record<string, SubjectColorValue>;
   /** Minutes before a lesson to notify at; 0 turns the reminder off. */
   notifyLessonReminderMinutes: number;
   /** Notify when today's or tomorrow's substitutions change after the initial load. */
@@ -65,11 +92,16 @@ export type Settings = {
   shareLangSyncWithApp: boolean;
   /** Whether the one-time "which language to share in" prompt has already been shown. */
   shareLangPromptShown: boolean;
+  /** Launches counted so far — drives the home-screen feedback prompt's "more than 3" gate. */
+  appOpenCount: number;
+  /** Closed the home-screen feedback card. The Settings entry stays reachable regardless. */
+  feedbackPromptDismissed: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
   selectedClassId: null,
   building: null,
+  subgroup: null,
   favorites: [],
   theme: "system",
   lang: "lv",
@@ -79,6 +111,8 @@ export const DEFAULT_SETTINGS: Settings = {
   cardRadius: "xl",
   cardElevation: "soft",
   reduceMotion: false,
+  appAccent: "default",
+  subjectColorCodingEnabled: true,
   subjectColorOverrides: {},
   notifyLessonReminderMinutes: 10,
   notifySubstitutionChanges: true,
@@ -89,6 +123,8 @@ export const DEFAULT_SETTINGS: Settings = {
   shareLang: "lv",
   shareLangSyncWithApp: true,
   shareLangPromptShown: false,
+  appOpenCount: 0,
+  feedbackPromptDismissed: false,
 };
 
 export type SubjectNote = {

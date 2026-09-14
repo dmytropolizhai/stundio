@@ -28,9 +28,20 @@
   --text-link: var(--blue-300);
   --text-link-hover: var(--blue-200);
 
-  /* Brand is ink, not blue — the tint and the focus ring still move here because both
-     are read against a dark ground. */
+  /* Brand is ink, not blue — the fill, the strong ink, the tint and the focus ring all move
+     here because they're read against a dark ground: a near-black fill from the light theme
+     would sit flush on the near-black --bg-app, so brand flips to a light ink with dark text
+     instead. --brand-strong (the "selected" ink — the active language card in
+     OnboardingLanguage, the current class row in ClassPicker) mirrors the light theme's own
+     gap between --text-strong and --brand-strong (ink-900 vs ink-700: brand-strong is a step
+     *softer*, not darker, than plain text) by landing one step in from white (ink-100) rather
+     than at white itself — left un-overridden it stayed --ink-700, which nearly disappears
+     against a dark card, and landing it on plain white made it indistinguishable from
+     --text-strong instead. */
+  --brand: var(--ink-100);
+  --brand-strong: var(--ink-200);
   --brand-tint: #1c1e26;
+  --text-on-brand: var(--ink-900);
   --focus-ring: var(--ink-300);
 
   /* Status. The DS tunes these for white ground; on dark they are lifted to keep 4.5:1
