@@ -15,6 +15,7 @@ import {
   wireNotificationTaps,
 } from "../notifications/index.ts";
 import { createAnalyticsClient, capacitorHttp as analyticsHttp } from "../lib/analytics/index.ts";
+import { wireWidget } from "../widget/index.ts";
 
 /** The Plausible site the app reports to (a fake domain — there is no web page behind it). */
 const ANALYTICS_DOMAIN = "stundio.lv";
@@ -37,6 +38,9 @@ export const bootApp: Boot = async () => {
 
   const notifications = wireNotifications(store);
   const notificationTaps = wireNotificationTaps(store);
+  // The home-screen tile follows the store, so a finished sync (or a class change) redraws it
+  // immediately — the plugin pokes AppWidgetManager rather than waiting for the 30-min tick.
+  const widget = wireWidget(store);
   // A cached timetable list means this device has synced before — gates the "schedule
   // changed" notification off the very first, baseline-less sync.
   const hadPreviousSync = (await cache.getTimetableList()) !== null;
@@ -54,6 +58,7 @@ export const bootApp: Boot = async () => {
     disposeResume();
     notifications.dispose();
     notificationTaps.dispose();
+    widget.dispose();
   };
   return { store, dispose };
 };

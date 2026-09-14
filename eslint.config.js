@@ -76,4 +76,22 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // And for lib/widget, where only the AppWidgetManager poke is native — the payload is pure.
+    files: ["src/lib/widget/**/*.ts"],
+    ignores: ["src/lib/widget/native.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@capacitor/*"],
+              message: "Only src/lib/widget/native.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

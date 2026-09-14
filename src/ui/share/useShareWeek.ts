@@ -46,9 +46,8 @@ export const useShareWeek = (
   /** The share image/message travels in its own language — separate from the app's chrome. */
   const effectiveLang = shareLangSyncWithApp ? lang : shareLang;
   const shareT = useMemo(
-    () =>
-      (key: Parameters<typeof translate>[1], params?: Parameters<typeof translate>[2]) =>
-        translate(effectiveLang, key, params),
+    () => (key: Parameters<typeof translate>[1], params?: Parameters<typeof translate>[2]) =>
+      translate(effectiveLang, key, params),
     [effectiveLang],
   );
 

@@ -162,7 +162,10 @@ describe("onNotificationTap", () => {
     const handler = vi.fn();
     onNotificationTap(handler);
 
-    expect(addListener).toHaveBeenCalledWith("localNotificationActionPerformed", expect.any(Function));
+    expect(addListener).toHaveBeenCalledWith(
+      "localNotificationActionPerformed",
+      expect.any(Function),
+    );
     const [, listener] = addListener.mock.calls[0] as [string, (action: unknown) => void];
     listener({ notification: { extra: { kind: "appUpdate" } } });
 

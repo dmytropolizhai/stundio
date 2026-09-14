@@ -157,6 +157,13 @@ export const ua: Dict = {
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
   "notification.update.title": "Доступне оновлення",
   "notification.update.body": "Stundio {version} готовий до завантаження.",
+  "widget.now": "Зараз",
+  "widget.next": "Далі",
+  "widget.done": "Уроків сьогодні більше немає",
+  "widget.noClass": "Обери клас",
+  "widget.noData": "Відкрий Stundio, щоб оновити",
+  "widget.minutesLeft": "ще {minutes} хв",
+  "widget.minutesUntil": "через {minutes} хв",
   "settings.data": "Дані",
   "settings.analytics": "Анонімна аналітика використання",
   "settings.analyticsHint":

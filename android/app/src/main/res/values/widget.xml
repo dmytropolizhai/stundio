@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Light-mode widget palette, approximated from the Studio design system (src/ds/tokens/).
+  RemoteViews cannot read CSS variables, so these are hand-mirrored: keep them in step with
+  colors.css / dark.css when those are regenerated.
+-->
+<resources>
+    <!-- surface-card / text-strong / text-muted -->
+    <color name="widget_surface">#FFFFFF</color>
+    <color name="widget_text_strong">#0B0C10</color>
+    <color name="widget_text_muted">#5B6070</color>
+    <!-- blue-500, "Studio Electric" — the fallback rail when a subject has no colour. -->
+    <color name="widget_accent">#1E3AFF</color>
+
+    <string name="widget_name">Nākamā stunda</string>
+    <string name="widget_description">Kas notiek tagad un kas ir nākamā.</string>
+    <!-- Shown before JS has ever published: no cache, nothing to be right or wrong about. -->
+    <string name="widget_empty_title">Atver Stundio</string>
+</resources>
