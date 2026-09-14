@@ -153,6 +153,7 @@ export const WeekView = ({
             name: lesson.subject?.name ?? lesson.subject?.short ?? "",
             tone: subjectTone(lesson.subject, subjectColorOverrides, colorCodingEnabled),
             cancelled: lesson.status === "cancelled",
+            span: lesson.span,
             ...(building === undefined ? {} : { building }),
           };
         });

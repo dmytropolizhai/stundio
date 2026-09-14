@@ -14,6 +14,13 @@ export type WeekGridCell = {
    * and folds into the cell's accessible label so the fact isn't colour-only.
    */
   building?: string;
+  /**
+   * Rows this one lesson structurally occupies (EduPage's `durationperiods` — a combined double
+   * lesson like a 2-period Sports block). Always rendered as one spanning cell, independent of
+   * `mergeConsecutive`, which is only for visually coalescing separately-scheduled identical
+   * lessons that merely happen to sit back-to-back. Defaults to 1.
+   */
+  span?: number;
 };
 
 export type WeekGridDay<K extends string = string> = {
@@ -70,10 +77,15 @@ const sameCell = (a: WeekGridCell, b: WeekGridCell): boolean =>
   (a.building ?? "") === (b.building ?? "");
 
 /**
- * Placement per row for one day column. Without merging this is just each period's own cell;
- * with it, a run of adjacent rows carrying the identical cell collapses to one `span`-tall
- * placement, and the rows it absorbs come back as `"covered"` (render nothing — the spanning
- * cell above already fills that grid area).
+ * Placement per row for one day column.
+ *
+ * First pass: every cell always occupies its own structural `span` (a combined double lesson —
+ * EduPage's `durationperiods` — regardless of `mergeConsecutive`), and the rows it covers come
+ * back as `"covered"` (render nothing — the spanning cell above already fills that grid area).
+ *
+ * Second pass, only with `mergeConsecutive`: adjacent placements carrying an identical cell
+ * additionally coalesce into one taller placement — this is for two separately-scheduled
+ * lessons that merely happen to sit back-to-back, not a lesson's own structural span.
  */
 const placementsFor = <K extends string>(
   day: WeekGridDay<K>,
@@ -81,9 +93,7 @@ const placementsFor = <K extends string>(
   mergeConsecutive: boolean,
 ): (Placement | undefined)[] => {
   const raw = periods.map((p) => p.cells[day.key]);
-  if (!mergeConsecutive) {
-    return raw.map((cell) => (cell === undefined ? undefined : { cell, span: 1 }));
-  }
+
   const out = new Array<Placement | undefined>(raw.length).fill(undefined);
   let i = 0;
   while (i < raw.length) {
@@ -92,16 +102,34 @@ const placementsFor = <K extends string>(
       i += 1;
       continue;
     }
-    let span = 1;
-    while (i + span < raw.length) {
-      const next = raw[i + span];
-      if (next === undefined || !sameCell(cell, next)) break;
-      span += 1;
-    }
+    const span = Math.min(Math.max(1, cell.span ?? 1), raw.length - i);
     out[i] = { cell, span };
     for (let k = 1; k < span; k += 1) out[i + k] = "covered";
     i += span;
   }
+
+  if (!mergeConsecutive) return out;
+
+  i = 0;
+  while (i < out.length) {
+    const placement = out[i];
+    if (placement === undefined || placement === "covered") {
+      i += 1;
+      continue;
+    }
+    let { span } = placement;
+    let j = i + span;
+    while (j < out.length) {
+      const next = out[j];
+      if (next === undefined || next === "covered" || !sameCell(placement.cell, next.cell)) break;
+      for (let k = 0; k < next.span; k += 1) out[j + k] = "covered";
+      span += next.span;
+      j += next.span;
+    }
+    out[i] = { cell: placement.cell, span };
+    i += span;
+  }
+
   return out;
 };
 
