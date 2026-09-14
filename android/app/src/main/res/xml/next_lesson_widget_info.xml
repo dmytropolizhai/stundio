@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  2×1 only, by decision (PLAN.md: scope the widget to "next lesson"; a 4×2 "rest of today" is
+  a fast-follow). `updatePeriodMillis` is the floor Android allows (30 min) and is the *fallback*
+  path: the app's own plugin pokes AppWidgetManager the moment a sync finishes.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/widget_next_lesson"
+    android:minHeight="40dp"
+    android:minWidth="110dp"
+    android:previewLayout="@layout/widget_next_lesson"
+    android:resizeMode="horizontal"
+    android:targetCellHeight="1"
+    android:targetCellWidth="2"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen" />

@@ -52,6 +52,11 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   reference encoder's golden matrices), then the hand-off to the OS share sheet. Domain- and
   design-system-free: colours arrive as resolved CSS colour strings and strings arrive
   translated, from `ui/share/`. Only `native.ts` touches Capacitor.
+- **`src/lib/widget/`** — the payload the Android home-screen tile renders: `payload.ts` turns
+  a `ResolvedDay` + `lib/schedule`'s `glanceLesson` into already-rendered strings, so the native
+  side does no schedule maths at all. Only `native.ts` touches Capacitor. The store wiring
+  (`src/widget/`) publishes it after every sync; `NextLessonWidget.refresh(context)` is the
+  native re-render seam.
 - **`src/lib/version/`**, **`src/lib/analytics/`** — GitHub release update checks; anonymous
   Plausible pings (opt-out, no cookies or persistent id).
 - **`src/db/`** — the `AppCache` port (`types.ts`) with an `idb` implementation and a memory
@@ -71,10 +76,11 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 
 These are enforced by lint, tests, or CI — breaking one breaks the build:
 
-- **Only `lib/edupage/http.ts`, `lib/analytics/http.ts` and `lib/share/native.ts` may import
-  `@capacitor/*`.** ESLint `no-restricted-imports` enforces this; everything else stays
-  platform-agnostic and testable. (`lib/version/installer.ts` is the one Android-only module by
-  nature — it drives this app's own `ApkInstaller` plugin.)
+- **Only `lib/edupage/http.ts`, `lib/analytics/http.ts`, `lib/share/native.ts`,
+  `lib/widget/native.ts` and `lib/systembars/native.ts` may import `@capacitor/*`.** ESLint
+  `no-restricted-imports` enforces this per-module; everything else stays platform-agnostic and
+  testable. (`lib/version/installer.ts` is the one Android-only module by nature — it drives this
+  app's own `ApkInstaller` plugin.)
 - **Import a module through its barrel** (`@/ds`, `@/store`, `@/lib/edupage`, …), never from a
   sibling file across a layer boundary.
 - **Never reach upward.** `lib/` knows nothing about `store/` or `ui/`; `ds/` knows nothing about

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The subject-colour rail, the same 4px cue the lesson rows use in the app. Drawn white so
+  `setColorFilter` can tint it to whatever colour the payload carries — RemoteViews has no
+  API-23-safe way to tint a background, but `ImageView.setColorFilter(int)` is remotable.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFFFFF" />
+    <corners android:radius="2dp" />
+</shape>
