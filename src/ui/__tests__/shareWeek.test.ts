@@ -6,12 +6,12 @@
  */
 import { describe, expect, it } from "vitest";
 import { bootHarness, classIdOf, FIXTURE_DATE } from "./harness.tsx";
-import { findClassTeacher, type ResolvedDay } from "../../lib/edupage/index.ts";
-import { weekDates } from "../../lib/schedule/index.ts";
+import { findClassTeacher, type ResolvedDay } from "@/lib/edupage";
+import { weekDates } from "@/lib/schedule";
 import { shareTheme } from "../share/palette.ts";
 import { buildWeekImageData, weekShareFileName, weekShareText } from "../share/weekImage.ts";
-import { translate } from "../i18n/index.ts";
-import type { Translate } from "../i18n/index.ts";
+import { translate } from "@/ui/i18n";
+import type { Translate } from "@/ui/i18n";
 
 const t: Translate = (key, params) => translate("lv", key, params);
 

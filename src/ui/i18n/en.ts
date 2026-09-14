@@ -155,6 +155,13 @@ export const en: Dict = {
   "notification.changed.body": "Today's schedule has changes.",
   "notification.update.title": "Update available",
   "notification.update.body": "Stundio {version} is ready to download.",
+  "widget.now": "Now",
+  "widget.next": "Next",
+  "widget.done": "No more lessons today",
+  "widget.noClass": "Pick a class",
+  "widget.noData": "Open Stundio to refresh",
+  "widget.minutesLeft": "{minutes} min left",
+  "widget.minutesUntil": "in {minutes} min",
   "settings.data": "Data",
   "settings.analytics": "Anonymous usage analytics",
   "settings.analyticsHint":

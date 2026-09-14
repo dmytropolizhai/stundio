@@ -8,7 +8,7 @@
  * without this, an empty (nothing-to-report) day would still read as "changed" purely because
  * it had never been cached, firing a notification with nothing behind it every single day.
  */
-import type { DaySubstitutions } from "../edupage/index.ts";
+import type { DaySubstitutions } from "@/lib/edupage";
 
 const fingerprint = (day: DaySubstitutions | null): string =>
   day === null || (day.notes.length === 0 && day.items.length === 0)

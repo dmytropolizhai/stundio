@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { DaySubstitutions, Substitution } from "../../edupage/index.ts";
+import type { DaySubstitutions, Substitution } from "@/lib/edupage";
 import { substitutionsChanged } from "../index.ts";
 
 const item = (over: Partial<Substitution> = {}): Substitution => ({

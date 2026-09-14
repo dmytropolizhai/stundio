@@ -24,7 +24,6 @@ import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 
-
 /**
  * Where a tapped notification wants the app to go. Set by the notification-tap listener
  * (`notifications/wire.ts`), consumed once by the shell (`App.tsx`) and cleared — the store

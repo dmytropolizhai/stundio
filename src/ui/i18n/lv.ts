@@ -161,6 +161,13 @@ export const lv = {
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",
   "notification.update.title": "Pieejams jauninājums",
   "notification.update.body": "Stundio {version} ir pieejama lejupielādei.",
+  "widget.now": "Tagad",
+  "widget.next": "Nākamā",
+  "widget.done": "Šodien stundu vairs nav",
+  "widget.noClass": "Izvēlies klasi",
+  "widget.noData": "Atver Stundio, lai atjaunotu",
+  "widget.minutesLeft": "vēl {minutes} min",
+  "widget.minutesUntil": "pēc {minutes} min",
   "settings.data": "Dati",
   "settings.analytics": "Anonīma lietošanas statistika",
   "settings.analyticsHint":

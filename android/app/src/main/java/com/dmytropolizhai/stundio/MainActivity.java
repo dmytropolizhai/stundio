@@ -15,6 +15,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(ApkInstallerPlugin.class);
         registerPlugin(AppSettingsPlugin.class);
         registerPlugin(ImageSharePlugin.class);
+        registerPlugin(StundioWidgetPlugin.class);
         registerPlugin(SystemBarsPlugin.class);
         super.onCreate(savedInstanceState);
     }

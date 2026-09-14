@@ -156,6 +156,13 @@ export const ru: Dict = {
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",
   "notification.update.title": "Доступно обновление",
   "notification.update.body": "Stundio {version} готово к загрузке.",
+  "widget.now": "Сейчас",
+  "widget.next": "Далее",
+  "widget.done": "Уроков сегодня больше нет",
+  "widget.noClass": "Выбери класс",
+  "widget.noData": "Открой Stundio, чтобы обновить",
+  "widget.minutesLeft": "ещё {minutes} мин",
+  "widget.minutesUntil": "через {minutes} мин",
   "settings.data": "Данные",
   "settings.analytics": "Анонимная статистика использования",
   "settings.analyticsHint":

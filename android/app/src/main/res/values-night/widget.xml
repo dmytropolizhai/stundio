@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark counterpart of values/widget.xml, mirroring src/ds/tokens/dark.css. -->
+<resources>
+    <color name="widget_surface">#16181F</color>
+    <color name="widget_text_strong">#FFFFFF</color>
+    <color name="widget_text_muted">#9BA2B4</color>
+    <!-- blue-300, not blue-500: the primary does not carry enough contrast on the dark card. -->
+    <color name="widget_accent">#7A8AFF</color>
+</resources>

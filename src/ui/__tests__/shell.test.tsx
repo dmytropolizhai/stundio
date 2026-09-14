@@ -4,9 +4,9 @@
  */
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { TabBar } from "../components/TabBar.tsx";
-import { useCustomization, useTheme } from "../theme/index.ts";
+import { useCustomization, useTheme } from "@/ui/theme";
 import { bootHarness, type Harness } from "./harness.tsx";
 
 // Capacitor itself is mocked (mirrors lib/share/__tests__/native.test.ts) — what these tests

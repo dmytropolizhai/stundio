@@ -3,8 +3,8 @@
  * (`index.css`) because "system" is only one of three choices the user has.
  */
 import { useEffect } from "react";
-import { useAppStore } from "../../store/index.ts";
-import type { Settings } from "../../db/index.ts";
+import { useAppStore } from "@/store";
+import type { Settings } from "@/db";
 import { nativeSystemBars } from "@/lib/systembars";
 
 export type Theme = Settings["theme"];
