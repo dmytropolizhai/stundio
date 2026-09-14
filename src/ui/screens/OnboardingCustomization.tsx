@@ -1,7 +1,8 @@
 /**
  * Onboarding Customization — a guided, step-by-step walkthrough to customize the app and
  * discover all of Stundio's special features (themes, custom DS accents, card styling,
- * exact schedule times, smart notifications, offline-first cache, home-screen widget, and sharing).
+ * exact schedule times, smart notifications, offline-first cache, home-screen widget, sharing,
+ * and direct messaging to the developer in Settings).
  *
  * Every control writes directly through the store to the cache, so preferences are active
  * immediately across the app shell. Skippable at any step so students in a rush can jump straight
@@ -27,8 +28,10 @@ import type { Settings, SubjectColorTone } from "@/db";
 import { SUBJECT_TONES } from "@/ui/theme";
 import { ensureNotificationPermission } from "@/notifications";
 import { useT, type MessageKey } from "@/ui/i18n";
+import { reportIssueUrl, suggestFeatureUrl } from "@/ui/feedback.ts";
+import { useSelectedClass } from "../hooks/useClasses.ts";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 const SWIPE_THRESHOLD_PX = 56;
 const RADIUS_STEPS = ["md", "lg", "xl", "2xl"] as const;
 
@@ -68,6 +71,11 @@ const STEP_METAS: StepMeta[] = [
     title: "onboarding.customization.step4.title",
     body: "onboarding.customization.step4.body",
   },
+  {
+    badge: "onboarding.customization.step5.badge",
+    title: "onboarding.customization.step5.title",
+    body: "onboarding.customization.step5.body",
+  },
 ];
 
 export const OnboardingCustomization = ({
@@ -79,6 +87,7 @@ export const OnboardingCustomization = ({
 }) => {
   const t = useT();
   const [step, setStep] = useState(0);
+  const selectedClass = useSelectedClass();
 
   const settings = useAppStore((s) => s.settings);
   const setTheme = useAppStore((s) => s.setTheme);
@@ -98,6 +107,7 @@ export const OnboardingCustomization = ({
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
 
+  const currentMeta = STEP_METAS[step] ?? STEP_METAS[0]!;
   const isLast = step === TOTAL_STEPS - 1;
 
   const advance = () => {
@@ -175,7 +185,7 @@ export const OnboardingCustomization = ({
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6 pt-(--app-inset-top)">
+    <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6 pt-[var(--app-inset-top)]">
       {/* Top navigation: back, progress, skip */}
       <header className="flex items-center justify-between pt-3 pb-2">
         <div className="w-10">
@@ -189,6 +199,9 @@ export const OnboardingCustomization = ({
             />
           )}
         </div>
+        <span className="font-text text-micro font-bold tracking-label text-muted uppercase">
+          {t("onboarding.customization.progress", { step: step + 1, total: TOTAL_STEPS })}
+        </span>
         <div className="flex w-10 justify-end">
           <Button variant="ghost" size="sm" onClick={onDone}>
             {t("onboarding.customization.skip")}
@@ -220,6 +233,19 @@ export const OnboardingCustomization = ({
         }}
         className="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain focus-visible:outline-2 focus-visible:outline-brand"
       >
+        {/* Step header */}
+        <div className="pt-2 pb-4 text-center">
+          <span className="inline-block rounded-pill bg-brand-surface px-2.5 py-1 font-text text-micro font-bold tracking-label text-brand-strong uppercase">
+            {t(currentMeta.badge)}
+          </span>
+          <h1 className="mt-2.5 font-display text-title tracking-display text-strong">
+            {t(currentMeta.title)}
+          </h1>
+          <p className="mx-auto mt-1.5 max-w-72 font-text text-body text-muted">
+            {t(currentMeta.body)}
+          </p>
+        </div>
+
         {/* ------------------------------------------------------------------ */}
         {/* Step 1: Appearance & Themes (Dark/Light/System + 6 DS Accents)     */}
         {/* ------------------------------------------------------------------ */}
@@ -555,6 +581,72 @@ export const OnboardingCustomization = ({
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ------------------------------------------------------------------ */}
+        {/* Step 5: Direct Messaging & Feedback to Developer in Settings       */}
+        {/* ------------------------------------------------------------------ */}
+        {step === 4 && (
+          <div className="flex flex-col gap-4 pb-4">
+            {/* Feedback and Bug Report Cards */}
+            <Card radius="lg" className="flex flex-col divide-y divide-hairline p-0">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-brand-surface text-brand-strong">
+                    <Icon name="triangle-alert" size={16} />
+                  </div>
+                  <div>
+                    <p className="font-text text-body font-bold text-strong">
+                      {t("onboarding.customization.step5.reportTitle")}
+                    </p>
+                    <p className="mt-0.5 font-text text-caption text-muted">
+                      {t("onboarding.customization.step5.reportBody")}
+                    </p>
+                  </div>
+                </div>
+                <Button size="sm" icon="triangle-alert" asChild>
+                  <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
+                    {t("settings.reportIssueAction")}
+                  </a>
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-brand-surface text-brand-strong">
+                    <Icon name="plus" size={16} />
+                  </div>
+                  <div>
+                    <p className="font-text text-body font-bold text-strong">
+                      {t("onboarding.customization.step5.suggestTitle")}
+                    </p>
+                    <p className="mt-0.5 font-text text-caption text-muted">
+                      {t("onboarding.customization.step5.suggestBody")}
+                    </p>
+                  </div>
+                </div>
+                <Button size="sm" icon="plus" asChild>
+                  <a
+                    href={suggestFeatureUrl(selectedClass?.short)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {t("settings.suggestFeatureAction")}
+                  </a>
+                </Button>
+              </div>
+            </Card>
+
+            {/* Location in settings hint banner */}
+            <div className="flex items-center gap-3 rounded-lg border border-hairline bg-card p-3 shadow-card">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-brand-surface text-brand-strong">
+                <Icon name="settings" size={18} />
+              </div>
+              <p className="font-text text-caption text-strong">
+                {t("onboarding.customization.step5.settingsHint")}
+              </p>
             </div>
           </div>
         )}

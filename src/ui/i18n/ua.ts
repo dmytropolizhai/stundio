@@ -77,6 +77,19 @@ export const ua: Dict = {
   "onboarding.customization.step4.shareTitle": "Діліться з одногрупниками",
   "onboarding.customization.step4.shareBody":
     "Експортуйте розклад на тиждень як картку з QR-кодом.",
+
+  "onboarding.customization.step5.badge": "Зв'язок із розробником",
+  "onboarding.customization.step5.title": "Відгуки та пропозиції",
+  "onboarding.customization.step5.body":
+    "У Налаштуваннях ви завжди можете повідомити про помилку чи запропонувати нову функцію напряму розробнику.",
+  "onboarding.customization.step5.reportTitle": "Помітили помилку?",
+  "onboarding.customization.step5.reportBody":
+    "Повідомте про неточності в кабінеті, уроці чи технічну проблему.",
+  "onboarding.customization.step5.suggestTitle": "Є ідея?",
+  "onboarding.customization.step5.suggestBody":
+    "Запропонуйте покращення — застосунок створюється спеціально для студентів RVT.",
+  "onboarding.customization.step5.settingsHint":
+    "Доступно в будь-який час у вкладці «Налаштування» внизу екрана.",
   "settings.customizationGuide": "Гід із налаштування",
   "settings.customizationGuideAction": "Відкрити",
 

@@ -60,6 +60,19 @@ describe("OnboardingCustomization", () => {
     expect(screen.getByText("Sākuma ekrāna logrīks")).toBeDefined();
     expect(screen.getByText("Kopīgo ar klasesbiedriem")).toBeDefined();
 
+    // Advance to Step 5: Direct messaging to developer in Settings
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Tālāk" }));
+    });
+
+    expect(screen.getByText("Saziņa ar izstrādātāju")).toBeDefined();
+    expect(screen.getByText("Atsauksmes un ieteikumi")).toBeDefined();
+    expect(screen.getByText("Pamanīji kļūdu?")).toBeDefined();
+    expect(screen.getByText("Ir ideja jaunai funkcijai?")).toBeDefined();
+    expect(
+      screen.getByText("Pieejams jebkurā laikā cilnē „Iestatījumi” ekrāna apakšā."),
+    ).toBeDefined();
+
     // Finish onboarding
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("button", { name: "Izvēlies savu klasi" }));

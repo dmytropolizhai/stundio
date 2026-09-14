@@ -83,6 +83,19 @@ export const lv = {
   "onboarding.customization.step4.shareTitle": "Kopīgo ar klasesbiedriem",
   "onboarding.customization.step4.shareBody":
     "Eksportē nedēļas sarakstu kā skaistu attēlu ar QR kodu.",
+
+  "onboarding.customization.step5.badge": "Saziņa ar izstrādātāju",
+  "onboarding.customization.step5.title": "Atsauksmes un ieteikumi",
+  "onboarding.customization.step5.body":
+    "Iestatījumos vari jebkurā brīdī ziņot par kļūdu vai ieteikt jaunu funkciju tieši izstrādātājam.",
+  "onboarding.customization.step5.reportTitle": "Pamanīji kļūdu?",
+  "onboarding.customization.step5.reportBody":
+    "Ziņo par kļūdainu stundu, telpu vai tehnisku problēmu.",
+  "onboarding.customization.step5.suggestTitle": "Ir ideja jaunai funkcijai?",
+  "onboarding.customization.step5.suggestBody":
+    "Iesaki uzlabojumu — lietotne top tieši RVT studentiem.",
+  "onboarding.customization.step5.settingsHint":
+    "Pieejams jebkurā laikā cilnē „Iestatījumi” ekrāna apakšā.",
   "settings.customizationGuide": "Pielāgošanas ceļvedis",
   "settings.customizationGuideAction": "Atvērt",
 

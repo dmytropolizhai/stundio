@@ -77,6 +77,19 @@ export const en: Dict = {
   "onboarding.customization.step4.shareTitle": "Share with Classmates",
   "onboarding.customization.step4.shareBody":
     "Export weekly schedule as an image card with a scannable QR code.",
+
+  "onboarding.customization.step5.badge": "Message the Developer",
+  "onboarding.customization.step5.title": "Feedback & Feature Requests",
+  "onboarding.customization.step5.body":
+    "You can report bugs or suggest new features directly to the developer anytime in Settings.",
+  "onboarding.customization.step5.reportTitle": "Spotted an issue?",
+  "onboarding.customization.step5.reportBody":
+    "Report wrong classroom data, lesson bugs, or technical issues.",
+  "onboarding.customization.step5.suggestTitle": "Have an idea?",
+  "onboarding.customization.step5.suggestBody":
+    "Suggest a feature — Stundio is built actively for RVT students.",
+  "onboarding.customization.step5.settingsHint":
+    "Always accessible via the Settings tab at the bottom of the screen.",
   "settings.customizationGuide": "Customization Walkthrough",
   "settings.customizationGuideAction": "Open",
 

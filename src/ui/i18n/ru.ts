@@ -77,6 +77,19 @@ export const ru: Dict = {
   "onboarding.customization.step4.shareTitle": "Делитесь с одногруппниками",
   "onboarding.customization.step4.shareBody":
     "Экспортируйте расписание на неделю в виде карточки с QR-кодом.",
+
+  "onboarding.customization.step5.badge": "Связь с разработчиком",
+  "onboarding.customization.step5.title": "Отзывы и предложения",
+  "onboarding.customization.step5.body":
+    "В Настройках вы всегда можете сообщить об ошибке или предложить новую функцию напрямую разработчику.",
+  "onboarding.customization.step5.reportTitle": "Заметили ошибку?",
+  "onboarding.customization.step5.reportBody":
+    "Сообщите о неточностях в кабинете, уроке или технической проблеме.",
+  "onboarding.customization.step5.suggestTitle": "Есть идея?",
+  "onboarding.customization.step5.suggestBody":
+    "Предложите улучшение — приложение создается специально для студентов RVT.",
+  "onboarding.customization.step5.settingsHint":
+    "Доступно в любое время во вкладке «Настройки» внизу экрана.",
   "settings.customizationGuide": "Гид по настройке",
   "settings.customizationGuideAction": "Открыть",
 
