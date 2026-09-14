@@ -11,22 +11,7 @@ import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
 import { CustomizationSheet } from "./CustomizationSheet.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
-
-const REPO_URL = "https://github.com/dmytropolizhai/stundio";
-const REPORT_ISSUE_BASE = `${REPO_URL}/issues/new`;
-
-/** Prefills a GitHub issue with the details a bug report needs but a user won't think to add. */
-const reportIssueUrl = (className: string | undefined): string => {
-  const body = [
-    "**What happened:**",
-    "",
-    "",
-    "---",
-    `App version: ${__APP_VERSION__}`,
-    `Class: ${className ?? "none selected"}`,
-  ].join("\n");
-  return `${REPORT_ISSUE_BASE}?${new URLSearchParams({ labels: "bug", body }).toString()}`;
-};
+import { REPO_URL, reportIssueUrl, suggestFeatureUrl } from "@/ui/feedback.ts";
 
 /** Also used by `CustomizationSheet`, which shares this screen's section/row look. */
 export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -396,6 +381,16 @@ export const SettingsView = ({
             <Button size="sm" icon="triangle-alert" asChild>
               <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
                 {t("settings.reportIssueAction")}
+              </a>
+            </Button>
+          </Row>
+          <Row className="flex flex-wrap items-center justify-between gap-3">
+            <span className="font-text text-caption font-bold text-strong">
+              {t("settings.suggestFeature")}
+            </span>
+            <Button size="sm" icon="plus" asChild>
+              <a href={suggestFeatureUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
+                {t("settings.suggestFeatureAction")}
               </a>
             </Button>
           </Row>

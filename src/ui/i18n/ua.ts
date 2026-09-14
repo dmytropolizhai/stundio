@@ -63,6 +63,10 @@ export const ua: Dict = {
   "day.free": "Вільний урок",
   "day.finished": "Уроки закінчилися",
   "day.now": "Зараз",
+  "day.feedbackPrompt.title": "Є ідея?",
+  "day.feedbackPrompt.body": "Розкажи, що додати чи виправити в Stundio.",
+  "day.feedbackPrompt.action": "Запропонувати",
+  "day.feedbackPrompt.dismiss": "Закрити",
 
   "week.previousWeek": "Попередній тиждень",
   "week.nextWeek": "Наступний тиждень",
@@ -198,6 +202,8 @@ export const ua: Dict = {
   "settings.whatsNewAction": "Переглянути",
   "settings.reportIssue": "Знайшли помилку?",
   "settings.reportIssueAction": "Повідомити",
+  "settings.suggestFeature": "Є ідея?",
+  "settings.suggestFeatureAction": "Запропонувати",
   "settings.madeBy": "Зроблено з ❤︎ Дмитром Поліжаєм",
 
   "theme.system": "Системна",
