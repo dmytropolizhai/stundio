@@ -4,7 +4,7 @@
  * shown verbatim, and every empty state says something.
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { StoreContext } from "../../store/index.ts";
 import { DayView } from "../screens/DayView.tsx";
 import { bootHarness, FIXTURE_DATE, type Harness } from "./harness.tsx";
@@ -219,5 +219,25 @@ describe("DayView", () => {
     await vi.waitFor(() => {
       expect(harness.server.calls.substitutions).toBeGreaterThan(before);
     });
+  });
+
+  it("shows the offline banner once syncStatus says offline, and hides it once synced again", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+    expect(screen.queryByTestId("offline-banner")).toBeNull();
+
+    act(() => {
+      harness.store.getState().setConnectivity(false);
+    });
+    expect(screen.getByTestId("offline-banner")).toBeDefined();
+    expect(screen.getByText("Nav interneta pieslēguma — rādām saglabāto sarakstu.")).toBeDefined();
+
+    await act(async () => {
+      harness.store.getState().setConnectivity(true);
+      await vi.waitFor(() => {
+        expect(harness.store.getState().syncStatus).toBe("idle");
+      });
+    });
+    expect(screen.queryByTestId("offline-banner")).toBeNull();
   });
 });

@@ -47,6 +47,15 @@ export type AppState = {
 
   hydrate: () => Promise<void>;
   refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<SyncOutcome>;
+  /**
+   * The device's own connectivity (`lib/network`), wired in from `watchConnectivity` — not a
+   * second, parallel "offline" concept next to `syncStatus`. Losing connectivity sets
+   * `syncStatus` to `"offline"` immediately, without waiting for a fetch to fail; regaining it
+   * triggers a `refresh()`, whose outcome is what actually settles `syncStatus` afterwards (still
+   * `"offline"` if the network reports connected but the school is unreachable, `"idle"` once a
+   * sync actually lands). `syncStatus` stays the single source of truth the UI reads.
+   */
+  setConnectivity: (online: boolean) => void;
   setClass: (classId: string | null) => Promise<void>;
   setBuilding: (building: Building | null) => Promise<void>;
   /** `null` shows every division merged — only meaningful for the currently selected class. */
@@ -181,6 +190,14 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           lastError: outcome.errors[0] ?? null,
         });
         return outcome;
+      },
+
+      setConnectivity: (online) => {
+        if (online) {
+          void get().refresh();
+        } else {
+          set({ syncStatus: "offline" });
+        }
       },
 
       // A subgroup label from the previous class means nothing for the new one, so it resets.

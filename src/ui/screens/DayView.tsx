@@ -200,6 +200,19 @@ export const DayView = ({
 
     return (
       <>
+        {syncStatus === "offline" && (
+          <Card
+            tone="sunken"
+            radius="lg"
+            elevation="none"
+            className="mt-3 flex items-center gap-2 font-text text-caption text-fg"
+            data-testid="offline-banner"
+          >
+            <Icon name="wifi-off" size={16} className="shrink-0 text-offline" />
+            {t("day.offline")}
+          </Card>
+        )}
+
         {day.stale && (
           <Card tone="amber" radius="lg" className="mt-3 font-text text-caption">
             {t("day.stale")}

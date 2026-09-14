@@ -56,6 +56,7 @@ export const en: Dict = {
   "day.noData": "Nothing cached yet",
   "day.noDataHint": "Go online once to download the timetable.",
   "day.stale": "This week's timetable is not published yet — showing the previous one.",
+  "day.offline": "No internet connection — showing the saved timetable.",
   "day.buildingOther": "Different building: {building}",
   "day.buildingMixed": "Several buildings: {buildings}",
   "day.notes": "Announcements",
@@ -138,7 +139,8 @@ export const en: Dict = {
   "settings.language": "Language",
   "settings.share": "Sharing",
   "settings.shareSyncLang": "Synchronize with app language",
-  "settings.shareSyncLangHint": "The shared image and message will use the language set in the app.",
+  "settings.shareSyncLangHint":
+    "The shared image and message will use the language set in the app.",
   "settings.shareLanguage": "Share image language",
   "settings.week": "Week view",
   "settings.mergeLessons": "Merge identical lessons",
@@ -203,6 +205,9 @@ export const en: Dict = {
 
   "customization.title": "Customization",
   "customization.theme": "Appearance",
+  "customization.accent": "Accent colour",
+  "customization.accent.hint": "The colour for highlights — today's date, the selected option.",
+  "customization.accent.reset": "Default",
   "customization.lessonStyle": "Lesson cards",
   "customization.lessonStyle.hint": "How a subject's colour shows on the day list.",
   "customization.lessonStyle.outline": "Outline",
@@ -218,6 +223,9 @@ export const en: Dict = {
   "customization.reduceMotion": "Reduce motion",
   "customization.reduceMotion.hint": "Turns off the app's transitions and animations.",
   "customization.subjectColors": "Subject colours",
+  "customization.subjectColors.enabled": "Subject colour coding",
+  "customization.subjectColors.enabled.hint":
+    "When off, every subject shows one neutral colour on the day list and week view.",
   "customization.subjectColors.hint":
     "Tap a colour to reassign it; tap Auto to go back to the default.",
   "customization.subjectColors.reset": "Auto",

@@ -83,6 +83,47 @@ describe("refresh", () => {
   });
 });
 
+/**
+ * Real device connectivity (`watchConnectivity`, wired in `boot.ts`) folds into the same
+ * `syncStatus` a failed fetch already produces — not a second, parallel notion of offline.
+ */
+describe("setConnectivity", () => {
+  it("goes offline immediately, without waiting for a fetch to fail", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    expect(store.getState().syncStatus).toBe("idle");
+
+    store.getState().setConnectivity(false);
+
+    expect(store.getState().syncStatus).toBe("offline");
+    // No network call was made to reach that conclusion — the device said so directly.
+    expect(server.calls.list).toBe(1);
+  });
+
+  it("triggers a refresh on reconnection, which settles the real status", async () => {
+    const store = makeStore();
+    server.offline = true;
+    store.getState().setConnectivity(false);
+    expect(store.getState().syncStatus).toBe("offline");
+
+    server.offline = false;
+    store.getState().setConnectivity(true);
+    await vi.waitFor(() => {
+      expect(store.getState().syncStatus).toBe("idle");
+    });
+  });
+
+  it("a reconnect that still can't reach the school stays offline", async () => {
+    const store = makeStore();
+    server.offline = true;
+
+    store.getState().setConnectivity(true);
+    await vi.waitFor(() => {
+      expect(store.getState().syncStatus).toBe("offline");
+    });
+  });
+});
+
 describe("offline cold open — the Phase 2 exit criterion", () => {
   it("serves the last-known timetable with no network", async () => {
     // Session 1: online, everything cached.

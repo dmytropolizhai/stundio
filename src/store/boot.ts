@@ -1,5 +1,6 @@
 /**
- * Production wiring: real IndexedDB cache, native transport, resume listener.
+ * Production wiring: real IndexedDB cache, native transport, resume listener, connectivity
+ * listener.
  * Split out of `provider.tsx` so that file exports only components (React Fast Refresh),
  * and so tests can substitute a `Boot` without touching the network.
  */
@@ -7,7 +8,8 @@ import { createAppStore } from "./useAppStore.ts";
 import type { Store } from "./context.ts";
 import { createCache } from "@/db";
 import { capacitorHttp } from "@/lib/edupage";
-import { createSyncEngine, watchAppResume } from "@/sync";
+import { nativeNetwork } from "@/lib/network";
+import { createSyncEngine, watchAppResume, watchConnectivity } from "@/sync";
 import {
   checkForAppUpdateNotification,
   notifyOnChanges,
@@ -70,8 +72,15 @@ export const bootApp: Boot = async () => {
   void checkForAppUpdateNotification(store);
 
   const disposeResume = watchAppResume({ refresh: refreshAndNotify });
+  const disposeConnectivity = watchConnectivity({
+    network: nativeNetwork,
+    onChange: (online) => {
+      store.getState().setConnectivity(online);
+    },
+  });
   const dispose = () => {
     disposeResume();
+    disposeConnectivity();
     notifications.dispose();
     notificationTaps.dispose();
     widget.dispose();

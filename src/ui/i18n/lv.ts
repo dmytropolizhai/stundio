@@ -63,6 +63,7 @@ export const lv = {
   "day.noData": "Nav saglabātu datu",
   "day.noDataHint": "Pievienojies internetam, lai lejupielādētu sarakstu.",
   "day.stale": "Šai nedēļai saraksts vēl nav publicēts — rādām iepriekšējo.",
+  "day.offline": "Nav interneta pieslēguma — rādām saglabāto sarakstu.",
   "day.buildingOther": "Cita ēka: {building}",
   "day.buildingMixed": "Vairākas ēkas: {buildings}",
   "day.notes": "Paziņojumi",
