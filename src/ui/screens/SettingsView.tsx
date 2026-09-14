@@ -10,8 +10,9 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
 import { CustomizationSheet } from "./CustomizationSheet.tsx";
+import { FeedbackSheet } from "../components/FeedbackSheet.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
-import { REPO_URL, reportIssueUrl, suggestFeatureUrl } from "@/ui/feedback.ts";
+import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
 
 /** Also used by `CustomizationSheet`, which shares this screen's section/row look. */
 export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -48,6 +49,10 @@ export const SettingsView = ({
 }) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
+  const [feedbackState, setFeedbackState] = useState<{ open: boolean; type: FeedbackType }>({
+    open: false,
+    type: "suggestion",
+  });
   const notifyPermissionDenied = useNotificationPermissionDenied();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
@@ -378,20 +383,24 @@ export const SettingsView = ({
             <span className="font-text text-caption font-bold text-strong">
               {t("settings.reportIssue")}
             </span>
-            <Button size="sm" icon="triangle-alert" asChild>
-              <a href={reportIssueUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
-                {t("settings.reportIssueAction")}
-              </a>
+            <Button
+              size="sm"
+              icon="triangle-alert"
+              onClick={() => setFeedbackState({ open: true, type: "bug" })}
+            >
+              {t("settings.reportIssueAction")}
             </Button>
           </Row>
           <Row className="flex flex-wrap items-center justify-between gap-3">
             <span className="font-text text-caption font-bold text-strong">
               {t("settings.suggestFeature")}
             </span>
-            <Button size="sm" icon="plus" asChild>
-              <a href={suggestFeatureUrl(selectedClass?.short)} target="_blank" rel="noreferrer">
-                {t("settings.suggestFeatureAction")}
-              </a>
+            <Button
+              size="sm"
+              icon="plus"
+              onClick={() => setFeedbackState({ open: true, type: "suggestion" })}
+            >
+              {t("settings.suggestFeatureAction")}
             </Button>
           </Row>
           <Row className="flex flex-wrap items-center justify-between gap-3">
@@ -481,6 +490,15 @@ export const SettingsView = ({
         onClose={() => {
           setCustomizing(false);
         }}
+      />
+
+      <FeedbackSheet
+        open={feedbackState.open}
+        type={feedbackState.type}
+        onClose={() => {
+          setFeedbackState((s) => ({ ...s, open: false }));
+        }}
+        className={selectedClass?.short}
       />
     </div>
   );

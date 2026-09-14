@@ -5,6 +5,7 @@ import {
   Bell,
   Building2,
   CalendarDays,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -24,6 +25,7 @@ import {
   RefreshCw,
   Repeat,
   Search,
+  Send,
   Settings,
   Share2,
   Star,
@@ -34,7 +36,7 @@ import {
   WifiOff,
   X,
 } from "lucide-react";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "@/ds";
 
 /**
  * The design system's icon wrapper — the one file that knows which icon set Stundio uses.
@@ -87,6 +89,8 @@ const ICONS = {
   sun: Sun,
   monitor: Monitor,
   star: Star,
+  check: Check,
+  send: Send,
 } as const;
 
 export type IconName = keyof typeof ICONS;
@@ -112,7 +116,6 @@ export const Icon = ({ name, size = 20, className }: IconProps) => {
     <Glyph
       size={size}
       strokeWidth={2}
-      absoluteStrokeWidth
       aria-hidden="true"
       className={cn("shrink-0", className)}
     />
