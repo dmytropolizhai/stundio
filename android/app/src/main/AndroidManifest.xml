@@ -33,6 +33,17 @@
                 android:resource="@xml/next_lesson_widget_info" />
         </receiver>
 
+        <!-- Re-arms the WorkManager widget-refresh jobs after a reboot or app update, both of
+             which can drop previously-scheduled work. No-op when no tile is placed. -->
+        <receiver
+            android:name=".widget.WidgetBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -47,4 +58,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Lets the app open Android's own install prompt for a downloaded update APK. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Re-arms the widget's WorkManager jobs after a reboot (WidgetBootReceiver). -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 </manifest>
