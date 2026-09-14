@@ -12,7 +12,7 @@ import { cn } from "../../lib/utils.ts";
  */
 const buttonVariants = cva(
   [
-    "inline-flex items-center justify-center rounded-pill font-text font-bold",
+    "inline-flex items-center justify-center rounded-pill font-text font-semibold",
     "cursor-pointer border-0 whitespace-nowrap select-none",
     "transition-[background-color,color,box-shadow,transform] duration-(--dur-fast) ease-(--ease-standard)",
     "active:scale-(--press-scale) active:duration-(--dur-instant)",
