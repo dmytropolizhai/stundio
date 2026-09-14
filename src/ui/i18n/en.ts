@@ -76,9 +76,8 @@ export const en: Dict = {
   "share.error": "Could not create the image",
   "share.title": "{class} timetable",
   "share.message":
-    "{class} timetable {period} \nWant to have better experience with EduPage, check out: https://github.com/dmytropolizhai/stundio",
+    "{class} timetable {period} \nWant to have better experience with EduPage, check out: https://bit.ly/stundio",
   "share.image.classTeacher": "Form teacher",
-  "share.image.appLabel": "Better EduPage experience on phone",
   "share.language.title": "Which language should the share be in?",
   "share.language.sync": "Synchronize the share image with my app language",
   "share.language.continue": "Continue",

@@ -5,17 +5,17 @@
  */
 import { createAppStore } from "./useAppStore.ts";
 import type { Store } from "./context.ts";
-import { createCache } from "../db/index.ts";
-import { capacitorHttp } from "../lib/edupage/index.ts";
-import { createSyncEngine, watchAppResume } from "../sync/index.ts";
+import { createCache } from "@/db";
+import { capacitorHttp } from "@/lib/edupage";
+import { createSyncEngine, watchAppResume } from "@/sync";
 import {
   checkForAppUpdateNotification,
   notifyOnChanges,
   wireNotifications,
   wireNotificationTaps,
-} from "../notifications/index.ts";
+} from "@/notifications";
 import { createAnalyticsClient, capacitorHttp as analyticsHttp } from "../lib/analytics/index.ts";
-import { wireWidget } from "../widget/index.ts";
+import { wireWidget } from "@/widget";
 
 /** The Plausible site the app reports to (a fake domain — there is no web page behind it). */
 const ANALYTICS_DOMAIN = "stundio.lv";
@@ -34,7 +34,6 @@ export const bootApp: Boot = async () => {
   // Paint from cache first; the network catches up underneath.
   await store.getState().hydrate();
   store.getState().trackEvent("app_open");
-  void store.getState().refresh();
 
   const notifications = wireNotifications(store);
   const notificationTaps = wireNotificationTaps(store);
@@ -45,9 +44,26 @@ export const bootApp: Boot = async () => {
   // changed" notification off the very first, baseline-less sync.
   const hadPreviousSync = (await cache.getTimetableList()) !== null;
 
-  const refreshAndNotify = async (): Promise<void> => {
-    const outcome = await store.getState().refresh();
-    notifyOnChanges(store, outcome, hadPreviousSync);
+  /*
+   * De-duped, not just "the tracked refresh": a resume can fire (or the user can relaunch)
+   * while a previous refresh is still in flight — real network round trips, not the instant
+   * fakes in tests. An overlapping call would read the same pre-change cache as its own
+   * "before" snapshot and independently re-detect the change the first call already caught,
+   * firing a second notification for something the user already saw. Sharing one in-flight
+   * promise means a second caller gets the first call's outcome instead of racing its own.
+   */
+  let inFlightRefresh: Promise<void> | null = null;
+  const refreshAndNotify = (): Promise<void> => {
+    if (inFlightRefresh !== null) return inFlightRefresh;
+    const promise = (async () => {
+      const outcome = await store.getState().refresh();
+      notifyOnChanges(store, outcome, hadPreviousSync);
+    })();
+    inFlightRefresh = promise;
+    void promise.finally(() => {
+      inFlightRefresh = null;
+    });
+    return promise;
   };
 
   void refreshAndNotify();

@@ -82,9 +82,8 @@ export const lv = {
   "share.error": "Neizdevās sagatavot attēlu",
   "share.title": "{class} stundu saraksts",
   "share.message":
-    "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://github.com/dmytropolizhai/stundio",
+    "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://bit.ly/stundio",
   "share.image.classTeacher": "Klases audzinātājs",
-  "share.image.appLabel": "Labāka EduPage pieredze tālrunī",
   "share.language.title": "Kādā valodā kopīgot?",
   "share.language.sync": "Sinhronizēt kopīgoto attēlu ar lietotnes valodu",
   "share.language.continue": "Turpināt",

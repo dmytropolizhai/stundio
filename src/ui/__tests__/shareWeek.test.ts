@@ -6,12 +6,12 @@
  */
 import { describe, expect, it } from "vitest";
 import { bootHarness, classIdOf, FIXTURE_DATE } from "./harness.tsx";
-import { findClassTeacher, type ResolvedDay } from "../../lib/edupage/index.ts";
-import { weekDates } from "../../lib/schedule/index.ts";
+import { findClassTeacher, type ResolvedDay } from "@/lib/edupage";
+import { weekDates } from "@/lib/schedule";
 import { shareTheme } from "../share/palette.ts";
 import { buildWeekImageData, weekShareFileName, weekShareText } from "../share/weekImage.ts";
-import { translate } from "../i18n/index.ts";
-import type { Translate } from "../i18n/index.ts";
+import { translate } from "@/ui/i18n";
+import type { Translate } from "@/ui/i18n";
 
 const t: Translate = (key, params) => translate("lv", key, params);
 
@@ -128,7 +128,7 @@ describe("buildWeekImageData", () => {
   it("carries the way back to the app: a scannable code and the same address in words", async () => {
     const data = await buildFor("A1-2");
 
-    expect(data.link.label).toBe("shorturl.at/pPrzh");
+    expect(data.link.label).toBe("https://bit.ly/stundio");
     expect(data.link.qr).not.toBeNull();
     expect(data.brand).toBe("Stundio");
   });
@@ -156,7 +156,7 @@ describe("the message the image travels with", () => {
 
     expect(text).toContain("A1-2");
     expect(text).toContain("07.09.–11.09.");
-    expect(text).toContain("https://github.com/dmytropolizhai/stundio/releases");
+    expect(text).toContain("https://bit.ly/stundio");
   });
 
   it("names the file after the class and the Monday it starts on", () => {
