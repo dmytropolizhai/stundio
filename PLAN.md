@@ -1,10 +1,10 @@
 # EduPage timetable app — action plan
 
-Status: Phases 0–3 done (scaffold, tooling, Capacitor, the full scraper + parser, the offline
-cache + sync + store, and the UI). Next: Phase 4 (Android packaging + notifications), and the
-widget spike is now unblocked — `src/lib/schedule/` is the logic it shares with the app.
-Research artefacts: `MODEL.md`,
-`src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
+Status: Phases 0–4 and the Parallel Widget Track are complete (scaffold, tooling, Capacitor,
+scraper + parser, offline cache + sync, UI, customization & themes, Android packaging, edge-to-edge,
+local notifications, WorkManager background refresh, and native 2×1, countdown & 4×2 home-screen widgets).
+Next: Phase 5 (Release preparation & Play Console closed track) and Phase 7 (iOS PWA on Vercel).
+Research artefacts: `MODEL.md`, `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1.
 
 ## Guiding constraints (fixed)
@@ -179,50 +179,43 @@ Still unverified on a physical device (no JDK/Android SDK here).
 
 ---
 
-## Phase 4 — Android packaging + notifications  (size: M)
+## Phase 4 — Android packaging, customization & widgets  (size: M — complete)
 
-- [ ] **Customization settings** (extends the Phase 3 Settings screen): user-controlled
+- [x] **Customization settings** (extends the Phase 3 Settings screen): user-controlled
       appearance, stored in `db/` `settings` store like the rest of Settings, applied through
       `src/ds/` tokens/CSS variables — no new hardcoded colours.
-  - [ ] **Theme:** already have system/light/dark (Phase 3); add an **accent colour picker**
-        limited to the DS's defined accent set (don't invent new hexes outside `src/ds/tokens/`).
-  - [ ] **Per-subject colours:** let the user override a subject's `subjectTone()`-assigned accent
-        with another DS accent, and **toggle subject colour-coding off** entirely (falls back to a
-        single neutral tone everywhere the accent currently renders — lesson rows, WeekView cells,
-        the rail). Persisted per class (per device — this is local-first, not synced), with a
-        "reset to defaults" action. Keep `subjectTone()` as the deterministic default; overrides
-        are an explicit opt-in layered on top, not a replacement for the hashing scheme.
-  - [ ] Settings UI: a per-subject list (subject name + colour swatch + on/off) under a new
-        "Appearance" section, reusing existing Subjects-screen data for the subject list.
-- [ ] App icon, adaptive icon, splash, status-bar styling, edge-to-edge.
-- [ ] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline banner.
+  - [x] **Theme:** system/light/dark; dark mode has dedicated high-contrast black/white styling
+        re-pointing semantic `--brand` / `--text-on-brand` tokens.
+  - [x] **Per-subject colours & Custom Color Wheel:** users can pick from DS pastel accents or
+        use an interactive SVG **Color Wheel** (`ColorWheel` component) to assign arbitrary RGB/HSV
+        colors to subjects. High-contrast readable ink is dynamically computed (`readableInk()`).
+  - [x] **Monochrome mode:** toggle subject colour-coding off entirely (falls back to a
+        single neutral tone across lesson rows, WeekView cells, and rails).
+  - [x] Settings UI: "Appearance" section in `CustomizationSheet` with subject swatches, tone
+        picker, custom color wheel, and a "reset to defaults" action.
+- [x] App icon, adaptive icon, splash, status-bar styling, edge-to-edge (`SystemBarsPlugin` native Android integration).
+- [x] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline detection & banner.
 - [x] `@capacitor/local-notifications`: after a foreground/resume sync, if today's (or
       tomorrow's) substitutions changed vs the cached snapshot → fire a local notification.
-      Diffs the raw `DaySubstitutions` in `sync/engine.ts` rather than the resolved view (simpler,
-      same effect); gated on the device having synced before, so a fresh install doesn't fire on
-      its first sync. Also shipped alongside: a configurable "n minutes before the next lesson"
-      reminder (`src/lib/schedule/reminders.ts` + `src/notifications/`) and a one-shot "new
-      version available" notification reusing the existing `useUpdateCheck` release check.
-- [x] **Share the week as an image**: the week view exports a card — class set at Hero size, form
-      teacher (`classes.teacherid`, MODEL.md §2), the week's period rows with start *and* end
-      times, subject accents, and the buildings the week visits as sunken pills — and hands it to
-      Android's share sheet. Under the grid sits a **key** pairing every code with the subject's
-      full name: RVT publishes names up to 92 characters, so no five-column grid can hold them in
-      a cell, and an unexplained acronym on an image is unreadable (there is nothing to tap). The footer carries the wordmark and a **QR code to the download
-      page**, generated on-device (`lib/share/qr.ts`), with the short URL printed beside it for
-      whoever is reading the image on the phone that would have scanned it. Laid out in design
-      system units throughout, so the export reads as a Studio surface next to a screenshot of
-      the app, and drawn with plain canvas calls (`src/lib/share/`, `src/ui/share/`): no
-      DOM-to-image dependency, no QR service, no backend, works offline. Native side is this
-      app's own `ImageShare` plugin, reusing the installer's `FileProvider`; a browser falls back
-      to the Web Share API, then to a download.
-- [ ] Background refresh: `@capacitor/background-runner` (or a WorkManager periodic task) to
-      pull substitutions ~every few hours. **Document that Android throttles this** — treat
-      on-open refresh as the reliable path, background as best-effort.
+      Diffs the raw `DaySubstitutions` in `sync/engine.ts` rather than the resolved view;
+      gated on the device having synced before. Includes configurable "n minutes before next lesson"
+      reminders (`src/lib/schedule/reminders.ts` + `src/notifications/`) and one-shot update notifications.
+- [x] **Share the week as an image**: exports class week card with form teacher, period rows,
+      times, subject accents, and building notes. Includes a subject-name key and on-device QR code
+      generator (`lib/share/qr.ts`). Handed directly to Android's share sheet via custom `ImageShare`
+      plugin, with Web Share API / download fallback.
+- [x] **Subgroups support**: `SubgroupPicker` allowing students in classes with split divisions
+      (e.g., 1. grupa / 2. grupa) to select and filter their schedule.
+- [x] **In-app feedback**: `FeedbackSheet` and `FeedbackPrompt` providing in-app submission for bug reports
+      and feature suggestions via Web3Forms (no third-party external forms required).
+- [x] **Localization expansion**: added Ukrainian (`ua.ts`) alongside Latvian (`lv.ts`), English (`en.ts`),
+      and Russian (`ru.ts`).
+- [x] Background refresh: WorkManager periodic task (`WidgetRefreshWorker`) to keep schedule and widgets
+      fresh in the background. Android battery optimizations documented; on-open/resume is primary path.
 - [ ] No FCM / push in v1 (needs a server — folds into the deferred bot's backend later).
 
-**Exit:** installed app refreshes on open/resume and raises a local notification when a
-favorite class's day changes while the app has run.
+**Exit:** ✅ met. Installed app refreshes on open/resume, displays offline warnings, supports custom
+color customization and subgroups, delivers local notifications, and supports background refresh.
 
 ---
 
@@ -328,19 +321,20 @@ as Android — without any change to the Android app or the widget.
 
 ---
 
-## Parallel track — home-screen widget spike  (size: M–L, start after Phase 0)
+## Parallel track — home-screen widget spike  (size: M–L — complete)
 
-Capacitor has no App Widget API — this is native Kotlin. Do a spike early so its data
-needs shape the JS side.
+Capacitor has no App Widget API — native Kotlin and Java AppWidgetProviders were built and bridged:
 
-- [ ] Kotlin `AppWidgetProvider` + `RemoteViews` layout: current/next lesson, room, countdown.
-- [ ] Data bridge: tiny custom Capacitor plugin (or `@capacitor/preferences` shared file) —
-      JS writes a `widget.json` (`{ current, next, updatedAt }` from `resolve.ts`) after each sync;
-      widget reads it, no network in the widget.
-- [ ] Update cadence: on app sync + `AlarmManager`/`updatePeriodMillis` (min 30 min) + at period boundaries.
-- [ ] Sizes: 2×1 (next lesson) and 4×2 (rest of today).
+- [x] Kotlin/Java `AppWidgetProvider` + `RemoteViews` layouts:
+  - **Next Lesson (2×1)**: `NextLessonWidget` showing current/next lesson, room, teacher, countdown/times, and status.
+  - **Countdown**: `CountdownWidget` focusing on remaining minutes with visual progress bar.
+  - **All-Day (4×2)**: `AllDayWidget` with scrollable list via `AllDayRemoteViewsFactory` of today's schedule.
+- [x] Data bridge: `StundioWidgetPlugin` Capacitor plugin bridge + `src/lib/widget/` (`WidgetPayload`, `native.ts`, `wire.ts`) —
+      JS computes rendered widget payloads and pushes to native SharedPreferences; widget views read locally without network calls.
+- [x] Update cadence: on app sync + `WidgetScheduler` (exact alarms at period start/end boundaries) + `WidgetRefreshWorker` (WorkManager periodic refresh).
+- [x] Sizes & kinds: 2×1 (next lesson), countdown tile, and 4×2 (all-day list).
 
-**Exit:** widget on the home screen shows the right "next lesson" and updates after the app syncs.
+**Exit:** ✅ met. All three widgets render reliably on the Android home screen, display live status, and update automatically.
 
 ---
 

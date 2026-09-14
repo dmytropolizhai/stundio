@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-11T00:00:00Z",
+  "generatedAt": "2026-09-14T23:00:00Z",
   "title": "Design System: Stundio",
   "extensions": {
     "colorMeta": {
@@ -260,9 +260,9 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The single electric action on a screen, carrying the brand glow.",
+      "description": "Neutral near-black pill with shadow-card, flipping to light ink in dark mode. Never electric blue per The Neutral Button Rule.",
       "html": "<button class=\"ds-btn-primary\">Uz šodienu</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--brand, #1e3aff); color: #fff; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 12px 32px -12px rgba(30,58,255,0.55); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-btn-primary:hover { background: var(--brand-strong, #1730d6); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--brand, #0b0c10); color: var(--text-on-brand, #fff); font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-btn-primary:hover { background: var(--ink-700, #2a2d36); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
     },
     {
       "name": "Chip",
@@ -380,13 +380,18 @@
         "section": "colors"
       },
       {
+        "name": "The Contrast Invariant Rule",
+        "body": "Any custom subject color selected through the Color Wheel must always be paired with a contrast-checked ink via readableInk(). An arbitrary user-selected background tint never renders with fixed unverified text contrast; it dynamically binds either dark ink (#0b0c10) or light ink (#ffffff) to guarantee legibility.",
+        "section": "colors"
+      },
+      {
         "name": "The One Voice Rule",
         "body": "Studio Electric appears on at most one or two elements per screen. Its rarity is what makes the \"now\" ring read as now. A screen with three blue things has no primary action.",
         "section": "colors"
       },
       {
         "name": "The Alias-Only Rule",
-        "body": "Dark mode re-points semantic aliases (--bg-app, --surface-card, --text-muted, …) and never a base palette step (--blue-*, --ink-*, --accent-*). A component that reaches for a base step directly will be wrong in one of the two themes.",
+        "body": "Dark mode re-points semantic aliases (--bg-app, --surface-card, --text-muted, …) and never a base palette step (--blue-*, --ink-*, --accent-*). A component that reaches for a base step directly will be wrong in one of the two themes. In dark mode, --brand flips to --ink-100 with --text-on-brand as --ink-900, giving dark mode its own black/white brand identity.",
         "section": "colors"
       },
       {
@@ -441,6 +446,9 @@
       "Do express selection as a fill swap to solid near-black — chips, day tiles, and nav items all do this and should keep doing it.",
       "Do give the current lesson the 2px electric inset ring and nothing more.",
       "Do keep cancelled lessons in place at 55% opacity with a strikethrough; they are information, not clutter.",
+      "Do compute contrasting text color via readableInk() whenever custom user subject colors are rendered.",
+      "Do support structural row spanning in WeekGrid for multi-period combined lessons.",
+      "Do set button label weight to semibold (font-semibold).",
       "Do state data freshness on any screen that shows school data.",
       "Do pair every fade with a small translate.",
       "Do keep 44px as the floor for any hit target, and reserve the 64px nav height plus its 16px inset at the bottom of scrollable content.",
@@ -448,6 +456,7 @@
     ],
     "donts": [
       "Don't use a subject accent to mean anything. It is an index (see The Index Rule); status has its own four colours.",
+      "Don't render a custom subject background color without verifying ink contrast via readableInk().",
       "Don't use EduPage's server-supplied subject hex, raw hex of any kind, or stock Tailwind palette colours (slate-500, amber-100).",
       "Don't put a shadow under a tinted card, or a navy-tinted shadow anywhere in dark mode.",
       "Don't give anything a square corner, or a radius below 8px.",
