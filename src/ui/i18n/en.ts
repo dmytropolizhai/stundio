@@ -83,6 +83,7 @@ export const en: Dict = {
   "share.message":
     "{class} timetable {period} \nWant to have better experience with EduPage, check out: https://bit.ly/stundio",
   "share.image.classTeacher": "Form teacher",
+  "share.image.appLabel": "Better EduPage experience on phone",
   "share.language.title": "Which language should the share be in?",
   "share.language.sync": "Synchronize the share image with my app language",
   "share.language.continue": "Continue",
@@ -137,8 +138,7 @@ export const en: Dict = {
   "settings.language": "Language",
   "settings.share": "Sharing",
   "settings.shareSyncLang": "Synchronize with app language",
-  "settings.shareSyncLangHint":
-    "The shared image and message will use the language set in the app.",
+  "settings.shareSyncLangHint": "The shared image and message will use the language set in the app.",
   "settings.shareLanguage": "Share image language",
   "settings.week": "Week view",
   "settings.mergeLessons": "Merge identical lessons",

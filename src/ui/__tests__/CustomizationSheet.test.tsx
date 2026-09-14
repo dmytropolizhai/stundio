@@ -74,6 +74,61 @@ describe("CustomizationSheet", () => {
     expect(harness.store.getState().settings.reduceMotion).toBe(true);
   });
 
+  it("sets the app-wide accent to one of the six fixed tones, and resets it to default", async () => {
+    const harness = await openSheetHarness();
+    expect(harness.store.getState().settings.appAccent).toBe("default");
+
+    const row = within(
+      screen
+        .getByText("Krāsa izceltiem elementiem — šodienas datumam, izvēlētajām opcijām.")
+        .closest("div") as HTMLElement,
+    );
+    const swatch = row.getByRole("button", { name: "lilac" });
+
+    await clickAndSettle(() => {
+      fireEvent.click(swatch);
+    });
+    expect(harness.store.getState().settings.appAccent).toBe("lilac");
+
+    await clickAndSettle(() => {
+      fireEvent.click(row.getByText("Noklusējuma"));
+    });
+    expect(harness.store.getState().settings.appAccent).toBe("default");
+  });
+
+  it("hides the per-subject list while colour-coding is off, without dropping the overrides", async () => {
+    const harness = await openSheetHarness();
+    const { result } = renderHook(() => useSubjects(), { wrapper: wrapper(harness) });
+    const first = result.current.subjects[0];
+    if (first === undefined) throw new Error("fixture class has no subjects");
+    const label = first.subject.name || first.subject.short;
+    const key = subjectToneKey(first.subject);
+
+    await clickAndSettle(() => {
+      fireEvent.click(
+        within(screen.getByText(label).closest("div") as HTMLElement).getByRole("button", {
+          name: "lime",
+        }),
+      );
+    });
+    expect(harness.store.getState().settings.subjectColorOverrides[key]).toBe("lime");
+    expect(screen.getByText(label)).toBeDefined();
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Priekšmetu krāsu kodēšana" }));
+    });
+    expect(harness.store.getState().settings.subjectColorCodingEnabled).toBe(false);
+    // The picker is hidden, not just disabled — nothing about it is left on screen.
+    expect(screen.queryByText(label)).toBeNull();
+    // The override itself survives underneath, ready to apply again once switched back on.
+    expect(harness.store.getState().settings.subjectColorOverrides[key]).toBe("lime");
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Priekšmetu krāsu kodēšana" }));
+    });
+    expect(screen.getByText(label)).toBeDefined();
+  });
+
   it("reassigns a subject's colour to one of the six fixed tones, and resets it back", async () => {
     const harness = await openSheetHarness();
     const { result } = renderHook(() => useSubjects(), { wrapper: wrapper(harness) });
@@ -118,11 +173,25 @@ describe("CustomizationSheet", () => {
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("switch", { name: "Mazāk animāciju" }));
     });
+    await clickAndSettle(() => {
+      fireEvent.click(
+        within(
+          screen
+            .getByText("Krāsa izceltiem elementiem — šodienas datumam, izvēlētajām opcijām.")
+            .closest("div") as HTMLElement,
+        ).getByRole("button", { name: "pink" }),
+      );
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Priekšmetu krāsu kodēšana" }));
+    });
     const settings = harness.store.getState().settings;
     expect(settings.lessonCardStyle).toBe("filled");
     expect(settings.cardRadius).toBe("2xl");
     expect(settings.cardElevation).toBe("bold");
     expect(settings.reduceMotion).toBe(true);
+    expect(settings.appAccent).toBe("pink");
+    expect(settings.subjectColorCodingEnabled).toBe(false);
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("Atjaunot noklusējumu"));
@@ -133,6 +202,8 @@ describe("CustomizationSheet", () => {
     expect(reset.cardElevation).toBe("soft");
     expect(reset.reduceMotion).toBe(false);
     expect(reset.subjectColorOverrides).toEqual({});
+    expect(reset.appAccent).toBe("default");
+    expect(reset.subjectColorCodingEnabled).toBe(true);
   });
 
   it("says so when no class is selected", async () => {

@@ -84,6 +84,7 @@ export const ru: Dict = {
   "share.message":
     "{class} расписание {period} \nХотите сделать использование EduPage удобнее? Загляните на: https://bit.ly/stundio",
   "share.image.classTeacher": "Классный руководитель",
+  "share.image.appLabel": "Удобный EduPage на телефоне",
   "share.language.title": "На каком языке поделиться?",
   "share.language.sync": "Синхронизировать изображение с языком приложения",
   "share.language.continue": "Продолжить",
@@ -205,6 +206,9 @@ export const ru: Dict = {
 
   "customization.title": "Персонализация",
   "customization.theme": "Оформление",
+  "customization.accent": "Акцентный цвет",
+  "customization.accent.hint": "Цвет для выделений — сегодняшней даты, выбранной опции.",
+  "customization.accent.reset": "По умолчанию",
   "customization.lessonStyle": "Карточки уроков",
   "customization.lessonStyle.hint": "Как цвет предмета показан в списке дня.",
   "customization.lessonStyle.outline": "Контур",
@@ -220,6 +224,9 @@ export const ru: Dict = {
   "customization.reduceMotion": "Меньше анимации",
   "customization.reduceMotion.hint": "Отключает переходы и анимации в приложении.",
   "customization.subjectColors": "Цвета предметов",
+  "customization.subjectColors.enabled": "Цветовая маркировка предметов",
+  "customization.subjectColors.enabled.hint":
+    "Если выключено, каждый предмет показан одним нейтральным цветом в списке дня и на неделе.",
   "customization.subjectColors.hint":
     "Нажми на цвет, чтобы назначить его; нажми «Авто», чтобы вернуть цвет по умолчанию.",
   "customization.subjectColors.reset": "Авто",

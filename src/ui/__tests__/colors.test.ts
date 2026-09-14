@@ -13,6 +13,7 @@ import {
   lessonBuilding,
   subjectCode,
   subjectTone,
+  subjectToneKey,
 } from "../theme/colors.ts";
 
 const subject = (partial: Partial<SubjectRef>): SubjectRef => ({
@@ -45,6 +46,25 @@ describe("subjectTone", () => {
   it("falls back rather than throwing on a missing subject", () => {
     expect(SUBJECT_TONES).toContain(subjectTone(null));
     expect(SUBJECT_TONES).toContain(subjectTone(subject({})));
+  });
+
+  it("collapses every subject to one neutral tone when colour-coding is off", () => {
+    expect(subjectTone(subject({ short: "PRG" }), {}, false)).toBe("sky");
+    expect(subjectTone(subject({ short: "MAT" }), {}, false)).toBe("sky");
+    expect(subjectTone(subject({ short: "ANG" }), {}, false)).toBe("sky");
+  });
+
+  it("ignores a per-subject override while colour-coding is off", () => {
+    const short = "DTB";
+    const overrides = { [subjectToneKey(subject({ short }))]: "lime" as const };
+    expect(subjectTone(subject({ short }), overrides, true)).toBe("lime");
+    expect(subjectTone(subject({ short }), overrides, false)).toBe("sky");
+  });
+
+  it("defaults to enabled when the flag is omitted, matching today's behaviour", () => {
+    expect(subjectTone(subject({ short: "MAT" }))).toBe(
+      subjectTone(subject({ short: "MAT" }), {}, true),
+    );
   });
 
   it("spreads a realistic timetable across more than one accent", () => {

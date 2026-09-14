@@ -83,6 +83,7 @@ export const ua: Dict = {
   "share.message":
     "{class} розклад {period} \nХочете зробити користування EduPage зручнішим? Завітайте на: https://bit.ly/stundio",
   "share.image.classTeacher": "Класний керівник",
+  "share.image.appLabel": "Зручніший EduPage на телефоні",
   "share.language.title": "Якою мовою поділитися?",
   "share.language.sync": "Синхронізувати зображення з мовою застосунку",
   "share.language.continue": "Продовжити",
@@ -204,6 +205,9 @@ export const ua: Dict = {
 
   "customization.title": "Персоналізація",
   "customization.theme": "Зовнішній вигляд",
+  "customization.accent": "Акцентний колір",
+  "customization.accent.hint": "Колір для виділень — сьогоднішньої дати, вибраної опції.",
+  "customization.accent.reset": "За замовчуванням",
   "customization.lessonStyle": "Картки уроків",
   "customization.lessonStyle.hint": "Як колір предмета показано в списку дня.",
   "customization.lessonStyle.outline": "Контур",
@@ -219,6 +223,9 @@ export const ua: Dict = {
   "customization.reduceMotion": "Менше анімації",
   "customization.reduceMotion.hint": "Вимикає переходи й анімації в застосунку.",
   "customization.subjectColors": "Кольори предметів",
+  "customization.subjectColors.enabled": "Кольорове кодування предметів",
+  "customization.subjectColors.enabled.hint":
+    "Вимкнено — кожен предмет показаний одним нейтральним кольором у списку дня й на тижні.",
   "customization.subjectColors.hint":
     "Торкнися кольору, щоб призначити його; торкнися «Авто», щоб повернути типовий колір.",
   "customization.subjectColors.reset": "Авто",

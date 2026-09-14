@@ -59,6 +59,12 @@ afterEach(() => {
     "radius-2xl",
     "elevation-bold",
     "reduce-motion",
+    "accent-amber",
+    "accent-sky",
+    "accent-lilac",
+    "accent-pink",
+    "accent-mint",
+    "accent-lime",
   );
   capacitorState.platform = "web";
   capacitorState.setAppearance.mockReset();
@@ -166,5 +172,31 @@ describe("useCustomization", () => {
       await harness.store.getState().setCardRadius("xl");
     });
     expect(document.documentElement.classList.contains("radius-2xl")).toBe(false);
+  });
+
+  it("leaves every accent class off for the default accent", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <Customized />);
+    for (const tone of ["amber", "sky", "lilac", "pink", "mint", "lime"]) {
+      expect(document.documentElement.classList.contains(`accent-${tone}`)).toBe(false);
+    }
+  });
+
+  it("sets exactly one accent class for a chosen accent, and moves it on change", async () => {
+    const harness = await bootHarness({ appAccent: "lilac" });
+    wrap(harness, <Customized />);
+    expect(document.documentElement.classList.contains("accent-lilac")).toBe(true);
+    expect(document.documentElement.classList.contains("accent-sky")).toBe(false);
+
+    await act(async () => {
+      await harness.store.getState().setAppAccent("mint");
+    });
+    expect(document.documentElement.classList.contains("accent-lilac")).toBe(false);
+    expect(document.documentElement.classList.contains("accent-mint")).toBe(true);
+
+    await act(async () => {
+      await harness.store.getState().setAppAccent("default");
+    });
+    expect(document.documentElement.classList.contains("accent-mint")).toBe(false);
   });
 });

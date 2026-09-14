@@ -75,6 +75,20 @@ describe("openAppDb", () => {
     expect(settings.lang).toBe(DEFAULT_SETTINGS.lang);
     expect(settings.selectedClassId).toBe("-927");
   });
+
+  it("backfills the accent and colour-coding fields for a record written before they existed", async () => {
+    const db = await openAppDb();
+    // Simulate a record written before `appAccent`/`subjectColorCodingEnabled` existed — an
+    // existing user's own settings must come back unchanged otherwise.
+    await db.put("settings", { selectedClassId: "-927", theme: "dark" } as never, "app");
+    db.close();
+
+    const settings = await createIdbCache(track(openAppDb())).getSettings();
+    // Preserving today's look exactly is the point: "default" accent, colour-coding still on.
+    expect(settings.appAccent).toBe("default");
+    expect(settings.subjectColorCodingEnabled).toBe(true);
+    expect(settings.theme).toBe("dark");
+  });
 });
 
 describe("createCache", () => {

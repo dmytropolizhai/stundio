@@ -60,6 +60,8 @@ export type AppState = {
   setCardRadius: (radius: Settings["cardRadius"]) => Promise<void>;
   setCardElevation: (elevation: Settings["cardElevation"]) => Promise<void>;
   setReduceMotion: (reduceMotion: boolean) => Promise<void>;
+  setAppAccent: (accent: Settings["appAccent"]) => Promise<void>;
+  setSubjectColorCodingEnabled: (enabled: boolean) => Promise<void>;
   /** `tone` of `null` clears the override, returning the subject to its auto-assigned tone. */
   setSubjectColorOverride: (
     subjectKey: string,
@@ -193,6 +195,9 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setCardRadius: (cardRadius) => persist({ cardRadius }),
       setCardElevation: (cardElevation) => persist({ cardElevation }),
       setReduceMotion: (reduceMotion) => persist({ reduceMotion }),
+      setAppAccent: (appAccent) => persist({ appAccent }),
+      setSubjectColorCodingEnabled: (subjectColorCodingEnabled) =>
+        persist({ subjectColorCodingEnabled }),
       setSubjectColorOverride: (subjectKey, tone) => {
         const next = { ...get().settings.subjectColorOverrides };
         if (tone === null) delete next[subjectKey];
@@ -206,6 +211,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           cardRadius: DEFAULT_SETTINGS.cardRadius,
           cardElevation: DEFAULT_SETTINGS.cardElevation,
           reduceMotion: DEFAULT_SETTINGS.reduceMotion,
+          appAccent: DEFAULT_SETTINGS.appAccent,
+          subjectColorCodingEnabled: DEFAULT_SETTINGS.subjectColorCodingEnabled,
           subjectColorOverrides: { ...DEFAULT_SETTINGS.subjectColorOverrides },
         }),
       setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>

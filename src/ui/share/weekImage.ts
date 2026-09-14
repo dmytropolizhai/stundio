@@ -67,6 +67,8 @@ export type WeekImageInput = {
   t: Translate;
   /** Same overrides the day and week views use, so a shared card matches the app on-screen. */
   subjectColorOverrides?: Record<string, SubjectTone>;
+  /** Same switch the day and week views read — off collapses every cell to the neutral tone. */
+  subjectColorCodingEnabled?: boolean;
 };
 
 const roomsOf = (lesson: ResolvedLesson): string =>
@@ -80,8 +82,10 @@ const toCell = (
   lesson: ResolvedLesson,
   theme: ShareTheme,
   subjectColorOverrides: Record<string, SubjectTone>,
+  subjectColorCodingEnabled: boolean,
 ): ShareCell => {
-  const tone = theme.tones[subjectTone(lesson.subject, subjectColorOverrides)];
+  const tone =
+    theme.tones[subjectTone(lesson.subject, subjectColorOverrides, subjectColorCodingEnabled)];
   const detail = roomsOf(lesson);
   const building = lessonBuilding(day, lesson);
 
@@ -107,6 +111,7 @@ const subjectKey = (
   days: (ResolvedDay | null)[],
   theme: ShareTheme,
   subjectColorOverrides: Record<string, SubjectTone>,
+  subjectColorCodingEnabled: boolean,
 ): ShareLegendEntry[] => {
   const byLabel = new Map<string, ShareLegendEntry>();
 
@@ -118,7 +123,8 @@ const subjectKey = (
       // Nothing to explain when there is no name behind the code.
       if (name === "" || name === label || byLabel.has(label)) continue;
 
-      const tone = theme.tones[subjectTone(lesson.subject, subjectColorOverrides)];
+      const tone =
+        theme.tones[subjectTone(lesson.subject, subjectColorOverrides, subjectColorCodingEnabled)];
       byLabel.set(label, { label, name, fill: tone.fill, ink: tone.ink });
     }
   }
@@ -165,6 +171,7 @@ export const buildWeekImageData = ({
   lang,
   t,
   subjectColorOverrides = {},
+  subjectColorCodingEnabled = true,
 }: WeekImageInput): ShareImageData => {
   const first = dates[0];
   const last = dates[dates.length - 1];
@@ -177,7 +184,7 @@ export const buildWeekImageData = ({
       const lesson = day?.lessons.find((l) => l.period === slot.period);
       return day === null || lesson === undefined
         ? null
-        : toCell(day, lesson, theme, subjectColorOverrides);
+        : toCell(day, lesson, theme, subjectColorOverrides, subjectColorCodingEnabled);
     }),
   }));
 
@@ -191,7 +198,7 @@ export const buildWeekImageData = ({
       date: formatDayMonth(date, lang),
     })),
     rows,
-    legend: subjectKey(days, theme, subjectColorOverrides),
+    legend: subjectKey(days, theme, subjectColorOverrides, subjectColorCodingEnabled),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
     link: appLink(),

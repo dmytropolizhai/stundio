@@ -207,6 +207,41 @@ describe("settings", () => {
     expect(await cache.getSettings()).toMatchObject({ theme: "dark", lang: "ru" });
   });
 
+  it("persists the app accent and the colour-coding toggle", async () => {
+    const store = makeStore();
+    await store.getState().hydrate();
+
+    expect(store.getState().settings.appAccent).toBe("default");
+    expect(store.getState().settings.subjectColorCodingEnabled).toBe(true);
+
+    await store.getState().setAppAccent("lilac");
+    await store.getState().setSubjectColorCodingEnabled(false);
+
+    expect(store.getState().settings.appAccent).toBe("lilac");
+    expect(store.getState().settings.subjectColorCodingEnabled).toBe(false);
+    expect(await cache.getSettings()).toMatchObject({
+      appAccent: "lilac",
+      subjectColorCodingEnabled: false,
+    });
+  });
+
+  it("restores the accent, colour-coding and every other Customization setting on reset", async () => {
+    const store = makeStore();
+    await store.getState().hydrate();
+
+    await store.getState().setAppAccent("mint");
+    await store.getState().setSubjectColorCodingEnabled(false);
+    await store.getState().setSubjectColorOverride("prg", "lime");
+    await store.getState().setReduceMotion(true);
+
+    await store.getState().resetCustomization();
+
+    expect(store.getState().settings.appAccent).toBe("default");
+    expect(store.getState().settings.subjectColorCodingEnabled).toBe(true);
+    expect(store.getState().settings.subjectColorOverrides).toEqual({});
+    expect(store.getState().settings.reduceMotion).toBe(false);
+  });
+
   it("re-resolves against the pinned building", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });

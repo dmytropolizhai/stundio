@@ -90,6 +90,7 @@ export const lv = {
   "share.message":
     "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://bit.ly/stundio",
   "share.image.classTeacher": "Klases audzinātājs",
+  "share.image.appLabel": "Labāka EduPage pieredze tālrunī",
   "share.language.title": "Kādā valodā kopīgot?",
   "share.language.sync": "Sinhronizēt kopīgoto attēlu ar lietotnes valodu",
   "share.language.continue": "Turpināt",
@@ -210,6 +211,10 @@ export const lv = {
 
   "customization.title": "Izskats",
   "customization.theme": "Noformējums",
+  "customization.accent": "Akcentkrāsa",
+  "customization.accent.hint":
+    "Krāsa izceltiem elementiem — šodienas datumam, izvēlētajām opcijām.",
+  "customization.accent.reset": "Noklusējuma",
   "customization.lessonStyle": "Stundu kartītes",
   "customization.lessonStyle.hint": "Kā priekšmeta krāsa parādās dienas sarakstā.",
   "customization.lessonStyle.outline": "Kontūra",
@@ -225,6 +230,9 @@ export const lv = {
   "customization.reduceMotion": "Mazāk animāciju",
   "customization.reduceMotion.hint": "Izslēdz lietotnes pārejas un animācijas.",
   "customization.subjectColors": "Priekšmetu krāsas",
+  "customization.subjectColors.enabled": "Priekšmetu krāsu kodēšana",
+  "customization.subjectColors.enabled.hint":
+    "Izslēdzot, katrs priekšmets stundu sarakstā un nedēļas skatā rāda vienu neitrālu krāsu.",
   "customization.subjectColors.hint":
     'Pieskaries krāsai, lai to mainītu; pieskaries "Auto", lai atgrieztos pie noklusējuma.',
   "customization.subjectColors.reset": "Auto",
