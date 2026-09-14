@@ -51,6 +51,7 @@ export const en: Dict = {
   "day.noData": "Nothing cached yet",
   "day.noDataHint": "Go online once to download the timetable.",
   "day.stale": "This week's timetable is not published yet — showing the previous one.",
+  "day.offline": "No internet connection — showing the saved timetable.",
   "day.buildingOther": "Different building: {building}",
   "day.buildingMixed": "Several buildings: {buildings}",
   "day.notes": "Announcements",
@@ -75,7 +76,8 @@ export const en: Dict = {
   "share.working": "Making the image…",
   "share.error": "Could not create the image",
   "share.title": "{class} timetable",
-  "share.message": "{class} timetable {period} \nWant to have better experience with EduPage, check out: https://github.com/dmytropolizhai/stundio",
+  "share.message":
+    "{class} timetable {period} \nWant to have better experience with EduPage, check out: https://github.com/dmytropolizhai/stundio",
   "share.image.classTeacher": "Form teacher",
   "share.image.appLabel": "Better EduPage experience on phone",
   "share.language.title": "Which language should the share be in?",
@@ -130,7 +132,8 @@ export const en: Dict = {
   "settings.language": "Language",
   "settings.share": "Sharing",
   "settings.shareSyncLang": "Synchronize with app language",
-  "settings.shareSyncLangHint": "The shared image and message will use the language set in the app.",
+  "settings.shareSyncLangHint":
+    "The shared image and message will use the language set in the app.",
   "settings.shareLanguage": "Share image language",
   "settings.week": "Week view",
   "settings.mergeLessons": "Merge identical lessons",

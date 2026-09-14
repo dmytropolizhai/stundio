@@ -71,10 +71,10 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 
 These are enforced by lint, tests, or CI — breaking one breaks the build:
 
-- **Only `lib/edupage/http.ts`, `lib/analytics/http.ts` and `lib/share/native.ts` may import
-  `@capacitor/*`.** ESLint `no-restricted-imports` enforces this; everything else stays
-  platform-agnostic and testable. (`lib/version/installer.ts` is the one Android-only module by
-  nature — it drives this app's own `ApkInstaller` plugin.)
+- **Only `lib/edupage/http.ts`, `lib/analytics/http.ts`, `lib/share/native.ts` and
+  `lib/network/native.ts` may import `@capacitor/*`.** ESLint `no-restricted-imports` enforces
+  this; everything else stays platform-agnostic and testable. (`lib/version/installer.ts` is the
+  one Android-only module by nature — it drives this app's own `ApkInstaller` plugin.)
 - **Import a module through its barrel** (`@/ds`, `@/store`, `@/lib/edupage`, …), never from a
   sibling file across a layer boundary.
 - **Never reach upward.** `lib/` knows nothing about `store/` or `ui/`; `ds/` knows nothing about

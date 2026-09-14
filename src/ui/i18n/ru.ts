@@ -51,6 +51,7 @@ export const ru: Dict = {
   "day.noData": "Нет сохранённых данных",
   "day.noDataHint": "Подключись к интернету, чтобы скачать расписание.",
   "day.stale": "Расписание на эту неделю ещё не опубликовано — показываем прошлое.",
+  "day.offline": "Нет подключения к интернету — показываем сохранённое расписание.",
   "day.buildingOther": "Другой корпус: {building}",
   "day.buildingMixed": "Несколько корпусов: {buildings}",
   "day.notes": "Объявления",
@@ -131,7 +132,8 @@ export const ru: Dict = {
   "settings.language": "Язык",
   "settings.share": "Публикация",
   "settings.shareSyncLang": "Синхронизировать с языком приложения",
-  "settings.shareSyncLangHint": "Изображение и сообщение будут на языке, установленном в приложении.",
+  "settings.shareSyncLangHint":
+    "Изображение и сообщение будут на языке, установленном в приложении.",
   "settings.shareLanguage": "Язык изображения",
   "settings.week": "Просмотр недели",
   "settings.mergeLessons": "Объединять одинаковые уроки",
