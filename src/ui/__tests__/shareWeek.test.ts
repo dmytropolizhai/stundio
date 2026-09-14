@@ -128,7 +128,7 @@ describe("buildWeekImageData", () => {
   it("carries the way back to the app: a scannable code and the same address in words", async () => {
     const data = await buildFor("A1-2");
 
-    expect(data.link.label).toBe("shorturl.at/pPrzh");
+    expect(data.link.label).toBe("https://bit.ly/stundio");
     expect(data.link.qr).not.toBeNull();
     expect(data.brand).toBe("Stundio");
   });

@@ -84,7 +84,6 @@ export const lv = {
   "share.message":
     "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://bit.ly/stundio",
   "share.image.classTeacher": "Klases audzinātājs",
-  "share.image.appLabel": "Labāka EduPage pieredze tālrunī",
   "share.language.title": "Kādā valodā kopīgot?",
   "share.language.sync": "Sinhronizēt kopīgoto attēlu ar lietotnes valodu",
   "share.language.continue": "Turpināt",

@@ -78,7 +78,6 @@ export const ua: Dict = {
   "share.message":
     "{class} розклад {period} \nХочете зробити користування EduPage зручнішим? Завітайте на: https://bit.ly/stundio",
   "share.image.classTeacher": "Класний керівник",
-  "share.image.appLabel": "Зручніший EduPage на телефоні",
   "share.language.title": "Якою мовою поділитися?",
   "share.language.sync": "Синхронізувати зображення з мовою застосунку",
   "share.language.continue": "Продовжити",

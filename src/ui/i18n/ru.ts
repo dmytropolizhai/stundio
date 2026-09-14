@@ -78,7 +78,6 @@ export const ru: Dict = {
   "share.message":
     "{class} расписание {period} \nХотите сделать использование EduPage удобнее? Загляните на: https://bit.ly/stundio",
   "share.image.classTeacher": "Классный руководитель",
-  "share.image.appLabel": "Удобный EduPage на телефоне",
   "share.language.title": "На каком языке поделиться?",
   "share.language.sync": "Синхронизировать изображение с языком приложения",
   "share.language.continue": "Продолжить",
