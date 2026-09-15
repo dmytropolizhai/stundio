@@ -30,6 +30,69 @@ export const en: Dict = {
   "onboarding.intro.step4.body":
     "A heads-up before class, and a ping if substitutions change — nothing else.",
 
+  "onboarding.customization.title": "Customize your Stundio",
+  "onboarding.customization.subtitle":
+    "Personalize your experience and explore Stundio's special features.",
+  "onboarding.customization.progress": "Customization step {step} of {total}",
+  "onboarding.customization.skip": "Skip",
+  "onboarding.customization.next": "Next",
+  "onboarding.customization.back": "Back",
+  "onboarding.customization.finish": "Choose your class",
+
+  "onboarding.customization.step1.badge": "Appearance & Theme",
+  "onboarding.customization.step1.title": "Personalize app appearance",
+  "onboarding.customization.step1.body":
+    "Dark mode for evenings, light mode for daylight, and 6 vibrant accent colors.",
+  "onboarding.customization.step1.themeLabel": "Theme",
+  "onboarding.customization.step1.accentLabel": "Accent color",
+
+  "onboarding.customization.step2.badge": "Lesson Cards",
+  "onboarding.customization.step2.title": "Tailor lesson cards to your style",
+  "onboarding.customization.step2.body":
+    "Choose card fill style, corner radius, and shadow elevation.",
+  "onboarding.customization.step2.styleLabel": "Card style",
+  "onboarding.customization.step2.radiusLabel": "Corner radius",
+  "onboarding.customization.step2.elevationLabel": "Card shadows",
+
+  "onboarding.customization.step3.badge": "Timetable Clarity",
+  "onboarding.customization.step3.title": "Display what matters to you",
+  "onboarding.customization.step3.body":
+    "Display exact period times, merge double periods, and color-code subjects.",
+  "onboarding.customization.step3.showTime": "Show exact lesson start & end times",
+  "onboarding.customization.step3.mergeLessons": "Merge consecutive identical lessons",
+  "onboarding.customization.step3.colorCoding": "Subject color-coding",
+
+  "onboarding.customization.step4.badge": "Special Features",
+  "onboarding.customization.step4.title": "Smart alerts & superpowers",
+  "onboarding.customization.step4.body":
+    "Pre-lesson reminders, substitution alerts, and reliable offline access.",
+  "onboarding.customization.step4.reminderLabel": "Lesson reminder",
+  "onboarding.customization.step4.substitutionLabel": "Notify on substitutions and cancellations",
+  "onboarding.customization.step4.offlineTitle": "100% Offline-First",
+  "onboarding.customization.step4.offlineBody":
+    "Schedule is stored on-device — works reliably without an internet connection.",
+  "onboarding.customization.step4.widgetTitle": "Home-screen Widget",
+  "onboarding.customization.step4.widgetBody":
+    "Glance at your current lesson and classroom right from your Android home screen.",
+  "onboarding.customization.step4.shareTitle": "Share with Classmates",
+  "onboarding.customization.step4.shareBody":
+    "Export weekly schedule as an image card with a scannable QR code.",
+
+  "onboarding.customization.step5.badge": "Message the Developer",
+  "onboarding.customization.step5.title": "Feedback & Feature Requests",
+  "onboarding.customization.step5.body":
+    "You can report bugs or suggest new features directly to the developer anytime in Settings.",
+  "onboarding.customization.step5.reportTitle": "Spotted an issue?",
+  "onboarding.customization.step5.reportBody":
+    "Report wrong classroom data, lesson bugs, or technical issues.",
+  "onboarding.customization.step5.suggestTitle": "Have an idea?",
+  "onboarding.customization.step5.suggestBody":
+    "Suggest a feature — Stundio is built actively for RVT students.",
+  "onboarding.customization.step5.settingsHint":
+    "Always accessible via the Settings tab at the bottom of the screen.",
+  "settings.customizationGuide": "Customization Walkthrough",
+  "settings.customizationGuideAction": "Open",
+
   "class.search": "Search classes…",
   "class.none": "No classes found",
   "class.favorites": "Favorites",

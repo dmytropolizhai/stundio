@@ -51,7 +51,13 @@ const SLIDES: Slide[] = [
  * before asking the one question it needs answered. Skippable at every step: this is a
  * courtesy tour, not a gate.
  */
-export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
+export const OnboardingIntro = ({
+  onDone,
+  onSkip,
+}: {
+  onDone: () => void;
+  onSkip?: () => void;
+}) => {
   const t = useT();
   const [step, setStep] = useState(0);
   const slide = SLIDES[step];
@@ -125,7 +131,7 @@ export const OnboardingIntro = ({ onDone }: { onDone: () => void }) => {
   return (
     <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6">
       <div className="flex justify-end pt-4">
-        <Button variant="ghost" size="sm" onClick={onDone}>
+        <Button variant="ghost" size="sm" onClick={onSkip ?? onDone}>
           {t("onboarding.intro.skip")}
         </Button>
       </div>
