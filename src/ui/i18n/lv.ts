@@ -170,6 +170,8 @@ export const lv = {
   "settings.notifyAppUpdatesHint": "Paziņo, kad iznāk jauna lietotnes versija.",
   "settings.notifyPermissionDenied": "Paziņojumi ir bloķēti sistēmas iestatījumos.",
   "settings.notifyOpenSettings": "Atvērt iestatījumus",
+  "settings.notificationsWebNotice":
+    "Bezsaistes atgādinājumi un paziņojumi ir pieejami Android lietotnē. Tīmekļa lietotnē izmaiņas atjaunojas, to atverot.",
   "notification.lessonReminder.title": "{subject} pēc {minutes} min",
   "notification.changed.title": "Izmaiņas stundu sarakstā",
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",

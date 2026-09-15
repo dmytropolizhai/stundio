@@ -165,6 +165,8 @@ export const ru: Dict = {
   "settings.notifyAppUpdatesHint": "Уведомлять о выходе новой версии приложения.",
   "settings.notifyPermissionDenied": "Уведомления заблокированы в настройках системы.",
   "settings.notifyOpenSettings": "Открыть настройки",
+  "settings.notificationsWebNotice":
+    "Офлайн-напоминания и уведомления доступны в приложении для Android. В веб-версии изменения обновляются при открытии.",
   "notification.lessonReminder.title": "{subject} через {minutes} мин",
   "notification.changed.title": "Изменения в расписании",
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",

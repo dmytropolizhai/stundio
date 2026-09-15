@@ -164,6 +164,8 @@ export const ua: Dict = {
   "settings.notifyAppUpdatesHint": "Сповіщати про вихід нової версії застосунку.",
   "settings.notifyPermissionDenied": "Сповіщення заблоковані в налаштуваннях системи.",
   "settings.notifyOpenSettings": "Відкрити налаштування",
+  "settings.notificationsWebNotice":
+    "Офлайн-нагадування та сповіщення доступні в додатку для Android. У веб-версії зміни оновлюються при відкритті.",
   "notification.lessonReminder.title": "{subject} через {minutes} хв",
   "notification.changed.title": "Розклад змінився",
   "notification.changed.body": "У розкладі на сьогодні є зміни.",

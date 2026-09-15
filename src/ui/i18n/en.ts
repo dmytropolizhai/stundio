@@ -163,6 +163,8 @@ export const en: Dict = {
   "settings.notifyAppUpdatesHint": "Notify when a new app version is released.",
   "settings.notifyPermissionDenied": "Notifications are blocked in system settings.",
   "settings.notifyOpenSettings": "Open settings",
+  "settings.notificationsWebNotice":
+    "Offline reminders and notifications are supported in the Android app. On the web app, schedule changes update whenever you open the app.",
   "notification.lessonReminder.title": "{subject} in {minutes} min",
   "notification.changed.title": "Timetable changed",
   "notification.changed.body": "Today's schedule has changes.",

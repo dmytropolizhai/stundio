@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useAppStore } from "@/store";
-import { listBuildings, listSubgroups } from "@/lib/edupage";
+import { isNativePlatform, listBuildings, listSubgroups } from "@/lib/edupage";
 import type { Settings } from "@/db";
 import { Icon } from "@/ds/components/ui/icon";
 import { Button, Card, SegmentedTabs, Switch, TopBar } from "@/ds";
@@ -274,78 +274,88 @@ export const SettingsView = ({
         </Section>
 
         <Section title={t("settings.notifications")}>
-          {notifyPermissionDenied && (
-            <Row className="flex flex-wrap items-center justify-between gap-3">
-              <p className="font-text text-caption font-bold text-danger">
-                {t("settings.notifyPermissionDenied")}
+          {!isNativePlatform() ? (
+            <Row>
+              <p className="font-text text-caption text-muted">
+                {t("settings.notificationsWebNotice")}
               </p>
-              <Button
-                size="sm"
-                icon="external-link"
-                onClick={() => {
-                  void openNotificationSettings();
-                }}
-              >
-                {t("settings.notifyOpenSettings")}
-              </Button>
             </Row>
+          ) : (
+            <>
+              {notifyPermissionDenied && (
+                <Row className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="font-text text-caption font-bold text-danger">
+                    {t("settings.notifyPermissionDenied")}
+                  </p>
+                  <Button
+                    size="sm"
+                    icon="external-link"
+                    onClick={() => {
+                      void openNotificationSettings();
+                    }}
+                  >
+                    {t("settings.notifyOpenSettings")}
+                  </Button>
+                </Row>
+              )}
+              <Row>
+                <p className="mb-2 font-text text-body font-bold text-strong">
+                  {t("settings.notifyLessonReminder")}
+                </p>
+                <p className="mb-2.5 font-text text-caption text-muted">
+                  {t("settings.notifyLessonReminderHint")}
+                </p>
+                <SegmentedTabs
+                  label={t("settings.notifyLessonReminder")}
+                  value={String(settings.notifyLessonReminderMinutes)}
+                  items={reminderOptions}
+                  onChange={(value) => {
+                    const minutes = Number(value);
+                    // Only ask for the OS permission when the user is turning reminders on — they
+                    // just told us why by picking a time, same as the onboarding notification slide.
+                    if (minutes > 0) void ensureNotificationPermission();
+                    void setNotifyLessonReminderMinutes(minutes);
+                  }}
+                />
+              </Row>
+              <Row className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-text text-body font-bold text-strong">
+                    {t("settings.notifySubstitutionChanges")}
+                  </p>
+                  <p className="mt-0.5 font-text text-caption text-muted">
+                    {t("settings.notifySubstitutionChangesHint")}
+                  </p>
+                </div>
+                <Switch
+                  aria-label={t("settings.notifySubstitutionChanges")}
+                  checked={settings.notifySubstitutionChanges}
+                  onChange={(checked) => {
+                    if (checked) void ensureNotificationPermission();
+                    void setNotifySubstitutionChanges(checked);
+                  }}
+                />
+              </Row>
+              <Row className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-text text-body font-bold text-strong">
+                    {t("settings.notifyAppUpdates")}
+                  </p>
+                  <p className="mt-0.5 font-text text-caption text-muted">
+                    {t("settings.notifyAppUpdatesHint")}
+                  </p>
+                </div>
+                <Switch
+                  aria-label={t("settings.notifyAppUpdates")}
+                  checked={settings.notifyAppUpdates}
+                  onChange={(checked) => {
+                    if (checked) void ensureNotificationPermission();
+                    void setNotifyAppUpdates(checked);
+                  }}
+                />
+              </Row>
+            </>
           )}
-          <Row>
-            <p className="mb-2 font-text text-body font-bold text-strong">
-              {t("settings.notifyLessonReminder")}
-            </p>
-            <p className="mb-2.5 font-text text-caption text-muted">
-              {t("settings.notifyLessonReminderHint")}
-            </p>
-            <SegmentedTabs
-              label={t("settings.notifyLessonReminder")}
-              value={String(settings.notifyLessonReminderMinutes)}
-              items={reminderOptions}
-              onChange={(value) => {
-                const minutes = Number(value);
-                // Only ask for the OS permission when the user is turning reminders on — they
-                // just told us why by picking a time, same as the onboarding notification slide.
-                if (minutes > 0) void ensureNotificationPermission();
-                void setNotifyLessonReminderMinutes(minutes);
-              }}
-            />
-          </Row>
-          <Row className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-text text-body font-bold text-strong">
-                {t("settings.notifySubstitutionChanges")}
-              </p>
-              <p className="mt-0.5 font-text text-caption text-muted">
-                {t("settings.notifySubstitutionChangesHint")}
-              </p>
-            </div>
-            <Switch
-              aria-label={t("settings.notifySubstitutionChanges")}
-              checked={settings.notifySubstitutionChanges}
-              onChange={(checked) => {
-                if (checked) void ensureNotificationPermission();
-                void setNotifySubstitutionChanges(checked);
-              }}
-            />
-          </Row>
-          <Row className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-text text-body font-bold text-strong">
-                {t("settings.notifyAppUpdates")}
-              </p>
-              <p className="mt-0.5 font-text text-caption text-muted">
-                {t("settings.notifyAppUpdatesHint")}
-              </p>
-            </div>
-            <Switch
-              aria-label={t("settings.notifyAppUpdates")}
-              checked={settings.notifyAppUpdates}
-              onChange={(checked) => {
-                if (checked) void ensureNotificationPermission();
-                void setNotifyAppUpdates(checked);
-              }}
-            />
-          </Row>
         </Section>
 
         <Section title={t("settings.data")}>
