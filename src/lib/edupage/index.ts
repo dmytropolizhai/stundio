@@ -9,6 +9,8 @@ export {
   type HttpResponse,
   capacitorHttp,
   fetchHttp,
+  defaultHttp,
+  isNativePlatform,
   USER_AGENT,
 } from "./http.ts";
 export {

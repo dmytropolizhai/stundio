@@ -214,7 +214,8 @@ export const en: Dict = {
   "feedback.sheet.successBody": "Your suggestion has been sent. Thank you for your input!",
   "feedback.sheet.bugTitle": "Report a bug",
   "feedback.sheet.bugMessageLabel": "What happened?",
-  "feedback.sheet.bugMessagePlaceholder": "Describe what went wrong and what you expected to happen…",
+  "feedback.sheet.bugMessagePlaceholder":
+    "Describe what went wrong and what you expected to happen…",
   "feedback.sheet.bugSubmit": "Send report",
   "feedback.sheet.bugSubmitting": "Sending…",
   "feedback.sheet.bugSuccessTitle": "Report sent!",

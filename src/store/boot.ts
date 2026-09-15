@@ -7,7 +7,7 @@
 import { createAppStore } from "./useAppStore.ts";
 import type { Store } from "./context.ts";
 import { createCache } from "@/db";
-import { capacitorHttp } from "@/lib/edupage";
+import { defaultHttp, isNativePlatform } from "@/lib/edupage";
 import { nativeNetwork } from "@/lib/network";
 import { createSyncEngine, watchAppResume, watchConnectivity } from "@/sync";
 import {
@@ -16,7 +16,7 @@ import {
   wireNotifications,
   wireNotificationTaps,
 } from "@/notifications";
-import { createAnalyticsClient, capacitorHttp as analyticsHttp } from "../lib/analytics/index.ts";
+import { createAnalyticsClient, defaultHttp as analyticsHttp } from "../lib/analytics/index.ts";
 import { wireWidget } from "@/widget";
 
 /** The Plausible site the app reports to (a fake domain — there is no web page behind it). */
@@ -27,9 +27,10 @@ export type Boot = () => Promise<{ store: Store; dispose?: () => void }>;
 /** Opens the real cache, hydrates from it, then reaches for the network. */
 export const bootApp: Boot = async () => {
   const cache = await createCache();
+  const isNative = isNativePlatform();
   const store = createAppStore({
     cache,
-    engine: createSyncEngine({ http: capacitorHttp, cache }),
+    engine: createSyncEngine({ http: defaultHttp, cache }),
     analytics: createAnalyticsClient(analyticsHttp, ANALYTICS_DOMAIN),
   });
 
@@ -38,8 +39,8 @@ export const bootApp: Boot = async () => {
   store.getState().trackEvent("app_open");
   void store.getState().recordAppOpen();
 
-  const notifications = wireNotifications(store);
-  const notificationTaps = wireNotificationTaps(store);
+  const notifications = isNative ? wireNotifications(store) : { dispose: () => {} };
+  const notificationTaps = isNative ? wireNotificationTaps(store) : { dispose: () => {} };
   // The home-screen tile follows the store, so a finished sync (or a class change) redraws it
   // immediately — the plugin pokes AppWidgetManager rather than waiting for the 30-min tick.
   const widget = wireWidget(store);
@@ -60,7 +61,9 @@ export const bootApp: Boot = async () => {
     if (inFlightRefresh !== null) return inFlightRefresh;
     const promise = (async () => {
       const outcome = await store.getState().refresh();
-      notifyOnChanges(store, outcome, hadPreviousSync);
+      if (isNative) {
+        notifyOnChanges(store, outcome, hadPreviousSync);
+      }
     })();
     inFlightRefresh = promise;
     void promise.finally(() => {
@@ -70,7 +73,9 @@ export const bootApp: Boot = async () => {
   };
 
   void refreshAndNotify();
-  void checkForAppUpdateNotification(store);
+  if (isNative) {
+    void checkForAppUpdateNotification(store);
+  }
 
   const disposeResume = watchAppResume({ refresh: refreshAndNotify });
   const disposeConnectivity = watchConnectivity({

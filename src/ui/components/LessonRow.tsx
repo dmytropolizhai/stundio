@@ -48,7 +48,9 @@ export const LessonRow = memo(
           {...(rooms === "" ? {} : { room: rooms })}
           {...(building === undefined ? {} : { building })}
           tone={accent.tone}
-          {...(accent.tone === "custom" ? { accentColor: { fill: accent.fill, ink: accent.ink } } : {})}
+          {...(accent.tone === "custom"
+            ? { accentColor: { fill: accent.fill, ink: accent.ink } }
+            : {})}
           filled={filled}
           status={status}
           timeVisible={showTime}

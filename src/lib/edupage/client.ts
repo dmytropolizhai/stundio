@@ -5,7 +5,7 @@
  * HTTP 200 even for failures — errors arrive as an `{ e: "..." }` envelope, so the status
  * code alone proves nothing. `callEdupage` is the single place that check lives.
  */
-import type { HttpClient } from "./http.ts";
+import { isNativePlatform, type HttpClient } from "./http.ts";
 import type { ISODate } from "./types.ts";
 
 /** The anonymous hash. Not a placeholder — see CLAUDE.md. */
@@ -14,21 +14,22 @@ export const ANON_GSH = "00000000";
 /** The school's real origin. Always used for `Referer`, whatever the request goes through. */
 export const schoolBaseUrl = (subdomain: string): string => `https://${subdomain}.edupage.org`;
 
-/** The dev-server proxy prefix; the target and rewrite live in `vite.config.ts`. */
+/** The dev-server and Cloudflare Pages Function proxy prefix. */
 export const EDUPAGE_PROXY_PREFIX = "/api-edupage";
 
 /**
  * Where requests are actually sent.
  *
- * In `npm run dev` the app is a page on localhost, and EduPage sends no CORS headers
- * (CLAUDE.md), so calls go through Vite's `/api-edupage` proxy. In every other mode — the
- * production bundle Capacitor ships, where `CapacitorHttp` is not bound by CORS, and under
- * Vitest, where the fake server answers — they go straight to the school. This is the only
- * place that choice is made; the proxy must never leak into a device build, which has no
- * dev server to proxy through.
+ * In native builds (Capacitor on Android), requests go straight to the school
+ * via `CapacitorHttp` which is not bound by CORS. In all browser environments
+ * (local Vite dev or Cloudflare Pages production), calls route through the
+ * `/api-edupage` proxy to terminate CORS and attach server-expected headers.
+ * Under Vitest tests, the fake server answers directly without a proxy.
  */
-export const apiBaseUrl = (subdomain: string): string =>
-  import.meta.env.MODE === "development" ? EDUPAGE_PROXY_PREFIX : schoolBaseUrl(subdomain);
+export const apiBaseUrl = (subdomain: string): string => {
+  if (import.meta.env.MODE === "test") return schoolBaseUrl(subdomain);
+  return isNativePlatform() ? schoolBaseUrl(subdomain) : EDUPAGE_PROXY_PREFIX;
+};
 
 export class EdupageError extends Error {
   readonly func: string;
@@ -55,10 +56,16 @@ export const callEdupage = async <T>(
   arg: unknown,
   referer: string,
 ): Promise<T> => {
+  const subdomainMatch = /^https:\/\/([a-zA-Z0-9-]+)\.edupage\.org/.exec(referer);
+  const extraHeaders: Record<string, string> = { Referer: referer };
+  if (subdomainMatch?.[1]) {
+    extraHeaders["X-Edupage-Subdomain"] = subdomainMatch[1];
+  }
+
   const res = await http({
     url,
     body: { __args: [null, arg], __gsh: ANON_GSH },
-    headers: { Referer: referer },
+    headers: extraHeaders,
   });
 
   if (res.status < 200 || res.status >= 300) {

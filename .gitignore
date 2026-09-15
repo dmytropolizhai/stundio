@@ -8,6 +8,7 @@ coverage
 
 # Capacitor / Android build output
 android/app/build
+android/app/release
 android/build
 android/.gradle
 android/local.properties
