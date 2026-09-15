@@ -100,6 +100,8 @@ export type Settings = {
   iphoneAnnouncementDismissed: boolean;
   /** Whether the prompt to add the app to iPhone home screen has been dismissed. */
   iphoneInstallPromptDismissed: boolean;
+  /** Whether the download Android APK banner in the web app has been dismissed. */
+  androidApkBannerDismissed: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -131,6 +133,7 @@ export const DEFAULT_SETTINGS: Settings = {
   feedbackPromptDismissed: false,
   iphoneAnnouncementDismissed: false,
   iphoneInstallPromptDismissed: false,
+  androidApkBannerDismissed: false,
 };
 
 export type SubjectNote = {

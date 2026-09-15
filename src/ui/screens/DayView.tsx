@@ -19,6 +19,8 @@ import { buildingNotice, lessonBuilding } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { FeedbackPrompt } from "../components/FeedbackPrompt.tsx";
+import { AndroidDownloadBanner } from "../components/AndroidDownloadBanner.tsx";
+import { InAppUpdatePrompt } from "../components/InAppUpdatePrompt.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
@@ -400,6 +402,8 @@ export const DayView = ({
             </div>
           )}
 
+          <InAppUpdatePrompt />
+          <AndroidDownloadBanner />
           <FeedbackPrompt />
 
           {body()}

@@ -19,3 +19,8 @@ export const isStandalonePwa = (): boolean => {
     window.matchMedia?.("(display-mode: standalone)").matches === true
   );
 };
+
+export const isAndroidDevice = (): boolean => {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  return /Android/i.test(navigator.userAgent);
+};

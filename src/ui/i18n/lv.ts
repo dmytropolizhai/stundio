@@ -74,6 +74,15 @@ export const lv = {
   "day.feedbackPrompt.body": "Pastāsti, ko Stundio vajadzētu pievienot vai labot.",
   "day.feedbackPrompt.action": "Ieteikt",
   "day.feedbackPrompt.dismiss": "Aizvērt",
+  "day.androidBanner.title": "Stundio Android lietotne",
+  "day.androidBanner.body":
+    "Lejupielādē lietotni sākuma ekrāna logrīkiem, fona sinhronizācijai un bezsaistes stundu sarakstam.",
+  "day.androidBanner.action": "Lejupielādēt APK",
+  "day.androidBanner.dismiss": "Aizvērt",
+  "day.updatePrompt.title": "Pieejams jauninājums",
+  "day.updatePrompt.body": "Pieejama jaunāka Stundio versija ({version}).",
+  "day.updatePrompt.action": "Atjaunināt",
+  "day.updatePrompt.dismiss": "Vēlāk",
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",
