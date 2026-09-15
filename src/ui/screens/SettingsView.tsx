@@ -11,7 +11,6 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
 import { CustomizationSheet } from "./CustomizationSheet.tsx";
-import { OnboardingCustomization } from "./OnboardingCustomization.tsx";
 import { FeedbackSheet } from "../components/FeedbackSheet.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
@@ -51,7 +50,6 @@ export const SettingsView = ({
 }) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
-  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState<{ open: boolean; type: FeedbackType }>({
     open: false,
     type: "suggestion",
@@ -103,14 +101,6 @@ export const SettingsView = ({
     { key: "light", label: t("theme.light") },
     { key: "dark", label: t("theme.dark") },
   ];
-
-  if (walkthroughOpen) {
-    return (
-      <div className="fixed inset-0 z-50 flex h-full flex-col bg-bg">
-        <OnboardingCustomization onDone={() => setWalkthroughOpen(false)} />
-      </div>
-    );
-  }
 
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
