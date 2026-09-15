@@ -1,6 +1,7 @@
 .venv
 .idea
 node_modules
+.wrangler
 dist
 coverage
 *.tsbuildinfo
