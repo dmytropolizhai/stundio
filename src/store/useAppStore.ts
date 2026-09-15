@@ -93,6 +93,8 @@ export type AppState = {
   /** Not user-facing — `boot.ts` calls this once per launch, alongside the `app_open` event. */
   recordAppOpen: () => Promise<void>;
   setFeedbackPromptDismissed: (dismissed: boolean) => Promise<void>;
+  setIphoneAnnouncementDismissed: (dismissed: boolean) => Promise<void>;
+  setIphoneInstallPromptDismissed: (dismissed: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
@@ -250,6 +252,10 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setShareLangPromptShown: (shareLangPromptShown) => persist({ shareLangPromptShown }),
       recordAppOpen: () => persist({ appOpenCount: get().settings.appOpenCount + 1 }),
       setFeedbackPromptDismissed: (feedbackPromptDismissed) => persist({ feedbackPromptDismissed }),
+      setIphoneAnnouncementDismissed: (iphoneAnnouncementDismissed) =>
+        persist({ iphoneAnnouncementDismissed }),
+      setIphoneInstallPromptDismissed: (iphoneInstallPromptDismissed) =>
+        persist({ iphoneInstallPromptDismissed }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {

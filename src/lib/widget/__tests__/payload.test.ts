@@ -215,7 +215,8 @@ describe("buildWidgetPayload — progress bar", () => {
     expect(build({ now: at("00:00") }).progressPercent).toBeNull();
     expect(build({ now: at("23:59") }).progressPercent).toBeNull();
 
-    const midpoint = minutesOf(FIRST.start)! + (minutesOf(FIRST.end)! - minutesOf(FIRST.start)!) / 2;
+    const midpoint =
+      minutesOf(FIRST.start)! + (minutesOf(FIRST.end)! - minutesOf(FIRST.start)!) / 2;
     const payload = build({ now: { date: FIXTURE_DATE, minutes: midpoint } });
     expect(payload.state).toBe("live");
     expect(payload.progressPercent).toBe(50);

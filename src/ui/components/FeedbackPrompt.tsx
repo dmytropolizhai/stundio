@@ -31,14 +31,11 @@ export const FeedbackPrompt = () => {
         data-testid="feedback-prompt"
       >
         <div className="min-w-0 flex-1">
-          <p className="font-text text-body font-bold text-strong">{t("day.feedbackPrompt.title")}</p>
+          <p className="font-text text-body font-bold text-strong">
+            {t("day.feedbackPrompt.title")}
+          </p>
           <p className="mt-0.5 font-text text-caption text-muted">{t("day.feedbackPrompt.body")}</p>
-          <Button
-            size="sm"
-            icon="plus"
-            className="mt-3"
-            onClick={() => setSheetOpen(true)}
-          >
+          <Button size="sm" icon="plus" className="mt-3" onClick={() => setSheetOpen(true)}>
             {t("day.feedbackPrompt.action")}
           </Button>
         </div>

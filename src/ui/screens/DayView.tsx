@@ -1,4 +1,13 @@
-import { Fragment, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
@@ -351,9 +360,7 @@ export const DayView = ({
           <TopBar
             title={
               <Suspense
-                fallback={
-                  <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
-                }
+                fallback={<span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>}
               >
                 <DatePicker
                   date={date}

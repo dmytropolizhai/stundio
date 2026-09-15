@@ -50,7 +50,7 @@ export default defineConfig({
     globals: true,
     environment: "happy-dom",
     setupFiles: ["./src/test/setup.ts"],
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx", "functions/**/*.test.ts"],
     coverage: {
       include: [
         "src/lib/edupage/**",
