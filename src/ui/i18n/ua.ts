@@ -166,6 +166,10 @@ export const ua: Dict = {
   "settings.notifyOpenSettings": "Відкрити налаштування",
   "settings.notificationsWebNotice":
     "Офлайн-нагадування та сповіщення доступні в додатку для Android. У веб-версії зміни оновлюються при відкритті.",
+  "settings.notificationsIosPwaRequired":
+    "Щоб отримувати сповіщення на iPhone, спочатку додайте Stundio на головний екран.",
+  "settings.notificationsLessonRemindersNativeNotice":
+    "Нагадування перед кожним уроком доступні в застосунку Android. Сповіщення про зміни розкладу працюють через Web Push.",
   "notification.lessonReminder.title": "{subject} через {minutes} хв",
   "notification.changed.title": "Розклад змінився",
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
@@ -286,7 +290,8 @@ export const ua: Dict = {
   "iphoneInstall.title": "Додайте Stundio на початковий екран",
   "iphoneInstall.subtitle":
     "Використовуйте Stundio як повноцінний застосунок на iPhone — на весь екран, без зайвих панелей і без інтернету.",
-  "iphoneInstall.step1": "Натисніть кнопку «На початковий екран» нижче або кнопку Поділитися в Safari",
+  "iphoneInstall.step1":
+    "Натисніть кнопку «На початковий екран» нижче або кнопку Поділитися в Safari",
   "iphoneInstall.step2": "У меню виберіть «На початковий екран»",
   "iphoneInstall.action": "Додати на початковий екран",
   "iphoneInstall.dismiss": "Продовжити в браузері",

@@ -13,7 +13,10 @@ export const IPHONE_PWA_URL = "https://stundio.pages.dev";
 export type RenderIphoneShareOptions = {
   t: Translate;
   scale?: number;
-  createCanvas?: (width: number, height: number) => {
+  createCanvas?: (
+    width: number,
+    height: number,
+  ) => {
     width: number;
     height: number;
     getContext: (id: "2d") => CanvasRenderingContext2D | null;
@@ -84,7 +87,12 @@ const drawQr = (
     if (row === undefined) continue;
     for (let c = 0; c < row.length; c += 1) {
       if (row[c]) {
-        ctx.fillRect(x + quiet + c * moduleSize, y + quiet + r * moduleSize, moduleSize, moduleSize);
+        ctx.fillRect(
+          x + quiet + c * moduleSize,
+          y + quiet + r * moduleSize,
+          moduleSize,
+          moduleSize,
+        );
       }
     }
   }

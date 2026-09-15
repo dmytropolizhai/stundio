@@ -165,6 +165,10 @@ export const en: Dict = {
   "settings.notifyOpenSettings": "Open settings",
   "settings.notificationsWebNotice":
     "Offline reminders and notifications are supported in the Android app. On the web app, schedule changes update whenever you open the app.",
+  "settings.notificationsIosPwaRequired":
+    "To receive notifications on iPhone, please add Stundio to your Home Screen first.",
+  "settings.notificationsLessonRemindersNativeNotice":
+    "Lesson countdown reminders are available in the Android app. Schedule change alerts work via Web Push notifications.",
   "notification.lessonReminder.title": "{subject} in {minutes} min",
   "notification.changed.title": "Timetable changed",
   "notification.changed.body": "Today's schedule has changes.",
@@ -278,7 +282,7 @@ export const en: Dict = {
   "iphoneAnnouncement.done": "Got it",
   "iphoneAnnouncement.shareTitle": "Stundio on iPhone",
   "iphoneAnnouncement.shareMessage":
-    "Stundio is now available on iPhone! 📱\n\nHow to install:\n1. Open Safari and go to https://stundio.pages.dev\n2. Tap the Share button (square with arrow pointing up)\n3. Tap \"Add to Home Screen\"\n\nClean timetable and substitutions: https://stundio.pages.dev",
+    'Stundio is now available on iPhone! 📱\n\nHow to install:\n1. Open Safari and go to https://stundio.pages.dev\n2. Tap the Share button (square with arrow pointing up)\n3. Tap "Add to Home Screen"\n\nClean timetable and substitutions: https://stundio.pages.dev',
   "settings.iphoneShare": "Stundio on iPhone",
   "settings.iphoneShareHint": "Tutorial and link to install Stundio on iPhone",
   "settings.iphoneShareAction": "Share",

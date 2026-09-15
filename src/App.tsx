@@ -124,10 +124,7 @@ const Shell = () => {
     return (
       <>
         <Onboarding />
-        <IphoneInstallSheet
-          open={iphoneInstall.open}
-          onClose={iphoneInstall.dismiss}
-        />
+        <IphoneInstallSheet open={iphoneInstall.open} onClose={iphoneInstall.dismiss} />
       </>
     );
   }
@@ -210,10 +207,7 @@ const Shell = () => {
         open={iphoneAnnouncement.open && !whatsNew.open}
         onClose={iphoneAnnouncement.dismiss}
       />
-      <IphoneInstallSheet
-        open={iphoneInstall.open}
-        onClose={iphoneInstall.dismiss}
-      />
+      <IphoneInstallSheet open={iphoneInstall.open} onClose={iphoneInstall.dismiss} />
     </div>
   );
 };

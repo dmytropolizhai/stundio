@@ -13,3 +13,12 @@ export {
   notifyOnChanges,
   checkForAppUpdateNotification,
 } from "./wire.ts";
+export {
+  isWebPushSupported,
+  getWebPushPermission,
+  requestWebPushPermission,
+  getExistingWebPushSubscription,
+  subscribeWebPush,
+  unsubscribeWebPush,
+  reportSubstitutionChangeToServer,
+} from "./webPush.ts";

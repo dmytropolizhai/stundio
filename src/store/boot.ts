@@ -13,6 +13,8 @@ import { createSyncEngine, watchAppResume, watchConnectivity } from "@/sync";
 import {
   checkForAppUpdateNotification,
   notifyOnChanges,
+  reportSubstitutionChangeToServer,
+  subscribeWebPush,
   wireNotifications,
   wireNotificationTaps,
 } from "@/notifications";
@@ -63,6 +65,8 @@ export const bootApp: Boot = async () => {
       const outcome = await store.getState().refresh();
       if (isNative) {
         notifyOnChanges(store, outcome, hadPreviousSync);
+      } else if (hadPreviousSync && outcome.changedDates.length > 0) {
+        void reportSubstitutionChangeToServer(outcome.changedDates);
       }
     })();
     inFlightRefresh = promise;
@@ -77,6 +81,46 @@ export const bootApp: Boot = async () => {
     void checkForAppUpdateNotification(store);
   }
 
+  let disposeWebPushSync = () => {};
+  if (!isNative) {
+    let lastClassId = store.getState().settings.selectedClassId;
+    let lastLang = store.getState().settings.lang;
+    let lastSubEnabled = store.getState().settings.notifySubstitutionChanges;
+
+    const syncWebPush = () => {
+      const { settings } = store.getState();
+      if (
+        settings.notifySubstitutionChanges &&
+        settings.selectedClassId &&
+        (settings.selectedClassId !== lastClassId ||
+          settings.lang !== lastLang ||
+          settings.notifySubstitutionChanges !== lastSubEnabled)
+      ) {
+        void subscribeWebPush(settings.selectedClassId, settings.lang);
+      }
+      lastClassId = settings.selectedClassId;
+      lastLang = settings.lang;
+      lastSubEnabled = settings.notifySubstitutionChanges;
+    };
+
+    disposeWebPushSync = store.subscribe(syncWebPush);
+  }
+
+  let disposeSw = () => {};
+  if (!isNative && typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+    const onSwMessage = (event: MessageEvent<unknown>) => {
+      const data = event.data as { type?: unknown; date?: unknown } | null | undefined;
+      if (data?.type === "NAVIGATE_DAY" && typeof data.date === "string") {
+        store.getState().setPendingNavigation({ tab: "day", date: data.date });
+      }
+    };
+
+    navigator.serviceWorker.addEventListener("message", onSwMessage);
+    disposeSw = () => {
+      navigator.serviceWorker.removeEventListener("message", onSwMessage);
+    };
+  }
+
   const disposeResume = watchAppResume({ refresh: refreshAndNotify });
   const disposeConnectivity = watchConnectivity({
     network: nativeNetwork,
@@ -87,6 +131,8 @@ export const bootApp: Boot = async () => {
   const dispose = () => {
     disposeResume();
     disposeConnectivity();
+    disposeWebPushSync();
+    disposeSw();
     notifications.dispose();
     notificationTaps.dispose();
     widget.dispose();

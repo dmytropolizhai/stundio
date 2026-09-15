@@ -5,11 +5,7 @@ import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { useIphoneAnnouncement } from "../hooks/useIphoneAnnouncement.ts";
 import { IphoneReleaseSheet } from "../screens/IphoneReleaseSheet.tsx";
 import { SettingsView } from "../screens/SettingsView.tsx";
-import {
-  IPHONE_PWA_URL,
-  iphoneShareText,
-  renderIphoneShareImage,
-} from "../share/iphoneImage.ts";
+import { IPHONE_PWA_URL, iphoneShareText, renderIphoneShareImage } from "../share/iphoneImage.ts";
 import { translate } from "../i18n/index.ts";
 
 type StubbedCanvas = { getContext: unknown; toDataURL: unknown };
@@ -68,7 +64,7 @@ describe("iPhone announcement & share", () => {
       expect(text).toContain("Stundio is now available on iPhone!");
       expect(text).toContain("1. Open Safari");
       expect(text).toContain("2. Tap the Share button");
-      expect(text).toContain("3. Tap \"Add to Home Screen\"");
+      expect(text).toContain('3. Tap "Add to Home Screen"');
       expect(text).toContain(IPHONE_PWA_URL);
     });
 

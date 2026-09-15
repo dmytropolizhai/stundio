@@ -172,6 +172,10 @@ export const lv = {
   "settings.notifyOpenSettings": "Atvērt iestatījumus",
   "settings.notificationsWebNotice":
     "Bezsaistes atgādinājumi un paziņojumi ir pieejami Android lietotnē. Tīmekļa lietotnē izmaiņas atjaunojas, to atverot.",
+  "settings.notificationsIosPwaRequired":
+    "Lai saņemtu paziņojumus iPhone tālrunī, vispirms pievienojiet Stundio sākuma ekrānam.",
+  "settings.notificationsLessonRemindersNativeNotice":
+    "Stundu atgādinājumi pirms katras stundas ir pieejami Android lietotnē. Paziņojumi par izmaiņām sarakstā darbojas caur tīmekļa paziņojumiem.",
   "notification.lessonReminder.title": "{subject} pēc {minutes} min",
   "notification.changed.title": "Izmaiņas stundu sarakstā",
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",

@@ -4,11 +4,7 @@ import { Sheet } from "../components/Sheet.tsx";
 import { useT } from "../i18n/index.ts";
 import { useAppStore } from "@/store";
 import { dataUrlToBase64, shareImage } from "@/lib/share";
-import {
-  IPHONE_PWA_URL,
-  iphoneShareText,
-  renderIphoneShareImage,
-} from "../share/iphoneImage.ts";
+import { IPHONE_PWA_URL, iphoneShareText, renderIphoneShareImage } from "../share/iphoneImage.ts";
 
 export type IphoneReleaseSheetProps = {
   open: boolean;
@@ -77,11 +73,7 @@ export const IphoneReleaseSheet = ({ open, onClose }: IphoneReleaseSheetProps) =
           {/* 3 Step Cards */}
           <div className="mt-2 space-y-2.5">
             {steps.map((step) => (
-              <Card
-                key={step.num}
-                tone="surface"
-                className="flex items-center gap-3.5 p-3.5"
-              >
+              <Card key={step.num} tone="surface" className="flex items-center gap-3.5 p-3.5">
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sky-600 font-display text-caption font-bold text-white shadow-sm">
                   {step.num}
                 </div>
@@ -105,9 +97,7 @@ export const IphoneReleaseSheet = ({ open, onClose }: IphoneReleaseSheetProps) =
                 {IPHONE_PWA_URL.replace(/^https:\/\//, "")}
               </span>
             </div>
-            <span className="font-text text-[11px] text-muted shrink-0">
-              Safari PWA
-            </span>
+            <span className="font-text text-[11px] text-muted shrink-0">Safari PWA</span>
           </div>
         </div>
 
@@ -122,9 +112,7 @@ export const IphoneReleaseSheet = ({ open, onClose }: IphoneReleaseSheetProps) =
               void handleShare();
             }}
           >
-            {sharing
-              ? t("iphoneAnnouncement.shareWorking")
-              : t("iphoneAnnouncement.share")}
+            {sharing ? t("iphoneAnnouncement.shareWorking") : t("iphoneAnnouncement.share")}
           </Button>
           <Button variant="inverse" block onClick={onClose}>
             {t("iphoneAnnouncement.done")}

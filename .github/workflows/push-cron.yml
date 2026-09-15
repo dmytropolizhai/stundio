@@ -1,0 +1,37 @@
+name: Push Notification Cron
+
+on:
+  schedule:
+    # Every 10 minutes from 05:00 to 18:00 UTC (08:00 to 21:00 Riga time), Mon-Fri
+    - cron: "*/10 5-18 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: push-cron
+  cancel-in-progress: false
+
+jobs:
+  check-substitutions:
+    name: Check Substitutions & Dispatch Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Push Cron Endpoint
+        run: |
+          AUTH_HEADER=""
+          if [ -n "${{ secrets.CRON_SECRET }}" ]; then
+            AUTH_HEADER="Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+          fi
+
+          echo "Triggering Cloudflare Pages push cron..."
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" -X POST "https://stundio.pages.dev/api-push/cron" \
+            -H "Content-Type: application/json" \
+            ${AUTH_HEADER:+-H "$AUTH_HEADER"})
+
+          echo "HTTP Status: $HTTP_STATUS"
+          cat response.json
+          echo ""
+
+          if [ "$HTTP_STATUS" -ge 400 ]; then
+            echo "Cron check failed with status $HTTP_STATUS"
+            exit 1
+          fi

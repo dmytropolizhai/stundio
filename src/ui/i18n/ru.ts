@@ -167,6 +167,10 @@ export const ru: Dict = {
   "settings.notifyOpenSettings": "Открыть настройки",
   "settings.notificationsWebNotice":
     "Офлайн-напоминания и уведомления доступны в приложении для Android. В веб-версии изменения обновляются при открытии.",
+  "settings.notificationsIosPwaRequired":
+    "Чтобы получать уведомления на iPhone, сначала добавьте Stundio на экран «Домой».",
+  "settings.notificationsLessonRemindersNativeNotice":
+    "Напоминания перед каждым уроком доступны в приложении Android. Уведомления об изменениях расписания работают через Web Push.",
   "notification.lessonReminder.title": "{subject} через {minutes} мин",
   "notification.changed.title": "Изменения в расписании",
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",

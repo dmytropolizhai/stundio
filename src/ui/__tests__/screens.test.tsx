@@ -518,6 +518,18 @@ describe("SettingsView", () => {
     fireEvent.click(screen.getByText("Mainīt"));
     expect(onPickClass).toHaveBeenCalled();
   });
+
+  it("handles web push toggle in notification settings", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+
+    // In web test harness without PushManager, Web notice is shown
+    expect(
+      screen.getByText(
+        "Bezsaistes atgādinājumi un paziņojumi ir pieejami Android lietotnē. Tīmekļa lietotnē izmaiņas atjaunojas, to atverot.",
+      ),
+    ).toBeDefined();
+  });
 });
 
 describe("theme", () => {
