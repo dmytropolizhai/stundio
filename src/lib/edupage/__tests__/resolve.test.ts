@@ -105,9 +105,16 @@ describe("resolveDay — A1-2, which has real changes that day", () => {
     expect(periods).toEqual([...periods].sort((a, b) => a - b));
   });
 
-  it("passes the day's announcements through untranslated", () => {
-    expect(day.notes).toEqual(subs.notes);
-    expect(day.notes.length).toBeGreaterThan(0);
+  it("filters announcements for the class and keeps allNotes intact", () => {
+    expect(day.allNotes).toEqual(subs.notes);
+    expect(day.allNotes?.length).toBeGreaterThan(0);
+    // A1-2 has no announcements targeted at it on this day
+    expect(day.notes).toEqual([]);
+
+    // A class targeted in announcements receives its filtered notes
+    const sc2Day = resolveDay(timetable, subs, classId("SC2"), FIXTURE_DATE);
+    expect(sc2Day.notes.length).toBeGreaterThan(0);
+    expect(sc2Day.notes[0]).toContain("SC2");
   });
 
   it("uses Substitution.raw verbatim as the change note", () => {

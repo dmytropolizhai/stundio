@@ -29,6 +29,7 @@ import type {
   Timetable,
   Weekday,
 } from "./types.ts";
+import { filterNotesForClass } from "./notes.ts";
 
 const WEEKDAYS: readonly Weekday[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
@@ -487,6 +488,17 @@ export const resolveDayAcross = (
 
   const leadSource = contributing[0]?.source ?? sources[0];
 
+  const allClasses = [
+    ...new Set(
+      sources
+        .flatMap((s) => s.timetable.classes.map((c) => c.short))
+        .concat(subs?.items.map((s) => s.className) ?? [])
+        .filter((s): s is string => Boolean(s)),
+    ),
+  ];
+  const rawNotes = subs?.notes ?? [];
+  const filteredNotes = filterNotesForClass(rawNotes, className, allClasses);
+
   return {
     date,
     weekday,
@@ -495,7 +507,8 @@ export const resolveDayAcross = (
     buildings,
     ttNum: lead?.meta.ttNum ?? "",
     lessons: out,
-    notes: subs?.notes ?? [],
+    notes: filteredNotes.relevant,
+    allNotes: rawNotes,
     stale:
       options.stale ?? leadSource?.stale ?? (lead === undefined ? false : !coversDate(lead, date)),
   };

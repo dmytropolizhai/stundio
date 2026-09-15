@@ -47,3 +47,9 @@ export {
   type DaySource,
   type ResolveOptions,
 } from "./resolve.ts";
+export {
+  extractTargetGroups,
+  filterNotesForClass,
+  isNoteRelevantForClass,
+  splitGroupAnnouncements,
+} from "./notes.ts";

@@ -240,4 +240,29 @@ describe("DayView", () => {
     });
     expect(screen.queryByTestId("offline-banner")).toBeNull();
   });
+
+  it("hides announcement card when no announcements for class and allows toggling all", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+
+    // Default class A1-2 has no announcements, so the card heading is not shown by default
+    expect(screen.queryByText(/Paziņojumi · no skolas/)).toBeNull();
+
+    // A subtle button to show all school announcements is available
+    const toggleButton = screen.getByRole("button", { name: /Visi skolas paziņojumi/ });
+    expect(toggleButton).toBeDefined();
+
+    // Clicking it reveals the school announcements
+    fireEvent.click(toggleButton);
+    expect(screen.getByText(/Paziņojumi · No skolas/i)).toBeDefined();
+    expect(screen.getByText(/SC2 grupai/)).toBeDefined();
+
+    // And the button switches to "Tikai manai grupai"
+    const onlyGroupButton = screen.getByRole("button", { name: "Tikai manai grupai" });
+    expect(onlyGroupButton).toBeDefined();
+
+    // Clicking it collapses the card back
+    fireEvent.click(onlyGroupButton);
+    expect(screen.queryByText(/Paziņojumi · No skolas/i)).toBeNull();
+  });
 });

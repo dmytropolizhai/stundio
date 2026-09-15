@@ -60,6 +60,8 @@ export const en: Dict = {
   "day.buildingOther": "Different building: {building}",
   "day.buildingMixed": "Several buildings: {buildings}",
   "day.notes": "Announcements",
+  "day.allNotes": "All school announcements ({count})",
+  "day.onlyMyGroup": "Only for my group",
   "day.free": "Free period",
   "day.finished": "Lessons are over",
   "day.now": "Now",
@@ -214,7 +216,8 @@ export const en: Dict = {
   "feedback.sheet.successBody": "Your suggestion has been sent. Thank you for your input!",
   "feedback.sheet.bugTitle": "Report a bug",
   "feedback.sheet.bugMessageLabel": "What happened?",
-  "feedback.sheet.bugMessagePlaceholder": "Describe what went wrong and what you expected to happen…",
+  "feedback.sheet.bugMessagePlaceholder":
+    "Describe what went wrong and what you expected to happen…",
   "feedback.sheet.bugSubmit": "Send report",
   "feedback.sheet.bugSubmitting": "Sending…",
   "feedback.sheet.bugSuccessTitle": "Report sent!",
