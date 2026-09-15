@@ -94,6 +94,7 @@ export type AppState = {
   recordAppOpen: () => Promise<void>;
   setFeedbackPromptDismissed: (dismissed: boolean) => Promise<void>;
   setIphoneAnnouncementDismissed: (dismissed: boolean) => Promise<void>;
+  setIphoneInstallPromptDismissed: (dismissed: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
@@ -253,6 +254,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setFeedbackPromptDismissed: (feedbackPromptDismissed) => persist({ feedbackPromptDismissed }),
       setIphoneAnnouncementDismissed: (iphoneAnnouncementDismissed) =>
         persist({ iphoneAnnouncementDismissed }),
+      setIphoneInstallPromptDismissed: (iphoneInstallPromptDismissed) =>
+        persist({ iphoneInstallPromptDismissed }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {

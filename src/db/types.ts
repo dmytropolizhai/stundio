@@ -98,6 +98,8 @@ export type Settings = {
   feedbackPromptDismissed: boolean;
   /** Whether the startup announcement about iPhone release has been dismissed. */
   iphoneAnnouncementDismissed: boolean;
+  /** Whether the prompt to add the app to iPhone home screen has been dismissed. */
+  iphoneInstallPromptDismissed: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -128,6 +130,7 @@ export const DEFAULT_SETTINGS: Settings = {
   appOpenCount: 0,
   feedbackPromptDismissed: false,
   iphoneAnnouncementDismissed: false,
+  iphoneInstallPromptDismissed: false,
 };
 
 export type SubjectNote = {

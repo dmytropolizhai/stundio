@@ -17,6 +17,7 @@ import { CustomizationSheet } from "./CustomizationSheet.tsx";
 import { FeedbackSheet } from "../components/FeedbackSheet.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
+import { isIosDevice, isStandalonePwa } from "../lib/platform.ts";
 
 /** Also used by `CustomizationSheet`, which shares this screen's section/row look. */
 export const Section = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -48,10 +49,12 @@ export const SettingsView = ({
   onPickClass,
   onShowWhatsNew,
   onShowIphoneAnnouncement,
+  onShowIphoneInstall,
 }: {
   onPickClass: () => void;
   onShowWhatsNew: () => void;
   onShowIphoneAnnouncement?: () => void;
+  onShowIphoneInstall?: () => void;
 }) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
@@ -247,6 +250,21 @@ export const SettingsView = ({
               </div>
               <Button size="sm" icon="share-2" onClick={onShowIphoneAnnouncement}>
                 {t("settings.iphoneShareAction")}
+              </Button>
+            </Row>
+          )}
+          {onShowIphoneInstall !== undefined && isIosDevice() && !isStandalonePwa() && (
+            <Row className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="font-text text-body font-bold text-strong">
+                  {t("settings.iphoneInstall")}
+                </p>
+                <p className="mt-0.5 font-text text-caption text-muted">
+                  {t("settings.iphoneInstallHint")}
+                </p>
+              </div>
+              <Button size="sm" icon="plus" onClick={onShowIphoneInstall}>
+                {t("settings.iphoneInstall")}
               </Button>
             </Row>
           )}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppStore } from "@/store";
+import { isIosDevice } from "../lib/platform.ts";
 
 export type IphoneAnnouncement = {
   open: boolean;
@@ -26,6 +27,7 @@ export const useIphoneAnnouncement = (): IphoneAnnouncement => {
 
   useEffect(() => {
     if (!ready || selectedClassId === null || dismissed || autoOpenedRef.current) return;
+    if (isIosDevice()) return;
     autoOpenedRef.current = true;
     setOpen(true);
   }, [ready, selectedClassId, dismissed]);

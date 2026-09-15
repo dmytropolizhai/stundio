@@ -289,6 +289,16 @@ export const lv = {
   "settings.iphoneShare": "Stundio uz iPhone",
   "settings.iphoneShareHint": "Pamācība un saite, kā uzstādīt Stundio uz iPhone",
   "settings.iphoneShareAction": "Kopīgot",
+
+  "iphoneInstall.title": "Pievieno Stundio sākuma ekrānam",
+  "iphoneInstall.subtitle":
+    "Lieto Stundio kā pilnvērtīgu lietotni savā iPhone — bez pārlūka joslām un ar tūlītēju bezsaistes piekļuvi.",
+  "iphoneInstall.step1": "Nospied pogu zemāk «Pievienot sākuma ekrānam» vai pārlūka pogu Kopīgot",
+  "iphoneInstall.step2": "Izvēlnē izvēlies «Pievienot sākuma ekrānam»",
+  "iphoneInstall.action": "Pievienot sākuma ekrānam",
+  "iphoneInstall.dismiss": "Turpināt pārlūkā",
+  "settings.iphoneInstall": "Pievienot sākuma ekrānam",
+  "settings.iphoneInstallHint": "Instalēt Stundio kā lietotni savā iPhone",
 } as const;
 
 export type Dict = Record<keyof typeof lv, string>;

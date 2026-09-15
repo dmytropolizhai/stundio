@@ -282,4 +282,14 @@ export const en: Dict = {
   "settings.iphoneShare": "Stundio on iPhone",
   "settings.iphoneShareHint": "Tutorial and link to install Stundio on iPhone",
   "settings.iphoneShareAction": "Share",
+
+  "iphoneInstall.title": "Add Stundio to Home Screen",
+  "iphoneInstall.subtitle":
+    "Use Stundio as a full app on your iPhone — full screen, no browser bars, and instant offline access.",
+  "iphoneInstall.step1": "Tap «Add to Home Screen» below or the browser Share button",
+  "iphoneInstall.step2": "In the menu, select «Add to Home Screen»",
+  "iphoneInstall.action": "Add to Home Screen",
+  "iphoneInstall.dismiss": "Continue in browser",
+  "settings.iphoneInstall": "Add to Home Screen",
+  "settings.iphoneInstallHint": "Install Stundio as an app on your iPhone",
 };

@@ -282,4 +282,14 @@ export const ua: Dict = {
   "settings.iphoneShare": "Stundio на iPhone",
   "settings.iphoneShareHint": "Інструкція та посилання для встановлення Stundio на iPhone",
   "settings.iphoneShareAction": "Поділитися",
+
+  "iphoneInstall.title": "Додайте Stundio на початковий екран",
+  "iphoneInstall.subtitle":
+    "Використовуйте Stundio як повноцінний застосунок на iPhone — на весь екран, без зайвих панелей і без інтернету.",
+  "iphoneInstall.step1": "Натисніть кнопку «На початковий екран» нижче або кнопку Поділитися в Safari",
+  "iphoneInstall.step2": "У меню виберіть «На початковий екран»",
+  "iphoneInstall.action": "Додати на початковий екран",
+  "iphoneInstall.dismiss": "Продовжити в браузері",
+  "settings.iphoneInstall": "Додати на початковий екран",
+  "settings.iphoneInstallHint": "Встановити Stundio як застосунок на iPhone",
 };

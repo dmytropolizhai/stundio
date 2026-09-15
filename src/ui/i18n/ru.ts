@@ -283,4 +283,14 @@ export const ru: Dict = {
   "settings.iphoneShare": "Stundio на iPhone",
   "settings.iphoneShareHint": "Инструкция и ссылка для установки Stundio на iPhone",
   "settings.iphoneShareAction": "Поделиться",
+
+  "iphoneInstall.title": "Добавьте Stundio на экран «Домой»",
+  "iphoneInstall.subtitle":
+    "Используйте Stundio как полноценное приложение на iPhone — во весь экран, без лишних панелей и без интернета.",
+  "iphoneInstall.step1": "Нажмите кнопку «На экран „Домой“» ниже или кнопку Поделиться в Safari",
+  "iphoneInstall.step2": "В меню выберите «На экран „Домой“»",
+  "iphoneInstall.action": "Добавить на экран «Домой»",
+  "iphoneInstall.dismiss": "Продолжить в браузере",
+  "settings.iphoneInstall": "Добавить на экран «Домой»",
+  "settings.iphoneInstallHint": "Установить Stundio как приложение на iPhone",
 };
