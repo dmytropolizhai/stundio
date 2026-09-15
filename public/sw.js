@@ -6,7 +6,7 @@
  * which are handled by Stundio's dedicated IndexedDB sync cache.
  */
 
-const CACHE_NAME = "stundio-shell-v1";
+const CACHE_NAME = "stundio-shell-v2";
 
 const PRECACHE_URLS = [
   "/",
