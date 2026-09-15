@@ -46,3 +46,37 @@ jobs:
           name: dist
           path: dist
           retention-days: 7
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: ci
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::warning ::CLOUDFLARE_API_TOKEN is not configured in repository secrets. Skipping deploy."
+            exit 0
+          fi
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+          echo "Deploying branch: $BRANCH_NAME"
+          npx --yes wrangler pages deploy dist --project-name stundio --branch "$BRANCH_NAME" --commit-dirty=true
