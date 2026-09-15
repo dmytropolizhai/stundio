@@ -47,9 +47,11 @@ export const Row = ({ children, className = "" }: { children: ReactNode; classNa
 export const SettingsView = ({
   onPickClass,
   onShowWhatsNew,
+  onShowIphoneAnnouncement,
 }: {
   onPickClass: () => void;
   onShowWhatsNew: () => void;
+  onShowIphoneAnnouncement?: () => void;
 }) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
@@ -231,6 +233,21 @@ export const SettingsView = ({
                   void setShareLang(value);
                 }}
               />
+            </Row>
+          )}
+          {onShowIphoneAnnouncement !== undefined && (
+            <Row className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="font-text text-body font-bold text-strong">
+                  {t("settings.iphoneShare")}
+                </p>
+                <p className="mt-0.5 font-text text-caption text-muted">
+                  {t("settings.iphoneShareHint")}
+                </p>
+              </div>
+              <Button size="sm" icon="share-2" onClick={onShowIphoneAnnouncement}>
+                {t("settings.iphoneShareAction")}
+              </Button>
             </Row>
           )}
         </Section>

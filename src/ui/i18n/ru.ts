@@ -262,4 +262,25 @@ export const ru: Dict = {
   "customization.subjectColors.empty": "Выбери класс, чтобы настроить цвета предметов.",
   "customization.preview.subject": "Пример предмета",
   "customization.reset": "Сбросить настройки",
+
+  "iphoneAnnouncement.title": "Stundio на iPhone",
+  "iphoneAnnouncement.badge": "НОВОЕ",
+  "iphoneAnnouncement.headline": "Stundio теперь на iPhone!",
+  "iphoneAnnouncement.subtitle":
+    "Удобное расписание, замены и работа без интернета теперь доступны в Safari.",
+  "iphoneAnnouncement.step1.title": "1. Откройте Safari",
+  "iphoneAnnouncement.step1.desc": "Перейдите на stundio.pages.dev",
+  "iphoneAnnouncement.step2.title": "2. Нажмите «Поделиться»",
+  "iphoneAnnouncement.step2.desc": "Иконка квадрата со стрелкой вверх внизу экрана",
+  "iphoneAnnouncement.step3.title": "3. На экран «Домой»",
+  "iphoneAnnouncement.step3.desc": "Выберите «На экран „Домой“», чтобы установить приложение",
+  "iphoneAnnouncement.share": "Поделиться с друзьями",
+  "iphoneAnnouncement.shareWorking": "Создаём изображение…",
+  "iphoneAnnouncement.done": "Понятно",
+  "iphoneAnnouncement.shareTitle": "Stundio на iPhone",
+  "iphoneAnnouncement.shareMessage":
+    "Stundio теперь доступен на iPhone! 📱\n\nКак установить:\n1. Откройте Safari и перейдите на https://stundio.pages.dev\n2. Нажмите «Поделиться» (иконка со стрелкой вверх)\n3. Выберите «На экран „Домой“»\n\nУдобное расписание и замены: https://stundio.pages.dev",
+  "settings.iphoneShare": "Stundio на iPhone",
+  "settings.iphoneShareHint": "Инструкция и ссылка для установки Stundio на iPhone",
+  "settings.iphoneShareAction": "Поделиться",
 };

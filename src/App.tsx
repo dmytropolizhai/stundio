@@ -17,6 +17,8 @@ import { DaySkeleton } from "./ui/components/Skeleton.tsx";
 import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
 import { WhatsNewSheet } from "./ui/screens/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
+import { IphoneReleaseSheet } from "./ui/screens/IphoneReleaseSheet.tsx";
+import { useIphoneAnnouncement } from "./ui/hooks/useIphoneAnnouncement.ts";
 import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 
@@ -97,6 +99,7 @@ const Shell = () => {
   const clearPendingNavigation = useAppStore((s) => s.clearPendingNavigation);
   const [tab, setTab] = useState<Tab>("day");
   const whatsNew = useWhatsNew();
+  const iphoneAnnouncement = useIphoneAnnouncement();
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
 
@@ -174,6 +177,7 @@ const Shell = () => {
               setPicking(true);
             }}
             onShowWhatsNew={whatsNew.show}
+            onShowIphoneAnnouncement={iphoneAnnouncement.show}
           />
         </Suspense>
       )}
@@ -187,6 +191,10 @@ const Shell = () => {
         unread={whatsNew.unread}
         history={whatsNew.history}
         onClose={whatsNew.dismiss}
+      />
+      <IphoneReleaseSheet
+        open={iphoneAnnouncement.open && !whatsNew.open}
+        onClose={iphoneAnnouncement.dismiss}
       />
     </div>
   );

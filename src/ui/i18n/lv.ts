@@ -268,6 +268,27 @@ export const lv = {
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",
+
+  "iphoneAnnouncement.title": "Stundio uz iPhone",
+  "iphoneAnnouncement.badge": "JAUNUMS",
+  "iphoneAnnouncement.headline": "Stundio tagad pieejams iPhone!",
+  "iphoneAnnouncement.subtitle":
+    "Ērts stundu saraksts, aizvietošanas un bezsaistes režīms tagad pieejams arī Safari pārlūkā.",
+  "iphoneAnnouncement.step1.title": "1. Atver Safari",
+  "iphoneAnnouncement.step1.desc": "Dodies uz vietni stundio.pages.dev",
+  "iphoneAnnouncement.step2.title": "2. Nospied «Kopīgot»",
+  "iphoneAnnouncement.step2.desc": "Ikona ar kvadrātu un bultiņu uz augšu ekrāna apakšā",
+  "iphoneAnnouncement.step3.title": "3. Pievieno sākuma ekrānam",
+  "iphoneAnnouncement.step3.desc": "Izvēlies «Pievienot sākuma ekrānam», lai instalētu lietotni",
+  "iphoneAnnouncement.share": "Kopīgot ar draugiem",
+  "iphoneAnnouncement.shareWorking": "Sagatavo attēlu…",
+  "iphoneAnnouncement.done": "Sapratu",
+  "iphoneAnnouncement.shareTitle": "Stundio uz iPhone",
+  "iphoneAnnouncement.shareMessage":
+    "Stundio tagad pieejams iPhone! 📱\n\nKā uzstādīt:\n1. Atver Safari un dodies uz https://stundio.pages.dev\n2. Nospied «Kopīgot» (ikona ar bultiņu uz augšu)\n3. Izvēlies «Pievienot sākuma ekrānam»\n\nĒrts stundu saraksts un aizvietošanas: https://stundio.pages.dev",
+  "settings.iphoneShare": "Stundio uz iPhone",
+  "settings.iphoneShareHint": "Pamācība un saite, kā uzstādīt Stundio uz iPhone",
+  "settings.iphoneShareAction": "Kopīgot",
 } as const;
 
 export type Dict = Record<keyof typeof lv, string>;

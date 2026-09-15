@@ -261,4 +261,25 @@ export const en: Dict = {
   "customization.subjectColors.empty": "Pick a class to customize its subject colours.",
   "customization.preview.subject": "Sample subject",
   "customization.reset": "Reset to defaults",
+
+  "iphoneAnnouncement.title": "Stundio on iPhone",
+  "iphoneAnnouncement.badge": "NEW",
+  "iphoneAnnouncement.headline": "Stundio is now on iPhone!",
+  "iphoneAnnouncement.subtitle":
+    "Clean timetable, substitutions and offline support are now available in Safari.",
+  "iphoneAnnouncement.step1.title": "1. Open Safari",
+  "iphoneAnnouncement.step1.desc": "Visit stundio.pages.dev",
+  "iphoneAnnouncement.step2.title": "2. Tap «Share»",
+  "iphoneAnnouncement.step2.desc": "Square icon with an arrow pointing up at the bottom",
+  "iphoneAnnouncement.step3.title": "3. Add to Home Screen",
+  "iphoneAnnouncement.step3.desc": "Tap «Add to Home Screen» to install the app",
+  "iphoneAnnouncement.share": "Share with friends",
+  "iphoneAnnouncement.shareWorking": "Making the image…",
+  "iphoneAnnouncement.done": "Got it",
+  "iphoneAnnouncement.shareTitle": "Stundio on iPhone",
+  "iphoneAnnouncement.shareMessage":
+    "Stundio is now available on iPhone! 📱\n\nHow to install:\n1. Open Safari and go to https://stundio.pages.dev\n2. Tap the Share button (square with arrow pointing up)\n3. Tap \"Add to Home Screen\"\n\nClean timetable and substitutions: https://stundio.pages.dev",
+  "settings.iphoneShare": "Stundio on iPhone",
+  "settings.iphoneShareHint": "Tutorial and link to install Stundio on iPhone",
+  "settings.iphoneShareAction": "Share",
 };

@@ -96,6 +96,8 @@ export type Settings = {
   appOpenCount: number;
   /** Closed the home-screen feedback card. The Settings entry stays reachable regardless. */
   feedbackPromptDismissed: boolean;
+  /** Whether the startup announcement about iPhone release has been dismissed. */
+  iphoneAnnouncementDismissed: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -125,6 +127,7 @@ export const DEFAULT_SETTINGS: Settings = {
   shareLangPromptShown: false,
   appOpenCount: 0,
   feedbackPromptDismissed: false,
+  iphoneAnnouncementDismissed: false,
 };
 
 export type SubjectNote = {

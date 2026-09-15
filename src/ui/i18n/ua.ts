@@ -261,4 +261,25 @@ export const ua: Dict = {
   "customization.subjectColors.empty": "Вибери клас, щоб налаштувати кольори предметів.",
   "customization.preview.subject": "Приклад предмета",
   "customization.reset": "Скинути налаштування",
+
+  "iphoneAnnouncement.title": "Stundio на iPhone",
+  "iphoneAnnouncement.badge": "НОВЕ",
+  "iphoneAnnouncement.headline": "Stundio тепер на iPhone!",
+  "iphoneAnnouncement.subtitle":
+    "Зручний розклад, заміни та робота без інтернету тепер доступні в Safari.",
+  "iphoneAnnouncement.step1.title": "1. Відкрийте Safari",
+  "iphoneAnnouncement.step1.desc": "Перейдіть на stundio.pages.dev",
+  "iphoneAnnouncement.step2.title": "2. Натисніть «Поділитися»",
+  "iphoneAnnouncement.step2.desc": "Іконка квадрата зі стрілкою вгору внизу екрана",
+  "iphoneAnnouncement.step3.title": "3. На початковий екран",
+  "iphoneAnnouncement.step3.desc": "Оберіть «На початковий екран», щоб встановити застосунок",
+  "iphoneAnnouncement.share": "Поділитися з друзями",
+  "iphoneAnnouncement.shareWorking": "Створюємо зображення…",
+  "iphoneAnnouncement.done": "Зрозуміло",
+  "iphoneAnnouncement.shareTitle": "Stundio на iPhone",
+  "iphoneAnnouncement.shareMessage":
+    "Stundio тепер доступний на iPhone! 📱\n\nЯк встановити:\n1. Відкрийте Safari та перейдіть на https://stundio.pages.dev\n2. Натисніть «Поділитися» (іконка зі стрілкою вгору)\n3. Оберіть «На початковий екран»\n\nЗручний розклад та заміни: https://stundio.pages.dev",
+  "settings.iphoneShare": "Stundio на iPhone",
+  "settings.iphoneShareHint": "Інструкція та посилання для встановлення Stundio на iPhone",
+  "settings.iphoneShareAction": "Поділитися",
 };
