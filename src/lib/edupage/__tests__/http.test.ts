@@ -6,13 +6,20 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const post = vi.hoisted(() => vi.fn());
-vi.mock("@capacitor/core", () => ({ CapacitorHttp: { post } }));
+const isNativePlatformMock = vi.hoisted(() => vi.fn(() => false));
+vi.mock("@capacitor/core", () => ({
+  CapacitorHttp: { post },
+  Capacitor: { isNativePlatform: isNativePlatformMock },
+}));
 
-const { USER_AGENT, capacitorHttp, fetchHttp, parseLooseJson } = await import("../http.ts");
+const { USER_AGENT, capacitorHttp, fetchHttp, defaultHttp, isNativePlatform, parseLooseJson } =
+  await import("../http.ts");
 
 afterEach(() => {
   vi.restoreAllMocks();
   post.mockReset();
+  isNativePlatformMock.mockReset();
+  isNativePlatformMock.mockReturnValue(false);
 });
 
 describe("capacitorHttp", () => {
@@ -65,5 +72,32 @@ describe("fetchHttp", () => {
 describe("parseLooseJson", () => {
   it("keeps a leading brace intact", () => {
     expect(parseLooseJson('{"r":1}')).toEqual({ r: 1 });
+  });
+});
+
+describe("defaultHttp and isNativePlatform", () => {
+  it("reports platform via isNativePlatform", () => {
+    isNativePlatformMock.mockReturnValue(true);
+    expect(isNativePlatform()).toBe(true);
+    isNativePlatformMock.mockReturnValue(false);
+    expect(isNativePlatform()).toBe(false);
+  });
+
+  it("routes to capacitorHttp when on native platform", async () => {
+    isNativePlatformMock.mockReturnValue(true);
+    post.mockResolvedValue({ status: 200, data: { r: 123 } });
+
+    const res = await defaultHttp({ url: "https://native-url", body: { x: 1 } });
+    expect(res).toEqual({ status: 200, data: { r: 123 } });
+    expect(post).toHaveBeenCalled();
+  });
+
+  it("routes to fetchHttp when on web platform", async () => {
+    isNativePlatformMock.mockReturnValue(false);
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response('{"r":456}', { status: 200 }));
+
+    const res = await defaultHttp({ url: "/api-edupage/test", body: { y: 2 } });
+    expect(res).toEqual({ status: 200, data: { r: 456 } });
+    expect(post).not.toHaveBeenCalled();
   });
 });

@@ -9,7 +9,8 @@
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
 
-const toHex2 = (value: number): string => clamp(Math.round(value), 0, 255).toString(16).padStart(2, "0");
+const toHex2 = (value: number): string =>
+  clamp(Math.round(value), 0, 255).toString(16).padStart(2, "0");
 
 export const isHexColor = (value: string): value is `#${string}` => /^#[0-9a-f]{6}$/i.test(value);
 

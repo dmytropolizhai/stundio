@@ -28,6 +28,7 @@ import {
   Send,
   Settings,
   Share2,
+  Smartphone,
   Star,
   Sun,
   TriangleAlert,
@@ -89,6 +90,7 @@ const ICONS = {
   sun: Sun,
   monitor: Monitor,
   star: Star,
+  smartphone: Smartphone,
   check: Check,
   send: Send,
 } as const;
@@ -113,11 +115,6 @@ export type IconProps = {
 export const Icon = ({ name, size = 20, className }: IconProps) => {
   const Glyph = ICONS[name];
   return (
-    <Glyph
-      size={size}
-      strokeWidth={2}
-      aria-hidden="true"
-      className={cn("shrink-0", className)}
-    />
+    <Glyph size={size} strokeWidth={2} aria-hidden="true" className={cn("shrink-0", className)} />
   );
 };

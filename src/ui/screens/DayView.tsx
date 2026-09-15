@@ -1,4 +1,13 @@
-import { Fragment, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
@@ -10,6 +19,8 @@ import { buildingNotice, lessonBuilding } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { FeedbackPrompt } from "../components/FeedbackPrompt.tsx";
+import { AndroidDownloadBanner } from "../components/AndroidDownloadBanner.tsx";
+import { InAppUpdatePrompt } from "../components/InAppUpdatePrompt.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
@@ -351,9 +362,7 @@ export const DayView = ({
           <TopBar
             title={
               <Suspense
-                fallback={
-                  <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
-                }
+                fallback={<span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>}
               >
                 <DatePicker
                   date={date}
@@ -393,6 +402,8 @@ export const DayView = ({
             </div>
           )}
 
+          <InAppUpdatePrompt />
+          <AndroidDownloadBanner />
           <FeedbackPrompt />
 
           {body()}

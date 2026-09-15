@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { isNativePlatform } from "@/lib/edupage";
 import { isNotificationPermissionDenied } from "@/notifications/localNotifications";
 
 /**
@@ -14,8 +15,14 @@ export const useNotificationPermissionDenied = (): boolean => {
   const [denied, setDenied] = useState(false);
 
   const refresh = useCallback(() => {
-    // Web (dev server, tests) has no local-notifications plugin at all — swallow that as
-    // "not denied" rather than letting it surface as an unhandled rejection.
+    if (!isNativePlatform()) {
+      if (typeof window !== "undefined" && "Notification" in window) {
+        setDenied(Notification.permission === "denied");
+      } else {
+        setDenied(false);
+      }
+      return;
+    }
     void isNotificationPermissionDenied()
       .then(setDenied)
       .catch(() => setDenied(false));

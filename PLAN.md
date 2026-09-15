@@ -1,9 +1,10 @@
 # EduPage timetable app — action plan
 
-Status: Phases 0–4 and the Parallel Widget Track are complete (scaffold, tooling, Capacitor,
+Status: Phases 0–4, the Parallel Widget Track, and Phase 7 (PWA on Cloudflare Pages) are complete (scaffold, tooling, Capacitor,
 scraper + parser, offline cache + sync, UI, customization & themes, Android packaging, edge-to-edge,
-local notifications, WorkManager background refresh, and native 2×1, countdown & 4×2 home-screen widgets).
-Next: Phase 5 (Release preparation & Play Console closed track) and Phase 7 (iOS PWA on Vercel).
+local notifications, WorkManager background refresh, native 2×1, countdown & 4×2 home-screen widgets,
+Cloudflare Pages proxy + PWA + Web Push).
+Next: Phase 5 (Play Console closed track & privacy policy URL) or Phase 6 (e-klase grades integration).
 Research artefacts: `MODEL.md`, `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1.
 
@@ -69,8 +70,7 @@ the TS output matches the Python output for the same fixture.
 - [x] CI: `lint → format → typecheck → test → build` (GitHub Actions — the repo is on
       GitHub, not GitLab as this plan originally assumed).
 - [x] Capacitor: `@capacitor/core @capacitor/cli @capacitor/android`, `npx cap add android`.
-- [ ] Verify `npx cap run android` shows the app on a device/emulator — **blocked**: needs a JDK 21
-      and the Android SDK, neither installed yet (`java` not on PATH, no `ANDROID_HOME`).
+- [x] Verify `npx cap run android` shows the app on a device/emulator (verified and shipped via GitHub Releases `v1.0.0` through `v1.1.11`).
 - [x] Move `contract.ts` → `src/lib/edupage/types.ts`; delete root copy; fix `MODEL.md` link.
 - [x] ~~Copy `data/*` → `__tests__/fixtures/`~~ → tests read repo-root `data/` via
       `__tests__/fixtures.ts`; one copy, no drift between probe output and tests.
@@ -219,14 +219,14 @@ color customization and subgroups, delivers local notifications, and supports ba
 
 ---
 
-## Phase 5 — Release  (size: S–M)
+## Phase 5 — Release  (size: S–M — in progress)
 
-- [ ] Privacy policy (easy: no data leaves device; only calls `pikcrvt.edupage.org`).
+- [ ] Privacy policy hosted URL / standalone document for Play Console.
 - [ ] Play Console: listing, screenshots, closed testing track; invite schoolmates.
-- [ ] `README` (what it is, how to build), `LICENSE`, ToS note (personal/educational use,
+- [x] `README` (what it is, how to build), `LICENSE`, ToS note (personal/educational use,
       custom User-Agent, cache-first, no tight polling).
 - [ ] Optional: Sentry for crash reports (respecting privacy), a one-line anonymous "it opened" ping — or nothing.
-- [ ] Tag `v1.0.0`.
+- [x] Tag `v1.0.0` (tagged `v1.0.0-ozols` through `v1.1.11-lacplesis`; APKs published on GitHub Releases).
 
 **Exit:** installable from the Play closed track; ≥5 schoolmates using it for a week without a blocking bug.
 
@@ -274,50 +274,26 @@ lessons, offline-cached, with credentials stored securely and the feature clearl
 
 ---
 
-## Phase 7 — iOS via PWA on Vercel  (size: S–M, fast-follow after v1)
+## Phase 7 — iOS via PWA on Cloudflare Pages  (size: S–M — complete)
 
 **Goal:** iOS users get the app too, without an Apple developer account or a native iOS build.
-No App Store, no Xcode — a PWA installed via Safari's "Add to Home Screen" is the only realistic
-path for a non-commercial, ~100–250-user school project.
+No App Store, no Xcode — a PWA installed via Safari's "Add to Home Screen".
+Deployed to Cloudflare Pages (`stundio.pages.dev`) with Functions for CORS bypass and Web Push.
 
-This does **not** touch the Android/Capacitor app or the widget — same `src/` web build, a second
-deployment target. The `apiBaseUrl()` proxy rule (see Conventions) needs a real answer for this
-target: iOS Safari, like the Vite dev proxy, has no `CapacitorHttp` to bypass CORS, and
-`pikcrvt.edupage.org` sends none. That is decided as part of this phase, below.
+- [x] **Decide the CORS path first:** Cloudflare Pages Function edge proxy (`functions/api-edupage/[[path]].ts`)
+      forwards `POST` to `pikcrvt.edupage.org`.
+- [x] `manifest.webmanifest`: name, short_name, `display: standalone`, theme tokens, icons (192, 512, maskable).
+- [x] iOS-specific meta tags in `index.html`: `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`,
+      `apple-touch-icon`.
+- [x] Service worker for offline app-shell caching via `vite-plugin-pwa`.
+- [x] Cloudflare Pages deployment: static build (`npm run build` → `dist/`) with GitHub Actions CD (`.github/workflows/ci.yml`).
+- [x] **Web Push notifications & cron dispatch**: Cloudflare Functions (`functions/api-push/`) + GitHub Actions
+      cron workflow (`.github/workflows/push-cron.yml`) to check substitutions and dispatch push notifications.
+- [x] **iOS install UX**: startup "Add to Home Screen" prompt for iPhone users (`IosInstallPrompt`) and tutorial card.
+- [x] Update `README`: iOS PWA installation instructions.
 
-- [ ] **Decide the CORS path first.** Three options, in order of preference:
-  1. A Vercel **serverless rewrite/proxy** (`vercel.json` rewrite or an `api/` edge function) that
-     forwards `POST` to `pikcrvt.edupage.org` and adds no auth of its own — same shape as the Vite
-     dev proxy, just hosted. This is the only piece of the whole project that would run off-device;
-     confirm it stays acceptable under "no backend server in v1" (it holds no state, no database,
-     no credentials — pure pass-through — so it's closer to a CDN edge rule than a backend, but
-     say so explicitly rather than assuming).
-  2. A public CORS-passthrough proxy (e.g. `corsproxy.io`) — fastest to ship, but a third party
-     sees every request; reject unless (1) turns out to be infeasible.
-  3. Ask the school to add CORS headers — unlikely to happen, not worth blocking on.
-- [ ] `manifest.json` (or `manifest.webmanifest`): name, short_name, `display: standalone`,
-      `theme_color`/`background_color` from `src/ds/tokens/`, icons (same source art as the Android
-      adaptive icon from Phase 4, re-exported at PWA sizes: 192/512 + maskable).
-- [ ] iOS-specific meta tags `index.html` needs beyond the manifest (Safari ignores parts of the
-      spec): `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`,
-      `apple-touch-icon`, splash-screen `<link>`s per device size (or accept the plain white
-      splash and skip these).
-- [ ] Service worker for offline app-shell caching (Workbox via `vite-plugin-pwa`, or hand-rolled)
-      — separate from the existing `db/`+`sync/` data cache, which already works offline; this
-      only needs to cache the JS/CSS/HTML shell so the app *opens* offline, not just renders stale
-      data once open.
-- [ ] Vercel project: static build (`npm run build` → `dist/`) + the CORS rewrite from step 1;
-      confirm `apiBaseUrl()` picks the right origin in this deployment (neither the Vite dev proxy
-      path nor the Capacitor direct-fetch path — a third branch keyed off `import.meta.env`).
-- [ ] No local notifications, no home-screen widget on this target — both are native-only
-      (`@capacitor/local-notifications`, the Kotlin `AppWidgetProvider`) and iOS Safari PWAs can't
-      host either. State this plainly in Settings/about so iOS users don't expect Phase 4 parity.
-- [ ] Update `README`/about copy: "Android: Play testing track. iOS: install as a web app from
-      Safari — no App Store account, tap Share → Add to Home Screen."
-
-**Exit:** the Vercel URL, opened in iOS Safari and added to the home screen, launches full-screen
-(no browser chrome), works offline for previously-synced days, and shows the same DayView/WeekView
-as Android — without any change to the Android app or the widget.
+**Exit:** ✅ met. PWA deployed on Cloudflare Pages, installable via Safari "Add to Home Screen", works offline,
+supports Web Push notifications for substitutions.
 
 ---
 

@@ -67,6 +67,15 @@ export const ua: Dict = {
   "day.feedbackPrompt.body": "Розкажи, що додати чи виправити в Stundio.",
   "day.feedbackPrompt.action": "Запропонувати",
   "day.feedbackPrompt.dismiss": "Закрити",
+  "day.androidBanner.title": "Stundio для Android",
+  "day.androidBanner.body":
+    "Завантажте застосунок для віджетів на головному екрані, фонової синхронізації та офлайн-розкладу.",
+  "day.androidBanner.action": "Завантажити APK",
+  "day.androidBanner.dismiss": "Закрити",
+  "day.updatePrompt.title": "Доступне оновлення",
+  "day.updatePrompt.body": "Доступна новіша версія Stundio ({version}).",
+  "day.updatePrompt.action": "Оновити",
+  "day.updatePrompt.dismiss": "Пізніше",
 
   "week.previousWeek": "Попередній тиждень",
   "week.nextWeek": "Наступний тиждень",
@@ -164,6 +173,12 @@ export const ua: Dict = {
   "settings.notifyAppUpdatesHint": "Сповіщати про вихід нової версії застосунку.",
   "settings.notifyPermissionDenied": "Сповіщення заблоковані в налаштуваннях системи.",
   "settings.notifyOpenSettings": "Відкрити налаштування",
+  "settings.notificationsWebNotice":
+    "Офлайн-нагадування та сповіщення доступні в додатку для Android. У веб-версії зміни оновлюються при відкритті.",
+  "settings.notificationsIosPwaRequired":
+    "Щоб отримувати сповіщення на iPhone, спочатку додайте Stundio на головний екран.",
+  "settings.notificationsLessonRemindersNativeNotice":
+    "Нагадування перед кожним уроком доступні в застосунку Android. Сповіщення про зміни розкладу працюють через Web Push.",
   "notification.lessonReminder.title": "{subject} через {minutes} хв",
   "notification.changed.title": "Розклад змінився",
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
@@ -259,4 +274,36 @@ export const ua: Dict = {
   "customization.subjectColors.empty": "Вибери клас, щоб налаштувати кольори предметів.",
   "customization.preview.subject": "Приклад предмета",
   "customization.reset": "Скинути налаштування",
+
+  "iphoneAnnouncement.title": "Stundio на iPhone",
+  "iphoneAnnouncement.badge": "НОВЕ",
+  "iphoneAnnouncement.headline": "Stundio тепер на iPhone!",
+  "iphoneAnnouncement.subtitle":
+    "Зручний розклад, заміни та робота без інтернету тепер доступні в Safari.",
+  "iphoneAnnouncement.step1.title": "1. Відкрийте Safari",
+  "iphoneAnnouncement.step1.desc": "Перейдіть на stundio.pages.dev",
+  "iphoneAnnouncement.step2.title": "2. Натисніть «Поділитися»",
+  "iphoneAnnouncement.step2.desc": "Іконка квадрата зі стрілкою вгору внизу екрана",
+  "iphoneAnnouncement.step3.title": "3. На початковий екран",
+  "iphoneAnnouncement.step3.desc": "Оберіть «На початковий екран», щоб встановити застосунок",
+  "iphoneAnnouncement.share": "Поділитися з друзями",
+  "iphoneAnnouncement.shareWorking": "Створюємо зображення…",
+  "iphoneAnnouncement.done": "Зрозуміло",
+  "iphoneAnnouncement.shareTitle": "Stundio на iPhone",
+  "iphoneAnnouncement.shareMessage":
+    "Stundio тепер доступний на iPhone! 📱\n\nЯк встановити:\n1. Відкрийте Safari та перейдіть на https://stundio.pages.dev\n2. Натисніть «Поділитися» (іконка зі стрілкою вгору)\n3. Оберіть «На початковий екран»\n\nЗручний розклад та заміни: https://stundio.pages.dev",
+  "settings.iphoneShare": "Stundio на iPhone",
+  "settings.iphoneShareHint": "Інструкція та посилання для встановлення Stundio на iPhone",
+  "settings.iphoneShareAction": "Поділитися",
+
+  "iphoneInstall.title": "Додайте Stundio на початковий екран",
+  "iphoneInstall.subtitle":
+    "Використовуйте Stundio як повноцінний застосунок на iPhone — на весь екран, без зайвих панелей і без інтернету.",
+  "iphoneInstall.step1":
+    "Натисніть кнопку «На початковий екран» нижче або кнопку Поділитися в Safari",
+  "iphoneInstall.step2": "У меню виберіть «На початковий екран»",
+  "iphoneInstall.action": "Додати на початковий екран",
+  "iphoneInstall.dismiss": "Продовжити в браузері",
+  "settings.iphoneInstall": "Додати на початковий екран",
+  "settings.iphoneInstallHint": "Встановити Stundio як застосунок на iPhone",
 };

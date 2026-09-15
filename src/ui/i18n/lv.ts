@@ -74,6 +74,15 @@ export const lv = {
   "day.feedbackPrompt.body": "Pastāsti, ko Stundio vajadzētu pievienot vai labot.",
   "day.feedbackPrompt.action": "Ieteikt",
   "day.feedbackPrompt.dismiss": "Aizvērt",
+  "day.androidBanner.title": "Stundio Android lietotne",
+  "day.androidBanner.body":
+    "Lejupielādē lietotni sākuma ekrāna logrīkiem, fona sinhronizācijai un bezsaistes stundu sarakstam.",
+  "day.androidBanner.action": "Lejupielādēt APK",
+  "day.androidBanner.dismiss": "Aizvērt",
+  "day.updatePrompt.title": "Pieejams jauninājums",
+  "day.updatePrompt.body": "Pieejama jaunāka Stundio versija ({version}).",
+  "day.updatePrompt.action": "Atjaunināt",
+  "day.updatePrompt.dismiss": "Vēlāk",
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",
@@ -170,6 +179,12 @@ export const lv = {
   "settings.notifyAppUpdatesHint": "Paziņo, kad iznāk jauna lietotnes versija.",
   "settings.notifyPermissionDenied": "Paziņojumi ir bloķēti sistēmas iestatījumos.",
   "settings.notifyOpenSettings": "Atvērt iestatījumus",
+  "settings.notificationsWebNotice":
+    "Bezsaistes atgādinājumi un paziņojumi ir pieejami Android lietotnē. Tīmekļa lietotnē izmaiņas atjaunojas, to atverot.",
+  "settings.notificationsIosPwaRequired":
+    "Lai saņemtu paziņojumus iPhone tālrunī, vispirms pievienojiet Stundio sākuma ekrānam.",
+  "settings.notificationsLessonRemindersNativeNotice":
+    "Stundu atgādinājumi pirms katras stundas ir pieejami Android lietotnē. Paziņojumi par izmaiņām sarakstā darbojas caur tīmekļa paziņojumiem.",
   "notification.lessonReminder.title": "{subject} pēc {minutes} min",
   "notification.changed.title": "Izmaiņas stundu sarakstā",
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",
@@ -266,6 +281,37 @@ export const lv = {
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",
+
+  "iphoneAnnouncement.title": "Stundio uz iPhone",
+  "iphoneAnnouncement.badge": "JAUNUMS",
+  "iphoneAnnouncement.headline": "Stundio tagad pieejams iPhone!",
+  "iphoneAnnouncement.subtitle":
+    "Ērts stundu saraksts, aizvietošanas un bezsaistes režīms tagad pieejams arī Safari pārlūkā.",
+  "iphoneAnnouncement.step1.title": "1. Atver Safari",
+  "iphoneAnnouncement.step1.desc": "Dodies uz vietni stundio.pages.dev",
+  "iphoneAnnouncement.step2.title": "2. Nospied «Kopīgot»",
+  "iphoneAnnouncement.step2.desc": "Ikona ar kvadrātu un bultiņu uz augšu ekrāna apakšā",
+  "iphoneAnnouncement.step3.title": "3. Pievieno sākuma ekrānam",
+  "iphoneAnnouncement.step3.desc": "Izvēlies «Pievienot sākuma ekrānam», lai instalētu lietotni",
+  "iphoneAnnouncement.share": "Kopīgot ar draugiem",
+  "iphoneAnnouncement.shareWorking": "Sagatavo attēlu…",
+  "iphoneAnnouncement.done": "Sapratu",
+  "iphoneAnnouncement.shareTitle": "Stundio uz iPhone",
+  "iphoneAnnouncement.shareMessage":
+    "Stundio tagad pieejams iPhone! 📱\n\nKā uzstādīt:\n1. Atver Safari un dodies uz https://stundio.pages.dev\n2. Nospied «Kopīgot» (ikona ar bultiņu uz augšu)\n3. Izvēlies «Pievienot sākuma ekrānam»\n\nĒrts stundu saraksts un aizvietošanas: https://stundio.pages.dev",
+  "settings.iphoneShare": "Stundio uz iPhone",
+  "settings.iphoneShareHint": "Pamācība un saite, kā uzstādīt Stundio uz iPhone",
+  "settings.iphoneShareAction": "Kopīgot",
+
+  "iphoneInstall.title": "Pievieno Stundio sākuma ekrānam",
+  "iphoneInstall.subtitle":
+    "Lieto Stundio kā pilnvērtīgu lietotni savā iPhone — bez pārlūka joslām un ar tūlītēju bezsaistes piekļuvi.",
+  "iphoneInstall.step1": "Nospied pogu zemāk «Pievienot sākuma ekrānam» vai pārlūka pogu Kopīgot",
+  "iphoneInstall.step2": "Izvēlnē izvēlies «Pievienot sākuma ekrānam»",
+  "iphoneInstall.action": "Pievienot sākuma ekrānam",
+  "iphoneInstall.dismiss": "Turpināt pārlūkā",
+  "settings.iphoneInstall": "Pievienot sākuma ekrānam",
+  "settings.iphoneInstallHint": "Instalēt Stundio kā lietotni savā iPhone",
 } as const;
 
 export type Dict = Record<keyof typeof lv, string>;
