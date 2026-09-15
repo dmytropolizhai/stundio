@@ -67,6 +67,8 @@ export const lv = {
   "day.buildingOther": "Cita ēka: {building}",
   "day.buildingMixed": "Vairākas ēkas: {buildings}",
   "day.notes": "Paziņojumi",
+  "day.allNotes": "Visi skolas paziņojumi ({count})",
+  "day.onlyMyGroup": "Tikai manai grupai",
   "day.free": "Brīvstunda",
   "day.finished": "Stundas beigušās",
   "day.now": "Tagad",

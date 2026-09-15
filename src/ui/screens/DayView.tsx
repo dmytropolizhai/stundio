@@ -1,4 +1,13 @@
-import { Fragment, lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
@@ -60,6 +69,7 @@ export const DayView = ({
 
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [showAllNotes, setShowAllNotes] = useState(false);
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
@@ -93,6 +103,10 @@ export const DayView = ({
 
     return () => controls.stop();
   }, [date, reduceMotion, x]);
+
+  useEffect(() => {
+    setShowAllNotes(false);
+  }, [date]);
 
   const onSwipeStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
@@ -296,21 +310,55 @@ export const DayView = ({
           ))}
         </motion.ul>
 
-        {day.notes.length > 0 && (
-          <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
-            <h2 className="u-eyebrow">
-              {t("day.notes")} · {t("lesson.fromSchool")}
-            </h2>
+        {(() => {
+          const displayNotes = showAllNotes ? (day.allNotes ?? day.notes) : day.notes;
+          const hasOtherNotes = (day.allNotes?.length ?? 0) > day.notes.length;
 
-            <ul className="mt-1.5 flex flex-col gap-1">
-              {day.notes.map((note) => (
-                <li key={note} className="font-text text-body text-fg">
-                  {note}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        )}
+          return (
+            <>
+              {displayNotes.length > 0 && (
+                <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="u-eyebrow">
+                      {t("day.notes")} · {t("lesson.fromSchool")}
+                    </h2>
+                    {hasOtherNotes && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllNotes((v) => !v)}
+                        className="font-text text-micro font-medium text-brand hover:underline cursor-pointer"
+                      >
+                        {showAllNotes
+                          ? t("day.onlyMyGroup")
+                          : t("day.allNotes", { count: day.allNotes?.length ?? 0 })}
+                      </button>
+                    )}
+                  </div>
+
+                  <ul className="mt-1.5 flex flex-col gap-1">
+                    {displayNotes.map((note) => (
+                      <li key={note} className="font-text text-body text-fg">
+                        {note}
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+
+              {day.notes.length === 0 && hasOtherNotes && !showAllNotes && (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllNotes(true)}
+                    className="font-text text-caption text-muted hover:text-fg hover:underline cursor-pointer"
+                  >
+                    {t("day.allNotes", { count: day.allNotes?.length ?? 0 })}
+                  </button>
+                </div>
+              )}
+            </>
+          );
+        })()}
       </>
     );
   };
@@ -351,9 +399,7 @@ export const DayView = ({
           <TopBar
             title={
               <Suspense
-                fallback={
-                  <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
-                }
+                fallback={<span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>}
               >
                 <DatePicker
                   date={date}
