@@ -112,3 +112,9 @@ These are enforced by lint, tests, or CI — breaking one breaks the build:
   real EduPage quirk. Match that: no comments restating the code.
 - Every non-trivial module opens with a short block comment stating its job and its boundaries.
   Keep that convention for new modules.
+
+
+## Changes
+- All changes must be done in a separate branch and PR. Generate the branch name from the issue based on git naming convention (feat, fix, chore, etc.).
+- All changes must be tested.
+- All changes must be documented.
