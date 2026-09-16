@@ -1,22 +1,23 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Button, Card, IconButton } from "@/ds";
 import { useT } from "@/ui/i18n";
 import { isNativePlatform } from "@/lib/edupage";
-import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
-import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
+import { useUpdateCheck } from "../hooks/useUpdateCheck";
+import { useUpdateInstall } from "../hooks/useUpdateInstall";
 
 /**
  * In-app banner notifying native Android users when a new release is available on GitHub.
  * Allows 1-tap download and in-app installation.
  */
-export const InAppUpdatePrompt = () => {
+export const InAppUpdatePrompt = memo(function InAppUpdatePrompt() {
   const t = useT();
   const [dismissed, setDismissed] = useState(false);
-  const { result: update } = useUpdateCheck();
+  const isNative = isNativePlatform();
+  const { result: update } = useUpdateCheck({ enabled: isNative && !dismissed });
   const installState = useUpdateInstall();
   const { install, canInstallInApp } = installState;
 
-  if (dismissed || !isNativePlatform() || !update?.hasUpdate || !update.apkUrl) {
+  if (dismissed || !isNative || !update?.hasUpdate || !update.apkUrl) {
     return null;
   }
 
@@ -36,7 +37,7 @@ export const InAppUpdatePrompt = () => {
           {t("day.updatePrompt.body", { version: update.latestVersion })}
         </p>
 
-        {installState.phase === "downloading" ? (
+        {isDownloading ? (
           <div className="mt-3 flex items-center gap-2">
             <div className="h-2 flex-1 overflow-hidden rounded-pill bg-hairline">
               <div
@@ -59,18 +60,18 @@ export const InAppUpdatePrompt = () => {
             >
               {t("day.updatePrompt.action")}
             </Button>
-            {!canInstallInApp && (
+            {!canInstallInApp ? (
               <Button asChild size="sm" variant="ghost">
                 <a href={update.url} target="_blank" rel="noreferrer">
                   GitHub
                 </a>
               </Button>
-            )}
+            ) : null}
           </div>
         )}
       </div>
 
-      {!isDownloading && (
+      {!isDownloading ? (
         <IconButton
           icon="x"
           label={t("day.updatePrompt.dismiss")}
@@ -78,7 +79,7 @@ export const InAppUpdatePrompt = () => {
           size="sm"
           onClick={() => setDismissed(true)}
         />
-      )}
+      ) : null}
     </Card>
   );
-};
+});

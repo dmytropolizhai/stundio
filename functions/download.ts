@@ -1,1 +1,1 @@
-export { onRequest, onRequestGet } from "./apk.ts";
+export { onRequest, onRequestGet, onRequestHead } from "./apk.ts";

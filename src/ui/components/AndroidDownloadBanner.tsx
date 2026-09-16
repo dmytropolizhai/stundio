@@ -1,19 +1,20 @@
+import { memo } from "react";
 import { useAppStore } from "@/store";
 import { Button, Card, IconButton } from "@/ds";
 import { useT } from "@/ui/i18n";
 import { isNativePlatform } from "@/lib/edupage";
-import { isAndroidDevice } from "../lib/platform.ts";
+import { isAndroidDevice } from "../lib/platform";
 
 /**
  * Banner shown only to users visiting the web app / PWA on Android devices.
  * Informs them about the native Android app (widgets, background sync) and provides a 1-tap APK download link.
  */
-export const AndroidDownloadBanner = () => {
+export const AndroidDownloadBanner = memo(function AndroidDownloadBanner() {
   const t = useT();
   const dismissed = useAppStore((s) => s.settings.androidApkBannerDismissed);
   const setDismissed = useAppStore((s) => s.setAndroidApkBannerDismissed);
 
-  if (dismissed || isNativePlatform() || !isAndroidDevice()) {
+  if (isNativePlatform() || !isAndroidDevice() || dismissed) {
     return null;
   }
 
@@ -47,4 +48,4 @@ export const AndroidDownloadBanner = () => {
       />
     </Card>
   );
-};
+});

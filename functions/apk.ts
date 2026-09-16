@@ -25,10 +25,10 @@ export const resolveApkDownloadUrl = async (fetchFn: typeof fetch = fetch): Prom
       const release = (await res.json()) as {
         assets?: Array<{ name: string; browser_download_url: string }>;
       };
-      const assets = release.assets ?? [];
+      const assets = Array.isArray(release?.assets) ? release.assets : [];
       const apkAsset =
         assets.find((a) => a.name === "stundio.apk") ??
-        assets.find((a) => a.name.toLowerCase().endsWith(".apk"));
+        assets.find((a) => typeof a.name === "string" && a.name.toLowerCase().endsWith(".apk"));
 
       if (apkAsset?.browser_download_url) {
         return apkAsset.browser_download_url;
@@ -52,4 +52,5 @@ export const onRequestGet = async (): Promise<Response> => {
   });
 };
 
+export const onRequestHead = onRequestGet;
 export const onRequest = onRequestGet;

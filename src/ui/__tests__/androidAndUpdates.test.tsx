@@ -1,13 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { StoreContext } from "../../store/index.ts";
 import { bootHarness, clickAndSettle } from "./harness.tsx";
-import { isAndroidDevice } from "../lib/platform.ts";
+import { isAndroidDevice } from "../lib/platform";
 import { AndroidDownloadBanner } from "../components/AndroidDownloadBanner.tsx";
 import { InAppUpdatePrompt } from "../components/InAppUpdatePrompt.tsx";
 import * as edupageModule from "@/lib/edupage";
-import * as updateCheckHook from "../hooks/useUpdateCheck.ts";
-import * as updateInstallHook from "../hooks/useUpdateInstall.ts";
+import * as versionModule from "@/lib/version";
+import * as updateCheckHook from "../hooks/useUpdateCheck";
+import * as updateInstallHook from "../hooks/useUpdateInstall";
+import { useUpdateCheck } from "../hooks/useUpdateCheck";
+import { useUpdateInstall } from "../hooks/useUpdateInstall";
 
 describe("Android download banner & in-app update prompt", () => {
   afterEach(() => {
@@ -172,6 +175,88 @@ describe("Android download banner & in-app update prompt", () => {
         </StoreContext.Provider>,
       );
       expect(screen.getByText("42%")).toBeDefined();
+    });
+  });
+
+  describe("useUpdateCheck hook", () => {
+    it("skips checking when enabled: false is provided", () => {
+      const checkSpy = vi.spyOn(versionModule, "checkForUpdate");
+      const { result } = renderHook(() => useUpdateCheck({ enabled: false }));
+
+      expect(checkSpy).not.toHaveBeenCalled();
+      expect(result.current.checking).toBe(false);
+      expect(result.current.checked).toBe(false);
+      expect(result.current.result).toBeNull();
+    });
+
+    it("cleans up pending requests on unmount", () => {
+      let resolvePromise!: (val: versionModule.UpdateCheckResult) => void;
+      vi.spyOn(versionModule, "checkForUpdate").mockReturnValue(
+        new Promise((resolve) => {
+          resolvePromise = resolve;
+        }),
+      );
+
+      const { unmount } = renderHook(() => useUpdateCheck());
+      unmount();
+
+      // Resolving after unmount should not throw or cause React state warnings
+      act(() => {
+        resolvePromise({
+          hasUpdate: true,
+          currentVersion: "v1.0.0",
+          latestVersion: "v1.1.0",
+          url: "https://example.com",
+          apkUrl: "https://example.com/apk",
+        });
+      });
+    });
+  });
+
+  describe("useUpdateInstall hook", () => {
+    it("handles concurrent calls and cleans up on unmount", () => {
+      let progressCb: ((p: number) => void) | undefined;
+      let resolveDownload!: () => void;
+      const downloadSpy = vi
+        .spyOn(versionModule, "downloadAndInstall")
+        .mockImplementation((_url, onProgress) => {
+          progressCb = onProgress;
+          return new Promise<void>((resolve) => {
+            resolveDownload = resolve;
+          });
+        });
+
+      const { result, unmount } = renderHook(() => useUpdateInstall());
+
+      act(() => {
+        void result.current.install("https://example.com/app.apk");
+      });
+
+      expect(result.current.phase).toBe("downloading");
+
+      // Second install call while already downloading is ignored
+      act(() => {
+        void result.current.install("https://example.com/app.apk");
+      });
+      expect(downloadSpy).toHaveBeenCalledTimes(1);
+
+      // Report progress
+      act(() => {
+        progressCb?.(50);
+      });
+      expect(result.current.phase).toBe("downloading");
+      if (result.current.phase === "downloading") {
+        expect(result.current.percent).toBe(50);
+      }
+
+      // Unmount before complete
+      unmount();
+
+      // Resolving after unmount does not throw
+      act(() => {
+        progressCb?.(100);
+        resolveDownload();
+      });
     });
   });
 });
