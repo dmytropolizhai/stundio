@@ -13,7 +13,8 @@ import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { dayProgress, minutesOf } from "@/lib/schedule";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
-import { Button, Card, Icon, TopBar } from "@/ds";
+import { Button, Card, Icon, Switch, TopBar } from "@/ds";
+import { Row, Section } from "./SettingsView.tsx";
 import { LessonRow } from "../components/LessonRow.tsx";
 import { buildingNotice, lessonBuilding } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
@@ -147,6 +148,7 @@ export const DayView = ({
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const showTime = useAppStore((s) => s.settings.showTime);
+  const setShowTime = useAppStore((s) => s.setShowTime);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const filled = useAppStore((s) => s.settings.lessonCardStyle === "filled");
@@ -471,6 +473,30 @@ export const DayView = ({
           <FeedbackPrompt />
 
           {body()}
+
+          {ready && selectedClassId !== null && (
+            <div className="mt-7">
+              <Section title={t("settings.day")}>
+                <Row className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-text text-body font-bold text-strong">
+                      {t("settings.showTime")}
+                    </p>
+                    <p className="mt-0.5 font-text text-caption text-muted">
+                      {t("settings.showTimeHint")}
+                    </p>
+                  </div>
+                  <Switch
+                    aria-label={t("settings.showTime")}
+                    checked={showTime}
+                    onChange={(checked) => {
+                      void setShowTime(checked);
+                    }}
+                  />
+                </Row>
+              </Section>
+            </div>
+          )}
         </div>
       </PullToRefresh>
 
