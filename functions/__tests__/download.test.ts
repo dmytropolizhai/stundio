@@ -128,4 +128,11 @@ describe("Cloudflare Pages Function: /apk redirect", () => {
     expect(resAll.status).toBe(302);
     expect(resAll.headers.get("Location")).toBe("https://example.com/stundio.apk");
   });
+
+  it("functions/apk.ts re-exports handlers for backward compatibility", async () => {
+    const apk = await import("../apk.ts");
+    expect(apk.onRequest).toBe(onRequest);
+    expect(apk.onRequestGet).toBe(onRequestGet);
+    expect(apk.onRequestHead).toBe(onRequestHead);
+  });
 });

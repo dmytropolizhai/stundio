@@ -52,7 +52,7 @@ describe("Android download banner & in-app update prompt", () => {
       const banner = screen.getByTestId("android-download-banner");
       expect(banner).toBeDefined();
       const link = screen.getByRole("link", { name: /Lejupielādēt APK|Download APK/i });
-      expect(link.getAttribute("href")).toBe("/apk");
+      expect(link.getAttribute("href")).toBe("/download");
     });
 
     it("hides when running inside native app", async () => {
