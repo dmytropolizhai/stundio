@@ -5,7 +5,7 @@ import {
   onRequestHead,
   resolveApkDownloadUrl,
   FALLBACK_DOWNLOAD_URL,
-} from "../apk.ts";
+} from "../download.ts";
 
 describe("Cloudflare Pages Function: /apk redirect", () => {
   beforeEach(() => {

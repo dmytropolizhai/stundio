@@ -31,7 +31,7 @@ export const AndroidDownloadBanner = memo(function AndroidDownloadBanner() {
         <p className="mt-0.5 font-text text-caption text-muted">{t("day.androidBanner.body")}</p>
         <div className="mt-3">
           <Button asChild size="sm" icon="download">
-            <a href="/apk" download>
+            <a href="/download" download>
               {t("day.androidBanner.action")}
             </a>
           </Button>
