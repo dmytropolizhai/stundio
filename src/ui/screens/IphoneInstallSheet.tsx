@@ -29,10 +29,10 @@ export const IphoneInstallSheet = ({ open, onClose }: IphoneInstallSheetProps) =
   return (
     <Sheet open={open} onClose={onClose} title={t("iphoneInstall.title")}>
       <div className="pb-2">
-        <div className="no-scrollbar max-h-[58vh] overflow-y-auto overscroll-contain">
+        <div>
           {/* App Icon Banner */}
-          <div className="flex flex-col items-center text-center pt-2 pb-3">
-            <div className="flex size-16 items-center justify-center rounded-2xl bg-surface-raised shadow-lg border border-hairline mb-3 overflow-hidden">
+          <div className="flex flex-col items-center text-center pt-1 pb-2">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-surface-raised shadow-md border border-hairline mb-2 overflow-hidden">
               <img
                 src="/icons/icon-192.png"
                 alt="Stundio"
@@ -43,33 +43,33 @@ export const IphoneInstallSheet = ({ open, onClose }: IphoneInstallSheetProps) =
                 }}
               />
             </div>
-            <h2 className="font-display text-heading font-extrabold text-strong">
+            <h2 className="font-display text-title font-bold text-strong">
               {t("iphoneInstall.title")}
             </h2>
-            <p className="mt-1.5 font-text text-body text-muted max-w-[300px]">
+            <p className="mt-1 font-text text-caption text-muted max-w-[300px]">
               {t("iphoneInstall.subtitle")}
             </p>
           </div>
 
           {/* 2 Step Cards */}
-          <div className="mt-2 space-y-2.5">
-            <Card tone="surface" className="flex items-center gap-3.5 p-3.5">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sky-600 font-display text-caption font-bold text-white shadow-sm">
+          <div className="mt-2 space-y-2">
+            <Card tone="surface" className="flex items-center gap-3 p-2.5">
+              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-sky-600 font-display text-caption font-bold text-white shadow-xs">
                 1
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-text text-body font-bold text-strong leading-snug">
+                <p className="font-text text-caption font-bold text-strong leading-snug">
                   {t("iphoneInstall.step1")}
                 </p>
               </div>
             </Card>
 
-            <Card tone="surface" className="flex items-center gap-3.5 p-3.5">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sky-600 font-display text-caption font-bold text-white shadow-sm">
+            <Card tone="surface" className="flex items-center gap-3 p-2.5">
+              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-sky-600 font-display text-caption font-bold text-white shadow-xs">
                 2
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-text text-body font-bold text-strong leading-snug">
+                <p className="font-text text-caption font-bold text-strong leading-snug">
                   {t("iphoneInstall.step2")}
                 </p>
               </div>
@@ -78,19 +78,19 @@ export const IphoneInstallSheet = ({ open, onClose }: IphoneInstallSheetProps) =
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-5 space-y-2">
+        <div className="mt-4 flex gap-2.5">
+          <Button variant="inverse" className="flex-1" onClick={onClose}>
+            {t("iphoneInstall.dismiss")}
+          </Button>
           <Button
             variant="primary"
             icon="plus"
-            block
+            className="flex-1"
             onClick={() => {
               void handleAddToHomeScreen();
             }}
           >
             {t("iphoneInstall.action")}
-          </Button>
-          <Button variant="inverse" block onClick={onClose}>
-            {t("iphoneInstall.dismiss")}
           </Button>
         </div>
       </div>

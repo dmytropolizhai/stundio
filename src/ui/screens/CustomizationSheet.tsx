@@ -142,7 +142,7 @@ const AppAccentRow = () => {
 
   return (
     <Row>
-      <p className="mb-2.5 font-text text-caption text-muted">{t("customization.accent.hint")}</p>
+      <p className="mb-1.5 font-text text-caption text-muted">{t("customization.accent.hint")}</p>
       <div className="-ml-2.5 flex items-center">
         {SUBJECT_TONES.map((option) => (
           <button
@@ -233,8 +233,8 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
         </Button>
       }
     >
-      <div className="no-scrollbar max-h-[75vh] overflow-y-auto overscroll-contain">
-        <div className="mb-5">
+      <div className="pb-2">
+        <div className="mb-3">
           <LessonCard
             period="3"
             start="10:20"
@@ -256,34 +256,45 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
               }}
             />
           </Row>
-        </Section>
-
-        <Section title={t("customization.accent")}>
           <AppAccentRow />
-        </Section>
-
-        <Section title={t("customization.lessonStyle")}>
           <Row>
-            <p className="mb-2.5 font-text text-caption text-muted">
-              {t("customization.lessonStyle.hint")}
-            </p>
-            <SegmentedTabs
-              label={t("customization.lessonStyle")}
-              value={settings.lessonCardStyle}
-              items={[
-                { key: "outline", label: t("customization.lessonStyle.outline") },
-                { key: "filled", label: t("customization.lessonStyle.filled") },
-              ]}
-              onChange={(value) => {
-                void setLessonCardStyle(value);
-              }}
-            />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="mb-1.5 font-text text-caption text-muted">
+                  {t("customization.lessonStyle")}
+                </p>
+                <SegmentedTabs
+                  label={t("customization.lessonStyle")}
+                  value={settings.lessonCardStyle}
+                  items={[
+                    { key: "outline", label: t("customization.lessonStyle.outline") },
+                    { key: "filled", label: t("customization.lessonStyle.filled") },
+                  ]}
+                  onChange={(value) => {
+                    void setLessonCardStyle(value);
+                  }}
+                />
+              </div>
+              <div>
+                <p className="mb-1.5 font-text text-caption text-muted">
+                  {t("customization.elevation")}
+                </p>
+                <SegmentedTabs
+                  label={t("customization.elevation")}
+                  value={settings.cardElevation}
+                  items={[
+                    { key: "soft", label: t("customization.elevation.soft") },
+                    { key: "bold", label: t("customization.elevation.bold") },
+                  ]}
+                  onChange={(value) => {
+                    void setCardElevation(value);
+                  }}
+                />
+              </div>
+            </div>
           </Row>
-        </Section>
-
-        <Section title={t("customization.radius")}>
           <Row>
-            <div className="mb-2.5 flex items-center justify-between">
+            <div className="mb-1.5 flex items-center justify-between">
               <p className="font-text text-caption text-muted">{t("customization.radius")}</p>
               <p className="font-text text-caption font-bold text-strong">
                 {radiusLabels[settings.cardRadius]}
@@ -304,31 +315,12 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
               }}
             />
           </Row>
-        </Section>
-
-        <Section title={t("customization.elevation")}>
-          <Row>
-            <SegmentedTabs
-              label={t("customization.elevation")}
-              value={settings.cardElevation}
-              items={[
-                { key: "soft", label: t("customization.elevation.soft") },
-                { key: "bold", label: t("customization.elevation.bold") },
-              ]}
-              onChange={(value) => {
-                void setCardElevation(value);
-              }}
-            />
-          </Row>
-        </Section>
-
-        <Section title={t("customization.reduceMotion")}>
-          <Row className="flex items-start justify-between gap-3">
+          <Row className="flex items-center justify-between gap-3">
             <div>
               <p className="font-text text-body font-bold text-strong">
                 {t("customization.reduceMotion")}
               </p>
-              <p className="mt-0.5 font-text text-caption text-muted">
+              <p className="font-text text-caption text-muted">
                 {t("customization.reduceMotion.hint")}
               </p>
             </div>
@@ -343,12 +335,12 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
         </Section>
 
         <Section title={t("customization.subjectColors")}>
-          <Row className="flex items-start justify-between gap-3">
+          <Row className="flex items-center justify-between gap-3">
             <div>
               <p className="font-text text-body font-bold text-strong">
                 {t("customization.subjectColors.enabled")}
               </p>
-              <p className="mt-0.5 font-text text-caption text-muted">
+              <p className="font-text text-caption text-muted">
                 {t("customization.subjectColors.enabled.hint")}
               </p>
             </div>
@@ -361,12 +353,6 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
             />
           </Row>
 
-          {/*
-           * Off, the per-subject list is hidden rather than left visible-but-inert: every one of
-           * these picks writes a `subjectColorOverrides` entry that `subjectTone` ignores while
-           * colour-coding is off (`ui/theme/colors.ts`), so showing it here would look live and
-           * do nothing.
-           */}
           {settings.subjectColorCodingEnabled &&
             (subjects.length === 0 ? (
               <Row>
@@ -375,22 +361,22 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
                 </p>
               </Row>
             ) : (
-              <>
-                <Row>
+              <div className="divide-y divide-hairline">
+                <div className="px-4 py-2">
                   <p className="font-text text-caption text-muted">
                     {t("customization.subjectColors.hint")}
                   </p>
-                </Row>
+                </div>
                 {subjects.map(({ subject }) => (
-                  <Row key={subject.id}>
+                  <div key={subject.id} className="px-4 py-1.5">
                     <SubjectColorRow
                       label={subject.name || subject.short}
                       tokenKey={subjectToneKey(subject)}
                       subject={subject}
                     />
-                  </Row>
+                  </div>
                 ))}
-              </>
+              </div>
             ))}
         </Section>
       </div>

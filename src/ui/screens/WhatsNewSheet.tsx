@@ -15,22 +15,22 @@ const Entry = ({ entry, dimmed }: { entry: ChangelogEntry; dimmed: boolean }) =>
   const t = useT();
 
   return (
-    <li className="not-first:mt-5">
+    <li className="not-first:mt-3.5">
       <div className="flex items-baseline justify-between gap-3">
         <span
           className={`font-text text-caption font-bold ${dimmed ? "text-muted" : "text-strong"}`}
         >
           {t("whatsNew.eyebrow", { version: entry.version })}
         </span>
-        <span className="font-text text-caption text-muted">
+        <span className="font-text text-micro text-muted">
           {formatReleaseDate(entry.date, lang)}
         </span>
       </div>
-      <ul className="mt-2">
+      <ul className="mt-1.5 space-y-1">
         {entry.lines[lang].map((line) => (
-          <li key={line} className="flex gap-2.5 not-first:mt-1.5">
-            <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-link" />
-            <span className="font-text text-body text-strong">{line}</span>
+          <li key={line} className="flex gap-2">
+            <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-link" />
+            <span className="font-text text-caption text-strong leading-snug">{line}</span>
           </li>
         ))}
       </ul>
@@ -57,14 +57,9 @@ export const WhatsNewSheet = ({
   return (
     <Sheet open={open} onClose={onClose} title={t("whatsNew.title")}>
       <div className="pb-2">
-        {/*
-          The DS sheet grows to fit its content, so a few releases of history push the title
-          and the dismiss button off-screen. Scrolling the list instead of the sheet keeps both
-          anchored, which is what makes the sheet dismissible without a scroll first.
-        */}
-        <div className="no-scrollbar max-h-[55vh] overflow-y-auto overscroll-contain">
+        <div>
           {history.length === 0 ? (
-            <p className="font-text text-body text-muted">{t("whatsNew.empty")}</p>
+            <p className="font-text text-caption text-muted">{t("whatsNew.empty")}</p>
           ) : (
             <>
               <ul>
@@ -73,19 +68,22 @@ export const WhatsNewSheet = ({
                 ))}
               </ul>
               {earlier.length > 0 && (
-                <>
-                  <h3 className="u-eyebrow mt-7 pb-3">{t("whatsNew.history")}</h3>
-                  <ul className="border-t border-hairline pt-4">
+                <details className="mt-4 border-t border-hairline pt-2 group">
+                  <summary className="u-eyebrow flex cursor-pointer list-none items-center justify-between py-1.5 select-none text-muted hover:text-strong">
+                    <span>{t("whatsNew.history")}</span>
+                    <span className="font-text text-micro text-muted">+{earlier.length}</span>
+                  </summary>
+                  <ul className="pt-2">
                     {earlier.map((entry) => (
                       <Entry key={entry.version} entry={entry} dimmed />
                     ))}
                   </ul>
-                </>
+                </details>
               )}
             </>
           )}
         </div>
-        <Button variant="inverse" block onClick={onClose} className="mt-6">
+        <Button variant="inverse" block onClick={onClose} className="mt-4">
           {t("whatsNew.done")}
         </Button>
       </div>

@@ -16,7 +16,7 @@ const IphoneWordmark = () => (
     viewBox="0 0 754 250"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="mb-3 w-[min(100%,320px)] h-auto text-strong"
+    className="mb-2 h-7 w-auto max-w-[200px] text-strong"
     aria-hidden
   >
     <path
@@ -88,41 +88,39 @@ export const IphoneReleaseSheet = ({ open, onClose }: IphoneReleaseSheetProps) =
   return (
     <Sheet open={open} onClose={onClose} title={t("iphoneAnnouncement.title")}>
       <div className="pb-2">
-        <div className="no-scrollbar max-h-[58vh] overflow-y-auto overscroll-contain">
+        <div>
           {/* Header Banner */}
-          <div className="flex flex-col items-center text-center pt-1 pb-3">
+          <div className="flex flex-col items-center text-center pt-1 pb-2">
             <IphoneWordmark />
-            <h2 className="font-display text-heading font-extrabold text-strong">
+            <h2 className="font-display text-title font-bold text-strong">
               {t("iphoneAnnouncement.headline")}
             </h2>
-            <p className="mt-1.5 font-text text-body text-muted max-w-70">
+            <p className="mt-1 font-text text-caption text-muted max-w-70">
               {t("iphoneAnnouncement.subtitle")}
             </p>
           </div>
 
-          {/* 3 Step Cards */}
-          <div className="mt-2 space-y-2.5">
+          {/* 3 Step Cards in 3-column grid */}
+          <div className="mt-2 grid grid-cols-3 gap-2">
             {steps.map((step) => (
-              <Card key={step.num} tone="custom" className="flex items-center gap-3.5 p-3.5">
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-full font-display text-caption font-bold text-strong shadow-sm">
+              <Card key={step.num} tone="custom" className="flex flex-col items-center text-center p-2.5">
+                <div className="flex size-6 shrink-0 items-center justify-center rounded-full font-display text-caption font-bold text-strong bg-surface-raised shadow-xs">
                   {step.num}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-text text-body font-bold text-strong leading-snug">
-                    {step.title}
-                  </p>
-                  <p className="font-text text-caption text-muted leading-tight mt-0.5">
-                    {step.desc}
-                  </p>
-                </div>
+                <p className="font-text text-caption font-bold text-strong leading-snug mt-1.5">
+                  {step.title}
+                </p>
+                <p className="font-text text-[11px] text-muted leading-tight mt-0.5">
+                  {step.desc}
+                </p>
               </Card>
             ))}
           </div>
 
           {/* Direct link callout */}
-          <div className="mt-4 rounded-xl border border-hairline bg-surface/50 px-3.5 py-2.5 flex items-center justify-between gap-2">
+          <div className="mt-3 rounded-xl border border-hairline bg-surface/50 px-3 py-2 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
-              <Icon name="globe" size={16} className="shrink-0 text-brand" />
+              <Icon name="globe" size={15} className="shrink-0 text-brand" />
               <span className="font-mono text-caption font-bold text-brand truncate">
                 {IPHONE_PWA_URL.replace(/^https:\/\//, "")}
               </span>
@@ -132,20 +130,20 @@ export const IphoneReleaseSheet = ({ open, onClose }: IphoneReleaseSheetProps) =
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-5 space-y-2">
+        <div className="mt-4 flex gap-2.5">
+          <Button variant="inverse" className="flex-1" onClick={onClose}>
+            {t("iphoneAnnouncement.done")}
+          </Button>
           <Button
             variant="primary"
             icon="share-2"
-            block
+            className="flex-1"
             disabled={sharing}
             onClick={() => {
               void handleShare();
             }}
           >
             {sharing ? t("iphoneAnnouncement.shareWorking") : t("iphoneAnnouncement.share")}
-          </Button>
-          <Button variant="inverse" block onClick={onClose}>
-            {t("iphoneAnnouncement.done")}
           </Button>
         </div>
       </div>
