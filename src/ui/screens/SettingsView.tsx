@@ -7,6 +7,7 @@ import { Button, Card, SegmentedTabs, Switch, TopBar } from "@/ds";
 import {
   ensureNotificationPermission,
   openNotificationSettings,
+} from "@/notifications/localNotifications";
 import { isWebPushSupported, subscribeWebPush, unsubscribeWebPush } from "@/notifications/webPush";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { useNotificationPermissionDenied } from "../hooks/useNotificationPermission.ts";
