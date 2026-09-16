@@ -1,31 +1,38 @@
 # EduPage timetable app — action plan
 
-Status: Phases 0–4 and the Parallel Widget Track are complete (scaffold, tooling, Capacitor,
-scraper + parser, offline cache + sync, UI, customization & themes, Android packaging, edge-to-edge,
-local notifications, WorkManager background refresh, and native 2×1, countdown & 4×2 home-screen widgets).
-Next: Phase 5 (Release preparation & Play Console closed track) and Phase 7 (iOS PWA on Vercel).
+Status: Phases 0–4, the Parallel Widget Track, and Phase 7 (Web/iOS PWA on Cloudflare Pages)
+are complete (scaffold, tooling, Capacitor, scraper + parser, offline cache + sync, UI, customization
+& themes, Android packaging, edge-to-edge, local notifications, WorkManager background refresh, native
+2×1, countdown & 4×2 home-screen widgets, Cloudflare Pages edge proxy + PWA + Web Push).
+Next: Phase 5 (Release & Distribution via GitHub Releases, Cloudflare download site, and OTA updates),
+Phase 6 (e-klase grades integration exploration), and Phase 8 (Teacher Mode).
 Research artefacts: `MODEL.md`, `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
-This plan takes it from research → shipped Android v1.
+This plan takes it from research → shipped Android v1 & Cloudflare PWA.
 
 ## Guiding constraints (fixed)
 
-- **Mobile-first, local-first.** Everything runs on-device. No backend server in v1.
-- **Capacitor + React (Vite + TS, strict).** Not RN (keep web skills + one codebase),
-  not pure PWA (EduPage sends no CORS headers → scrape needs `CapacitorHttp`).
+- **Mobile-first, local-first.** Everything runs on-device. No central database server in v1.
+- **Capacitor + React (Vite + TS, strict).** One codebase for both Android native APK and Web/iOS PWA.
+- **No Google Play Store distribution:** High legal risk (aSc / EduPage cease & desist or court threats).
+  Distributed directly via GitHub Releases (APK) and the web app (`stundio.pages.dev` with `/apk` redirect).
+- **Web & iOS via Cloudflare Pages + Workers:** Cloudflare Functions (`/api-edupage`) terminate browser CORS
+  against EduPage, serve the PWA, and dispatch Web Push notifications via cron workers.
 - **Telegram bot: deferred.** Not in v1 scope.
-- **Value proposition = a home-screen "next lesson" widget.** Without it this is just
-  another EduPage client. It is also the hardest piece (native Android) → de-risk early.
-- Target school: `pikcrvt.edupage.org` (Rīgas Valsts tehnikums). Public data, class-based
+- **Value proposition = glanceable schedule.** Native Android home-screen widgets (2×1 next lesson, countdown,
+  4×2 all-day) + iOS PWA "Add to Home Screen" with Web Push notifications.
+- **Target school:** `pikcrvt.edupage.org` (Rīgas Valsts tehnikums). Public data, class-based
   (no per-student login).
 
 ## Architecture snapshot
 
 ```
-CapacitorHttp ─► client.ts ─► normalize.ts ─┐
-                          └─ substitutions.ts ┤
-                                              ├─► resolve.ts ─► ResolvedDay ─► Zustand ─► UI
-                       idb (cache) ◄─► sync.ts ┘                                 │
-                                                        widget bridge ◄──────────┘
+CapacitorHttp (Android) ───────────┐
+                                    ├─► client.ts ─► normalize.ts ─┐
+CF Edge Proxy (Web/PWA) ───────────┘              └─ substitutions.ts ┤
+                                                                      ├─► resolve.ts ─► ResolvedDay ─► Zustand ─► UI
+                                               idb (cache) ◄─► sync.ts ┘                                 │
+                                                                                widget bridge (Android) ◄┤
+                                                                                CF Web Push (PWA/iOS)   ◄┘
 ```
 
 Target layout (single Vite app, no monorepo — KISS for v1):
@@ -69,15 +76,13 @@ the TS output matches the Python output for the same fixture.
 - [x] CI: `lint → format → typecheck → test → build` (GitHub Actions — the repo is on
       GitHub, not GitLab as this plan originally assumed).
 - [x] Capacitor: `@capacitor/core @capacitor/cli @capacitor/android`, `npx cap add android`.
-- [ ] Verify `npx cap run android` shows the app on a device/emulator — **blocked**: needs a JDK 21
-      and the Android SDK, neither installed yet (`java` not on PATH, no `ANDROID_HOME`).
+- [x] Verify `npx cap run android` shows the app on a device/emulator (verified and shipped via GitHub Releases `v1.0.0` through `v1.1.11`).
 - [x] Move `contract.ts` → `src/lib/edupage/types.ts`; delete root copy; fix `MODEL.md` link.
 - [x] ~~Copy `data/*` → `__tests__/fixtures/`~~ → tests read repo-root `data/` via
       `__tests__/fixtures.ts`; one copy, no drift between probe output and tests.
 - [x] Move `probe_*.py` → `reference/`.
 
-**Exit:** blank themed app launches on Android; `npm test` and CI are green.
-Currently: web build + lint + typecheck + 3 fixture smoke tests green; on-device launch pending the SDK.
+**Exit:** ✅ met. Blank themed app launches on Android; test suite and CI pipelines are green. Tagged APK releases running on physical hardware.
 
 ---
 
@@ -219,16 +224,26 @@ color customization and subgroups, delivers local notifications, and supports ba
 
 ---
 
-## Phase 5 — Release  (size: S–M)
+## Phase 5 — Release & distribution  (size: S–M — in progress)
 
-- [ ] Privacy policy (easy: no data leaves device; only calls `pikcrvt.edupage.org`).
-- [ ] Play Console: listing, screenshots, closed testing track; invite schoolmates.
-- [ ] `README` (what it is, how to build), `LICENSE`, ToS note (personal/educational use,
-      custom User-Agent, cache-first, no tight polling).
-- [ ] Optional: Sentry for crash reports (respecting privacy), a one-line anonymous "it opened" ping — or nothing.
-- [ ] Tag `v1.0.0`.
+**Distribution model:** No Google Play Store publication. EduPage / aSc legal risk (C&D / court exposure)
+makes centralized app store distribution dangerous for an unofficial school timetable parser.
+Distribution is handled directly via:
+1. **GitHub Releases** (signed Android APKs).
+2. **Cloudflare Pages web app** (`stundio.pages.dev`) with direct `/apk` and `/download` redirect endpoints.
+3. **In-app self-updater** for Android (OTA updates directly from GitHub releases without Google Play).
 
-**Exit:** installable from the Play closed track; ≥5 schoolmates using it for a week without a blocking bug.
+- [x] Tag `v1.0.0` (tagged `v1.0.0-ozols` through `v1.1.11-lacplesis`; APKs published on GitHub Releases).
+- [x] Web download & `/apk` redirect: Cloudflare Pages edge function (`functions/apk.ts` and `functions/download.ts`)
+      queries GitHub latest releases and issues a 302 redirect with fallback.
+- [x] Android web download banner (`AndroidDownloadBanner.tsx`) prompting Android web visitors on `stundio.pages.dev` to install the APK.
+- [x] In-app OTA self-updater (`InAppUpdatePrompt.tsx` + `ApkInstaller` plugin): checks GitHub releases API and guides the user through on-device update installation.
+- [x] `README` (installation guides for Android APK and iOS PWA, architecture notes, dev build commands), `LICENSE`.
+- [x] Plausible analytics (`lib/analytics/`): opt-out, privacy-friendly, zero cookies, no persistent identifiers.
+- [ ] Explicit non-commercial educational disclaimer & privacy statement published in app footer / web.
+- [x] Google Play Store submission deliberately avoided (eliminates legal/court liability from EduPage).
+
+**Exit:** users install APKs via `stundio.pages.dev/apk` or GitHub Releases; installed apps auto-detect and install updates; ≥5 schoolmates using it for a week without a blocking bug.
 
 ---
 
@@ -274,50 +289,65 @@ lessons, offline-cached, with credentials stored securely and the feature clearl
 
 ---
 
-## Phase 7 — iOS via PWA on Vercel  (size: S–M, fast-follow after v1)
+## Phase 7 — Web & iOS via PWA on Cloudflare Pages  (size: S–M — complete)
 
-**Goal:** iOS users get the app too, without an Apple developer account or a native iOS build.
-No App Store, no Xcode — a PWA installed via Safari's "Add to Home Screen" is the only realistic
-path for a non-commercial, ~100–250-user school project.
+**Goal:** iOS and desktop users get the app without an Apple developer account, Xcode, or App Store approval.
+A PWA installed via Safari's "Add to Home Screen" provides a full-screen, offline-capable timetable experience.
+Deployed to Cloudflare Pages (`stundio.pages.dev`) with Cloudflare Functions for CORS bypass and Web Push notifications.
 
-This does **not** touch the Android/Capacitor app or the widget — same `src/` web build, a second
-deployment target. The `apiBaseUrl()` proxy rule (see Conventions) needs a real answer for this
-target: iOS Safari, like the Vite dev proxy, has no `CapacitorHttp` to bypass CORS, and
-`pikcrvt.edupage.org` sends none. That is decided as part of this phase, below.
+- [x] **Decide the CORS path first:** Cloudflare Pages Function edge proxy (`functions/api-edupage/[[path]].ts`)
+      forwards `POST` to `pikcrvt.edupage.org` on the same origin with SSRF protection (`^[a-zA-Z0-9-]+$`).
+- [x] `manifest.webmanifest`: name, short_name, `display: standalone`, theme tokens, icons (192, 512, maskable).
+- [x] iOS-specific meta tags in `index.html`: `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`,
+      `apple-touch-icon`.
+- [x] Service worker for offline app-shell caching (`public/sw.js`).
+- [x] Cloudflare Pages deployment: static build (`dist/`) with GitHub Actions CD (`.github/workflows/ci.yml`).
+- [x] **Web Push notifications & cron dispatch:** Cloudflare Functions (`functions/api-push/`) + GitHub Actions
+      cron workflow (`.github/workflows/push-cron.yml`) to check substitutions and dispatch push notifications for PWA subscribers.
+- [x] **iOS install UX:** startup "Add to Home Screen" prompt for iPhone users (`IphoneInstallSheet`), tutorial card (`IphoneReleaseSheet`), and settings platform notice.
+- [x] Update `README`: iOS PWA installation instructions.
 
-- [ ] **Decide the CORS path first.** Three options, in order of preference:
-  1. A Vercel **serverless rewrite/proxy** (`vercel.json` rewrite or an `api/` edge function) that
-     forwards `POST` to `pikcrvt.edupage.org` and adds no auth of its own — same shape as the Vite
-     dev proxy, just hosted. This is the only piece of the whole project that would run off-device;
-     confirm it stays acceptable under "no backend server in v1" (it holds no state, no database,
-     no credentials — pure pass-through — so it's closer to a CDN edge rule than a backend, but
-     say so explicitly rather than assuming).
-  2. A public CORS-passthrough proxy (e.g. `corsproxy.io`) — fastest to ship, but a third party
-     sees every request; reject unless (1) turns out to be infeasible.
-  3. Ask the school to add CORS headers — unlikely to happen, not worth blocking on.
-- [ ] `manifest.json` (or `manifest.webmanifest`): name, short_name, `display: standalone`,
-      `theme_color`/`background_color` from `src/ds/tokens/`, icons (same source art as the Android
-      adaptive icon from Phase 4, re-exported at PWA sizes: 192/512 + maskable).
-- [ ] iOS-specific meta tags `index.html` needs beyond the manifest (Safari ignores parts of the
-      spec): `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`,
-      `apple-touch-icon`, splash-screen `<link>`s per device size (or accept the plain white
-      splash and skip these).
-- [ ] Service worker for offline app-shell caching (Workbox via `vite-plugin-pwa`, or hand-rolled)
-      — separate from the existing `db/`+`sync/` data cache, which already works offline; this
-      only needs to cache the JS/CSS/HTML shell so the app *opens* offline, not just renders stale
-      data once open.
-- [ ] Vercel project: static build (`npm run build` → `dist/`) + the CORS rewrite from step 1;
-      confirm `apiBaseUrl()` picks the right origin in this deployment (neither the Vite dev proxy
-      path nor the Capacitor direct-fetch path — a third branch keyed off `import.meta.env`).
-- [ ] No local notifications, no home-screen widget on this target — both are native-only
-      (`@capacitor/local-notifications`, the Kotlin `AppWidgetProvider`) and iOS Safari PWAs can't
-      host either. State this plainly in Settings/about so iOS users don't expect Phase 4 parity.
-- [ ] Update `README`/about copy: "Android: Play testing track. iOS: install as a web app from
-      Safari — no App Store account, tap Share → Add to Home Screen."
+**Exit:** ✅ met. The Cloudflare Pages URL (`stundio.pages.dev`), opened in iOS Safari and added to the home screen,
+launches full-screen, works offline for cached days, supports Web Push notifications for schedule changes,
+and renders the same DayView/WeekView as Android.
 
-**Exit:** the Vercel URL, opened in iOS Safari and added to the home screen, launches full-screen
-(no browser chrome), works offline for previously-synced days, and shows the same DayView/WeekView
-as Android — without any change to the Android app or the widget.
+---
+
+## Phase 8 — Teacher Mode ("Choose Your Side")  (size: M)
+
+**Goal:** Dedicated persona and timetable views for RVT teachers using the same public, anonymous EduPage
+dataset. Teachers select their name, see their teaching periods with class/group + room assignments,
+and have substitution cover duties (*aizvietošanas stundas*) highlighted.
+
+**Key Design Decisions (from user discovery):**
+1. **Choose Your Side (Star Wars inspired persona selection):** Onboarding and Settings feature a bold
+   "Choose Your Side" selector: **Student** (*Skolēns*) vs. **Teacher** (*Skolotājs*).
+2. **Teacher Picker:** Searchable list of teachers populated directly from EduPage's public `teachers` table
+   (mirrors the existing `ClassPicker`).
+3. **Card & Schedule Layout:**
+   - On teacher lesson cards, display **`[Class / Group] [Room] [Subject]`** prominently (replacing teacher name, which is redundant).
+   - Single group per room (no simultaneous 2-group room splits needed).
+   - WeekView grid and DayView resolve timetable rows indexed by `teacherids` rather than `classids`.
+4. **Cover Lessons (*Aizvietošana*):**
+   - Identify lessons where the teacher is assigned to cover another class from the daily substitution feed.
+   - Visually highlight cover lessons with high-contrast accent badges and dedicated card styling.
+   - User toggle in Settings: "Highlight cover lessons" (*Izcelt aizvietošanas stundas*).
+5. **No Native Widgets in v1:** App and PWA focus; future direction is web-first, so native Android widgets for teachers are deferred.
+6. **Zero Authentication / Strictly Public:** Powered 100% by public EduPage tables (`teachers`, `lessons`, `cards`, `substitutions`); zero teacher logins or private credentials stored.
+7. **Dual-Role Support (Fast-follow):** Quick persona switcher for form teachers (*klases audzinātāji*) to jump between their own teaching timetable and their class schedule will arrive in a subsequent update.
+
+- [ ] `lib/edupage/`: `resolveTeacherDay(timetable, substitutions, teacherId, date)` mirroring `resolveDay()`, joining by `teacherids`, mapping cover lessons (*aizvietošana*) from `substitutions`.
+- [ ] `store/`: add `persona: 'student' | 'teacher'`, `selectedTeacherId`, and `highlightCoverLessons: boolean` to `settings` store and `AppCache`.
+- [ ] UI — "Choose Your Side" Onboarding & Settings:
+  - Persona selection step in onboarding and Settings ("Skolēns" vs "Skolotājs").
+  - `TeacherPicker`: searchable list of RVT teachers parsed from cached timetable.
+- [ ] UI — Teacher DayView & WeekView:
+  - DayView cards display `Class / Group`, `Room`, `Subject`, and `Period times`.
+  - Cover lessons (*aizvietošanas stundas*) highlighted with dedicated visual badges.
+  - Settings toggle: enable/disable cover lesson highlighting.
+- [ ] Web/PWA compatibility: fully tested and functional on `stundio.pages.dev`.
+
+**Exit:** a teacher selects their profile during onboarding, views their daily and weekly teaching schedule with accurate room and class assignments, and sees substitution cover duties clearly highlighted, online and offline.
 
 ---
 
@@ -357,6 +387,8 @@ Capacitor has no App Widget API — native Kotlin and Java AppWidgetProviders we
 
 | Risk | Mitigation |
 |---|---|
+| Google Play legal exposure from EduPage / aSc | Eliminated: distribute directly via GitHub Releases and Cloudflare Pages (`/apk`); no store presence |
+| Browser CORS against EduPage on Web/iOS | Cloudflare Pages Function edge proxy (`functions/api-edupage/`) handles CORS and forward headers |
 | EduPage changes the undocumented API | All of it isolated in `lib/edupage`; fixtures + tests; version the parser; probes in `reference/` to re-derive fast |
 | School switches UI language → `.info` grammar breaks | `raw` always kept; "canary" test on `other` ratio; parser keyed by detected locale |
 | Android kills background refresh | On-open/resume refresh is primary; background + widget alarm are best-effort; be explicit in UI ("updated Xm ago") |
@@ -370,13 +402,14 @@ Capacitor has no App Widget API — native Kotlin and Java AppWidgetProviders we
 ## Out of scope for v1
 
 Telegram bot · per-student login (messages, lunch) · multi-school support ·
-push notifications via server · teacher/classroom timetable views (data supports it — later).
+FCM server push (handled via Android WorkManager locally and Cloudflare cron Web Push for PWA) ·
+Google Play Store listing (deliberately out of scope to avoid legal exposure from EduPage) ·
+classroom timetable views (data supports it — later); teacher mode tracked in Phase 8.
 e-klase grades: tracked as **Phase 6**, a fast-follow after v1 ships — not dropped, but not v1.
-iOS: tracked as **Phase 7** (PWA on Vercel, since there's no Apple developer account) — same
-fast-follow status, no native app, no notifications/widget on that platform.
 
 ## Definition of done (v1)
 
-Pick class → correct today/week view, online and offline, in LV/EN/RU · substitutions applied
-with visible diffs · local notification on favorite-class changes · home-screen "next lesson"
-widget · on Play closed testing · used by ≥5 schoolmates for a week.
+Pick class → correct today/week view, online and offline, in LV/EN/RU/UA · substitutions applied
+with visible diffs · local notification / Web Push on favorite-class changes · home-screen "next lesson"
+widget (Android) & PWA Add-to-Home-Screen (iOS) · APK releases published on GitHub and downloadable via
+`stundio.pages.dev/apk` · in-app update notification functioning on device · used by ≥5 schoolmates for a week.

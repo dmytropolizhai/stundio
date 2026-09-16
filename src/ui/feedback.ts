@@ -45,7 +45,7 @@ export type SubmitFeedbackParams = {
   className?: string | undefined;
   subject?: string | undefined;
   metadata?: Record<string, unknown> | undefined;
-}
+};
 
 export type SubmitSuggestionParams = Omit<SubmitFeedbackParams, "type">;
 export type SubmitBugReportParams = Omit<SubmitFeedbackParams, "type">;

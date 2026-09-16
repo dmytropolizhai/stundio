@@ -28,9 +28,7 @@ describe("submitFeedback", () => {
   });
 
   it("throws if message is empty or whitespace", async () => {
-    await expect(submitFeedback({ message: "   " })).rejects.toThrow(
-      "Message cannot be empty",
-    );
+    await expect(submitFeedback({ message: "   " })).rejects.toThrow("Message cannot be empty");
   });
 
   it("submits suggestion successfully with default type", async () => {
@@ -51,7 +49,14 @@ describe("submitFeedback", () => {
     expect(url).toBe("https://api.web3forms.com/submit");
     expect(options.method).toBe("POST");
 
-    const body = JSON.parse(options.body as string) as { access_key: string; feedback_type: string; subject: string; message: string; email: string; class: string };
+    const body = JSON.parse(options.body as string) as {
+      access_key: string;
+      feedback_type: string;
+      subject: string;
+      message: string;
+      email: string;
+      class: string;
+    };
     expect(body.access_key).toBe(WEB3FORMS_ACCESS_KEY);
     expect(body.feedback_type).toBe("suggestion");
     expect(body.subject).toContain("Stundio suggestion");
@@ -76,7 +81,15 @@ describe("submitFeedback", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(options.body as string) as { access_key: string; feedback_type: string; subject: string; message: string; email: string; class: string; error_code?: string }
+    const body = JSON.parse(options.body as string) as {
+      access_key: string;
+      feedback_type: string;
+      subject: string;
+      message: string;
+      email: string;
+      class: string;
+      error_code?: string;
+    };
     expect(body.access_key).toBe(WEB3FORMS_ACCESS_KEY);
     expect(body.feedback_type).toBe("bug");
     expect(body.subject).toContain("Stundio bug report");
@@ -100,7 +113,12 @@ describe("submitFeedback", () => {
     });
 
     const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(options.body as string) as { access_key: string; feedback_type: string; subject: string; message: string }
+    const body = JSON.parse(options.body as string) as {
+      access_key: string;
+      feedback_type: string;
+      subject: string;
+      message: string;
+    };
     expect(body.subject).toBe("Custom urgent issue");
   });
 
@@ -113,9 +131,7 @@ describe("submitFeedback", () => {
       }),
     );
 
-    await expect(
-      submitFeedback({ message: "Something cool" }),
-    ).rejects.toThrow("HTTP error 500");
+    await expect(submitFeedback({ message: "Something cool" })).rejects.toThrow("HTTP error 500");
   });
 
   it("throws when api returns success: false", async () => {
@@ -127,9 +143,7 @@ describe("submitFeedback", () => {
       }),
     );
 
-    await expect(
-      submitFeedback({ message: "Something cool" }),
-    ).rejects.toThrow("Invalid key");
+    await expect(submitFeedback({ message: "Something cool" })).rejects.toThrow("Invalid key");
   });
 
   it("submitSuggestion delegates to submitFeedback", async () => {

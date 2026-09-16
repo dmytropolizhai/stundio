@@ -2,6 +2,8 @@ dist
 android
 coverage
 .venv
+.claude
+.wrangler
 src/lib/edupage/__tests__/fixtures
 data
 
