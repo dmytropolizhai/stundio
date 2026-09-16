@@ -13,6 +13,7 @@ const PRECACHE_URLS = [
   "/index.html",
   "/manifest.webmanifest",
   "/favicon.png",
+  "/mark.svg",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/icon-maskable-512.png",
@@ -47,8 +48,11 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
 
-  // Do not intercept or cache EduPage API proxy calls
-  if (url.pathname.startsWith("/api-edupage")) return;
+  // Do not intercept or cache EduPage API proxy or serverless push endpoints
+  if (url.pathname.startsWith("/api-")) return;
+
+  // Never cache service worker script updates
+  if (url.pathname === "/sw.js") return;
 
   // For navigation requests (HTML pages): Network-First, fall back to cached index.html
   if (request.mode === "navigate") {
