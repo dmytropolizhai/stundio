@@ -5,6 +5,7 @@ import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { isAndroidDevice } from "../lib/platform";
 import { AndroidDownloadBanner } from "../components/AndroidDownloadBanner.tsx";
 import { InAppUpdatePrompt } from "../components/InAppUpdatePrompt.tsx";
+import { SettingsView } from "../screens/SettingsView.tsx";
 import * as edupageModule from "@/lib/edupage";
 import * as versionModule from "@/lib/version";
 import * as updateCheckHook from "../hooks/useUpdateCheck";
@@ -257,6 +258,93 @@ describe("Android download banner & in-app update prompt", () => {
         progressCb?.(100);
         resolveDownload();
       });
+    });
+  });
+
+  describe("SettingsView update button platform visibility", () => {
+    it("hides update button when viewing from web", async () => {
+      vi.spyOn(edupageModule, "isNativePlatform").mockReturnValue(false);
+      const harness = await bootHarness();
+
+      render(
+        <StoreContext.Provider value={harness.store}>
+          <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />
+        </StoreContext.Provider>,
+      );
+
+      // Current version text is displayed
+      expect(screen.getByText(/versija|version/i)).toBeDefined();
+      // Neither check button nor update button is rendered
+      expect(screen.queryByRole("button", { name: /Pārbaud|Check/i })).toBeNull();
+      expect(screen.queryByRole("button", { name: /Lejupielādēt|Download/i })).toBeNull();
+    });
+
+    it("hides update button when viewing from web even if update is available", async () => {
+      vi.spyOn(edupageModule, "isNativePlatform").mockReturnValue(false);
+      vi.spyOn(updateCheckHook, "useUpdateCheck").mockReturnValue({
+        result: {
+          hasUpdate: true,
+          currentVersion: "v1.1.11",
+          latestVersion: "v1.2.0",
+          url: "https://github.com/dmytropolizhai/stundio/releases/tag/v1.2.0",
+          apkUrl: "https://example.com/stundio.apk",
+        },
+        checking: false,
+        checked: true,
+        recheck: vi.fn(),
+      });
+      const harness = await bootHarness();
+
+      render(
+        <StoreContext.Provider value={harness.store}>
+          <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />
+        </StoreContext.Provider>,
+      );
+
+      // Current version text is displayed
+      expect(screen.getByText(/versija|version/i)).toBeDefined();
+      // Update download button or link is not rendered
+      expect(screen.queryByRole("button", { name: /Lejupielādēt|Download/i })).toBeNull();
+      expect(screen.queryByRole("link", { name: /Lejupielādēt|Download/i })).toBeNull();
+      expect(screen.queryByRole("button", { name: /Pārbaud|Check/i })).toBeNull();
+    });
+
+    it("shows check for updates button when viewing in native app", async () => {
+      vi.spyOn(edupageModule, "isNativePlatform").mockReturnValue(true);
+      const harness = await bootHarness();
+
+      render(
+        <StoreContext.Provider value={harness.store}>
+          <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />
+        </StoreContext.Provider>,
+      );
+
+      expect(screen.getByRole("button", { name: /Pārbaud|Check/i })).toBeDefined();
+    });
+
+    it("shows update action in native app when update is available", async () => {
+      vi.spyOn(edupageModule, "isNativePlatform").mockReturnValue(true);
+      vi.spyOn(updateCheckHook, "useUpdateCheck").mockReturnValue({
+        result: {
+          hasUpdate: true,
+          currentVersion: "v1.1.11",
+          latestVersion: "v1.2.0",
+          url: "https://github.com/dmytropolizhai/stundio/releases/tag/v1.2.0",
+          apkUrl: "https://example.com/stundio.apk",
+        },
+        checking: false,
+        checked: true,
+        recheck: vi.fn(),
+      });
+      const harness = await bootHarness();
+
+      render(
+        <StoreContext.Provider value={harness.store}>
+          <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />
+        </StoreContext.Provider>,
+      );
+
+      expect(screen.getByRole("link", { name: /Lejupielādēt|Download/i })).toBeDefined();
     });
   });
 });
