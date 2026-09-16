@@ -276,10 +276,9 @@ export const ua: Dict = {
   "customization.subjectColors.empty": "Вибери клас, щоб налаштувати кольори предметів.",
   "customization.preview.subject": "Приклад предмета",
   "customization.reset": "Скинути налаштування",
-
-  "iphoneAnnouncement.title": "Stundio на iPhone",
   "iphoneAnnouncement.badge": "НОВЕ",
-  "iphoneAnnouncement.headline": "Stundio тепер на iPhone!",
+  "iphoneAnnouncement.title": "Stundio на iPhone",
+  "iphoneAnnouncement.headline": "Тепер також доступно на iPhone",
   "iphoneAnnouncement.subtitle":
     "Зручний розклад, заміни та робота без інтернету тепер доступні в Safari.",
   "iphoneAnnouncement.step1.title": "Відкрийте Safari",

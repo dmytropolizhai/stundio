@@ -283,9 +283,8 @@ export const lv = {
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",
-
-  "iphoneAnnouncement.title": "Stundio uz iPhone",
   "iphoneAnnouncement.badge": "JAUNUMS",
+  "iphoneAnnouncement.title": "Stundio uz iPhone",
   "iphoneAnnouncement.headline": "Tagad arī pieejams uz iPhone",
   "iphoneAnnouncement.subtitle":
     "Ērts stundu saraksts, aizvietošanas un bezsaistes režīms tagad pieejams arī Safari pārlūkā.",

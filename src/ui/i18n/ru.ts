@@ -277,10 +277,9 @@ export const ru: Dict = {
   "customization.subjectColors.empty": "Выбери класс, чтобы настроить цвета предметов.",
   "customization.preview.subject": "Пример предмета",
   "customization.reset": "Сбросить настройки",
-
-  "iphoneAnnouncement.title": "Stundio на iPhone",
   "iphoneAnnouncement.badge": "НОВОЕ",
-  "iphoneAnnouncement.headline": "Stundio теперь на iPhone!",
+  "iphoneAnnouncement.title": "Stundio на iPhone",
+  "iphoneAnnouncement.headline": "Теперь также доступно на iPhone",
   "iphoneAnnouncement.subtitle":
     "Удобное расписание, замены и работа без интернета теперь доступны в Safari.",
   "iphoneAnnouncement.step1.title": "Откройте Safari",
