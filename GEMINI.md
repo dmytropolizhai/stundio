@@ -1,2 +1,2 @@
-# CLAUDE.md
+# GEMINI.md
 Read ./AGENT.md
