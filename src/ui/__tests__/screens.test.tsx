@@ -325,6 +325,30 @@ describe("WeekView", () => {
     expect(onPickClass).toHaveBeenCalled();
   });
 
+  it("allows toggling merge-lessons preference directly from WeekView", async () => {
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Nedēļas skats")).toBeDefined();
+    const toggle = screen.getByRole("switch", { name: "Apvienot vienādas stundas" });
+    expect(toggle).toBeDefined();
+    expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(false);
+
+    await clickAndSettle(() => {
+      fireEvent.click(toggle);
+    });
+
+    expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(true);
+  });
+
   /*
    * Sharing, end to end through the screen: happy-dom has no canvas and no share sheet, so both
    * are stood in for — what is under test is that a tap really draws the week and really hands

@@ -7,7 +7,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { StoreContext } from "../../store/index.ts";
 import { DayView } from "../screens/DayView.tsx";
-import { bootHarness, FIXTURE_DATE, type Harness } from "./harness.tsx";
+import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 /** 08:50 Riga on the fixture date: inside the first lesson. */
 const DURING_FIRST_LESSON = new Date("2026-09-09T05:50:00Z");
@@ -281,5 +281,21 @@ describe("DayView", () => {
     );
 
     expect(screen.queryByText(/Paziņojumi · No skolas/i)).toBeNull();
+  });
+
+  it("allows toggling show-time preference directly from DayView", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+
+    expect(screen.getByText("Dienas skats")).toBeDefined();
+    const toggle = screen.getByRole("switch", { name: "Rādīt laiku" });
+    expect(toggle).toBeDefined();
+    expect(harness.store.getState().settings.showTime).toBe(false);
+
+    await clickAndSettle(() => {
+      fireEvent.click(toggle);
+    });
+
+    expect(harness.store.getState().settings.showTime).toBe(true);
   });
 });

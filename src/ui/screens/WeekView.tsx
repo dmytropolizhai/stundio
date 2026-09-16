@@ -8,11 +8,13 @@ import {
   Button,
   Card,
   IconButton,
+  Switch,
   TopBar,
   WeekGrid,
   type WeekGridCell,
   type WeekGridPeriod,
 } from "@/ds";
+import { Row, Section } from "./SettingsView.tsx";
 import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
 import { PullToRefresh } from "../components/PullToRefresh.tsx";
 import { StateMessage } from "../components/StateMessage.tsx";
@@ -61,6 +63,7 @@ export const WeekView = ({
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
+  const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const syncStatus = useAppStore((s) => s.syncStatus);
@@ -389,6 +392,30 @@ export const WeekView = ({
           />
 
           {body()}
+
+          {ready && selectedClassId !== null && (
+            <div className="mt-7">
+              <Section title={t("settings.week")}>
+                <Row className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-text text-body font-bold text-strong">
+                      {t("settings.mergeLessons")}
+                    </p>
+                    <p className="mt-0.5 font-text text-caption text-muted">
+                      {t("settings.mergeLessonsHint")}
+                    </p>
+                  </div>
+                  <Switch
+                    aria-label={t("settings.mergeLessons")}
+                    checked={mergeConsecutive}
+                    onChange={(checked) => {
+                      void setMergeConsecutiveLessons(checked);
+                    }}
+                  />
+                </Row>
+              </Section>
+            </div>
+          )}
         </div>
       </PullToRefresh>
 
