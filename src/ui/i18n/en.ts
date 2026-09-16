@@ -278,8 +278,7 @@ export const en: Dict = {
   "customization.reset": "Reset to defaults",
 
   "iphoneAnnouncement.title": "Stundio on iPhone",
-  "iphoneAnnouncement.badge": "NEW",
-  "iphoneAnnouncement.headline": "Stundio is now on iPhone!",
+  "iphoneAnnouncement.headline": "Now also available on iPhone",
   "iphoneAnnouncement.subtitle":
     "Clean timetable, substitutions and offline support are now available in Safari.",
   "iphoneAnnouncement.step1.title": "Open Safari",

@@ -279,8 +279,7 @@ export const ru: Dict = {
   "customization.reset": "Сбросить настройки",
 
   "iphoneAnnouncement.title": "Stundio на iPhone",
-  "iphoneAnnouncement.badge": "НОВОЕ",
-  "iphoneAnnouncement.headline": "Stundio теперь на iPhone!",
+  "iphoneAnnouncement.headline": "Теперь также доступно на iPhone",
   "iphoneAnnouncement.subtitle":
     "Удобное расписание, замены и работа без интернета теперь доступны в Safari.",
   "iphoneAnnouncement.step1.title": "Откройте Safari",

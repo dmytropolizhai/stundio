@@ -285,7 +285,6 @@ export const lv = {
   "customization.reset": "Atjaunot noklusējumu",
 
   "iphoneAnnouncement.title": "Stundio uz iPhone",
-  "iphoneAnnouncement.badge": "JAUNUMS",
   "iphoneAnnouncement.headline": "Tagad arī pieejams uz iPhone",
   "iphoneAnnouncement.subtitle":
     "Ērts stundu saraksts, aizvietošanas un bezsaistes režīms tagad pieejams arī Safari pārlūkā.",
