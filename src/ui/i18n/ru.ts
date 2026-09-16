@@ -70,6 +70,15 @@ export const ru: Dict = {
   "day.feedbackPrompt.body": "Расскажи, что добавить или исправить в Stundio.",
   "day.feedbackPrompt.action": "Предложить",
   "day.feedbackPrompt.dismiss": "Закрыть",
+  "day.androidBanner.title": "Stundio для Android",
+  "day.androidBanner.body":
+    "Скачайте приложение для виджетов на главном экране, фоновой синхронизации и офлайн-расписания.",
+  "day.androidBanner.action": "Скачать APK",
+  "day.androidBanner.dismiss": "Закрыть",
+  "day.updatePrompt.title": "Доступно обновление",
+  "day.updatePrompt.body": "Доступна новая версия Stundio ({version}).",
+  "day.updatePrompt.action": "Обновить",
+  "day.updatePrompt.dismiss": "Позже",
 
   "week.previousWeek": "Предыдущая неделя",
   "week.nextWeek": "Следующая неделя",

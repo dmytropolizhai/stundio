@@ -69,6 +69,15 @@ export const ua: Dict = {
   "day.feedbackPrompt.body": "Розкажи, що додати чи виправити в Stundio.",
   "day.feedbackPrompt.action": "Запропонувати",
   "day.feedbackPrompt.dismiss": "Закрити",
+  "day.androidBanner.title": "Stundio для Android",
+  "day.androidBanner.body":
+    "Завантажте застосунок для віджетів на головному екрані, фонової синхронізації та офлайн-розкладу.",
+  "day.androidBanner.action": "Завантажити APK",
+  "day.androidBanner.dismiss": "Закрити",
+  "day.updatePrompt.title": "Доступне оновлення",
+  "day.updatePrompt.body": "Доступна новіша версія Stundio ({version}).",
+  "day.updatePrompt.action": "Оновити",
+  "day.updatePrompt.dismiss": "Пізніше",
 
   "week.previousWeek": "Попередній тиждень",
   "week.nextWeek": "Наступний тиждень",

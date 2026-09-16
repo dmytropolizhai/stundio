@@ -69,6 +69,15 @@ export const en: Dict = {
   "day.feedbackPrompt.body": "Tell us what to add or fix in Stundio.",
   "day.feedbackPrompt.action": "Suggest",
   "day.feedbackPrompt.dismiss": "Dismiss",
+  "day.androidBanner.title": "Stundio for Android",
+  "day.androidBanner.body":
+    "Download the app for home-screen widgets, background sync, and offline schedule.",
+  "day.androidBanner.action": "Download APK",
+  "day.androidBanner.dismiss": "Dismiss",
+  "day.updatePrompt.title": "Update available",
+  "day.updatePrompt.body": "A newer version of Stundio is available ({version}).",
+  "day.updatePrompt.action": "Update",
+  "day.updatePrompt.dismiss": "Later",
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",

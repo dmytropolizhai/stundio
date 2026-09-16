@@ -95,6 +95,7 @@ export type AppState = {
   setFeedbackPromptDismissed: (dismissed: boolean) => Promise<void>;
   setIphoneAnnouncementDismissed: (dismissed: boolean) => Promise<void>;
   setIphoneInstallPromptDismissed: (dismissed: boolean) => Promise<void>;
+  setAndroidApkBannerDismissed: (dismissed: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
@@ -256,6 +257,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         persist({ iphoneAnnouncementDismissed }),
       setIphoneInstallPromptDismissed: (iphoneInstallPromptDismissed) =>
         persist({ iphoneInstallPromptDismissed }),
+      setAndroidApkBannerDismissed: (androidApkBannerDismissed) =>
+        persist({ androidApkBannerDismissed }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {
