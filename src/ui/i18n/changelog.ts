@@ -26,6 +26,48 @@ export type ChangelogEntry = {
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: "v1.2.0-vaira",
+    date: "2026-09-16",
+    lines: {
+      lv: [
+        "Palaista Stundio tīmekļa versija un instalējama PWA lietotne ar bezsaistes atbalstu.",
+        "Pievienots iPhone atbalsts ar instalēšanas pamācību un sākuma ekrāna pievienošanas paziņojumu.",
+        "Ieviesta Web Push paziņojumu sistēma stundu saraksta izmaiņām Safari (iOS 16.4+) un pārlūkiem.",
+        "Pievienoti lietotnē iebūvēti atjauninājumu paziņojumi un viena pieskāriena APK instalēšana Android lietotnē.",
+        "Skolas paziņojumi tagad tiek viedi filtrēti pēc izvēlētās grupas un skolotāju vārdiem.",
+        "Pievienoti ātrie iestatījumi dienas un nedēļas skatos (stundu apvienošana un laika rādīšana).",
+        "Atjauninātas tīmekļa un PWA sākuma ekrāna ikonas ar caurspīdīgu fonu.",
+      ],
+      en: [
+        "Launched Stundio on the web and as an installable Progressive Web App (PWA) with offline support.",
+        "Added iPhone support with home screen installation prompts and step-by-step tutorial card.",
+        "Added Web Push notifications for timetable changes on iOS Safari (16.4+) and modern desktop/web browsers.",
+        "Added in-app update notifications and one-tap APK installation on Android.",
+        "Smart filtering for school announcements by your selected group and teacher names.",
+        "Added quick view settings directly in Day and Week views (toggle lesson merging and times).",
+        "Updated website and PWA home-screen app icons with clean transparent backgrounds.",
+      ],
+      ru: [
+        "Запущена веб-версия Stundio и устанавливаемое PWA-приложение с поддержкой работы офлайн.",
+        "Добавлена поддержка iPhone с подсказками по установке на экран «Домой» и карточкой-инструкцией.",
+        "Добавлены Web Push уведомления об изменениях в расписании для Safari (iOS 16.4+) и браузеров.",
+        "Добавлены уведомления об обновлениях внутри приложения и быстрая установка APK на Android.",
+        "Умная фильтрация школьных объявлений по выбранной группе и именам преподавателей.",
+        "Добавлены быстрые переключатели объединения уроков и времени прямо в расписании дня и недели.",
+        "Обновлены иконки для сайта и PWA с чистым прозрачным фоном.",
+      ],
+      ua: [
+        "Запущено вебверсію Stundio та встановлюваний PWA-додаток із підтримкою роботи офлайн.",
+        "Додано підтримку iPhone із підказками щодо додавання на початковий екран та карткою-інструкцією.",
+        "Додано Web Push сповіщення про зміни в розкладі для Safari (iOS 16.4+) та браузерів.",
+        "Додано сповіщення про оновлення всередині додатка та швидке встановлення APK на Android.",
+        "Розумна фільтрація шкільних оголошень за вибраною групою та іменами викладачів.",
+        "Додано швидкі перемикачі об'єднання уроків і показу часу безпосередньо у переглядах дня та тижня.",
+        "Оновлено іконки для сайту та PWA із прозорим фоном.",
+      ],
+    },
+  },
+  {
     version: "v1.1.11-lacplesis",
     date: "2026-09-14",
     lines: {

@@ -121,10 +121,10 @@ describe("iPhone announcement & share", () => {
         );
       });
 
-      expect(screen.getByText("Stundio tagad pieejams iPhone!")).toBeDefined();
-      expect(screen.getByText("1. Atver Safari")).toBeDefined();
-      expect(screen.getByText("2. Nospied «Kopīgot»")).toBeDefined();
-      expect(screen.getByText("3. Pievieno sākuma ekrānam")).toBeDefined();
+      expect(screen.getByText("Tagad arī pieejams uz iPhone")).toBeDefined();
+      expect(screen.getByText("Atver Safari")).toBeDefined();
+      expect(screen.getByText("Nospied «Kopīgot»")).toBeDefined();
+      expect(screen.getByText("Pievieno sākuma ekrānam")).toBeDefined();
     });
 
     it("does not auto-open if already dismissed", async () => {
@@ -137,7 +137,7 @@ describe("iPhone announcement & share", () => {
         );
       });
 
-      expect(screen.queryByText("Stundio tagad pieejams iPhone!")).toBeNull();
+      expect(screen.queryByText("Tagad arī pieejams uz iPhone")).toBeNull();
     });
 
     it("persists dismissal when user taps 'Sapratu' (Got it)", async () => {
@@ -168,13 +168,13 @@ describe("iPhone announcement & share", () => {
         );
       });
 
-      expect(screen.queryByText("Stundio tagad pieejams iPhone!")).toBeNull();
+      expect(screen.queryByText("Tagad arī pieejams uz iPhone")).toBeNull();
 
       act(() => {
         fireEvent.click(screen.getByText("show-announcement"));
       });
 
-      expect(screen.getByText("Stundio tagad pieejams iPhone!")).toBeDefined();
+      expect(screen.getByText("Tagad arī pieejams uz iPhone")).toBeDefined();
     });
   });
 

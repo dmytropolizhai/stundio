@@ -82,12 +82,13 @@ export const SettingsView = ({
   const setShareLang = useAppStore((s) => s.setShareLang);
   const setShareLangSyncWithApp = useAppStore((s) => s.setShareLangSyncWithApp);
   const refresh = useAppStore((s) => s.refresh);
+  const isNative = isNativePlatform();
   const {
     result: update,
     checking: checkingUpdate,
     checked: updateChecked,
     recheck,
-  } = useUpdateCheck();
+  } = useUpdateCheck({ enabled: isNative });
   const install = useUpdateInstall();
 
   const buildings = useMemo(() => listBuildings(metas), [metas]);
@@ -495,61 +496,71 @@ export const SettingsView = ({
               {t("settings.whatsNewAction")}
             </Button>
           </Row>
-          <Row className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="font-text text-body font-bold text-strong">
-                {updateChecked && !update?.hasUpdate
-                  ? t("settings.upToDate")
-                  : t("settings.checkForUpdates")}
-              </p>
-              <p className="mt-0.5 font-text text-caption text-muted">
+          {isNative ? (
+            <>
+              <Row className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="font-text text-body font-bold text-strong">
+                    {updateChecked && !update?.hasUpdate
+                      ? t("settings.upToDate")
+                      : t("settings.checkForUpdates")}
+                  </p>
+                  <p className="mt-0.5 font-text text-caption text-muted">
+                    {t("settings.currentVersion", { version: __APP_VERSION__ })}
+                  </p>
+                </div>
+                <Button size="sm" icon="refresh-cw" disabled={checkingUpdate} onClick={recheck}>
+                  {checkingUpdate
+                    ? t("settings.checkingForUpdates")
+                    : t("settings.checkForUpdatesAction")}
+                </Button>
+              </Row>
+              {update?.hasUpdate && (
+                <Row className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="font-text text-caption font-bold text-strong">
+                    {t("settings.updateAvailable", { version: update.latestVersion })}
+                  </span>
+                  {install.canInstallInApp && update.apkUrl ? (
+                    install.phase === "downloading" ? (
+                      <span className="font-text text-caption text-muted">
+                        {t("settings.updateDownloading", { percent: install.percent })}
+                      </span>
+                    ) : (
+                      (() => {
+                        const apkUrl = update.apkUrl;
+                        return (
+                          <Button
+                            size="sm"
+                            icon="download"
+                            onClick={() => {
+                              void install.install(apkUrl);
+                            }}
+                          >
+                            {t("settings.updateAction")}
+                          </Button>
+                        );
+                      })()
+                    )
+                  ) : (
+                    <Button size="sm" icon="external-link" asChild>
+                      <a href={update.url} target="_blank" rel="noreferrer">
+                        {t("settings.updateAction")}
+                      </a>
+                    </Button>
+                  )}
+                  {install.phase === "error" && (
+                    <p className="w-full font-text text-caption text-danger">
+                      {t("settings.updateError", { message: install.message })}
+                    </p>
+                  )}
+                </Row>
+              )}
+            </>
+          ) : (
+            <Row>
+              <p className="font-text text-caption text-muted">
                 {t("settings.currentVersion", { version: __APP_VERSION__ })}
               </p>
-            </div>
-            <Button size="sm" icon="refresh-cw" disabled={checkingUpdate} onClick={recheck}>
-              {checkingUpdate
-                ? t("settings.checkingForUpdates")
-                : t("settings.checkForUpdatesAction")}
-            </Button>
-          </Row>
-          {update?.hasUpdate && (
-            <Row className="flex flex-wrap items-center justify-between gap-3">
-              <span className="font-text text-caption font-bold text-strong">
-                {t("settings.updateAvailable", { version: update.latestVersion })}
-              </span>
-              {install.canInstallInApp && update.apkUrl ? (
-                install.phase === "downloading" ? (
-                  <span className="font-text text-caption text-muted">
-                    {t("settings.updateDownloading", { percent: install.percent })}
-                  </span>
-                ) : (
-                  (() => {
-                    const apkUrl = update.apkUrl;
-                    return (
-                      <Button
-                        size="sm"
-                        icon="download"
-                        onClick={() => {
-                          void install.install(apkUrl);
-                        }}
-                      >
-                        {t("settings.updateAction")}
-                      </Button>
-                    );
-                  })()
-                )
-              ) : (
-                <Button size="sm" icon="external-link" asChild>
-                  <a href={update.url} target="_blank" rel="noreferrer">
-                    {t("settings.updateAction")}
-                  </a>
-                </Button>
-              )}
-              {install.phase === "error" && (
-                <p className="w-full font-text text-caption text-danger">
-                  {t("settings.updateError", { message: install.message })}
-                </p>
-              )}
             </Row>
           )}
         </Section>

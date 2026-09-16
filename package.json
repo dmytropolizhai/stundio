@@ -1,7 +1,7 @@
 {
   "name": "stundio",
   "private": true,
-  "version": "v1.1.11-lacplesis",
+  "version": "v1.2.0-vaira",
   "type": "module",
   "engines": {
     "node": ">=20"
