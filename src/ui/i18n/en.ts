@@ -276,9 +276,9 @@ export const en: Dict = {
   "customization.subjectColors.empty": "Pick a class to customize its subject colours.",
   "customization.preview.subject": "Sample subject",
   "customization.reset": "Reset to defaults",
-  "iphoneAnnouncement.badge": "NEW",
   "iphoneAnnouncement.title": "Stundio on iPhone",
-  "iphoneAnnouncement.headline": "Now also available on iPhone",
+  "iphoneAnnouncement.badge": "NEW",
+  "iphoneAnnouncement.headline": "Stundio is now on iPhone!",
   "iphoneAnnouncement.subtitle":
     "Clean timetable, substitutions and offline support are now available in Safari.",
   "iphoneAnnouncement.step1.title": "Open Safari",
