@@ -382,4 +382,29 @@ describe("filterNotesForClass with teacher names & surnames", () => {
       ),
     ).toBe(false);
   });
+
+  it("handles announcements split across teacher initials and cabinet names (e.g. Levics H-129 kab.)", () => {
+    const notes = ["AV2-1 grupai 1 stunda audzināšana sk.", "A.", "Levics H-129 kab."];
+    const pool = [...allTeachers, "Levics Arsenijs"];
+
+    const { relevant: dpRelevant, other: dpOther } = filterNotesForClass(
+      notes,
+      "DP2-1",
+      ["DP2-1", "AV2-1"],
+      dp21Teachers,
+      pool,
+    );
+    expect(dpRelevant).toEqual([]);
+    expect(dpOther).toEqual(notes);
+
+    const { relevant: avRelevant, other: avOther } = filterNotesForClass(
+      notes,
+      "AV2-1",
+      ["DP2-1", "AV2-1"],
+      ["Levics Arsenijs"],
+      pool,
+    );
+    expect(avRelevant).toEqual(notes);
+    expect(avOther).toEqual([]);
+  });
 });

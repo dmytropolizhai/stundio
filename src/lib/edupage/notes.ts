@@ -231,11 +231,11 @@ export const isTeacherMentionedInNote = (note: string, teacher: TeacherIdentifie
       return true;
     }
 
-    // Standalone token followed by punctuation, number, stunda, or absence keywords
+    // Standalone token followed by punctuation, number, room/cabinet, stunda, or absence keywords
     const standaloneRe = new RegExp(
       "(?<!\\p{L})" +
         (stem.length >= 4 ? stem + "\\p{L}{0,3}" : tok) +
-        "(?:[.,:;–—-]\\s*|\\s+[-–—]\\s+|\\s+\\d|\\s+stund|\\s+slim|\\s+nebūs|\\s+atcelt)",
+        "(?:[.,:;–—-]\\s*|\\s+[-–—]\\s+|\\s+\\d|\\s+[A-Z]-\\d|\\s+kab|\\s+telp|\\s+zāl|\\s+korp|\\s+stund|\\s+slim|\\s+nebūs|\\s+atcelt)",
       "iu",
     );
     if (standaloneRe.test(note)) {
@@ -332,7 +332,7 @@ export const filterNotesForClass = (
         );
       const isTeacherContinuation =
         lastGroupTargets !== null &&
-        /(?:sk\.|,|[–—-]\s*|\bun\b)$/i.test(previousNote) &&
+        /(?:sk\.|[A-ZŠČĢĶĀĒĪŪŅ]\.|,|[–—-]\s*|\bun\b)$/iu.test(previousNote) &&
         trimmed.length < 35;
 
       const isContinuation =
