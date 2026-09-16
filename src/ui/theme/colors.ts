@@ -15,7 +15,13 @@ import {
   type ResolvedStatus,
   type SubjectRef,
 } from "../../lib/edupage/index.ts";
-import { isHexColor, readableInk, type BadgeProps, type LessonStatus, type LessonTone } from "../../ds/index.ts";
+import {
+  isHexColor,
+  readableInk,
+  type BadgeProps,
+  type LessonStatus,
+  type LessonTone,
+} from "../../ds/index.ts";
 
 /** The six subject accents, in DS order. `brand` is reserved for "now" and is not assignable. */
 export const SUBJECT_TONES = ["amber", "sky", "lilac", "pink", "mint", "lime"] as const;
@@ -89,9 +95,7 @@ export const subjectTone = (
  * over `subjectTone` alone so a custom colour actually reaches the screen instead of silently
  * falling back to a DS tone class that doesn't exist for it.
  */
-export type SubjectAccent =
-  | { tone: SubjectTone }
-  | { tone: "custom"; fill: string; ink: string };
+export type SubjectAccent = { tone: SubjectTone } | { tone: "custom"; fill: string; ink: string };
 
 export const subjectAccent = (
   subject: SubjectRef | null,

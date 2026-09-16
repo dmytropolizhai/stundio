@@ -31,19 +31,12 @@ describe("FeedbackSheet", () => {
 
     wrap(
       harness,
-      <FeedbackSheet
-        open={true}
-        onClose={onClose}
-        className="10.a"
-        onSubmitted={onSubmitted}
-      />,
+      <FeedbackSheet open={true} onClose={onClose} className="10.a" onSubmitted={onSubmitted} />,
     );
 
     expect(screen.getByText("Ieteikt funkciju")).toBeDefined();
 
-    const textarea = screen.getByPlaceholderText(
-      "Ko Stundio vajadzētu pievienot vai uzlabot?",
-    );
+    const textarea = screen.getByPlaceholderText("Ko Stundio vajadzētu pievienot vai uzlabot?");
     fireEvent.change(textarea, { target: { value: "Make widget resizable" } });
 
     const emailInput = screen.getByPlaceholderText("Ja vēlies saņemt atbildi");
@@ -65,25 +58,18 @@ describe("FeedbackSheet", () => {
 
   it("displays error message when network request fails", async () => {
     const harness = await bootHarness();
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("Network connection lost")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network connection lost")));
 
     wrap(harness, <FeedbackSheet open={true} onClose={() => {}} />);
 
-    const textarea = screen.getByPlaceholderText(
-      "Ko Stundio vajadzētu pievienot vai uzlabot?",
-    );
+    const textarea = screen.getByPlaceholderText("Ko Stundio vajadzētu pievienot vai uzlabot?");
     fireEvent.change(textarea, { target: { value: "Need offline sync" } });
 
     const submitBtn = screen.getByRole("button", { name: "Nosūtīt ieteikumu" });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Neizdevās nosūtīt. Pārbaudi interneta savienojumu."),
-      ).toBeDefined();
+      expect(screen.getByText("Neizdevās nosūtīt. Pārbaudi interneta savienojumu.")).toBeDefined();
     });
   });
 
@@ -110,9 +96,7 @@ describe("FeedbackSheet", () => {
     expect(screen.getByText("Ziņot par kļūdu")).toBeDefined();
     expect(screen.getByText("Kas notika?")).toBeDefined();
 
-    const textarea = screen.getByPlaceholderText(
-      "Apraksti, kas nogāja greizi un ko tu gaidīji…",
-    );
+    const textarea = screen.getByPlaceholderText("Apraksti, kas nogāja greizi un ko tu gaidīji…");
     fireEvent.change(textarea, { target: { value: "Schedule fails to load on Friday" } });
 
     const submitBtn = screen.getByRole("button", { name: "Nosūtīt ziņojumu" });
@@ -124,7 +108,13 @@ describe("FeedbackSheet", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
-    const body = JSON.parse(options.body as string) as { feedback_type: string; subject: string; message: string; class: string; error_code?: string };
+    const body = JSON.parse(options.body as string) as {
+      feedback_type: string;
+      subject: string;
+      message: string;
+      class: string;
+      error_code?: string;
+    };
     expect(body.feedback_type).toBe("bug");
     expect(body.subject).toContain("Stundio bug report");
     expect(body.class).toBe("11.c");

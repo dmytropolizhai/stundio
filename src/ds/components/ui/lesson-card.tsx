@@ -183,12 +183,14 @@ export const LessonCard = ({
             className={cn(
               "flex size-10 shrink-0 items-center justify-center rounded-full",
               "font-text",
-              filled
-                ? "bg-current/15"
-                : cn(tone === "custom" ? "" : cn(RAIL[tone], "text-black")),
+              filled ? "bg-current/15" : cn(tone === "custom" ? "" : cn(RAIL[tone], "text-black")),
               cancelled && "line-through",
             )}
-            style={!filled && custom !== undefined ? { backgroundColor: custom.fill, color: custom.ink } : undefined}
+            style={
+              !filled && custom !== undefined
+                ? { backgroundColor: custom.fill, color: custom.ink }
+                : undefined
+            }
           >
             {period}
           </span>

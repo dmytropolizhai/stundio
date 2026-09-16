@@ -4,7 +4,10 @@ import { listBuildings, listSubgroups } from "@/lib/edupage";
 import type { Settings } from "@/db";
 import { Icon } from "@/ds/components/ui/icon";
 import { Button, Card, SegmentedTabs, Switch, TopBar } from "@/ds";
-import { ensureNotificationPermission, openNotificationSettings } from "@/notifications/localNotifications";
+import {
+  ensureNotificationPermission,
+  openNotificationSettings,
+} from "@/notifications/localNotifications";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { useNotificationPermissionDenied } from "../hooks/useNotificationPermission.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
