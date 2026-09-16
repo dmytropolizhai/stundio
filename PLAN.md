@@ -4,8 +4,8 @@ Status: Phases 0–4, the Parallel Widget Track, and Phase 7 (Web/iOS PWA on Clo
 are complete (scaffold, tooling, Capacitor, scraper + parser, offline cache + sync, UI, customization
 & themes, Android packaging, edge-to-edge, local notifications, WorkManager background refresh, native
 2×1, countdown & 4×2 home-screen widgets, Cloudflare Pages edge proxy + PWA + Web Push).
-Next: Phase 5 (Release & Distribution via GitHub Releases, Cloudflare download site, and OTA updates)
-and Phase 6 (e-klase grades integration exploration).
+Next: Phase 5 (Release & Distribution via GitHub Releases, Cloudflare download site, and OTA updates),
+Phase 6 (e-klase grades integration exploration), and Phase 8 (Teacher Mode).
 Research artefacts: `MODEL.md`, `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1 & Cloudflare PWA.
 
@@ -313,6 +313,44 @@ and renders the same DayView/WeekView as Android.
 
 ---
 
+## Phase 8 — Teacher Mode ("Choose Your Side")  (size: M)
+
+**Goal:** Dedicated persona and timetable views for RVT teachers using the same public, anonymous EduPage
+dataset. Teachers select their name, see their teaching periods with class/group + room assignments,
+and have substitution cover duties (*aizvietošanas stundas*) highlighted.
+
+**Key Design Decisions (from user discovery):**
+1. **Choose Your Side (Star Wars inspired persona selection):** Onboarding and Settings feature a bold
+   "Choose Your Side" selector: **Student** (*Skolēns*) vs. **Teacher** (*Skolotājs*).
+2. **Teacher Picker:** Searchable list of teachers populated directly from EduPage's public `teachers` table
+   (mirrors the existing `ClassPicker`).
+3. **Card & Schedule Layout:**
+   - On teacher lesson cards, display **`[Class / Group] [Room] [Subject]`** prominently (replacing teacher name, which is redundant).
+   - Single group per room (no simultaneous 2-group room splits needed).
+   - WeekView grid and DayView resolve timetable rows indexed by `teacherids` rather than `classids`.
+4. **Cover Lessons (*Aizvietošana*):**
+   - Identify lessons where the teacher is assigned to cover another class from the daily substitution feed.
+   - Visually highlight cover lessons with high-contrast accent badges and dedicated card styling.
+   - User toggle in Settings: "Highlight cover lessons" (*Izcelt aizvietošanas stundas*).
+5. **No Native Widgets in v1:** App and PWA focus; future direction is web-first, so native Android widgets for teachers are deferred.
+6. **Zero Authentication / Strictly Public:** Powered 100% by public EduPage tables (`teachers`, `lessons`, `cards`, `substitutions`); zero teacher logins or private credentials stored.
+7. **Dual-Role Support (Fast-follow):** Quick persona switcher for form teachers (*klases audzinātāji*) to jump between their own teaching timetable and their class schedule will arrive in a subsequent update.
+
+- [ ] `lib/edupage/`: `resolveTeacherDay(timetable, substitutions, teacherId, date)` mirroring `resolveDay()`, joining by `teacherids`, mapping cover lessons (*aizvietošana*) from `substitutions`.
+- [ ] `store/`: add `persona: 'student' | 'teacher'`, `selectedTeacherId`, and `highlightCoverLessons: boolean` to `settings` store and `AppCache`.
+- [ ] UI — "Choose Your Side" Onboarding & Settings:
+  - Persona selection step in onboarding and Settings ("Skolēns" vs "Skolotājs").
+  - `TeacherPicker`: searchable list of RVT teachers parsed from cached timetable.
+- [ ] UI — Teacher DayView & WeekView:
+  - DayView cards display `Class / Group`, `Room`, `Subject`, and `Period times`.
+  - Cover lessons (*aizvietošanas stundas*) highlighted with dedicated visual badges.
+  - Settings toggle: enable/disable cover lesson highlighting.
+- [ ] Web/PWA compatibility: fully tested and functional on `stundio.pages.dev`.
+
+**Exit:** a teacher selects their profile during onboarding, views their daily and weekly teaching schedule with accurate room and class assignments, and sees substitution cover duties clearly highlighted, online and offline.
+
+---
+
 ## Parallel track — home-screen widget spike  (size: M–L — complete)
 
 Capacitor has no App Widget API — native Kotlin and Java AppWidgetProviders were built and bridged:
@@ -366,7 +404,7 @@ Capacitor has no App Widget API — native Kotlin and Java AppWidgetProviders we
 Telegram bot · per-student login (messages, lunch) · multi-school support ·
 FCM server push (handled via Android WorkManager locally and Cloudflare cron Web Push for PWA) ·
 Google Play Store listing (deliberately out of scope to avoid legal exposure from EduPage) ·
-teacher/classroom timetable views (data supports it — later).
+classroom timetable views (data supports it — later); teacher mode tracked in Phase 8.
 e-klase grades: tracked as **Phase 6**, a fast-follow after v1 ships — not dropped, but not v1.
 
 ## Definition of done (v1)
