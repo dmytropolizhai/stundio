@@ -69,6 +69,15 @@ export const en: Dict = {
   "day.feedbackPrompt.body": "Tell us what to add or fix in Stundio.",
   "day.feedbackPrompt.action": "Suggest",
   "day.feedbackPrompt.dismiss": "Dismiss",
+  "day.androidBanner.title": "Stundio for Android",
+  "day.androidBanner.body":
+    "Download the app for home-screen widgets, background sync, and offline schedule.",
+  "day.androidBanner.action": "Download APK",
+  "day.androidBanner.dismiss": "Dismiss",
+  "day.updatePrompt.title": "Update available",
+  "day.updatePrompt.body": "A newer version of Stundio is available ({version}).",
+  "day.updatePrompt.action": "Update",
+  "day.updatePrompt.dismiss": "Later",
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",
@@ -165,6 +174,12 @@ export const en: Dict = {
   "settings.notifyAppUpdatesHint": "Notify when a new app version is released.",
   "settings.notifyPermissionDenied": "Notifications are blocked in system settings.",
   "settings.notifyOpenSettings": "Open settings",
+  "settings.notificationsWebNotice":
+    "Offline reminders and notifications are supported in the Android app. On the web app, schedule changes update whenever you open the app.",
+  "settings.notificationsIosPwaRequired":
+    "To receive notifications on iPhone, please add Stundio to your Home Screen first.",
+  "settings.notificationsLessonRemindersNativeNotice":
+    "Lesson countdown reminders are available in the Android app. Schedule change alerts work via Web Push notifications.",
   "notification.lessonReminder.title": "{subject} in {minutes} min",
   "notification.changed.title": "Timetable changed",
   "notification.changed.body": "Today's schedule has changes.",
@@ -261,4 +276,35 @@ export const en: Dict = {
   "customization.subjectColors.empty": "Pick a class to customize its subject colours.",
   "customization.preview.subject": "Sample subject",
   "customization.reset": "Reset to defaults",
+
+  "iphoneAnnouncement.title": "Stundio on iPhone",
+  "iphoneAnnouncement.badge": "NEW",
+  "iphoneAnnouncement.headline": "Stundio is now on iPhone!",
+  "iphoneAnnouncement.subtitle":
+    "Clean timetable, substitutions and offline support are now available in Safari.",
+  "iphoneAnnouncement.step1.title": "1. Open Safari",
+  "iphoneAnnouncement.step1.desc": "Visit stundio.pages.dev",
+  "iphoneAnnouncement.step2.title": "2. Tap «Share»",
+  "iphoneAnnouncement.step2.desc": "Square icon with an arrow pointing up at the bottom",
+  "iphoneAnnouncement.step3.title": "3. Add to Home Screen",
+  "iphoneAnnouncement.step3.desc": "Tap «Add to Home Screen» to install the app",
+  "iphoneAnnouncement.share": "Share with friends",
+  "iphoneAnnouncement.shareWorking": "Making the image…",
+  "iphoneAnnouncement.done": "Got it",
+  "iphoneAnnouncement.shareTitle": "Stundio on iPhone",
+  "iphoneAnnouncement.shareMessage":
+    'Stundio is now available on iPhone! 📱\n\nHow to install:\n1. Open Safari and go to https://stundio.pages.dev\n2. Tap the Share button (square with arrow pointing up)\n3. Tap "Add to Home Screen"\n\nClean timetable and substitutions: https://stundio.pages.dev',
+  "settings.iphoneShare": "Stundio on iPhone",
+  "settings.iphoneShareHint": "Tutorial and link to install Stundio on iPhone",
+  "settings.iphoneShareAction": "Share",
+
+  "iphoneInstall.title": "Add Stundio to Home Screen",
+  "iphoneInstall.subtitle":
+    "Use Stundio as a full app on your iPhone — full screen, no browser bars, and instant offline access.",
+  "iphoneInstall.step1": "Tap «Add to Home Screen» below or the browser Share button",
+  "iphoneInstall.step2": "In the menu, select «Add to Home Screen»",
+  "iphoneInstall.action": "Add to Home Screen",
+  "iphoneInstall.dismiss": "Continue in browser",
+  "settings.iphoneInstall": "Add to Home Screen",
+  "settings.iphoneInstallHint": "Install Stundio as an app on your iPhone",
 };

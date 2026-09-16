@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { canInstallInApp, downloadAndInstall } from "@/lib/version";
 
 export type InstallState =
@@ -14,19 +14,49 @@ export type InstallState =
  */
 export const useUpdateInstall = () => {
   const [state, setState] = useState<InstallState>({ phase: "idle" });
+  const isMountedRef = useRef(true);
+  const isInstallingRef = useRef(false);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const install = useCallback(async (apkUrl: string) => {
+    if (isInstallingRef.current) return;
+    isInstallingRef.current = true;
     setState({ phase: "downloading", percent: 0 });
     try {
-      await downloadAndInstall(apkUrl, (percent) => setState({ phase: "downloading", percent }));
-      setState({ phase: "idle" });
-    } catch (err) {
-      setState({
-        phase: "error",
-        message: err instanceof Error ? err.message : "Install failed",
+      await downloadAndInstall(apkUrl, (percent) => {
+        if (isMountedRef.current) {
+          setState({ phase: "downloading", percent });
+        }
       });
+      if (isMountedRef.current) {
+        setState({ phase: "idle" });
+      }
+    } catch (err) {
+      if (isMountedRef.current) {
+        setState({
+          phase: "error",
+          message: err instanceof Error ? err.message : "Install failed",
+        });
+      }
+    } finally {
+      isInstallingRef.current = false;
     }
   }, []);
 
-  return { ...state, install, canInstallInApp: canInstallInApp() };
+  const canInstall = useMemo(() => canInstallInApp(), []);
+
+  return useMemo(
+    () => ({
+      ...state,
+      install,
+      canInstallInApp: canInstall,
+    }),
+    [state, install, canInstall],
+  );
 };

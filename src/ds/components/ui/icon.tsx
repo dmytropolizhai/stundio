@@ -28,6 +28,7 @@ import {
   Send,
   Settings,
   Share2,
+  Smartphone,
   Star,
   Sun,
   TriangleAlert,
@@ -89,6 +90,7 @@ const ICONS = {
   sun: Sun,
   monitor: Monitor,
   star: Star,
+  smartphone: Smartphone,
   check: Check,
   send: Send,
 } as const;

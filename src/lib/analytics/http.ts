@@ -2,7 +2,7 @@
  * The only file under lib/analytics allowed to import Capacitor (enforced by ESLint,
  * mirroring `lib/edupage/http.ts`).
  */
-import { CapacitorHttp } from "@capacitor/core";
+import { Capacitor, CapacitorHttp } from "@capacitor/core";
 
 export type HttpClient = (url: string, body: unknown) => Promise<void>;
 
@@ -26,3 +26,7 @@ export const fetchHttp: HttpClient = async (url, body) => {
     body: JSON.stringify(body),
   });
 };
+
+/** The transport for this platform: native on Android, fetch in browsers. */
+export const defaultHttp: HttpClient = (url, body) =>
+  Capacitor.isNativePlatform() ? capacitorHttp(url, body) : fetchHttp(url, body);

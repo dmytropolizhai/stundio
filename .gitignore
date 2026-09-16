@@ -1,6 +1,9 @@
 .venv
 .idea
 node_modules
+.wrangler
+_worker.bundle
+_worker.js
 dist
 coverage
 *.tsbuildinfo
@@ -8,6 +11,7 @@ coverage
 
 # Capacitor / Android build output
 android/app/build
+android/app/release
 android/build
 android/.gradle
 android/local.properties

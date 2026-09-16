@@ -5,7 +5,13 @@
  * below CANNOT reach it cross-origin — it exists for tests and for the Vite dev preview.
  * On device, `capacitorHttp` goes through the native layer and is not subject to CORS.
  */
-import { CapacitorHttp } from "@capacitor/core";
+import { Capacitor, CapacitorHttp } from "@capacitor/core";
+
+/**
+ * True only when running inside the Android (or future iOS) native app shell.
+ * Web browsers and Cloudflare Pages return false.
+ */
+export const isNativePlatform = (): boolean => Capacitor.isNativePlatform();
 
 export type HttpRequest = {
   url: string;
@@ -51,6 +57,13 @@ export const fetchHttp: HttpClient = async ({ url, body, headers }) => {
   const text = await res.text();
   return { status: res.status, data: parseLooseJson(text) };
 };
+
+/**
+ * The default transport for this platform: native HTTP in the Capacitor container,
+ * standard `fetch` in web browsers (where requests pass through the dev or Cloudflare proxy).
+ */
+export const defaultHttp: HttpClient = (req) =>
+  isNativePlatform() ? capacitorHttp(req) : fetchHttp(req);
 
 /**
  * EduPage occasionally prefixes the JSON body with junk; the Python probe strips it the
