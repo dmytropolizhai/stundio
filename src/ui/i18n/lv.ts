@@ -286,14 +286,14 @@ export const lv = {
 
   "iphoneAnnouncement.title": "Stundio uz iPhone",
   "iphoneAnnouncement.badge": "JAUNUMS",
-  "iphoneAnnouncement.headline": "Stundio tagad pieejams iPhone!",
+  "iphoneAnnouncement.headline": "Tagad arī pieejams uz iPhone",
   "iphoneAnnouncement.subtitle":
     "Ērts stundu saraksts, aizvietošanas un bezsaistes režīms tagad pieejams arī Safari pārlūkā.",
-  "iphoneAnnouncement.step1.title": "1. Atver Safari",
+  "iphoneAnnouncement.step1.title": "Atver Safari",
   "iphoneAnnouncement.step1.desc": "Dodies uz vietni stundio.pages.dev",
-  "iphoneAnnouncement.step2.title": "2. Nospied «Kopīgot»",
+  "iphoneAnnouncement.step2.title": "Nospied «Kopīgot»",
   "iphoneAnnouncement.step2.desc": "Ikona ar kvadrātu un bultiņu uz augšu ekrāna apakšā",
-  "iphoneAnnouncement.step3.title": "3. Pievieno sākuma ekrānam",
+  "iphoneAnnouncement.step3.title": "Pievieno sākuma ekrānam",
   "iphoneAnnouncement.step3.desc": "Izvēlies «Pievienot sākuma ekrānam», lai instalētu lietotni",
   "iphoneAnnouncement.share": "Kopīgot ar draugiem",
   "iphoneAnnouncement.shareWorking": "Sagatavo attēlu…",
