@@ -61,6 +61,8 @@ export const ru: Dict = {
   "day.buildingOther": "Другой корпус: {building}",
   "day.buildingMixed": "Несколько корпусов: {buildings}",
   "day.notes": "Объявления",
+  "day.allNotes": "Все объявления школы ({count})",
+  "day.onlyMyGroup": "Только для моей группы",
   "day.free": "Окно",
   "day.finished": "Уроки закончились",
   "day.now": "Сейчас",

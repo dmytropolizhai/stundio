@@ -167,7 +167,8 @@ export type ResolvedDay = {
   buildings: Building[];
   ttNum: string; // base timetable used (the primary one)
   lessons: ResolvedLesson[]; // sorted by period; cancelled kept with status "cancelled"
-  notes: string[]; // pass-through of DaySubstitutions.notes
+  notes: string[]; // filtered announcements for this class (plus general school announcements)
+  allNotes?: string[]; // pass-through of all DaySubstitutions.notes for the day
   stale: boolean; // true if base ttNum.validFrom week != date's week
 };
 
