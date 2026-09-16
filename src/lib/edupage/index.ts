@@ -48,8 +48,14 @@ export {
   type ResolveOptions,
 } from "./resolve.ts";
 export {
+  areTeachersEqual,
+  buildLatvianStem,
+  extractMentionedTeachers,
   extractTargetGroups,
   filterNotesForClass,
+  getTeacherTokens,
   isNoteRelevantForClass,
+  isTeacherMentionedInNote,
   splitGroupAnnouncements,
+  type TeacherIdentifier,
 } from "./notes.ts";

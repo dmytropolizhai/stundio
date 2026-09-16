@@ -1,18 +1,6 @@
-/**
- * School announcement classification & filtering by class/group.
- *
- * EduPage substitution feeds publish daily announcements in a single `.subst_note`
- * block for the whole school. Administrators frequently include group-specific notices
- * (e.g. "N3 grupai 6 - stunda atcelta", "DP2-1 grupai 1. stunda atcelta",
- * "DP2-1, DP2-2 grupām sports zālē") alongside general school-wide announcements.
- *
- * This module parses and filters these notes so students see:
- * 1. Announcements specifically mentioning their class/group.
- * 2. Announcements for their department/programme prefix (e.g. "DP grupām" or "DP2 grupām" for "DP2-1").
- * 3. General school announcements that do not target any specific group.
- *
- * Irrelevant announcements targeting other groups are filtered out.
- */
+import type { TeacherRef } from "./types.ts";
+
+export type TeacherIdentifier = TeacherRef | string;
 
 /**
  * Regex matching group suffixes in Latvian:
@@ -143,19 +131,156 @@ export const isTargetMatch = (target: string, className: string): boolean => {
 };
 
 /**
+ * Extracts name and surname tokens from a teacher label or TeacherRef.
+ * Ignores 1-2 character initials (e.g. "N.", "J.").
+ */
+export const getTeacherTokens = (teacher: TeacherIdentifier): string[] => {
+  const label = typeof teacher === "string" ? teacher : teacher.short || teacher.name || "";
+  if (!label) return [];
+  return label
+    .split(/[\s,/]+/)
+    .map((t) => t.replace(/[.,;:()]/g, "").trim())
+    .filter((t) => t.length >= 3);
+};
+
+/**
+ * Builds a stem for Latvian names/surnames to allow declension matching.
+ * E.g. "Tiltiņš" -> "Tiltiņ", "Baumane" -> "Bauman", "Salmiņa" -> "Salmiņ",
+ * "Geislers" -> "Geisler", "Sabanskis" -> "Sabansk".
+ * Short words (<= 4 chars) are kept intact to avoid false positive collisions.
+ */
+export const buildLatvianStem = (token: string): string => {
+  if (token.length <= 4) return token;
+  const lower = token.toLowerCase();
+  if (lower.endsWith("is")) return token.slice(0, -2);
+  if (/[sšae]$/i.test(token)) {
+    return token.slice(0, -1);
+  }
+  return token;
+};
+
+/**
+ * Checks whether two teachers refer to the same person.
+ */
+export const areTeachersEqual = (a: TeacherIdentifier, b: TeacherIdentifier): boolean => {
+  if (typeof a === "object" && typeof b === "object" && a.id && b.id && a.id === b.id) {
+    return true;
+  }
+  const labelA = (typeof a === "string" ? a : a.short || a.name || "").trim().toUpperCase();
+  const labelB = (typeof b === "string" ? b : b.short || b.name || "").trim().toUpperCase();
+  if (labelA === labelB && labelA !== "") return true;
+
+  const tokensA = getTeacherTokens(a).map((t) => t.toUpperCase());
+  const tokensB = getTeacherTokens(b).map((t) => t.toUpperCase());
+  if (tokensA.length === 0 || tokensB.length === 0) return false;
+
+  const setA = new Set(tokensA);
+  const common = tokensB.filter((t) => setA.has(t));
+  if (tokensA.length >= 2 && tokensB.length >= 2) {
+    return common.length >= 2;
+  }
+  return common.length >= 1;
+};
+
+/**
+ * Checks whether a given teacher is mentioned in the note text by name or surname.
+ */
+export const isTeacherMentionedInNote = (note: string, teacher: TeacherIdentifier): boolean => {
+  const tokens = getTeacherTokens(teacher);
+  if (tokens.length === 0) return false;
+
+  // 1. Full name in either order (e.g. "Egija Baumane" or "Baumane Egija")
+  if (tokens.length >= 2) {
+    const full1 = tokens.join("[\\s,]+");
+    const full2 = [...tokens].reverse().join("[\\s,]+");
+    const re1 = new RegExp("(?<!\\p{L})" + full1 + "(?=[^\\p{L}]|$)", "iu");
+    const re2 = new RegExp("(?<!\\p{L})" + full2 + "(?=[^\\p{L}]|$)", "iu");
+    if (re1.test(note) || re2.test(note)) return true;
+  }
+
+  // 2. Title + token (e.g. "sk. Tiltiņš", "sk. N. Tiltiņš", "skolotāja Sabanska", "sk. Kalniņai")
+  const titleRe = /(?:sk\.|skolotāj\p{L}*)\s+(?:[A-ZŠČĢĶĀĒĪŪŅ]\.\s*)?(\p{L}+)/giu;
+  const titleMatches = [...note.matchAll(titleRe)].map((m) => m[1]);
+  for (const tm of titleMatches) {
+    if (!tm) continue;
+    const tmStem = buildLatvianStem(tm).toLowerCase();
+    for (const tok of tokens) {
+      const stem = buildLatvianStem(tok).toLowerCase();
+      if (
+        tm.toLowerCase() === tok.toLowerCase() ||
+        (stem.length >= 4 && tmStem.startsWith(stem)) ||
+        (stem.length >= 4 && stem.startsWith(tmStem))
+      ) {
+        return true;
+      }
+    }
+  }
+
+  // 3. Header indicating teacher list (e.g. "Skolotāji, kuri nepiedalās:", "Skolotāji:")
+  const hasTeacherList = /skolotāj\p{L}*\s*[,:]/iu.test(note);
+
+  // 4. Token match with Latvian declension:
+  for (const tok of tokens) {
+    const stem = buildLatvianStem(tok);
+    const stemRe =
+      stem.length >= 4
+        ? new RegExp("(?<!\\p{L})" + stem + "\\p{L}{0,3}(?=[^\\p{L}]|$)", "iu")
+        : new RegExp("(?<!\\p{L})" + tok + "(?=[^\\p{L}]|$)", "iu");
+
+    if (hasTeacherList && stemRe.test(note)) {
+      return true;
+    }
+
+    // Standalone token followed by punctuation, number, stunda, or absence keywords
+    const standaloneRe = new RegExp(
+      "(?<!\\p{L})" +
+        (stem.length >= 4 ? stem + "\\p{L}{0,3}" : tok) +
+        "(?:[.,:;–—-]\\s*|\\s+[-–—]\\s+|\\s+\\d|\\s+stund|\\s+slim|\\s+nebūs|\\s+atcelt)",
+      "iu",
+    );
+    if (standaloneRe.test(note)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Extracts all teachers from the provided teacher pool that are mentioned in the note.
+ */
+export const extractMentionedTeachers = (
+  note: string,
+  teachers: readonly TeacherIdentifier[],
+): TeacherIdentifier[] => {
+  return teachers.filter((t) => isTeacherMentionedInNote(note, t));
+};
+
+/**
  * Determines whether an individual announcement is relevant to a selected class.
  */
 export const isNoteRelevantForClass = (
   note: string,
   className: string,
   allClasses: readonly string[] = [],
+  classTeachers: readonly TeacherIdentifier[] = [],
+  allTeachers: readonly TeacherIdentifier[] = [],
 ): boolean => {
   const targets = extractTargetGroups(note, allClasses);
-  if (targets.length === 0) {
-    // General school announcement
-    return true;
+  if (targets.length > 0) {
+    return targets.some((t) => isTargetMatch(t, className));
   }
-  return targets.some((t) => isTargetMatch(t, className));
+
+  // If no group is targeted, check if announcement targets teachers
+  if (allTeachers.length > 0) {
+    const mentioned = extractMentionedTeachers(note, allTeachers);
+    if (mentioned.length > 0) {
+      return mentioned.some((mt) => classTeachers.some((ct) => areTeachersEqual(mt, ct)));
+    }
+  }
+
+  // General school announcement
+  return true;
 };
 
 /**
@@ -166,6 +291,8 @@ export const filterNotesForClass = (
   rawNotes: readonly string[],
   className: string,
   allClasses: readonly string[] = [],
+  classTeachers: readonly TeacherIdentifier[] = [],
+  allTeachers: readonly TeacherIdentifier[] = [],
 ): { relevant: string[]; other: string[] } => {
   if (className.trim() === "") {
     return { relevant: [...rawNotes], other: [] };
@@ -219,8 +346,26 @@ export const filterNotesForClass = (
           other.push(trimmed);
         }
       } else {
-        // General announcement applicable to all students
         lastGroupTargets = null;
+
+        // Check if note mentions teachers
+        if (allTeachers.length > 0) {
+          const mentioned = extractMentionedTeachers(trimmed, allTeachers);
+          if (mentioned.length > 0) {
+            const isRelevant = mentioned.some((mt) =>
+              classTeachers.some((ct) => areTeachersEqual(mt, ct)),
+            );
+            if (isRelevant) {
+              relevant.push(trimmed);
+            } else {
+              other.push(trimmed);
+            }
+            previousNote = trimmed;
+            continue;
+          }
+        }
+
+        // General announcement applicable to all students
         relevant.push(trimmed);
       }
     }

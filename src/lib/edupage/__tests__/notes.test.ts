@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  areTeachersEqual,
+  buildLatvianStem,
+  extractMentionedTeachers,
   extractTargetGroups,
   filterNotesForClass,
+  getTeacherTokens,
   isNoteRelevantForClass,
   isTargetMatch,
+  isTeacherMentionedInNote,
   splitGroupAnnouncements,
 } from "../notes.ts";
 
@@ -188,5 +193,193 @@ describe("filterNotesForClass", () => {
     const { relevant, other } = filterNotesForClass(notes, "DP2-1");
     expect(relevant).toEqual(["Bibliotēka šodien slēgta."]);
     expect(other).toEqual(["N3 grupai 6 - stunda atcelta"]);
+  });
+});
+
+describe("teacher matching", () => {
+  it("extracts names and surnames while ignoring single-letter initials", () => {
+    expect(getTeacherTokens("Baumane Egija")).toEqual(["Baumane", "Egija"]);
+    expect(getTeacherTokens("Liene Elizabete Čakste")).toEqual(["Liene", "Elizabete", "Čakste"]);
+    expect(getTeacherTokens("N. Tiltiņš")).toEqual(["Tiltiņš"]);
+    expect(getTeacherTokens("Tiltiņš N.")).toEqual(["Tiltiņš"]);
+  });
+
+  it("builds Latvian stems for inflected names", () => {
+    expect(buildLatvianStem("Tiltiņš")).toBe("Tiltiņ");
+    expect(buildLatvianStem("Baumane")).toBe("Bauman");
+    expect(buildLatvianStem("Salmiņa")).toBe("Salmiņ");
+    expect(buildLatvianStem("Geislers")).toBe("Geisler");
+    expect(buildLatvianStem("Sabanskis")).toBe("Sabansk");
+    expect(buildLatvianStem("Atis")).toBe("Atis"); // <= 4 chars kept intact
+  });
+
+  it("determines teacher equality", () => {
+    expect(areTeachersEqual("Baumane Egija", "Egija Baumane")).toBe(true);
+    expect(areTeachersEqual("Tiltiņš Normunds", "N. Tiltiņš")).toBe(true);
+    expect(areTeachersEqual("Baumane Egija", "Tiltiņš Normunds")).toBe(false);
+  });
+
+  it("identifies teacher mentioned in text", () => {
+    expect(
+      isTeacherMentionedInNote(
+        "Skolotāji, kuri nepiedalās: Egija Baumane , Liene Elizabete Čakste , Olga Sabanska , Valda Salmiņa",
+        "Baumane Egija",
+      ),
+    ).toBe(true);
+    expect(
+      isTeacherMentionedInNote(
+        "Skolotāji, kuri nepiedalās: Egija Baumane , Liene Elizabete Čakste , Olga Sabanska , Valda Salmiņa",
+        "Tiltiņš Normunds",
+      ),
+    ).toBe(false);
+    expect(isTeacherMentionedInNote("sk. N. Tiltiņš.6 stunda brīva.", "Tiltiņš Normunds")).toBe(
+      true,
+    );
+    expect(isTeacherMentionedInNote("Tiltiņš.6 stunda brīva.", "Tiltiņš Normunds")).toBe(true);
+    expect(isTeacherMentionedInNote("sk. Tiltiņam 3. stunda atcelta", "Tiltiņš Normunds")).toBe(
+      true,
+    );
+    expect(isTeacherMentionedInNote("sk. Salmiņai 2. stunda atcelta", "Salmiņa Valda")).toBe(true);
+    expect(isTeacherMentionedInNote("sk. Būmanis slims", "Būmanis Agris")).toBe(true);
+    expect(isTeacherMentionedInNote("Bibliotēka šodien slēgta.", "Baumane Egija")).toBe(false);
+  });
+
+  it("extracts all mentioned teachers from a list", () => {
+    const all = ["Baumane Egija", "Čakste Liene Elizabete", "Tiltiņš Normunds"];
+    const note = "Aizvietošana pie sk. Čakstes un sk. Tiltiņa";
+    expect(extractMentionedTeachers(note, all)).toEqual([
+      "Čakste Liene Elizabete",
+      "Tiltiņš Normunds",
+    ]);
+  });
+});
+
+describe("filterNotesForClass with teacher names & surnames", () => {
+  const dp21Teachers = [
+    "Būmanis Agris",
+    "Drozda Lolita",
+    "Kazakēviča Elita",
+    "Lasinska Ingrīda",
+    "Lazdiņa Mairita",
+  ];
+  const allTeachers = [
+    ...dp21Teachers,
+    "Baumane Egija",
+    "Čakste Liene Elizabete",
+    "Olga Sabanska",
+    "Valda Salmiņa",
+    "Tiltiņš Normunds",
+  ];
+
+  it("filters out absent teacher lists when none teach the selected class", () => {
+    const notes = [
+      "Skolotāji, kuri nepiedalās: Egija Baumane , Liene Elizabete Čakste , Olga Sabanska , Valda Salmiņa",
+    ];
+    const { relevant, other } = filterNotesForClass(
+      notes,
+      "DP2-1",
+      ["DP2-1", "A1-2"],
+      dp21Teachers,
+      allTeachers,
+    );
+    expect(relevant).toEqual([]);
+    expect(other).toEqual(notes);
+  });
+
+  it("keeps absent teacher list when one of the teachers teaches the class", () => {
+    const a12Teachers = ["Čakste Liene Elizabete", "Edgars Geislers"];
+    const notes = [
+      "Skolotāji, kuri nepiedalās: Egija Baumane , Liene Elizabete Čakste , Olga Sabanska , Valda Salmiņa",
+    ];
+    const { relevant, other } = filterNotesForClass(
+      notes,
+      "A1-2",
+      ["DP2-1", "A1-2"],
+      a12Teachers,
+      allTeachers,
+    );
+    expect(relevant).toEqual(notes);
+    expect(other).toEqual([]);
+  });
+
+  it("filters out teacher-specific notices for other teachers", () => {
+    const notes = ["sk. Tiltiņš slims, 3. stunda brīva"];
+    const { relevant, other } = filterNotesForClass(
+      notes,
+      "DP2-1",
+      ["DP2-1", "PRT4"],
+      dp21Teachers,
+      allTeachers,
+    );
+    expect(relevant).toEqual([]);
+    expect(other).toEqual(notes);
+  });
+
+  it("keeps teacher-specific notices for the class's own teacher", () => {
+    const notes = ["sk. Būmanis slims, 1. stunda atcelta"];
+    const { relevant, other } = filterNotesForClass(
+      notes,
+      "DP2-1",
+      ["DP2-1", "PRT4"],
+      dp21Teachers,
+      allTeachers,
+    );
+    expect(relevant).toEqual(notes);
+    expect(other).toEqual([]);
+  });
+
+  it("gives explicit group targeting precedence over teacher mentions", () => {
+    // Note explicitly targeted to DP2-1 mentioning teacher Čakste (who isn't their normal teacher)
+    const notes = ["DP2-1 grupai 3. stunda pie sk. Čakstes"];
+    const { relevant, other } = filterNotesForClass(
+      notes,
+      "DP2-1",
+      ["DP2-1", "A1-2"],
+      dp21Teachers,
+      allTeachers,
+    );
+    expect(relevant).toEqual(notes);
+    expect(other).toEqual([]);
+  });
+
+  it("keeps general school announcements alongside teacher filtering", () => {
+    const notes = [
+      "Skolas bibliotēka šodien slēgta.",
+      "sk. Tiltiņš slims",
+      "sk. Būmanis 2. stunda attālināti",
+    ];
+    const { relevant, other } = filterNotesForClass(
+      notes,
+      "DP2-1",
+      ["DP2-1", "PRT4"],
+      dp21Teachers,
+      allTeachers,
+    );
+    expect(relevant).toEqual([
+      "Skolas bibliotēka šodien slēgta.",
+      "sk. Būmanis 2. stunda attālināti",
+    ]);
+    expect(other).toEqual(["sk. Tiltiņš slims"]);
+  });
+
+  it("correctly handles isNoteRelevantForClass with teachers", () => {
+    expect(
+      isNoteRelevantForClass(
+        "sk. Būmanis slims",
+        "DP2-1",
+        ["DP2-1", "PRT4"],
+        dp21Teachers,
+        allTeachers,
+      ),
+    ).toBe(true);
+    expect(
+      isNoteRelevantForClass(
+        "sk. Tiltiņš slims",
+        "DP2-1",
+        ["DP2-1", "PRT4"],
+        dp21Teachers,
+        allTeachers,
+      ),
+    ).toBe(false);
   });
 });

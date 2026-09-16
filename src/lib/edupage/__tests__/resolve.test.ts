@@ -115,6 +115,20 @@ describe("resolveDay — A1-2, which has real changes that day", () => {
     const sc2Day = resolveDay(timetable, subs, classId("SC2"), FIXTURE_DATE);
     expect(sc2Day.notes.length).toBeGreaterThan(0);
     expect(sc2Day.notes[0]).toContain("SC2");
+
+    // Teacher-targeted note filtering:
+    // A1-2 has Liene Elizabete Čakste as a teacher, whereas DP2-1 does not
+    const subsWithTeacherNote: DaySubstitutions = {
+      ...subs,
+      notes: [...subs.notes, "sk. Čakstei šodien konsultācija 16:00", "sk. Tiltiņš slims"],
+    };
+    const a12Day = resolveDay(timetable, subsWithTeacherNote, classId("A1-2"), FIXTURE_DATE);
+    const dp21Day = resolveDay(timetable, subsWithTeacherNote, classId("DP2-1"), FIXTURE_DATE);
+
+    expect(a12Day.notes).toContain("sk. Čakstei šodien konsultācija 16:00");
+    expect(a12Day.notes).not.toContain("sk. Tiltiņš slims");
+    expect(dp21Day.notes).not.toContain("sk. Čakstei šodien konsultācija 16:00");
+    expect(dp21Day.notes).not.toContain("sk. Tiltiņš slims");
   });
 
   it("uses Substitution.raw verbatim as the change note", () => {
