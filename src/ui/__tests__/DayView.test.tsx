@@ -240,4 +240,46 @@ describe("DayView", () => {
     });
     expect(screen.queryByTestId("offline-banner")).toBeNull();
   });
+
+  it("hides announcement card when no announcements for class and allows toggling all", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+
+    // Default class A1-2 has no announcements, so the card heading is not shown by default
+    expect(screen.queryByText(/Paziņojumi · no skolas/)).toBeNull();
+
+    // A subtle button to show all school announcements is available
+    const toggleButton = screen.getByRole("button", { name: /Visi skolas paziņojumi/ });
+    expect(toggleButton).toBeDefined();
+
+    // Clicking it reveals the school announcements
+    fireEvent.click(toggleButton);
+    expect(screen.getByText(/Paziņojumi · No skolas/i)).toBeDefined();
+    expect(screen.getByText(/SC2 grupai/)).toBeDefined();
+
+    // And the button switches to "Tikai manai grupai"
+    const onlyGroupButton = screen.getByRole("button", { name: "Tikai manai grupai" });
+    expect(onlyGroupButton).toBeDefined();
+
+    // Clicking it collapses the card back
+    fireEvent.click(onlyGroupButton);
+    expect(screen.queryByText(/Paziņojumi · No skolas/i)).toBeNull();
+  });
+
+  it("resets showAllNotes when date changes", async () => {
+    const harness = await bootHarness();
+    const { rerender } = renderDay(harness);
+
+    const toggleButton = screen.getByRole("button", { name: /Visi skolas paziņojumi/ });
+    fireEvent.click(toggleButton);
+    expect(screen.getByText(/Paziņojumi · No skolas/i)).toBeDefined();
+
+    rerender(
+      <StoreContext.Provider value={harness.store}>
+        <DayView date="2026-09-10" onDateChange={vi.fn()} onPickClass={vi.fn()} />
+      </StoreContext.Provider>,
+    );
+
+    expect(screen.queryByText(/Paziņojumi · No skolas/i)).toBeNull();
+  });
 });

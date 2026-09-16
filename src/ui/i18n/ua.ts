@@ -60,6 +60,8 @@ export const ua: Dict = {
   "day.buildingOther": "Інший корпус: {building}",
   "day.buildingMixed": "Кілька корпусів: {buildings}",
   "day.notes": "Оголошення",
+  "day.allNotes": "Усі оголошення школи ({count})",
+  "day.onlyMyGroup": "Лише для моєї групи",
   "day.free": "Вільний урок",
   "day.finished": "Уроки закінчилися",
   "day.now": "Зараз",

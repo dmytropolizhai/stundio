@@ -60,6 +60,8 @@ export const en: Dict = {
   "day.buildingOther": "Different building: {building}",
   "day.buildingMixed": "Several buildings: {buildings}",
   "day.notes": "Announcements",
+  "day.allNotes": "All school announcements ({count})",
+  "day.onlyMyGroup": "Only for my group",
   "day.free": "Free period",
   "day.finished": "Lessons are over",
   "day.now": "Now",
