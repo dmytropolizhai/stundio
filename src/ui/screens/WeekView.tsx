@@ -134,7 +134,7 @@ export const WeekView = ({
 
   const rows = useMemo<WeekGridPeriod<ISODate>[]>(
     () =>
-      periods.map(({ period, start, end   }) => {
+      periods.map(({ period, start, end }) => {
         const cells: Partial<Record<ISODate, WeekGridCell>> = {};
 
         days.forEach((day, i) => {

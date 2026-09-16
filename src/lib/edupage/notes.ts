@@ -19,7 +19,7 @@
  * e.g. "DP2-1 grupai", "DP2-1, DP2-2 grupām", "N3 grupai", "A4-2 grupas", etc.
  */
 const GROUP_SUFFIX_RE =
-  /\b([-A-Za-z0-9_/]+(?:\s*(?:,|un|\/)\s*[-A-Za-z0-9_/]+)*)\s+grup(?:ai|ām|am|as|a|ā)\b/gi;
+  /\b([-A-Za-z0-9_/]+(?:\s*(?:,|un|\/)\s*[-A-Za-z0-9_/]+)*)\s+grup(?:ai|ām|am|as|a|ā|u|ās)\b/gi;
 
 /**
  * Regex matching leading class code followed by separator:
@@ -51,7 +51,7 @@ export const splitGroupAnnouncements = (text: string): string[] => {
   // Split before any "[GROUP] grupai/grupām" that does not appear at the very start
   const parts = trimmed
     .split(
-      /(?<=\S)\s+(?=[-A-Za-z0-9_/]+(?:\s*(?:,|un|\/)\s*[-A-Za-z0-9_/]+)*\s+grup(?:ai|ām|am|as|a|ā)\b)/iu,
+      /(?<=\S)\s+(?=[-A-Za-z0-9_/]+(?:\s*(?:,|un|\/)\s*[-A-Za-z0-9_/]+)*\s+grup(?:ai|ām|am|as|a|ā|u|ās)\b)/iu,
     )
     .map((s) => s.trim())
     .filter((s) => s !== "");
@@ -181,6 +181,8 @@ export const filterNotesForClass = (
   const other: string[] = [];
   let lastGroupTargets: string[] | null = null;
 
+  let previousNote = "";
+
   for (const note of flattened) {
     const trimmed = note.trim();
     if (trimmed === "") continue;
@@ -197,12 +199,17 @@ export const filterNotesForClass = (
       }
     } else {
       // Check if this line is a continuation of the previous group announcement
-      const isContinuation =
-        lastGroupTargets !== null &&
-        (/\b(?:\d+(?:\s*-\s*\d+)?\s*(?:\.|\b)\s*stund|\d+\s*stund|atcelt|brīv|pašvadīt)/i.test(
+      const hasSubstitutionKeywords =
+        /\b(?:\d+(?:\s*-\s*\d+)?\s*(?:\.|\b)\s*stund|\d+\s*stund|atcelt|brīv|pašvadīt)/i.test(
           trimmed,
-        ) ||
-          trimmed.length < 35);
+        );
+      const isTeacherContinuation =
+        lastGroupTargets !== null &&
+        /(?:sk\.|,|[–—-]\s*|\bun\b)$/i.test(previousNote) &&
+        trimmed.length < 35;
+
+      const isContinuation =
+        lastGroupTargets !== null && (hasSubstitutionKeywords || isTeacherContinuation);
 
       if (isContinuation && lastGroupTargets !== null) {
         const matches = lastGroupTargets.some((t) => isTargetMatch(t, className));
@@ -217,6 +224,7 @@ export const filterNotesForClass = (
         relevant.push(trimmed);
       }
     }
+    previousNote = trimmed;
   }
 
   return { relevant, other };

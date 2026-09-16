@@ -54,6 +54,71 @@ const NowMarker = ({ label }: { label: string }) => (
   </li>
 );
 
+type SchoolNotesProps = {
+  notes: string[];
+  allNotes?: string[] | undefined;
+  showAll: boolean;
+  onToggleShowAll: () => void;
+  onShowAll: () => void;
+};
+
+const SchoolNotes = ({
+  notes,
+  allNotes,
+  showAll,
+  onToggleShowAll,
+  onShowAll,
+}: SchoolNotesProps) => {
+  const t = useT();
+  const displayNotes = showAll ? (allNotes ?? notes) : notes;
+  const hasOtherNotes = (allNotes?.length ?? 0) > notes.length;
+
+  return (
+    <>
+      {displayNotes.length > 0 && (
+        <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="u-eyebrow">
+              {t("day.notes")} · {t("lesson.fromSchool")}
+            </h2>
+            {hasOtherNotes && (
+              <button
+                type="button"
+                onClick={onToggleShowAll}
+                className="font-text text-micro font-medium text-brand hover:underline cursor-pointer"
+              >
+                {showAll
+                  ? t("day.onlyMyGroup")
+                  : t("day.allNotes", { count: allNotes?.length ?? 0 })}
+              </button>
+            )}
+          </div>
+
+          <ul className="mt-1.5 flex flex-col gap-1">
+            {displayNotes.map((note, index) => (
+              <li key={`${index}-${note}`} className="font-text text-body text-fg">
+                {note}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      {notes.length === 0 && hasOtherNotes && !showAll && (
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={onShowAll}
+            className="font-text text-caption text-muted hover:text-fg hover:underline cursor-pointer"
+          >
+            {t("day.allNotes", { count: allNotes?.length ?? 0 })}
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
 export const DayView = ({
   date,
   onDateChange,
@@ -69,7 +134,13 @@ export const DayView = ({
 
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [prevDate, setPrevDate] = useState(date);
   const [showAllNotes, setShowAllNotes] = useState(false);
+
+  if (prevDate !== date) {
+    setPrevDate(date);
+    setShowAllNotes(false);
+  }
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
@@ -103,10 +174,6 @@ export const DayView = ({
 
     return () => controls.stop();
   }, [date, reduceMotion, x]);
-
-  useEffect(() => {
-    setShowAllNotes(false);
-  }, [date]);
 
   const onSwipeStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
@@ -310,55 +377,13 @@ export const DayView = ({
           ))}
         </motion.ul>
 
-        {(() => {
-          const displayNotes = showAllNotes ? (day.allNotes ?? day.notes) : day.notes;
-          const hasOtherNotes = (day.allNotes?.length ?? 0) > day.notes.length;
-
-          return (
-            <>
-              {displayNotes.length > 0 && (
-                <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
-                  <div className="flex items-center justify-between gap-2">
-                    <h2 className="u-eyebrow">
-                      {t("day.notes")} · {t("lesson.fromSchool")}
-                    </h2>
-                    {hasOtherNotes && (
-                      <button
-                        type="button"
-                        onClick={() => setShowAllNotes((v) => !v)}
-                        className="font-text text-micro font-medium text-brand hover:underline cursor-pointer"
-                      >
-                        {showAllNotes
-                          ? t("day.onlyMyGroup")
-                          : t("day.allNotes", { count: day.allNotes?.length ?? 0 })}
-                      </button>
-                    )}
-                  </div>
-
-                  <ul className="mt-1.5 flex flex-col gap-1">
-                    {displayNotes.map((note) => (
-                      <li key={note} className="font-text text-body text-fg">
-                        {note}
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-              )}
-
-              {day.notes.length === 0 && hasOtherNotes && !showAllNotes && (
-                <div className="mt-4 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={() => setShowAllNotes(true)}
-                    className="font-text text-caption text-muted hover:text-fg hover:underline cursor-pointer"
-                  >
-                    {t("day.allNotes", { count: day.allNotes?.length ?? 0 })}
-                  </button>
-                </div>
-              )}
-            </>
-          );
-        })()}
+        <SchoolNotes
+          notes={day.notes}
+          allNotes={day.allNotes}
+          showAll={showAllNotes}
+          onToggleShowAll={() => setShowAllNotes((v) => !v)}
+          onShowAll={() => setShowAllNotes(true)}
+        />
       </>
     );
   };

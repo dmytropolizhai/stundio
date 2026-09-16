@@ -37,11 +37,25 @@ export const FeedbackSheet = ({
 
   const isBug = type === "bug";
   const sheetTitle =
-    title ?? (isSuccess ? (isBug ? t("feedback.sheet.bugSuccessTitle") : t("feedback.sheet.successTitle")) : (isBug ? t("feedback.sheet.bugTitle") : t("feedback.sheet.title")));
-  const resolvedMessageLabel = messageLabel ?? (isBug ? t("feedback.sheet.bugMessageLabel") : t("feedback.sheet.messageLabel"));
-  const resolvedPlaceholder = messagePlaceholder ?? (isBug ? t("feedback.sheet.bugMessagePlaceholder") : t("feedback.sheet.messagePlaceholder"));
-  const resolvedSubmitLabel = submitLabel ?? (isBug ? t("feedback.sheet.bugSubmit") : t("feedback.sheet.submit"));
-  const submittingLabel = isBug ? t("feedback.sheet.bugSubmitting") : t("feedback.sheet.submitting");
+    title ??
+    (isSuccess
+      ? isBug
+        ? t("feedback.sheet.bugSuccessTitle")
+        : t("feedback.sheet.successTitle")
+      : isBug
+        ? t("feedback.sheet.bugTitle")
+        : t("feedback.sheet.title"));
+  const resolvedMessageLabel =
+    messageLabel ??
+    (isBug ? t("feedback.sheet.bugMessageLabel") : t("feedback.sheet.messageLabel"));
+  const resolvedPlaceholder =
+    messagePlaceholder ??
+    (isBug ? t("feedback.sheet.bugMessagePlaceholder") : t("feedback.sheet.messagePlaceholder"));
+  const resolvedSubmitLabel =
+    submitLabel ?? (isBug ? t("feedback.sheet.bugSubmit") : t("feedback.sheet.submit"));
+  const submittingLabel = isBug
+    ? t("feedback.sheet.bugSubmitting")
+    : t("feedback.sheet.submitting");
   const successBody = isBug ? t("feedback.sheet.bugSuccessBody") : t("feedback.sheet.successBody");
 
   const resetForm = () => {

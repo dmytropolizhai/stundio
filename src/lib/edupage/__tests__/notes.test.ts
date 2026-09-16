@@ -43,6 +43,8 @@ describe("extractTargetGroups", () => {
     expect(extractTargetGroups("N3 grupai 6 - stunda atcelta, 7 stunda sports Sk.")).toEqual([
       "N3",
     ]);
+    expect(extractTargetGroups("Aicinām DP2-1 grupu uz pasākumu")).toEqual(["DP2-1"]);
+    expect(extractTargetGroups("Izmaiņas DP grupās")).toEqual(["DP"]);
   });
 
   it("extracts multiple groups with 'grupām'", () => {
@@ -178,6 +180,13 @@ describe("filterNotesForClass", () => {
       "Skolas bibliotēka šodien slēgta.",
       "DP2-1 grupai 1. stunda atcelta",
     ]);
+    expect(other).toEqual(["N3 grupai 6 - stunda atcelta"]);
+  });
+
+  it("does not treat a short independent general announcement as a group continuation", () => {
+    const notes = ["N3 grupai 6 - stunda atcelta", "Bibliotēka šodien slēgta."];
+    const { relevant, other } = filterNotesForClass(notes, "DP2-1");
+    expect(relevant).toEqual(["Bibliotēka šodien slēgta."]);
     expect(other).toEqual(["N3 grupai 6 - stunda atcelta"]);
   });
 });
