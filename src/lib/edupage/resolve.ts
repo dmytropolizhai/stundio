@@ -29,6 +29,7 @@ import type {
   Timetable,
   Weekday,
 } from "./types.ts";
+import { filterNotesForClass } from "./notes.ts";
 
 const WEEKDAYS: readonly Weekday[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
@@ -487,6 +488,62 @@ export const resolveDayAcross = (
 
   const leadSource = contributing[0]?.source ?? sources[0];
 
+  const allClasses = [
+    ...new Set(
+      sources
+        .flatMap((s) => s.timetable.classes.map((c) => c.short))
+        .concat(subs?.items.map((s) => s.className) ?? [])
+        .filter((s): s is string => Boolean(s)),
+    ),
+  ];
+  const classTeacherNames = new Set<string>();
+  for (const source of sources) {
+    const classLessons = source.timetable.lessons.filter((l) => l.classIds.includes(classId));
+    const teacherIdSet = new Set(classLessons.flatMap((l) => l.teacherIds));
+
+    const cls = source.timetable.classes.find((c) => c.id === classId);
+    if (cls?.teacherId) teacherIdSet.add(cls.teacherId);
+
+    for (const t of source.timetable.teachers) {
+      if (teacherIdSet.has(t.id)) {
+        if (t.short) classTeacherNames.add(t.short);
+        if (t.name) classTeacherNames.add(t.name);
+      }
+    }
+  }
+
+  if (subs) {
+    for (const item of subs.items) {
+      if (item.className === className) {
+        if (item.teacher) classTeacherNames.add(item.teacher);
+        if (item.teacherFrom) classTeacherNames.add(item.teacherFrom);
+      }
+    }
+  }
+
+  const allTeacherNames = new Set<string>();
+  for (const source of sources) {
+    for (const t of source.timetable.teachers) {
+      if (t.short) allTeacherNames.add(t.short);
+      if (t.name) allTeacherNames.add(t.name);
+    }
+  }
+  if (subs) {
+    for (const item of subs.items) {
+      if (item.teacher) allTeacherNames.add(item.teacher);
+      if (item.teacherFrom) allTeacherNames.add(item.teacherFrom);
+    }
+  }
+
+  const rawNotes = subs?.notes ?? [];
+  const filteredNotes = filterNotesForClass(
+    rawNotes,
+    className,
+    allClasses,
+    [...classTeacherNames],
+    [...allTeacherNames],
+  );
+
   return {
     date,
     weekday,
@@ -495,7 +552,8 @@ export const resolveDayAcross = (
     buildings,
     ttNum: lead?.meta.ttNum ?? "",
     lessons: out,
-    notes: subs?.notes ?? [],
+    notes: filteredNotes.relevant,
+    allNotes: rawNotes,
     stale:
       options.stale ?? leadSource?.stale ?? (lead === undefined ? false : !coversDate(lead, date)),
   };

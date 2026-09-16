@@ -1,0 +1,21 @@
+{
+  "routes": [
+    {
+      "routePath": "/api-edupage/:path*",
+      "mountPath": "/api-edupage",
+      "method": "OPTIONS",
+      "module": [
+        "api-edupage/[[path]].ts:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/api-edupage/:path*",
+      "mountPath": "/api-edupage",
+      "method": "",
+      "module": [
+        "api-edupage/[[path]].ts:onRequest"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}

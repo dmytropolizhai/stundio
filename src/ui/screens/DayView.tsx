@@ -54,6 +54,71 @@ const NowMarker = ({ label }: { label: string }) => (
   </li>
 );
 
+type SchoolNotesProps = {
+  notes: string[];
+  allNotes?: string[] | undefined;
+  showAll: boolean;
+  onToggleShowAll: () => void;
+  onShowAll: () => void;
+};
+
+const SchoolNotes = ({
+  notes,
+  allNotes,
+  showAll,
+  onToggleShowAll,
+  onShowAll,
+}: SchoolNotesProps) => {
+  const t = useT();
+  const displayNotes = showAll ? (allNotes ?? notes) : notes;
+  const hasOtherNotes = (allNotes?.length ?? 0) > notes.length;
+
+  return (
+    <>
+      {displayNotes.length > 0 && (
+        <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="u-eyebrow">
+              {t("day.notes")} · {t("lesson.fromSchool")}
+            </h2>
+            {hasOtherNotes && (
+              <button
+                type="button"
+                onClick={onToggleShowAll}
+                className="font-text text-micro font-medium text-brand hover:underline cursor-pointer"
+              >
+                {showAll
+                  ? t("day.onlyMyGroup")
+                  : t("day.allNotes", { count: allNotes?.length ?? 0 })}
+              </button>
+            )}
+          </div>
+
+          <ul className="mt-1.5 flex flex-col gap-1">
+            {displayNotes.map((note, index) => (
+              <li key={`${index}-${note}`} className="font-text text-body text-fg">
+                {note}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      {notes.length === 0 && hasOtherNotes && !showAll && (
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={onShowAll}
+            className="font-text text-caption text-muted hover:text-fg hover:underline cursor-pointer"
+          >
+            {t("day.allNotes", { count: allNotes?.length ?? 0 })}
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
 export const DayView = ({
   date,
   onDateChange,
@@ -69,6 +134,13 @@ export const DayView = ({
 
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [prevDate, setPrevDate] = useState(date);
+  const [showAllNotes, setShowAllNotes] = useState(false);
+
+  if (prevDate !== date) {
+    setPrevDate(date);
+    setShowAllNotes(false);
+  }
 
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
@@ -305,21 +377,13 @@ export const DayView = ({
           ))}
         </motion.ul>
 
-        {day.notes.length > 0 && (
-          <Card tone="sunken" radius="lg" elevation="none" className="mt-7">
-            <h2 className="u-eyebrow">
-              {t("day.notes")} · {t("lesson.fromSchool")}
-            </h2>
-
-            <ul className="mt-1.5 flex flex-col gap-1">
-              {day.notes.map((note) => (
-                <li key={note} className="font-text text-body text-fg">
-                  {note}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        )}
+        <SchoolNotes
+          notes={day.notes}
+          allNotes={day.allNotes}
+          showAll={showAllNotes}
+          onToggleShowAll={() => setShowAllNotes((v) => !v)}
+          onShowAll={() => setShowAllNotes(true)}
+        />
       </>
     );
   };
