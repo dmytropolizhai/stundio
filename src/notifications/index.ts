@@ -21,6 +21,7 @@ export {
   requestWebPushPermission,
   getExistingWebPushSubscription,
   subscribeWebPush,
+  refreshWebPushSubscription,
   unsubscribeWebPush,
   reportSubstitutionChangeToServer,
 } from "./webPush.ts";

@@ -419,8 +419,11 @@ export const SettingsView = ({
                     if (isNativePlatform()) {
                       if (checked) void ensureNotificationPermission();
                     } else if (checked) {
-                      if (settings.selectedClassId) {
-                        void subscribeWebPush(settings.selectedClassId, settings.lang);
+                      // The class's display short, not its id: that is the only name the
+                      // substitution feed publishes, so it is the only one the server can
+                      // file this device under and later find again.
+                      if (selectedClass !== null) {
+                        void subscribeWebPush(selectedClass.short, settings.lang);
                       }
                     } else {
                       void unsubscribeWebPush();

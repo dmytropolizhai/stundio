@@ -6,6 +6,7 @@ import {
   requestWebPushPermission,
   getExistingWebPushSubscription,
   subscribeWebPush,
+  refreshWebPushSubscription,
   unsubscribeWebPush,
   reportSubstitutionChangeToServer,
   VAPID_PUBLIC_KEY,
@@ -111,6 +112,55 @@ describe("webPush", () => {
         method: "POST",
       }),
     );
+
+    // The class's display short is what the checker files recipients under; sending anything
+    // else (an EduPage id, as this used to) registers the device under a key nobody reads.
+    const [, init] = fetchMock.mock.calls[0] as [string, { body: string }];
+    expect(JSON.parse(init.body)).toMatchObject({ className: "1DP1", lang: "lv" });
+  });
+
+  it("re-files an existing subscription without ever prompting", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const requestPermission = vi.fn().mockResolvedValue("granted");
+    const mockSub = {
+      endpoint: "https://fcm.googleapis.com/test",
+      toJSON: () => ({ keys: { p256dh: "mockP256dh", auth: "mockAuth" } }),
+    };
+
+    vi.stubGlobal("Notification", { permission: "granted", requestPermission });
+    Reflect.set(window, "PushManager", class {});
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        ready: Promise.resolve({
+          pushManager: { getSubscription: vi.fn().mockResolvedValue(mockSub) },
+        }),
+      },
+      configurable: true,
+    });
+
+    await refreshWebPushSubscription("1DP1", "lv");
+
+    expect(requestPermission).not.toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledWith("/api-push/subscribe", expect.anything());
+  });
+
+  it("does not register anything on boot when permission was never granted", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const requestPermission = vi.fn().mockResolvedValue("granted");
+    vi.stubGlobal("Notification", { permission: "default", requestPermission });
+    Reflect.set(window, "PushManager", class {});
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { ready: Promise.resolve({ pushManager: {} }) },
+      configurable: true,
+    });
+
+    await refreshWebPushSubscription("1DP1", "lv");
+
+    expect(requestPermission).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("unsubscribes from Web Push and notifies /api-push/unsubscribe", async () => {

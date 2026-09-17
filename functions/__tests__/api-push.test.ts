@@ -125,7 +125,7 @@ describe("Cloudflare Pages Function: /api-push", () => {
       expect(res.status).toBe(400);
     });
 
-    it("validates missing keys and classId", async () => {
+    it("validates missing keys and className", async () => {
       const kv = createMockKv();
       const res1 = await onSubscribeRequest({
         request: new Request("https://stundio.pages.dev/api-push/subscribe", {
@@ -155,45 +155,69 @@ describe("Cloudflare Pages Function: /api-push", () => {
       expect(res2.status).toBe(400);
     });
 
-    it("successfully registers subscription and handles class update", async () => {
-      const kv = createMockKv();
-      const payload = {
-        endpoint: "https://fcm.googleapis.com/test-endpoint",
-        keys: { p256dh: "dummy-p256dh", auth: "dummy-auth" },
-        classId: "1DP1",
-        lang: "lv",
-      };
-
-      const res = await onSubscribeRequest({
+    const subscribe = (kv: KVNamespace, body: unknown) =>
+      onSubscribeRequest({
         request: new Request("https://stundio.pages.dev/api-push/subscribe", {
           method: "POST",
-          body: JSON.stringify(payload),
+          body: JSON.stringify(body),
         }),
         params: {},
         env: { PUSH_KV: kv },
         waitUntil: vi.fn(),
         next: vi.fn(),
+      });
+
+    const payload = {
+      endpoint: "https://fcm.googleapis.com/test-endpoint",
+      keys: { p256dh: "dummy-p256dh", auth: "dummy-auth" },
+      className: "1DP1",
+      lang: "lv",
+    };
+
+    it("successfully registers subscription and handles class update", async () => {
+      const kv = createMockKv();
+
+      const res = await subscribe(kv, payload);
+      expect(res.status).toBe(200);
+      const data = (await res.json()) as { ok: boolean; className: string };
+      expect(data.ok).toBe(true);
+      expect(data.className).toBe("1DP1");
+
+      // Update class to 2DP1
+      const updateRes = await subscribe(kv, { ...payload, className: "2DP1" });
+      expect(updateRes.status).toBe(200);
+      expect(vi.mocked(kv.delete)).toHaveBeenCalledWith(expect.stringContaining("class:1DP1:"));
+    });
+
+    it("indexes the device under the name the checker looks recipients up by", async () => {
+      // The whole point of the rename: `checkAndDispatchSubstitutions` lists `class:<section
+      // header>:`, so anything else here — an EduPage id, say — is a key nobody ever reads.
+      const kv = createMockKv();
+      await subscribe(kv, payload);
+
+      const indexed = await kv.list({ prefix: "class:1DP1:" });
+      expect(indexed.keys).toHaveLength(1);
+    });
+
+    it("still accepts a pre-rename client's `classId`", async () => {
+      // An installed PWA can be serving a cached bundle for a while yet; a subscription under
+      // the wrong key is no worse than the 400 it would otherwise get, and it re-files itself
+      // the moment that client updates.
+      const kv = createMockKv();
+      const res = await subscribe(kv, {
+        endpoint: payload.endpoint,
+        keys: payload.keys,
+        classId: "-928",
+        lang: "lv",
       });
 
       expect(res.status).toBe(200);
-      const data = (await res.json()) as { ok: boolean; classId: string };
-      expect(data.ok).toBe(true);
-      expect(data.classId).toBe("1DP1");
+      expect((await kv.list({ prefix: "class:-928:" })).keys).toHaveLength(1);
 
-      // Update class to 2DP1
-      const updateRes = await onSubscribeRequest({
-        request: new Request("https://stundio.pages.dev/api-push/subscribe", {
-          method: "POST",
-          body: JSON.stringify({ ...payload, classId: "2DP1" }),
-        }),
-        params: {},
-        env: { PUSH_KV: kv },
-        waitUntil: vi.fn(),
-        next: vi.fn(),
-      });
-
-      expect(updateRes.status).toBe(200);
-      expect(vi.mocked(kv.delete)).toHaveBeenCalled();
+      // …and updating to the real class short clears the stale entry behind it.
+      await subscribe(kv, payload);
+      expect((await kv.list({ prefix: "class:-928:" })).keys).toHaveLength(0);
+      expect((await kv.list({ prefix: "class:1DP1:" })).keys).toHaveLength(1);
     });
   });
 
@@ -403,7 +427,7 @@ describe("Cloudflare Pages Function: /api-push", () => {
             "BBb4nnU3LcNCjbU9tSotemIqe6m10tH5mXExCi5CO78DpOljO3e1UX1kXem2goXDcNG3z0dcqZc5K1iaTYtTuYA",
           auth: Buffer.from("1234567890123456").toString("base64url"),
         },
-        classId: "1DP1",
+        className: "1DP1",
         lang: "lv",
       };
 
