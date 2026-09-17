@@ -400,6 +400,15 @@
   :root {
     --app-inset-top: env(safe-area-inset-top, 0px);
     --app-inset-bottom: env(safe-area-inset-bottom, 0px);
+
+    /*
+     * iOS Safari resolves `vh` against the *large* viewport — the screen as it looks with the
+     * address bar and toolbar retracted — so anything sized in `vh` and anchored to `bottom: 0`
+     * is taller than what is actually on screen and grows upward past the header and off the
+     * top. `dvh`, set just below, tracks the viewport that is really visible; this is only the
+     * fallback for engines that do not know it.
+     */
+    --app-viewport-height: 100vh;
     color-scheme: light;
 
     /*
@@ -410,6 +419,17 @@
      */
     --share-shadow: rgba(6, 11, 61, 0.16);
   }
+  /*
+   * Kept out of `:root` above and behind `@supports`: two declarations of the same custom
+   * property in one rule are the usual fallback idiom, but the CSS minifier collapses them to
+   * the last one, which would drop the `vh` fallback from the production bundle.
+   */
+  @supports (height: 100dvh) {
+    :root {
+      --app-viewport-height: 100dvh;
+    }
+  }
+
   :root.dark {
     color-scheme: dark;
     /* Navy is invisible on a dark ground; the system drops to plain black there. */
