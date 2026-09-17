@@ -44,6 +44,8 @@ export const ua: Dict = {
   "subgroup.skip": "Пропустити — показувати обидві підгрупи",
 
   "day.today": "Сьогодні",
+  "day.tomorrow": "Завтра",
+  "day.yesterday": "Вчора",
   "day.jumpToday": "Перейти до сьогодні",
   "day.openCalendar": "Обрати дату",
   "day.previousMonth": "Попередній місяць",

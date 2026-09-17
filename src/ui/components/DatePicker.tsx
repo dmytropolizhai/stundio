@@ -1,6 +1,7 @@
 import { Icon } from "@/ds/components/ui/icon";
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger, cn } from "@/ds";
-import { formatDayMonth, localeTag, useLang, useT } from "@/ui/i18n";
+import { localeTag, useLang, useT } from "@/ui/i18n";
+import { dayTitle } from "../lib/dayTitle.ts";
 import type { ISODate } from "@/lib/edupage";
 
 export const DatePicker = ({
@@ -18,7 +19,6 @@ export const DatePicker = ({
 }) => {
   const t = useT();
   const lang = useLang();
-  const isToday = date === today;
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -28,7 +28,7 @@ export const DatePicker = ({
           aria-label={t("day.openCalendar")}
           className="inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)"
         >
-          <span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>
+          <span>{dayTitle(date, today, t, lang)}</span>
 
           <Icon
             name="chevron-down"
