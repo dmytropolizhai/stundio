@@ -47,6 +47,8 @@ export const ua: Dict = {
   "day.tomorrow": "Завтра",
   "day.yesterday": "Вчора",
   "day.jumpToday": "Перейти до сьогодні",
+  "day.previousDay": "Попередній день",
+  "day.nextDay": "Наступний день",
   "day.openCalendar": "Обрати дату",
   "day.previousMonth": "Попередній місяць",
   "day.nextMonth": "Наступний місяць",

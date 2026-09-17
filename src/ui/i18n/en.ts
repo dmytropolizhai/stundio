@@ -47,6 +47,8 @@ export const en: Dict = {
   "day.tomorrow": "Tomorrow",
   "day.yesterday": "Yesterday",
   "day.jumpToday": "Go to today",
+  "day.previousDay": "Previous day",
+  "day.nextDay": "Next day",
   "day.openCalendar": "Choose a date",
   "day.previousMonth": "Previous month",
   "day.nextMonth": "Next month",

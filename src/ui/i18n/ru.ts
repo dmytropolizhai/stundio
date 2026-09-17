@@ -48,6 +48,8 @@ export const ru: Dict = {
   "day.tomorrow": "Завтра",
   "day.yesterday": "Вчера",
   "day.jumpToday": "К сегодня",
+  "day.previousDay": "Предыдущий день",
+  "day.nextDay": "Следующий день",
   "day.openCalendar": "Выбрать дату",
   "day.previousMonth": "Предыдущий месяц",
   "day.nextMonth": "Следующий месяц",
