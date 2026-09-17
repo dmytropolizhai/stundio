@@ -181,6 +181,8 @@ export const lv = {
   "settings.notifySubstitutionChangesHint": "Paziņo, ja mainās šodienas vai rītdienas stundas.",
   "settings.notifyAppUpdates": "Jauninājumi",
   "settings.notifyAppUpdatesHint": "Paziņo, kad iznāk jauna lietotnes versija.",
+  "settings.notifyExactAlarmDenied":
+    "Sistēma neļauj precīzus modinātājus — atgādinājumi var kavēties. Ieslēdz «Modinātāji un atgādinājumi».",
   "settings.notifyPermissionDenied": "Paziņojumi ir bloķēti sistēmas iestatījumos.",
   "settings.notifyOpenSettings": "Atvērt iestatījumus",
   "settings.notificationsWebNotice":

@@ -17,6 +17,11 @@ let cache: AppCache;
 
 const engineAt = (iso: string) => createSyncEngine({ http: server.http, cache, now: at(iso) });
 
+/** Changes are scoped to the picked class, so anything asserting on them has to pick one. */
+const pickClass = async (selectedClassId: string): Promise<void> => {
+  await cache.putSettings({ ...(await cache.getSettings()), selectedClassId });
+};
+
 beforeEach(() => {
   server = createFakeServer();
   cache = createMemoryCache();
@@ -68,8 +73,53 @@ describe("a cold first sync", () => {
   });
 
   it("reports every date fetched for the first time as changed", async () => {
+    await pickClass("-928"); // "A1-2", which has substitutions on both fetched days
     const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
     expect(outcome.changedDates).toEqual(["2026-09-09", "2026-09-10"]);
+  });
+
+  it("reports nothing as changed while no class is picked", async () => {
+    // Nobody's timetable can have changed before they have told the app whose it is.
+    const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
+    expect(outcome.changedDates).toEqual([]);
+  });
+});
+
+describe("what counts as a change", () => {
+  /** Two classes, one row each — the smallest document that can change for only one of them. */
+  const twoClassDay = (mine: string, theirs: string): string => `
+    <div class="section">
+      <div class="header"><span>A1-2</span></div>
+      <div class="row"><div class="period">1</div><div class="info">${mine}</div></div>
+    </div>
+    <div class="section">
+      <div class="header"><span>B1-1</span></div>
+      <div class="row"><div class="period">2</div><div class="info">${theirs}</div></div>
+    </div>`;
+
+  it("ignores a republished day where only another class's row moved", async () => {
+    // The whole point: the feed is school-wide, so most of what it publishes is somebody
+    // else's timetable. Before scoping, each of those rows fired a "your timetable changed".
+    await pickClass("-928"); // "A1-2"
+    server.substitutionsHtml = twoClassDay("Mat - Atcelts", "Fiz - Atcelts");
+    await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
+
+    server.substitutionsHtml = twoClassDay("Mat - Atcelts", "Fiz - Aizvietošana: (A) ➔ B");
+    const outcome = await engineAt(`${DATE}T09:00:00Z`).sync({ date: DATE });
+
+    expect(outcome.refreshedDates).toContain(DATE);
+    expect(outcome.changedDates).toEqual([]);
+  });
+
+  it("still reports the day when the picked class's own row moves", async () => {
+    await pickClass("-928"); // "A1-2"
+    server.substitutionsHtml = twoClassDay("Mat - Atcelts", "Fiz - Atcelts");
+    await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
+
+    server.substitutionsHtml = twoClassDay("Mat - Aizvietošana: (A) ➔ B", "Fiz - Atcelts");
+    const outcome = await engineAt(`${DATE}T09:00:00Z`).sync({ date: DATE });
+
+    expect(outcome.changedDates).toContain(DATE);
   });
 });
 

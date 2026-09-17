@@ -13,8 +13,8 @@ import { createSyncEngine, watchAppResume, watchConnectivity } from "@/sync";
 import {
   checkForAppUpdateNotification,
   notifyOnChanges,
+  refreshWebPushSubscription,
   reportSubstitutionChangeToServer,
-  subscribeWebPush,
   wireNotifications,
   wireNotificationTaps,
 } from "@/notifications";
@@ -81,28 +81,32 @@ export const bootApp: Boot = async () => {
     void checkForAppUpdateNotification(store);
   }
 
+  /*
+   * Keeps the Web Push registration filed under what the *server* can find it by: the class's
+   * display short, which only becomes known once a timetable is cached. Starting from `null`
+   * rather than the current value on purpose — the first tick that can name the class re-files
+   * this device, which is how an installation registered under the old EduPage id (a key the
+   * checker never dispatched to) repairs itself without the user touching anything.
+   */
   let disposeWebPushSync = () => {};
   if (!isNative) {
-    let lastClassId = store.getState().settings.selectedClassId;
-    let lastLang = store.getState().settings.lang;
-    let lastSubEnabled = store.getState().settings.notifySubstitutionChanges;
+    let lastRegistration: string | null = null;
 
     const syncWebPush = () => {
-      const { settings } = store.getState();
-      if (
-        settings.notifySubstitutionChanges &&
-        settings.selectedClassId &&
-        (settings.selectedClassId !== lastClassId ||
-          settings.lang !== lastLang ||
-          settings.notifySubstitutionChanges !== lastSubEnabled)
-      ) {
-        void subscribeWebPush(settings.selectedClassId, settings.lang);
+      const { settings, selectedClassShort } = store.getState();
+      const className = selectedClassShort();
+      if (!settings.notifySubstitutionChanges || className === null) {
+        lastRegistration = null;
+        return;
       }
-      lastClassId = settings.selectedClassId;
-      lastLang = settings.lang;
-      lastSubEnabled = settings.notifySubstitutionChanges;
+      const registration = `${className}|${settings.lang}`;
+      if (registration === lastRegistration) return;
+      lastRegistration = registration;
+      // Never prompts: the OS ask belongs to the Settings toggle the user just turned on.
+      void refreshWebPushSubscription(className, settings.lang);
     };
 
+    syncWebPush();
     disposeWebPushSync = store.subscribe(syncWebPush);
   }
 

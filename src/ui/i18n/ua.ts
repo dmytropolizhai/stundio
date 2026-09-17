@@ -175,6 +175,8 @@ export const ua: Dict = {
     "Сповіщати, коли змінюються уроки на сьогодні або завтра.",
   "settings.notifyAppUpdates": "Оновлення застосунку",
   "settings.notifyAppUpdatesHint": "Сповіщати про вихід нової версії застосунку.",
+  "settings.notifyExactAlarmDenied":
+    "Система забороняє точні будильники — нагадування можуть запізнюватися. Дозвольте «Будильники та нагадування».",
   "settings.notifyPermissionDenied": "Сповіщення заблоковані в налаштуваннях системи.",
   "settings.notifyOpenSettings": "Відкрити налаштування",
   "settings.notificationsWebNotice":

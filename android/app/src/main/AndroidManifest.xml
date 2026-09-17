@@ -94,4 +94,13 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- Re-arms the widget's WorkManager jobs after a reboot (WidgetBootReceiver). -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--
+      Lesson reminders are alarm-clock-grade: "10 minutes before Maths" is worthless if Doze
+      batches it into the next maintenance window a quarter of an hour later. Without this,
+      `AlarmManager.canScheduleExactAlarms()` is false on Android 12+ and the LocalNotifications
+      plugin silently downgrades every reminder to `setAndAllowWhileIdle` — inexact, and in
+      practice ten-odd minutes late. Auto-granted up to Android 13; from 14 the user grants it
+      under "Alarms & reminders", which Settings offers when it reads back denied.
+    -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 </manifest>

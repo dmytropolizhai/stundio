@@ -174,6 +174,8 @@ export const en: Dict = {
   "settings.notifySubstitutionChangesHint": "Notify when today's or tomorrow's lessons change.",
   "settings.notifyAppUpdates": "App updates",
   "settings.notifyAppUpdatesHint": "Notify when a new app version is released.",
+  "settings.notifyExactAlarmDenied":
+    'The system is blocking exact alarms, so reminders can arrive late. Allow "Alarms & reminders".',
   "settings.notifyPermissionDenied": "Notifications are blocked in system settings.",
   "settings.notifyOpenSettings": "Open settings",
   "settings.notificationsWebNotice":

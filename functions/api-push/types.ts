@@ -39,10 +39,24 @@ export type PushSubscriptionPayload = {
     p256dh: string;
     auth: string;
   };
-  classId: string;
+  /**
+   * The class's DISPLAY SHORT ("1DP1") — the only name the substitution feed publishes, and so
+   * the only thing a subscription can be keyed by: `checkAndDispatchSubstitutions` looks its
+   * recipients up under `class:<section header>:`. This field used to carry the client's
+   * `selectedClassId` ("-928") instead, which matches no section header EduPage ever renders,
+   * so every change the checker found dispatched to nobody.
+   */
+  className: string;
   lang: string;
   updatedAt?: number;
+  /** What `className` was called while it held an id. Read-only, to migrate stored records. */
+  classId?: string;
 };
+
+/** The class a stored subscription is filed under, tolerating pre-rename records. */
+export const subscriptionClass = (
+  record: Partial<PushSubscriptionPayload> | null | undefined,
+): string | null => record?.className ?? record?.classId ?? null;
 
 export const DEFAULT_VAPID_PUBLIC_KEY =
   "BBb4nnU3LcNCjbU9tSotemIqe6m10tH5mXExCi5CO78DpOljO3e1UX1kXem2goXDcNG3z0dcqZc5K1iaTYtTuYA";

@@ -54,8 +54,17 @@ export const getExistingWebPushSubscription = async (): Promise<PushSubscription
   }
 };
 
+/**
+ * Registers this device for "your timetable changed" pushes, prompting for permission if it has
+ * never been asked — so only call it from somewhere the user has just asked for notifications.
+ *
+ * `className` is the class's DISPLAY SHORT ("1DP1"), never `selectedClassId`: the checker files
+ * subscribers under the section headers EduPage publishes, and an id matches none of them.
+ * Re-registering under a different class is also how a device migrates off a stale key, so this
+ * is safe (and cheap) to call again with the same subscription.
+ */
 export const subscribeWebPush = async (
-  classId: string,
+  className: string,
   lang: Lang,
 ): Promise<PushSubscription | null> => {
   if (!isWebPushSupported()) return null;
@@ -93,7 +102,7 @@ export const subscribeWebPush = async (
       body: JSON.stringify({
         endpoint: sub.endpoint,
         keys: { p256dh, auth },
-        classId,
+        className,
         lang,
       }),
     });
@@ -102,6 +111,16 @@ export const subscribeWebPush = async (
   } catch {
     return null;
   }
+};
+
+/**
+ * The same registration, but never prompting: for re-filing an existing subscription on boot
+ * (the class it is indexed under changed, or it was registered before the app sent a usable
+ * one at all). A device that has not granted permission has nothing to re-file.
+ */
+export const refreshWebPushSubscription = async (className: string, lang: Lang): Promise<void> => {
+  if (!isWebPushSupported() || getWebPushPermission() !== "granted") return;
+  await subscribeWebPush(className, lang);
 };
 
 export const unsubscribeWebPush = async (): Promise<boolean> => {

@@ -176,6 +176,8 @@ export const ru: Dict = {
     "Уведомлять об изменениях в расписании на сегодня или завтра.",
   "settings.notifyAppUpdates": "Обновления приложения",
   "settings.notifyAppUpdatesHint": "Уведомлять о выходе новой версии приложения.",
+  "settings.notifyExactAlarmDenied":
+    "Система запрещает точные будильники — напоминания могут опаздывать. Разрешите «Будильники и напоминания».",
   "settings.notifyPermissionDenied": "Уведомления заблокированы в настройках системы.",
   "settings.notifyOpenSettings": "Открыть настройки",
   "settings.notificationsWebNotice":
