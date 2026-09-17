@@ -52,6 +52,8 @@ export const lv = {
 
   "day.today": "Šodien",
   "day.jumpToday": "Uz šodienu",
+  "day.previousDay": "Iepriekšējā diena",
+  "day.nextDay": "Nākamā diena",
   "day.openCalendar": "Izvēlēties datumu",
   "day.previousMonth": "Iepriekšējais mēnesis",
   "day.nextMonth": "Nākamais mēnesis",

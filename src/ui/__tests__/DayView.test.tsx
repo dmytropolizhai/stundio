@@ -188,6 +188,20 @@ describe("DayView", () => {
     expect(onDateChange).toHaveBeenCalledWith("2026-09-08");
   });
 
+  it("navigates to previous and next days when clicking the chevron buttons", async () => {
+    const harness = await bootHarness();
+    const { onDateChange } = renderDay(harness);
+
+    const prevButton = screen.getByRole("button", { name: "Iepriekšējā diena" });
+    const nextButton = screen.getByRole("button", { name: "Nākamā diena" });
+
+    fireEvent.click(prevButton);
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-08");
+
+    fireEvent.click(nextButton);
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
+  });
+
   it("explains an empty day rather than going blank", async () => {
     const harness = await bootHarness();
     renderDay(harness, "2026-09-12"); // Saturday
