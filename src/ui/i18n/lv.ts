@@ -51,6 +51,8 @@ export const lv = {
   "subgroup.skip": "Izlaist — rādīt abas pusgrupas",
 
   "day.today": "Šodien",
+  "day.tomorrow": "Rīt",
+  "day.yesterday": "Vakar",
   "day.jumpToday": "Uz šodienu",
   "day.openCalendar": "Izvēlēties datumu",
   "day.previousMonth": "Iepriekšējais mēnesis",

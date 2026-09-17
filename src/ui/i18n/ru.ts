@@ -45,6 +45,8 @@ export const ru: Dict = {
   "subgroup.skip": "Пропустить — показывать обе подгруппы",
 
   "day.today": "Сегодня",
+  "day.tomorrow": "Завтра",
+  "day.yesterday": "Вчера",
   "day.jumpToday": "К сегодня",
   "day.openCalendar": "Выбрать дату",
   "day.previousMonth": "Предыдущий месяц",

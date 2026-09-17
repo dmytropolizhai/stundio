@@ -44,6 +44,8 @@ export const en: Dict = {
   "subgroup.skip": "Skip — show both subgroups",
 
   "day.today": "Today",
+  "day.tomorrow": "Tomorrow",
+  "day.yesterday": "Yesterday",
   "day.jumpToday": "Go to today",
   "day.openCalendar": "Choose a date",
   "day.previousMonth": "Previous month",
