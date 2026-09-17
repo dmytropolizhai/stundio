@@ -57,34 +57,27 @@ export const WhatsNewSheet = ({
   return (
     <Sheet open={open} onClose={onClose} title={t("whatsNew.title")}>
       <div className="pb-2">
-        {/*
-          The DS sheet grows to fit its content, so a few releases of history push the title
-          and the dismiss button off-screen. Scrolling the list instead of the sheet keeps both
-          anchored, which is what makes the sheet dismissible without a scroll first.
-        */}
-        <div className="no-scrollbar max-h-[55vh] overflow-y-auto overscroll-contain">
-          {history.length === 0 ? (
-            <p className="font-text text-body text-muted">{t("whatsNew.empty")}</p>
-          ) : (
-            <>
-              <ul>
-                {headline.map((entry) => (
-                  <Entry key={entry.version} entry={entry} dimmed={false} />
-                ))}
-              </ul>
-              {earlier.length > 0 && (
-                <>
-                  <h3 className="u-eyebrow mt-7 pb-3">{t("whatsNew.history")}</h3>
-                  <ul className="border-t border-hairline pt-4">
-                    {earlier.map((entry) => (
-                      <Entry key={entry.version} entry={entry} dimmed />
-                    ))}
-                  </ul>
-                </>
-              )}
-            </>
-          )}
-        </div>
+        {history.length === 0 ? (
+          <p className="font-text text-body text-muted">{t("whatsNew.empty")}</p>
+        ) : (
+          <>
+            <ul>
+              {headline.map((entry) => (
+                <Entry key={entry.version} entry={entry} dimmed={false} />
+              ))}
+            </ul>
+            {earlier.length > 0 && (
+              <>
+                <h3 className="u-eyebrow mt-7 pb-3">{t("whatsNew.history")}</h3>
+                <ul className="border-t border-hairline pt-4">
+                  {earlier.map((entry) => (
+                    <Entry key={entry.version} entry={entry} dimmed />
+                  ))}
+                </ul>
+              </>
+            )}
+          </>
+        )}
         <Button variant="inverse" block onClick={onClose} className="mt-6">
           {t("whatsNew.done")}
         </Button>
