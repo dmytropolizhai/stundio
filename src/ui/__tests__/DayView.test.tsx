@@ -47,6 +47,22 @@ describe("DayView", () => {
     expect(screen.getByText("Šodien")).toBeDefined();
   });
 
+  it("names yesterday and tomorrow in the header, and dates anything further out", async () => {
+    const harness = await bootHarness();
+
+    const { unmount } = renderDay(harness, "2026-09-10");
+    expect(screen.getByText("Rīt")).toBeDefined();
+    unmount();
+
+    const back = renderDay(harness, "2026-09-08");
+    expect(screen.getByText("Vakar")).toBeDefined();
+    back.unmount();
+
+    renderDay(harness, "2026-09-11");
+    expect(screen.queryByText("Rīt")).toBeNull();
+    expect(screen.queryByText("Vakar")).toBeNull();
+  });
+
   it("says nothing about the building on an ordinary main-building day", async () => {
     const harness = await bootHarness();
     renderDay(harness);

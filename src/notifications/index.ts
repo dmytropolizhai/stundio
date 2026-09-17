@@ -1,5 +1,7 @@
 export {
+  ensureExactAlarmPermission,
   ensureNotificationPermission,
+  hasExactAlarmPermission,
   hasNotificationPermission,
   isNotificationPermissionDenied,
   notifyAppUpdate,
@@ -19,6 +21,7 @@ export {
   requestWebPushPermission,
   getExistingWebPushSubscription,
   subscribeWebPush,
+  refreshWebPushSubscription,
   unsubscribeWebPush,
   reportSubstitutionChangeToServer,
 } from "./webPush.ts";

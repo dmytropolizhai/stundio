@@ -684,6 +684,15 @@ The only modal surface in the system — the DS ships no Dialog, Toast, or Toolt
 the scrim is navy at 56% over an 8px blur, fading in over 160ms. Bottom padding reserves the safe-area
 inset.
 
+- **Height:** the sheet is a flex column capped at
+  `calc(var(--app-viewport-height) - var(--app-inset-top) - 12px)`, with the grab handle, title row
+  and footer pinned and the body scrolling between them. Callers hand it plain content — **never a
+  `vh`-sized scroller of their own.** iOS Safari resolves `vh` against the *large* viewport (address
+  bar and toolbar retracted), so a `vh`-sized sheet anchored to `bottom: 0` is taller than the screen
+  really is: it climbs over the app header and carries its own handle, title and close button off the
+  top. `--app-viewport-height` is `100dvh` where the engine has it (`src/index.css`), `100vh`
+  otherwise; the 12px keeps a strip of scrim visible under the status bar.
+
 - **FeedbackSheet:** Used for in-app suggestions and bug reporting. Houses segmented chip toggles
   ("suggestion" / "issue"), a clean textarea with character counter, and a pill submit button with
   `send` and `check` feedback states.

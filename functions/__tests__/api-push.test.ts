@@ -125,7 +125,7 @@ describe("Cloudflare Pages Function: /api-push", () => {
       expect(res.status).toBe(400);
     });
 
-    it("validates missing keys and classId", async () => {
+    it("validates missing keys and className", async () => {
       const kv = createMockKv();
       const res1 = await onSubscribeRequest({
         request: new Request("https://stundio.pages.dev/api-push/subscribe", {
@@ -155,45 +155,69 @@ describe("Cloudflare Pages Function: /api-push", () => {
       expect(res2.status).toBe(400);
     });
 
-    it("successfully registers subscription and handles class update", async () => {
-      const kv = createMockKv();
-      const payload = {
-        endpoint: "https://fcm.googleapis.com/test-endpoint",
-        keys: { p256dh: "dummy-p256dh", auth: "dummy-auth" },
-        classId: "1DP1",
-        lang: "lv",
-      };
-
-      const res = await onSubscribeRequest({
+    const subscribe = (kv: KVNamespace, body: unknown) =>
+      onSubscribeRequest({
         request: new Request("https://stundio.pages.dev/api-push/subscribe", {
           method: "POST",
-          body: JSON.stringify(payload),
+          body: JSON.stringify(body),
         }),
         params: {},
         env: { PUSH_KV: kv },
         waitUntil: vi.fn(),
         next: vi.fn(),
+      });
+
+    const payload = {
+      endpoint: "https://fcm.googleapis.com/test-endpoint",
+      keys: { p256dh: "dummy-p256dh", auth: "dummy-auth" },
+      className: "1DP1",
+      lang: "lv",
+    };
+
+    it("successfully registers subscription and handles class update", async () => {
+      const kv = createMockKv();
+
+      const res = await subscribe(kv, payload);
+      expect(res.status).toBe(200);
+      const data = (await res.json()) as { ok: boolean; className: string };
+      expect(data.ok).toBe(true);
+      expect(data.className).toBe("1DP1");
+
+      // Update class to 2DP1
+      const updateRes = await subscribe(kv, { ...payload, className: "2DP1" });
+      expect(updateRes.status).toBe(200);
+      expect(vi.mocked(kv.delete)).toHaveBeenCalledWith(expect.stringContaining("class:1DP1:"));
+    });
+
+    it("indexes the device under the name the checker looks recipients up by", async () => {
+      // The whole point of the rename: `checkAndDispatchSubstitutions` lists `class:<section
+      // header>:`, so anything else here — an EduPage id, say — is a key nobody ever reads.
+      const kv = createMockKv();
+      await subscribe(kv, payload);
+
+      const indexed = await kv.list({ prefix: "class:1DP1:" });
+      expect(indexed.keys).toHaveLength(1);
+    });
+
+    it("still accepts a pre-rename client's `classId`", async () => {
+      // An installed PWA can be serving a cached bundle for a while yet; a subscription under
+      // the wrong key is no worse than the 400 it would otherwise get, and it re-files itself
+      // the moment that client updates.
+      const kv = createMockKv();
+      const res = await subscribe(kv, {
+        endpoint: payload.endpoint,
+        keys: payload.keys,
+        classId: "-928",
+        lang: "lv",
       });
 
       expect(res.status).toBe(200);
-      const data = (await res.json()) as { ok: boolean; classId: string };
-      expect(data.ok).toBe(true);
-      expect(data.classId).toBe("1DP1");
+      expect((await kv.list({ prefix: "class:-928:" })).keys).toHaveLength(1);
 
-      // Update class to 2DP1
-      const updateRes = await onSubscribeRequest({
-        request: new Request("https://stundio.pages.dev/api-push/subscribe", {
-          method: "POST",
-          body: JSON.stringify({ ...payload, classId: "2DP1" }),
-        }),
-        params: {},
-        env: { PUSH_KV: kv },
-        waitUntil: vi.fn(),
-        next: vi.fn(),
-      });
-
-      expect(updateRes.status).toBe(200);
-      expect(vi.mocked(kv.delete)).toHaveBeenCalled();
+      // …and updating to the real class short clears the stale entry behind it.
+      await subscribe(kv, payload);
+      expect((await kv.list({ prefix: "class:-928:" })).keys).toHaveLength(0);
+      expect((await kv.list({ prefix: "class:1DP1:" })).keys).toHaveLength(1);
     });
   });
 
@@ -331,6 +355,27 @@ describe("Cloudflare Pages Function: /api-push", () => {
       expect(summaries.get("1DP1")?.rowCount).toBe(1);
     });
 
+    it("hashes the rows' text, not the markup around them", async () => {
+      // EduPage re-renders this page per request; attribute churn must not read as a change.
+      const rows = `<div class="row remove"><div class="period">1</div><div class="info">Matematika - Atcelts</div></div>`;
+      const restyled = `<div class="row remove print-nobreak" style="order:2"><div class="period">1</div>  <div class="info">Matematika - Atcelts</div></div>`;
+      const section = (body: string) =>
+        `<div class="section"><div class="header"><span class="print-font-resizable">1DP1</span></div><div class="rows">${body}</div></div>`;
+
+      const a = await extractClassSubstitutions(section(rows));
+      const b = await extractClassSubstitutions(section(restyled));
+      expect(b.get("1DP1")?.hash).toBe(a.get("1DP1")?.hash);
+    });
+
+    it("hashes differently once a row's text actually changes", async () => {
+      const section = (info: string) =>
+        `<div class="section"><div class="header"><span class="print-font-resizable">1DP1</span></div><div class="rows"><div class="row"><div class="period">1</div><div class="info">${info}</div></div></div></div>`;
+
+      const a = await extractClassSubstitutions(section("Matematika - Atcelts"));
+      const b = await extractClassSubstitutions(section("Matematika - Aizvietošana: (A) ➔ B"));
+      expect(b.get("1DP1")?.hash).not.toBe(a.get("1DP1")?.hash);
+    });
+
     it("generates target dates in Europe/Riga", () => {
       const dates = getTargetDates(new Date("2026-09-15T10:00:00Z"));
       expect(dates.length).toBe(3);
@@ -368,6 +413,71 @@ describe("Cloudflare Pages Function: /api-push", () => {
     it("reports missing PUSH_KV in checkAndDispatchSubstitutions", async () => {
       const res = await checkAndDispatchSubstitutions({});
       expect(res.errors).toContain("PUSH_KV binding is missing");
+    });
+
+    describe("first sighting of a date", () => {
+      const DATE = "2026-09-15";
+      const dayHtml = (info: string) =>
+        `<div class="section"><div class="header"><span class="print-font-resizable">1DP1</span></div><div class="rows"><div class="row"><div class="period">1</div><div class="info">${info}</div></div></div></div>`;
+
+      const subscriber = {
+        endpoint: "https://fcm.googleapis.com/test",
+        keys: {
+          p256dh:
+            "BBb4nnU3LcNCjbU9tSotemIqe6m10tH5mXExCi5CO78DpOljO3e1UX1kXem2goXDcNG3z0dcqZc5K1iaTYtTuYA",
+          auth: Buffer.from("1234567890123456").toString("base64url"),
+        },
+        className: "1DP1",
+        lang: "lv",
+      };
+
+      /** Answers EduPage with `html`, and every push endpoint with a 201. */
+      const routedFetch = (html: string) =>
+        vi.fn((input: RequestInfo | URL) => {
+          const url = input instanceof Request ? input.url : String(input);
+          if (url.includes("edupage.org")) {
+            return Promise.resolve(new Response(JSON.stringify({ r: html }), { status: 200 }));
+          }
+          return Promise.resolve(new Response(null, { status: 201 }));
+        });
+
+      it("records a baseline instead of pushing what was already published", async () => {
+        // `getTargetDates` slides a new date into the window every day. Reporting whatever it
+        // already holds as "changes" is what pushed a notification every single morning.
+        const kv = createMockKv({ [`class:1DP1:abc`]: JSON.stringify(subscriber) });
+        global.fetch = routedFetch(dayHtml("Matematika - Atcelts"));
+
+        const res = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        expect(res.changedClasses).toEqual([]);
+        expect(res.notifiedDevices).toBe(0);
+        expect(await kv.get(`state:pikcrvt:${DATE}:1DP1`, "text")).not.toBeNull();
+      });
+
+      it("pushes once the day moves away from that baseline", async () => {
+        const kv = createMockKv({ [`class:1DP1:abc`]: JSON.stringify(subscriber) });
+
+        global.fetch = routedFetch(dayHtml("Matematika - Atcelts"));
+        await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        global.fetch = routedFetch(dayHtml("Matematika - Aizvietošana: (A) ➔ B"));
+        const res = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        expect(res.changedClasses).toEqual([`1DP1@${DATE}`]);
+        expect(res.notifiedDevices).toBe(1);
+      });
+
+      it("stays quiet when the school republishes the same day", async () => {
+        const kv = createMockKv({ [`class:1DP1:abc`]: JSON.stringify(subscriber) });
+        const html = dayHtml("Matematika - Atcelts");
+
+        global.fetch = routedFetch(html);
+        await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+        const res = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        expect(res.changedClasses).toEqual([]);
+        expect(res.notifiedDevices).toBe(0);
+      });
     });
   });
 });

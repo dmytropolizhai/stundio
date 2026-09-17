@@ -103,6 +103,13 @@ export type AppState = {
   /** No-op when the user has opted out. Screen views, manual refreshes — nothing PII-bearing. */
   trackEvent: (event: string) => void;
   resolvedDay: (date: ISODate, classId?: string) => ResolvedDay | null;
+  /**
+   * The selected class's display short ("1DP1"), or `null` while none is picked or no cached
+   * timetable knows that id yet. The substitution feed only ever speaks in these shorts — the
+   * EduPage id in `settings.selectedClassId` means nothing to it — so anything matching against
+   * the feed (the Web Push registration, in particular) has to go through here.
+   */
+  selectedClassShort: () => string | null;
 };
 
 export type StoreDeps = { cache: AppCache; engine: SyncEngine; analytics?: AnalyticsClient };
@@ -295,6 +302,17 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
             ? favorites.filter((id) => id !== classId)
             : [...favorites, classId],
         });
+      },
+
+      selectedClassShort: () => {
+        const state = get();
+        const id = state.settings.selectedClassId;
+        if (id === null) return null;
+        for (const timetable of Object.values(state.timetables)) {
+          const short = timetable.classes.find((c) => c.id === id)?.short;
+          if (short !== undefined && short !== "") return short;
+        }
+        return null;
       },
 
       resolvedDay: (date, classId) => {

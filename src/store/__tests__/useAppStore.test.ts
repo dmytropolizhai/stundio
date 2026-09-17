@@ -335,6 +335,27 @@ describe("analytics", () => {
   });
 });
 
+describe("selectedClassShort", () => {
+  it("is null before a class is picked", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    expect(store.getState().selectedClassShort()).toBeNull();
+  });
+
+  it("translates the stored EduPage id into the name the substitution feed uses", async () => {
+    // Web Push subscriptions are filed under this, so an id here reaches nobody.
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "A1-2"));
+    expect(store.getState().selectedClassShort()).toBe("A1-2");
+  });
+
+  it("is null while no timetable that knows the class is cached yet", () => {
+    const store = makeStore();
+    expect(store.getState().selectedClassShort()).toBeNull();
+  });
+});
+
 describe("resolvedDay memoisation", () => {
   it("returns the identical object for repeated reads", async () => {
     const store = makeStore();

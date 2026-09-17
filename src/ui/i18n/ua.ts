@@ -44,6 +44,8 @@ export const ua: Dict = {
   "subgroup.skip": "Пропустити — показувати обидві підгрупи",
 
   "day.today": "Сьогодні",
+  "day.tomorrow": "Завтра",
+  "day.yesterday": "Вчора",
   "day.jumpToday": "Перейти до сьогодні",
   "day.previousDay": "Попередній день",
   "day.nextDay": "Наступний день",
@@ -175,6 +177,8 @@ export const ua: Dict = {
     "Сповіщати, коли змінюються уроки на сьогодні або завтра.",
   "settings.notifyAppUpdates": "Оновлення застосунку",
   "settings.notifyAppUpdatesHint": "Сповіщати про вихід нової версії застосунку.",
+  "settings.notifyExactAlarmDenied":
+    "Система забороняє точні будильники — нагадування можуть запізнюватися. Дозвольте «Будильники та нагадування».",
   "settings.notifyPermissionDenied": "Сповіщення заблоковані в налаштуваннях системи.",
   "settings.notifyOpenSettings": "Відкрити налаштування",
   "settings.notificationsWebNotice":

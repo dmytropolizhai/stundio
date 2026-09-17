@@ -62,24 +62,22 @@ export const IphoneInstallSheet = ({ open, onClose }: IphoneInstallSheetProps) =
   return (
     <Sheet open={open} onClose={onClose} title={t("iphoneInstall.title")}>
       <div className="pb-2">
-        <div className="no-scrollbar max-h-[58vh] overflow-y-auto overscroll-contain">
-          <div className="flex flex-col items-center pb-3 pt-2 text-center">
-            <AppIcon />
+        <div className="flex flex-col items-center pb-3 pt-2 text-center">
+          <AppIcon />
 
-            <h2 className="font-display text-heading font-extrabold text-strong">
-              {t("iphoneInstall.title")}
-            </h2>
+          <h2 className="font-display text-heading font-extrabold text-strong">
+            {t("iphoneInstall.title")}
+          </h2>
 
-            <p className="mt-1.5 max-w-75 font-text text-body text-muted">
-              {t("iphoneInstall.subtitle")}
-            </p>
-          </div>
+          <p className="mt-1.5 max-w-75 font-text text-body text-muted">
+            {t("iphoneInstall.subtitle")}
+          </p>
+        </div>
 
-          <div className="mt-2 space-y-2.5">
-            <InstallStep number={1}>{t("iphoneInstall.step1")}</InstallStep>
+        <div className="mt-2 space-y-2.5">
+          <InstallStep number={1}>{t("iphoneInstall.step1")}</InstallStep>
 
-            <InstallStep number={2}>{t("iphoneInstall.step2")}</InstallStep>
-          </div>
+          <InstallStep number={2}>{t("iphoneInstall.step2")}</InstallStep>
         </div>
 
         <div className="mt-5 space-y-2">

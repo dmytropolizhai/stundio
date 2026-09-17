@@ -26,6 +26,11 @@ export type BottomSheetProps = {
  * the focus trap, Escape, scroll lock and `aria-modal` for free; the DS styling is unchanged.
  *
  * The scrim is the second (and last) place the DS permits blur: navy 56% over an 8px blur.
+ *
+ * The sheet caps itself at the visible viewport minus the top safe-area inset and scrolls its
+ * own body: anchored to `bottom: 0`, content taller than the screen would otherwise grow upward
+ * over the header and carry the grab handle, title and close button off the top — where nothing
+ * can reach them. Callers pass their content plain; the scroll region is this component's job.
  */
 export const BottomSheet = ({
   open,
@@ -86,6 +91,8 @@ export const BottomSheet = ({
             "rounded-t-2xl bg-card px-5 pt-2.5 shadow-raised",
             "pb-[calc(--spacing(6)+var(--app-inset-bottom))]",
             "mx-auto w-full max-w-screen",
+            "flex flex-col",
+            "max-h-[calc(var(--app-viewport-height)-var(--app-inset-top)-12px)]",
             !isDragging && "transition-transform",
             className,
           )}
@@ -94,13 +101,13 @@ export const BottomSheet = ({
           {/* Grab handle. Also the drag-to-dismiss target. */}
           <div
             aria-hidden="true"
-            className="mx-auto mb-3.5 h-1 w-11 touch-none rounded-pill bg-ink-200"
+            className="mx-auto mb-3.5 h-1 w-11 shrink-0 touch-none rounded-pill bg-ink-200"
             onPointerDown={handleDragStart}
             onPointerMove={handleDragMove}
             onPointerUp={handleDragEnd}
             onPointerCancel={handleDragEnd}
           />
-          <div className="mb-3.5 flex items-start gap-3">
+          <div className="mb-3.5 flex shrink-0 items-start gap-3">
             <div className="min-w-0 flex-1">
               {eyebrow !== undefined && <div className="u-eyebrow">{eyebrow}</div>}
               <Dialog.Title
@@ -118,8 +125,11 @@ export const BottomSheet = ({
               </Dialog.Close>
             )}
           </div>
-          {children}
-          {footer !== undefined && <div className="mt-4.5">{footer}</div>}
+          {/* Negative margin + matching padding so a focus ring at the edge is not clipped. */}
+          <div className="no-scrollbar -mx-5 min-h-0 overflow-y-auto overscroll-contain px-5">
+            {children}
+          </div>
+          {footer !== undefined && <div className="mt-4.5 shrink-0">{footer}</div>}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -11,6 +11,8 @@ const getPending = vi.hoisted(() => vi.fn());
 const createChannel = vi.hoisted(() => vi.fn());
 const checkPermissions = vi.hoisted(() => vi.fn());
 const requestPermissions = vi.hoisted(() => vi.fn());
+const checkExactNotificationSetting = vi.hoisted(() => vi.fn());
+const changeExactNotificationSetting = vi.hoisted(() => vi.fn());
 const remove = vi.hoisted(() => vi.fn());
 const addListener = vi.hoisted(() => vi.fn().mockResolvedValue({ remove }));
 
@@ -22,12 +24,16 @@ vi.mock("@capacitor/local-notifications", () => ({
     createChannel,
     checkPermissions,
     requestPermissions,
+    checkExactNotificationSetting,
+    changeExactNotificationSetting,
     addListener,
   },
 }));
 
 const {
+  ensureExactAlarmPermission,
   ensureNotificationPermission,
+  hasExactAlarmPermission,
   hasNotificationPermission,
   notifyAppUpdate,
   notifySubstitutionsChanged,
@@ -57,6 +63,8 @@ beforeEach(() => {
   createChannel.mockReset();
   checkPermissions.mockReset();
   requestPermissions.mockReset();
+  checkExactNotificationSetting.mockReset().mockResolvedValue({ exact_alarm: "granted" });
+  changeExactNotificationSetting.mockReset().mockResolvedValue({ exact_alarm: "granted" });
   addListener.mockClear().mockResolvedValue({ remove });
   remove.mockClear();
 });
@@ -99,6 +107,39 @@ describe("hasNotificationPermission", () => {
     checkPermissions.mockResolvedValue({ display: "denied" });
     expect(await hasNotificationPermission()).toBe(false);
     expect(requestPermissions).not.toHaveBeenCalled();
+  });
+});
+
+describe("exact alarms", () => {
+  it("reports denied when Android is refusing exact alarms", async () => {
+    checkExactNotificationSetting.mockResolvedValue({ exact_alarm: "denied" });
+    expect(await hasExactAlarmPermission()).toBe(false);
+  });
+
+  it("assumes exactness where the setting does not exist at all", async () => {
+    // iOS and the browser: the call is simply not implemented, which is not a reason to tell
+    // the user their reminders will be late.
+    checkExactNotificationSetting.mockRejectedValue(new Error("not implemented"));
+    expect(await hasExactAlarmPermission()).toBe(true);
+    expect(await ensureExactAlarmPermission()).toBe(true);
+  });
+
+  it("does not send the user out to system settings when already allowed", async () => {
+    expect(await ensureExactAlarmPermission()).toBe(true);
+    expect(changeExactNotificationSetting).not.toHaveBeenCalled();
+  });
+
+  it("opens the system setting when denied, and reports what came back", async () => {
+    checkExactNotificationSetting.mockResolvedValue({ exact_alarm: "denied" });
+    changeExactNotificationSetting.mockResolvedValue({ exact_alarm: "granted" });
+    expect(await ensureExactAlarmPermission()).toBe(true);
+    expect(changeExactNotificationSetting).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports still-denied when the user leaves the setting off", async () => {
+    checkExactNotificationSetting.mockResolvedValue({ exact_alarm: "denied" });
+    changeExactNotificationSetting.mockResolvedValue({ exact_alarm: "denied" });
+    expect(await ensureExactAlarmPermission()).toBe(false);
   });
 });
 

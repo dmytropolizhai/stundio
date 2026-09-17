@@ -36,6 +36,17 @@ export const getTargetDates = (refDate: Date = new Date()): string[] => {
   return Array.from(new Set([today, tomorrow, dayAfter])).sort();
 };
 
+/** Tags out, entities and runs of whitespace normalised — the readable text of one row. */
+const rowText = (html: string): string =>
+  html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+
 export const extractClassSubstitutions = async (
   html: string,
 ): Promise<Map<string, ClassSubstitutionSummary>> => {
@@ -51,7 +62,10 @@ export const extractClassSubstitutions = async (
 
     const rows = [...sec.matchAll(/<div class="row[^>]*>[\s\S]*?<\/div>\s*<\/div>/g)];
     const rowCount = rows.length;
-    const hash = await sha256Hex(sec.trim());
+    // Hash what a pupil would read, not the markup around it: EduPage re-renders this page on
+    // every request, and hashing the raw HTML makes any attribute, class or whitespace churn
+    // look like a timetable change. Row *text* only changes when the timetable does.
+    const hash = await sha256Hex(rows.map((row) => rowText(row[0])).join("\n"));
 
     result.set(className, {
       className,
@@ -194,9 +208,19 @@ export const checkAndDispatchSubstitutions = async (
       const previousHash = (await env.PUSH_KV.get(stateKey, "text")) as string | null;
 
       if (previousHash !== summary.hash) {
+        await env.PUSH_KV.put(stateKey, summary.hash, { expirationTtl: 86400 * 7 });
+
+        /*
+         * No stored hash means this is simply the first time the scan has reached this date —
+         * `getTargetDates` slides a new one into the window every day — not that anything
+         * changed. Publishing whatever was already there as "changes" fired a push for every
+         * subscribed class every single morning, which is the spam this guard removes. Record
+         * the baseline and let the *next* scan report real movement against it.
+         */
+        if (previousHash === null) continue;
+
         // Change detected!
         result.changedClasses.push(`${className}@${date}`);
-        await env.PUSH_KV.put(stateKey, summary.hash, { expirationTtl: 86400 * 7 });
 
         // Only send push if there were previous substitutions or new ones have rows
         if (summary.rowCount > 0) {

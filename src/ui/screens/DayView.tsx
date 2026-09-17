@@ -26,7 +26,8 @@ import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { formatDuration, formatDayMonth, useLang, useT } from "@/ui/i18n";
+import { formatDuration, useLang, useT } from "@/ui/i18n";
+import { dayTitle } from "../lib/dayTitle.ts";
 
 // Only mounted on tap — keep Radix Dialog + Popover out of the initial bundle.
 const LessonSheet = lazy(() =>
@@ -439,9 +440,7 @@ export const DayView = ({
                   }}
                 />
 
-                <Suspense
-                  fallback={<span>{isToday ? t("day.today") : formatDayMonth(date, lang)}</span>}
-                >
+                <Suspense fallback={<span>{dayTitle(date, now.date, t, lang)}</span>}>
                   <DatePicker
                     date={date}
                     today={now.date}
