@@ -20,6 +20,8 @@ export type FakeServer = {
   offline: boolean;
   /** Answer HTTP 200 with the `{ e }` envelope EduPage uses for real errors. */
   serverError: boolean;
+  /** Stand in for the day fixture, so a test can publish a second version of a day. */
+  substitutionsHtml: string | null;
   reset: () => void;
 };
 
@@ -35,10 +37,12 @@ export const createFakeServer = (): FakeServer => {
     calls: { list: 0, timetable: 0, substitutions: 0 },
     offline: false,
     serverError: false,
+    substitutionsHtml: null,
     reset: () => {
       server.calls = { list: 0, timetable: 0, substitutions: 0 };
       server.offline = false;
       server.serverError = false;
+      server.substitutionsHtml = null;
     },
     http: (req: HttpRequest) => {
       const endpoint = endpointOf(req.url);
@@ -58,7 +62,7 @@ export const createFakeServer = (): FakeServer => {
         case "substitutions":
           return Promise.resolve({
             status: 200,
-            data: { r: read("subst_2026-09-09_classes.html") },
+            data: { r: server.substitutionsHtml ?? read("subst_2026-09-09_classes.html") },
           });
       }
     },

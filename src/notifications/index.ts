@@ -1,5 +1,7 @@
 export {
+  ensureExactAlarmPermission,
   ensureNotificationPermission,
+  hasExactAlarmPermission,
   hasNotificationPermission,
   isNotificationPermissionDenied,
   notifyAppUpdate,

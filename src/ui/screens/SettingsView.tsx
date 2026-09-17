@@ -5,12 +5,14 @@ import type { Settings } from "@/db";
 import { Icon } from "@/ds/components/ui/icon";
 import { Button, Card, SegmentedTabs, Switch, TopBar } from "@/ds";
 import {
+  ensureExactAlarmPermission,
   ensureNotificationPermission,
   openNotificationSettings,
 } from "@/notifications/localNotifications";
 import { isWebPushSupported, subscribeWebPush, unsubscribeWebPush } from "@/notifications/webPush";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { useNotificationPermissionDenied } from "../hooks/useNotificationPermission.ts";
+import { useExactAlarmDenied } from "../hooks/useExactAlarmPermission.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
@@ -64,6 +66,7 @@ export const SettingsView = ({
     type: "suggestion",
   });
   const notifyPermissionDenied = useNotificationPermissionDenied();
+  const exactAlarmDenied = useExactAlarmDenied();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
   const timetables = useAppStore((s) => s.timetables);
@@ -364,10 +367,34 @@ export const SettingsView = ({
                     items={reminderOptions}
                     onChange={(value) => {
                       const minutes = Number(value);
-                      if (minutes > 0) void ensureNotificationPermission();
+                      if (minutes > 0) {
+                        // Both grants, in order: permission to show anything at all, then
+                        // permission to show it *on time*. Without the second one Android
+                        // delivers the reminder whenever Doze next wakes up.
+                        void ensureNotificationPermission().then((granted) => {
+                          if (granted) return ensureExactAlarmPermission();
+                          return granted;
+                        });
+                      }
                       void setNotifyLessonReminderMinutes(minutes);
                     }}
                   />
+                  {exactAlarmDenied && settings.notifyLessonReminderMinutes > 0 && (
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                      <p className="max-w-md font-text text-caption font-bold text-danger">
+                        {t("settings.notifyExactAlarmDenied")}
+                      </p>
+                      <Button
+                        size="sm"
+                        icon="external-link"
+                        onClick={() => {
+                          void ensureExactAlarmPermission();
+                        }}
+                      >
+                        {t("settings.notifyOpenSettings")}
+                      </Button>
+                    </div>
+                  )}
                 </Row>
               ) : (
                 <Row>

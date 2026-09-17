@@ -84,6 +84,43 @@ export const openNotificationSettings = async (): Promise<void> => {
 };
 
 /**
+ * Whether the OS will let us schedule *exact* alarms.
+ *
+ * This is a second, separate grant from the notification permission and the one that decides
+ * whether a reminder is on time: without it the plugin falls back to `setAndAllowWhileIdle`,
+ * which Doze is free to batch into its next maintenance window — the ten-minutes-late reminder.
+ * Android < 12 has no such setting and the plugin reports "granted"; everywhere the call is not
+ * implemented at all (iOS, the browser) we assume exactness rather than nag about it.
+ */
+export const hasExactAlarmPermission = async (): Promise<boolean> => {
+  try {
+    const current = await LocalNotifications.checkExactNotificationSetting();
+    return current.exact_alarm === "granted";
+  } catch {
+    return true;
+  }
+};
+
+/**
+ * Sends the user to the system's "Alarms & reminders" screen when exact alarms are denied,
+ * and resolves to whether they are allowed once they come back. A no-op that resolves true
+ * below Android 12 and off-Android, so callers need no platform check of their own.
+ *
+ * Only call this from somewhere the user has just asked for reminders — it leaves the app.
+ */
+export const ensureExactAlarmPermission = async (): Promise<boolean> => {
+  try {
+    if ((await LocalNotifications.checkExactNotificationSetting()).exact_alarm === "granted") {
+      return true;
+    }
+    const changed = await LocalNotifications.changeExactNotificationSetting();
+    return changed.exact_alarm === "granted";
+  } catch {
+    return true;
+  }
+};
+
+/**
  * Resolves false without prompting only when the user already said no; otherwise asks.
  * Only call this from a place the user has just been told *why* — the onboarding notification
  * slide, or a Settings toggle they turned on themselves. Never call it unconditionally on boot;

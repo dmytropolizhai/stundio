@@ -37,7 +37,11 @@ export type SyncOutcome = {
   /** tt_num actually fetched this run (absent when it was already cached). */
   fetchedTtNum: string | null;
   refreshedDates: ISODate[];
-  /** Dates among `refreshedDates` whose substitutions actually differ from what was cached. */
+  /**
+   * Dates among `refreshedDates` whose substitutions differ from what was cached *for the
+   * selected class*. School-wide churn — another class losing a teacher, an announcement aimed
+   * at a different year — is not a change to this user's timetable and never lands here.
+   */
   changedDates: ISODate[];
   prunedDays: number;
   /** Human-readable reasons, in order. Empty on a clean run. */
@@ -133,8 +137,28 @@ export const createSyncEngine = (deps: SyncDeps) => {
     }
   };
 
+  /**
+   * The display short ("A1-2") the substitution feed keys the user's class by — the bridge
+   * between `selectedClassId` (an EduPage id like "-927") and the rows in a `DaySubstitutions`.
+   * `null` when no class is picked or none of the cached timetables knows that id, in which
+   * case nothing can be reported as changed rather than everything being.
+   */
+  const selectedClassName = async (
+    classId: string | null,
+    selections: readonly { meta: TimetableMeta }[],
+  ): Promise<string | null> => {
+    if (classId === null) return null;
+    for (const selection of selections) {
+      const timetable = await cache.getTimetable(selection.meta.ttNum);
+      const short = timetable?.classes.find((c) => c.id === classId)?.short;
+      if (short !== undefined && short !== "") return short;
+    }
+    return null;
+  };
+
   const refreshSubstitutions = async (
     dates: readonly ISODate[],
+    className: string | null,
     errors: SyncFailure[],
   ): Promise<{ done: ISODate[]; changed: ISODate[] }> => {
     const done: ISODate[] = [];
@@ -147,7 +171,7 @@ export const createSyncEngine = (deps: SyncDeps) => {
         const after = parseDaySubstitutions(html, date, now().toISOString());
         await cache.putSubstitutions(after);
         done.push(date);
-        if (substitutionsChanged(before, after)) changed.push(date);
+        if (substitutionsChanged(before, after, className)) changed.push(date);
       } catch (err) {
         errors.push(failure(`substitutions ${date}`, err));
       }
@@ -191,6 +215,7 @@ export const createSyncEngine = (deps: SyncDeps) => {
 
     const { done: refreshedDates, changed: changedDates } = await refreshSubstitutions(
       daysToRefresh(today),
+      await selectedClassName(settings.selectedClassId, selections),
       errors,
     );
 

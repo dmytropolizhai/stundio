@@ -331,6 +331,27 @@ describe("Cloudflare Pages Function: /api-push", () => {
       expect(summaries.get("1DP1")?.rowCount).toBe(1);
     });
 
+    it("hashes the rows' text, not the markup around them", async () => {
+      // EduPage re-renders this page per request; attribute churn must not read as a change.
+      const rows = `<div class="row remove"><div class="period">1</div><div class="info">Matematika - Atcelts</div></div>`;
+      const restyled = `<div class="row remove print-nobreak" style="order:2"><div class="period">1</div>  <div class="info">Matematika - Atcelts</div></div>`;
+      const section = (body: string) =>
+        `<div class="section"><div class="header"><span class="print-font-resizable">1DP1</span></div><div class="rows">${body}</div></div>`;
+
+      const a = await extractClassSubstitutions(section(rows));
+      const b = await extractClassSubstitutions(section(restyled));
+      expect(b.get("1DP1")?.hash).toBe(a.get("1DP1")?.hash);
+    });
+
+    it("hashes differently once a row's text actually changes", async () => {
+      const section = (info: string) =>
+        `<div class="section"><div class="header"><span class="print-font-resizable">1DP1</span></div><div class="rows"><div class="row"><div class="period">1</div><div class="info">${info}</div></div></div></div>`;
+
+      const a = await extractClassSubstitutions(section("Matematika - Atcelts"));
+      const b = await extractClassSubstitutions(section("Matematika - Aizvietošana: (A) ➔ B"));
+      expect(b.get("1DP1")?.hash).not.toBe(a.get("1DP1")?.hash);
+    });
+
     it("generates target dates in Europe/Riga", () => {
       const dates = getTargetDates(new Date("2026-09-15T10:00:00Z"));
       expect(dates.length).toBe(3);
@@ -368,6 +389,71 @@ describe("Cloudflare Pages Function: /api-push", () => {
     it("reports missing PUSH_KV in checkAndDispatchSubstitutions", async () => {
       const res = await checkAndDispatchSubstitutions({});
       expect(res.errors).toContain("PUSH_KV binding is missing");
+    });
+
+    describe("first sighting of a date", () => {
+      const DATE = "2026-09-15";
+      const dayHtml = (info: string) =>
+        `<div class="section"><div class="header"><span class="print-font-resizable">1DP1</span></div><div class="rows"><div class="row"><div class="period">1</div><div class="info">${info}</div></div></div></div>`;
+
+      const subscriber = {
+        endpoint: "https://fcm.googleapis.com/test",
+        keys: {
+          p256dh:
+            "BBb4nnU3LcNCjbU9tSotemIqe6m10tH5mXExCi5CO78DpOljO3e1UX1kXem2goXDcNG3z0dcqZc5K1iaTYtTuYA",
+          auth: Buffer.from("1234567890123456").toString("base64url"),
+        },
+        classId: "1DP1",
+        lang: "lv",
+      };
+
+      /** Answers EduPage with `html`, and every push endpoint with a 201. */
+      const routedFetch = (html: string) =>
+        vi.fn((input: RequestInfo | URL) => {
+          const url = input instanceof Request ? input.url : String(input);
+          if (url.includes("edupage.org")) {
+            return Promise.resolve(new Response(JSON.stringify({ r: html }), { status: 200 }));
+          }
+          return Promise.resolve(new Response(null, { status: 201 }));
+        });
+
+      it("records a baseline instead of pushing what was already published", async () => {
+        // `getTargetDates` slides a new date into the window every day. Reporting whatever it
+        // already holds as "changes" is what pushed a notification every single morning.
+        const kv = createMockKv({ [`class:1DP1:abc`]: JSON.stringify(subscriber) });
+        global.fetch = routedFetch(dayHtml("Matematika - Atcelts"));
+
+        const res = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        expect(res.changedClasses).toEqual([]);
+        expect(res.notifiedDevices).toBe(0);
+        expect(await kv.get(`state:pikcrvt:${DATE}:1DP1`, "text")).not.toBeNull();
+      });
+
+      it("pushes once the day moves away from that baseline", async () => {
+        const kv = createMockKv({ [`class:1DP1:abc`]: JSON.stringify(subscriber) });
+
+        global.fetch = routedFetch(dayHtml("Matematika - Atcelts"));
+        await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        global.fetch = routedFetch(dayHtml("Matematika - Aizvietošana: (A) ➔ B"));
+        const res = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        expect(res.changedClasses).toEqual([`1DP1@${DATE}`]);
+        expect(res.notifiedDevices).toBe(1);
+      });
+
+      it("stays quiet when the school republishes the same day", async () => {
+        const kv = createMockKv({ [`class:1DP1:abc`]: JSON.stringify(subscriber) });
+        const html = dayHtml("Matematika - Atcelts");
+
+        global.fetch = routedFetch(html);
+        await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+        const res = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        expect(res.changedClasses).toEqual([]);
+        expect(res.notifiedDevices).toBe(0);
+      });
     });
   });
 });
