@@ -7,9 +7,10 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { StoreContext } from "@/store";
 import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { ClassSelector } from "@/ui/screens/class-selector";
-import { WeekView } from "../screens/WeekView.tsx";
-import { SettingsView } from "../screens/SettingsView.tsx";
+import { WeekView } from "../screens/week-view";
+import { SettingsView } from "../screens/settings-view";
 import { applyTheme, resolveTheme } from "@/ui/theme";
+import { handleBackPress } from "../hooks/useBackButton.ts";
 import { bootHarness, classIdOf, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
@@ -105,6 +106,27 @@ describe("ClassPicker", () => {
       classIdOf(harness.store, "DT3-2"),
     );
     expect(harness.store.getState().settings.subgroup).toBe("1");
+  });
+
+  it("returns to class list when back button is pressed while subgroup picker is open", async () => {
+    const harness = await bootHarness({ selectedClassId: null });
+    const onPicked = vi.fn();
+    wrap(harness, <ClassSelector onPicked={onPicked} />);
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("DT3-2"));
+    });
+
+    expect(screen.getByText("1. pusgrupa")).toBeDefined();
+
+    await clickAndSettle(() => {
+      void handleBackPress({ minimizeApp: vi.fn() });
+    });
+
+    // Subgroup picker is dismissed, back to class search list
+    expect(screen.queryByText("1. pusgrupa")).toBeNull();
+    expect(screen.getByLabelText("Meklēt klasi…")).toBeDefined();
+    expect(onPicked).not.toHaveBeenCalled();
   });
 
   it("pins favourites above the rest", async () => {

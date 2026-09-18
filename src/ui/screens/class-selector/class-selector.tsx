@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { listSubgroups } from "@/lib/edupage";
 import { useClasses, type ClassOption } from "@/ui/hooks/useClasses.ts";
+import { useBackButton } from "@/ui/hooks/useBackButton.ts";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { ClassSearch } from "./class-search.tsx";
 import { ClassList } from "./class-list.tsx";
-import { SubgroupPicker } from "@/ui/screens/SubgroupPicker.tsx";
+import { SubgroupPicker } from "@/ui/screens/subgroup-picker";
 
 type ClassSelectorProps = {
   onPicked?: () => void;
@@ -22,6 +23,13 @@ export const ClassSelector = ({ onPicked }: ClassSelectorProps) => {
 
   const [query, setQuery] = useState("");
   const [askSubgroupFor, setAskSubgroupFor] = useState<ClassOption | null>(null);
+
+  useBackButton(
+    () => {
+      setAskSubgroupFor(null);
+    },
+    { enabled: askSubgroupFor !== null, priority: 20 },
+  );
 
   useEffect(() => {
     if (classes.length === 0) {

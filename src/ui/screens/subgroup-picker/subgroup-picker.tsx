@@ -1,8 +1,14 @@
 import { useAppStore } from "@/store";
-import { Button, Card } from "@/ds";
+import { Button } from "@/ds";
 import { listSubgroups } from "@/lib/edupage";
-import type { ClassOption } from "../hooks/useClasses.ts";
+import type { ClassOption } from "@/ui/hooks/useClasses.ts";
 import { useT } from "@/ui/i18n";
+import { SubgroupList } from "./subgroup-list.tsx";
+
+type SubgroupPickerProps = {
+  cls: ClassOption;
+  onDone: () => void;
+};
 
 /**
  * Asked once, right after picking a divided class ("pusgrupa"): which half is the user's.
@@ -10,7 +16,7 @@ import { useT } from "@/ui/i18n";
  * bug this whole feature fixes (`resolve.ts`'s `matchesSubgroup`). Skipping is allowed — it
  * just means the merged view stays, same as for a class that isn't split at all.
  */
-export const SubgroupPicker = ({ cls, onDone }: { cls: ClassOption; onDone: () => void }) => {
+export const SubgroupPicker = ({ cls, onDone }: SubgroupPickerProps) => {
   const t = useT();
   const timetables = useAppStore((s) => s.timetables);
   const setClass = useAppStore((s) => s.setClass);
@@ -36,24 +42,7 @@ export const SubgroupPicker = ({ cls, onDone }: { cls: ClassOption; onDone: () =
           {t("subgroup.title", { class: cls.short })}
         </h1>
         <p className="max-w-88 font-text text-body text-muted">{t("subgroup.subtitle")}</p>
-        <ul className="flex w-full max-w-88 flex-col gap-2.5">
-          {subgroups.map((label) => (
-            <li key={label}>
-              <Card
-                tone="surface"
-                radius="lg"
-                onClick={() => {
-                  pick(label);
-                }}
-                className="flex items-center justify-center border-2 border-transparent"
-              >
-                <span className="font-text text-body font-bold text-strong">
-                  {t("subgroup.option", { label })}
-                </span>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        <SubgroupList subgroups={subgroups} onPick={pick} />
       </div>
 
       <Button block size="lg" variant="ghost" onClick={skip}>

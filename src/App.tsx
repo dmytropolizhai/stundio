@@ -10,11 +10,11 @@ import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
-import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
-import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
-import { DayView } from "./ui/screens/DayView.tsx";
+import { OnboardingLanguage } from "./ui/screens/onboarding-language";
+import { OnboardingIntro } from "./ui/screens/onboarding-intro";
+import { DayView } from "./ui/screens/day-view";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
-import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
+import { SplashScreen } from "./ui/screens/splash-screen";
 import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
 import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
@@ -23,17 +23,19 @@ import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
+import { nativeApp } from "@/lib/app";
+import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
 
 // Split off the tabs that aren't on screen at launch — only DayView (the default tab) and
 // ClassPicker (onboarding) need to be in the initial bundle.
 const WeekView = lazy(() =>
-  import("./ui/screens/WeekView.tsx").then((m) => ({ default: m.WeekView })),
+  import("./ui/screens/week-view").then((m) => ({ default: m.WeekView })),
 );
 const SubjectsView = lazy(() =>
-  import("./ui/screens/SubjectsView.tsx").then((m) => ({ default: m.SubjectsView })),
+  import("./ui/screens/subjects-view").then((m) => ({ default: m.SubjectsView })),
 );
 const SettingsView = lazy(() =>
-  import("./ui/screens/SettingsView.tsx").then((m) => ({ default: m.SettingsView })),
+  import("./ui/screens/settings-view").then((m) => ({ default: m.SettingsView })),
 );
 
 /**
@@ -60,6 +62,21 @@ const BootSignal = ({ onReady }: { onReady: () => void }) => {
 const Onboarding = () => {
   const t = useT();
   const [step, setStep] = useState<"language" | "intro" | "picker">("language");
+
+  useBackButton(
+    () => {
+      if (step === "picker") {
+        setStep("intro");
+        return true;
+      }
+      if (step === "intro") {
+        setStep("language");
+        return true;
+      }
+      return false;
+    },
+    { priority: 10 },
+  );
 
   if (step === "language") {
     return (
@@ -105,6 +122,20 @@ const Shell = () => {
   const iphoneInstall = useIphoneInstallPrompt();
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
+
+  useBackButton(
+    () => {
+      setPicking(false);
+    },
+    { enabled: picking, priority: 15 },
+  );
+
+  useBackButton(
+    () => {
+      setTab("day");
+    },
+    { enabled: !picking && tab !== "day", priority: 5 },
+  );
 
   useEffect(() => {
     trackEvent(`view_${tab}`);
@@ -216,6 +247,12 @@ export default function App() {
   const [ready, setReady] = useState(false);
   const markReady = useCallback(() => {
     setReady(true);
+  }, []);
+
+  useEffect(() => {
+    return nativeApp.addBackButtonListener(() => {
+      void handleBackPress();
+    });
   }, []);
 
   return (

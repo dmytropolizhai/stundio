@@ -5,7 +5,7 @@
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { act, render, screen } from "@testing-library/react";
-import { SplashScreen } from "../screens/SplashScreen.tsx";
+import { SplashScreen } from "../screens/splash-screen";
 
 /** happy-dom does not drive rAF off a real vsync; run the callbacks by hand. */
 const flushFrame = async () => {

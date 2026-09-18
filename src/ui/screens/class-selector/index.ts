@@ -1,1 +1,1 @@
-export { ClassSelector } from "./class-selector.tsx";
+export { ClassSelector, ClassSelector as ClassPicker } from "./class-selector.tsx";

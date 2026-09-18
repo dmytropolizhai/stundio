@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { fireEvent, render, renderHook, screen, within } from "@testing-library/react";
 import { StoreContext } from "@/store";
-import { SettingsView } from "../screens/SettingsView.tsx";
+import { SettingsView } from "../screens/settings-view";
 import { subjectToneKey } from "@/ui/theme";
 import { useSubjects } from "../hooks/useSubjects.ts";
 import { bootHarness, clickAndSettle, type Harness } from "./harness.tsx";

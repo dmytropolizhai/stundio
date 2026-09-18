@@ -4,7 +4,7 @@ import { StoreContext } from "@/store";
 import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { useIphoneInstallPrompt } from "../hooks/useIphoneInstallPrompt.ts";
 import { IphoneInstallSheet } from "../screens/sheets/IphoneInstallSheet.tsx";
-import { SettingsView } from "../screens/SettingsView.tsx";
+import { SettingsView } from "../screens/settings-view";
 import { isIosDevice, isStandalonePwa } from "../lib/platform.ts";
 
 describe("iPhone install prompt & platform detection", () => {
