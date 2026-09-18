@@ -3,6 +3,7 @@ import { useAppStore } from "@/store";
 import { Card, Icon, IconButton, TextField } from "@/ds";
 import { listSubgroups } from "@/lib/edupage";
 import { useClasses, type ClassOption } from "../hooks/useClasses.ts";
+import { useBackButton } from "../hooks/useBackButton.ts";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { SubgroupPicker } from "./SubgroupPicker.tsx";
 import { useT } from "@/ui/i18n";
@@ -32,6 +33,13 @@ export const ClassPicker = ({ onPicked }: { onPicked?: () => void }) => {
   const refresh = useAppStore((s) => s.refresh);
   const [query, setQuery] = useState("");
   const [askSubgroupFor, setAskSubgroupFor] = useState<ClassOption | null>(null);
+
+  useBackButton(
+    () => {
+      setAskSubgroupFor(null);
+    },
+    { enabled: askSubgroupFor !== null, priority: 20 },
+  );
 
   useEffect(() => {
     if (classes.length === 0) {
