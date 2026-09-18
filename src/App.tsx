@@ -23,6 +23,8 @@ import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
+import { nativeApp } from "@/lib/app";
+import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
 
 // Split off the tabs that aren't on screen at launch — only DayView (the default tab) and
 // ClassPicker (onboarding) need to be in the initial bundle.
@@ -60,6 +62,21 @@ const BootSignal = ({ onReady }: { onReady: () => void }) => {
 const Onboarding = () => {
   const t = useT();
   const [step, setStep] = useState<"language" | "intro" | "picker">("language");
+
+  useBackButton(
+    () => {
+      if (step === "picker") {
+        setStep("intro");
+        return true;
+      }
+      if (step === "intro") {
+        setStep("language");
+        return true;
+      }
+      return false;
+    },
+    { priority: 10 },
+  );
 
   if (step === "language") {
     return (
@@ -105,6 +122,20 @@ const Shell = () => {
   const iphoneInstall = useIphoneInstallPrompt();
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
+
+  useBackButton(
+    () => {
+      setPicking(false);
+    },
+    { enabled: picking, priority: 15 },
+  );
+
+  useBackButton(
+    () => {
+      setTab("day");
+    },
+    { enabled: !picking && tab !== "day", priority: 5 },
+  );
 
   useEffect(() => {
     trackEvent(`view_${tab}`);
@@ -216,6 +247,12 @@ export default function App() {
   const [ready, setReady] = useState(false);
   const markReady = useCallback(() => {
     setReady(true);
+  }, []);
+
+  useEffect(() => {
+    return nativeApp.addBackButtonListener(() => {
+      void handleBackPress();
+    });
   }, []);
 
   return (
