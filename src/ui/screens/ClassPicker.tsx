@@ -3,6 +3,7 @@ import { useAppStore } from "../../store/index.ts";
 import { Card, Icon, IconButton, TextField } from "../../ds/index.ts";
 import { listSubgroups } from "../../lib/edupage/index.ts";
 import { useClasses, type ClassOption } from "../hooks/useClasses.ts";
+import { useBackButton } from "../hooks/useBackButton.ts";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { SubgroupPicker } from "./SubgroupPicker.tsx";
 import { useT } from "../i18n/index.ts";
@@ -31,6 +32,13 @@ export const ClassPicker = ({ onPicked }: { onPicked?: () => void }) => {
   const toggleFavorite = useAppStore((s) => s.toggleFavorite);
   const [query, setQuery] = useState("");
   const [askSubgroupFor, setAskSubgroupFor] = useState<ClassOption | null>(null);
+
+  useBackButton(
+    () => {
+      setAskSubgroupFor(null);
+    },
+    { enabled: askSubgroupFor !== null, priority: 20 },
+  );
 
   const matches = useMemo(() => {
     const needle = query.trim().toLowerCase();

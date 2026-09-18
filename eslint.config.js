@@ -130,4 +130,22 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // And for lib/app, where only the native app bridge is allowed to touch Capacitor.
+    files: ["src/lib/app/**/*.ts"],
+    ignores: ["src/lib/app/native.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@capacitor/*"],
+              message: "Only src/lib/app/native.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );
