@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash background for dark system mode (mirrors drawable-night/splash.png background) -->
+    <color name="splash_background">#0C0D0E</color>
+</resources>
