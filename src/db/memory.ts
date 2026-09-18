@@ -9,7 +9,7 @@ import {
   type Settings,
   type SubjectNote,
 } from "./types.ts";
-import type { DaySubstitutions, ISODate, Timetable } from "../lib/edupage/index.ts";
+import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
 
 export const createMemoryCache = (): AppCache => {
   let list: CachedTimetableList | null = null;

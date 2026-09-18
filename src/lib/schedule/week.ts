@@ -2,13 +2,7 @@
  * School-week arithmetic for the week pager. Mon–Fri only: RVT publishes no weekend
  * lessons, and a two-column-wider grid for two always-empty days is a worse screen.
  */
-import {
-  weekdayOf,
-  type HHMM,
-  type ISODate,
-  type ResolvedDay,
-  type Weekday,
-} from "../edupage/index.ts";
+import { weekdayOf, type HHMM, type ISODate, type ResolvedDay, type Weekday } from "@/lib/edupage";
 
 const ORDER: Record<Weekday, number> = { mon: 0, tue: 1, wed: 2, thu: 3, fri: 4, sat: 5, sun: 6 };
 

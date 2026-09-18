@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { useAppStore } from "../../store/index.ts";
-import { Card, Icon, IconButton, TextField } from "../../ds/index.ts";
-import { listSubgroups } from "../../lib/edupage/index.ts";
+import { useAppStore } from "@/store";
+import { Card, Icon, IconButton, TextField } from "@/ds";
+import { listSubgroups } from "@/lib/edupage";
 import { useClasses, type ClassOption } from "../hooks/useClasses.ts";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { SubgroupPicker } from "./SubgroupPicker.tsx";
-import { useT } from "../i18n/index.ts";
+import { useT } from "@/ui/i18n";
 
 /**
  * Class picker — onboarding and the "change class" route from Settings.

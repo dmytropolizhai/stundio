@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { useIphoneInstallPrompt } from "../hooks/useIphoneInstallPrompt.ts";
 import { IphoneInstallSheet } from "../screens/IphoneInstallSheet.tsx";

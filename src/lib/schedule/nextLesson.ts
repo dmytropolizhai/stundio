@@ -6,7 +6,7 @@
  * be re-implemented in Kotlin against these tests. Wall clock is always Europe/Riga
  * (CLAUDE.md) — the device may sit in another timezone, the school never does.
  */
-import type { HHMM, ISODate, ResolvedDay, ResolvedLesson } from "../edupage/index.ts";
+import type { HHMM, ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 
 /** Wall clock in Riga, decomposed: the calendar date plus minutes since local midnight. */
 export type RigaClock = { date: ISODate; minutes: number };

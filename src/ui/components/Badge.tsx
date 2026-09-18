@@ -1,7 +1,7 @@
-import type { ResolvedStatus } from "../../lib/edupage/index.ts";
-import { Badge } from "../../ds/index.ts";
-import { STATUS_DOT_CLASS, STATUS_TONE, isChanged } from "../theme/index.ts";
-import { useT } from "../i18n/index.ts";
+import type { ResolvedStatus } from "@/lib/edupage";
+import { Badge } from "@/ds";
+import { STATUS_DOT_CLASS, STATUS_TONE, isChanged } from "@/ui/theme";
+import { useT } from "@/ui/i18n";
 
 /** The one-word "what changed" chip. Renders nothing for an unchanged lesson. */
 export const StatusBadge = ({ status }: { status: ResolvedStatus }) => {

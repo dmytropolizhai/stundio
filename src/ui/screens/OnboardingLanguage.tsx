@@ -1,6 +1,6 @@
-import { useAppStore } from "../../store/index.ts";
-import { Button, Card } from "../../ds/index.ts";
-import { LANGS, LANG_NAMES, useT, type Lang } from "../i18n/index.ts";
+import { useAppStore } from "@/store";
+import { Button, Card } from "@/ds";
+import { LANGS, LANG_NAMES, useT, type Lang } from "@/ui/i18n";
 
 /**
  * The very first question on first launch — before the feature tour, before the class picker.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { startOfWeek, weekDates, weekPeriods } from "../index.ts";
-import type { ResolvedDay, ResolvedLesson } from "../../edupage/index.ts";
+import { startOfWeek, weekDates, weekPeriods } from "@/lib/schedule";
+import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 
 describe("startOfWeek", () => {
   it("returns the Monday of the same week", () => {

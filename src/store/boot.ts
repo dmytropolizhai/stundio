@@ -18,7 +18,7 @@ import {
   wireNotifications,
   wireNotificationTaps,
 } from "@/notifications";
-import { createAnalyticsClient, defaultHttp as analyticsHttp } from "../lib/analytics/index.ts";
+import { createAnalyticsClient, defaultHttp as analyticsHttp } from "@/lib/analytics";
 import { wireWidget } from "@/widget";
 
 /** The Plausible site the app reports to (a fake domain — there is no web page behind it). */

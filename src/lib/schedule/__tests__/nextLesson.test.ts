@@ -3,8 +3,8 @@
  * lesson ends, cancelled slots, a day that is not today, and a device in the wrong timezone.
  */
 import { describe, expect, it } from "vitest";
-import type { ResolvedDay, ResolvedLesson } from "../../edupage/index.ts";
-import { dayProgress, glanceLesson, minutesOf, rigaClock, timedLessons } from "../index.ts";
+import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
+import { dayProgress, glanceLesson, minutesOf, rigaClock, timedLessons } from "@/lib/schedule";
 
 const lesson = (
   over: Partial<ResolvedLesson> & Pick<ResolvedLesson, "period">,

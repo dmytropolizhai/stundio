@@ -1,5 +1,5 @@
-import { BottomNav, type BottomNavItem, type IconName } from "../../ds/index.ts";
-import { useT } from "../i18n/index.ts";
+import { BottomNav, type BottomNavItem, type IconName } from "@/ds";
+import { useT } from "@/ui/i18n";
 
 export type Tab = "day" | "week" | "subjects" | "settings";
 

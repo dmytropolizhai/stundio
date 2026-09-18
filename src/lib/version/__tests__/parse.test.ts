@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compareVersions, parseVersion } from "../index.ts";
+import { compareVersions, parseVersion } from "@/lib/version";
 
 describe("parseVersion", () => {
   it("strips a leading v and a trailing -word suffix", () => {

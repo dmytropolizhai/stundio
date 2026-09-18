@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import type { SubjectRef } from "../../lib/edupage/index.ts";
-import { Button } from "../../ds/index.ts";
+import type { SubjectRef } from "@/lib/edupage";
+import { Button } from "@/ds";
 import { Sheet } from "../components/Sheet.tsx";
-import { useAppStore } from "../../store/index.ts";
-import { useT } from "../i18n/index.ts";
+import { useAppStore } from "@/store";
+import { useT } from "@/ui/i18n";
 
 /**
  * Freeform note for one subject, keyed the same way `useSubjects.ts` keys its catalogue

@@ -5,7 +5,7 @@
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { DayView } from "../screens/DayView.tsx";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 

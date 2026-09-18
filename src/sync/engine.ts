@@ -24,9 +24,9 @@ import {
   type ISODate,
   type ISODateTime,
   type TimetableMeta,
-} from "../lib/edupage/index.ts";
-import type { AppCache } from "../db/index.ts";
-import { substitutionsChanged } from "../lib/schedule/index.ts";
+} from "@/lib/edupage";
+import type { AppCache } from "@/db";
+import { substitutionsChanged } from "@/lib/schedule";
 import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
 export type SyncStatus = "idle" | "syncing" | "offline" | "error";

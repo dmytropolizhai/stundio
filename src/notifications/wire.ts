@@ -3,11 +3,11 @@
  * store. Nothing in here computes a fire time or a diff itself — it only decides *when* to
  * re-run those and hands the result to the plugin.
  */
-import { checkForUpdate } from "../lib/version/index.ts";
-import { rigaClock, lessonReminders } from "../lib/schedule/index.ts";
-import { translate } from "../ui/i18n/index.ts";
-import type { Store } from "../store/index.ts";
-import type { SyncOutcome } from "../sync/index.ts";
+import { checkForUpdate } from "@/lib/version";
+import { rigaClock, lessonReminders } from "@/lib/schedule";
+import { translate } from "@/ui/i18n";
+import type { Store } from "@/store";
+import type { SyncOutcome } from "@/sync";
 import {
   hasNotificationPermission,
   notifyAppUpdate,

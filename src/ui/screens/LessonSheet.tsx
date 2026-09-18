@@ -1,8 +1,8 @@
-import type { ResolvedDay, ResolvedLesson } from "../../lib/edupage/index.ts";
-import { Button, Card } from "../../ds/index.ts";
+import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
+import { Button, Card } from "@/ds";
 import { Sheet } from "../components/Sheet.tsx";
 import { StatusBadge } from "../components/Badge.tsx";
-import { formatRange, useT } from "../i18n/index.ts";
+import { formatRange, useT } from "@/ui/i18n";
 
 const Field = ({ label, value }: { label: string; value: string }) => {
   if (value === "") return null;

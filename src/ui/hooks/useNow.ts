@@ -5,7 +5,7 @@
  * the day screen only ever shows whole minutes.
  */
 import { useEffect, useState } from "react";
-import { rigaClock, type RigaClock } from "../../lib/schedule/index.ts";
+import { rigaClock, type RigaClock } from "@/lib/schedule";
 
 export const useNow = (): RigaClock => {
   const [now, setNow] = useState<RigaClock>(() => rigaClock());

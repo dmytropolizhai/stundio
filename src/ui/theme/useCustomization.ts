@@ -5,7 +5,7 @@
  * still something the Studio DS itself would recognise (CLAUDE.md: `ds/tokens/*` stays generated).
  */
 import { useEffect } from "react";
-import { useAppStore } from "../../store/index.ts";
+import { useAppStore } from "@/store";
 import { SUBJECT_TONES } from "./colors.ts";
 
 export const useCustomization = (): void => {

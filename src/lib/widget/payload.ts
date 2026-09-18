@@ -10,8 +10,8 @@
  * Pure and React-free. The Capacitor hand-off lives in `native.ts`, the store wiring in
  * `src/widget/wire.ts`.
  */
-import type { ResolvedDay, ResolvedLesson } from "../edupage/index.ts";
-import { dayProgress, glanceLesson, timedLessons, type RigaClock } from "../schedule/index.ts";
+import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
+import { dayProgress, glanceLesson, timedLessons, type RigaClock } from "@/lib/schedule";
 import {
   WIDGET_PAYLOAD_VERSION,
   type WidgetDayEntry,

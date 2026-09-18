@@ -4,11 +4,11 @@
  * shapes the device does, not hand-written stubs.
  */
 import { act } from "@testing-library/react";
-import { createAppStore, type Store } from "../../store/index.ts";
-import { createMemoryCache } from "../../db/index.ts";
-import { createSyncEngine } from "../../sync/index.ts";
+import { createAppStore, type Store } from "@/store";
+import { createMemoryCache } from "@/db";
+import { createSyncEngine } from "@/sync";
 import { createFakeServer } from "../../sync/__tests__/fakeServer.ts";
-import type { Settings } from "../../db/index.ts";
+import type { Settings } from "@/db";
 
 /** The date the fixtures were captured on — a Wednesday with 55 substitutions. */
 export const FIXTURE_DATE = "2026-09-09";

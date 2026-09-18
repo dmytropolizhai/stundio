@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ResolvedDay, ResolvedLesson } from "../../edupage/index.ts";
-import { lessonReminders, rigaTimeToDate } from "../index.ts";
+import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
+import { lessonReminders, rigaTimeToDate } from "@/lib/schedule";
 
 const lesson = (
   over: Partial<ResolvedLesson> & Pick<ResolvedLesson, "period">,
