@@ -270,8 +270,8 @@
   --spacing-nav-inset: var(--nav-inset);
   --spacing-topbar: var(--topbar-height);
   --spacing-tap: var(--tap-min);
-  --spacing-safe-top: env(safe-area-inset-top, 0px);
-  --spacing-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --spacing-safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --spacing-safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
 
   /*
    * The bottom nav floats over the scroll area (TabBar.tsx), so every screen has to end its
@@ -281,7 +281,8 @@
    * part of the sum, not assumed to be zero.
    */
   --spacing-nav-safe: calc(
-    var(--nav-height) + var(--nav-inset) + 20px + env(safe-area-inset-bottom, 0px)
+    var(--nav-height) + var(--nav-inset) + 20px +
+      var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))
   );
 
   --container-screen: var(--screen-max);
@@ -398,8 +399,10 @@
 
   /* The app runs full-bleed inside the Capacitor WebView. */
   :root {
-    --app-inset-top: env(safe-area-inset-top, 0px);
-    --app-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --app-inset-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+    --app-inset-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
 
     /*
      * iOS Safari resolves `vh` against the *large* viewport — the screen as it looks with the
