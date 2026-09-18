@@ -9,7 +9,7 @@ import { todayInRiga } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
-import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
+import { ClassSelector } from "./ui/screens/class-selector";
 import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
 import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
@@ -84,7 +84,7 @@ const Onboarding = () => {
         <p className="mt-3 font-text text-body-lg text-white/72">{t("onboarding.subtitle")}</p>
       </div>
       <div className="flex min-h-0 flex-1 flex-col pt-5">
-        <ClassPicker />
+        <ClassSelector />
       </div>
     </div>
   );
@@ -140,7 +140,7 @@ const Shell = () => {
             }}
           />
         </div>
-        <ClassPicker
+        <ClassSelector
           onPicked={() => {
             setPicking(false);
           }}
