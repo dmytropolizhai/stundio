@@ -283,7 +283,7 @@ describe("settings", () => {
     expect(store.getState().settings.reduceMotion).toBe(false);
   });
 
-  it("clears all cache stores and resets store state to defaults on resetAllData", async () => {
+  it("clears user data (settings and notes) on resetAllData while preserving timetables", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });
     const classId = classIdOf(store, "A1-2");
@@ -302,12 +302,12 @@ describe("settings", () => {
     expect(store.getState().settings.selectedClassId).toBeNull();
     expect(store.getState().settings.lang).toBe("lv");
     expect(store.getState().settings.theme).toBe("system");
-    expect(store.getState().metas).toEqual([]);
-    expect(store.getState().timetables).toEqual({});
-    expect(store.getState().substitutions).toEqual({});
     expect(store.getState().notes).toEqual({});
-    expect(await cache.listTimetableNums()).toEqual([]);
     expect(await cache.listNoteSubjects()).toEqual([]);
+    // Timetables and metas are preserved so class picker works immediately
+    expect(store.getState().metas.length).toBeGreaterThan(0);
+    expect(Object.keys(store.getState().timetables).length).toBeGreaterThan(0);
+    expect((await cache.listTimetableNums()).length).toBeGreaterThan(0);
   });
 
   it("re-resolves against the pinned building", async () => {

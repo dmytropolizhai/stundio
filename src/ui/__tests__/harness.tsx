@@ -13,7 +13,11 @@ import type { Settings } from "../../db/index.ts";
 /** The date the fixtures were captured on — a Wednesday with 55 substitutions. */
 export const FIXTURE_DATE = "2026-09-09";
 
-export type Harness = { store: Store; server: ReturnType<typeof createFakeServer> };
+export type Harness = {
+  store: Store;
+  server: ReturnType<typeof createFakeServer>;
+  cache: ReturnType<typeof createMemoryCache>;
+};
 
 export const bootHarness = async (settings: Partial<Settings> = {}): Promise<Harness> => {
   const cache = createMemoryCache();
@@ -40,7 +44,7 @@ export const bootHarness = async (settings: Partial<Settings> = {}): Promise<Har
     await store.getState().hydrate();
   });
 
-  return { store, server };
+  return { store, server, cache };
 };
 
 export const classIdOf = (store: Store, short: string): string =>

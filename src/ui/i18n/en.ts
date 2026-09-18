@@ -222,11 +222,11 @@ export const en: Dict = {
   "settings.suggestFeatureAction": "Suggest",
   "settings.dangerZone": "Danger zone",
   "settings.resetData": "Reset all data",
-  "settings.resetDataHint": "Deletes cached timetables, notes, and restores default settings.",
+  "settings.resetDataHint": "Deletes notes and restores default settings.",
   "settings.resetDataAction": "Reset",
   "settings.resetDataConfirmTitle": "Reset all data?",
   "settings.resetDataConfirmBody":
-    "All downloaded timetables, substitutions, notes will be deleted, and all settings will be restored to their defaults. The app will return to its initial setup.",
+    "All notes will be deleted, and all settings will be restored to their defaults. The app will return to its initial setup.",
   "settings.resetDataConfirmButton": "Reset all data",
   "settings.resetDataCancelButton": "Cancel",
   "feedback.sheet.title": "Suggest a feature",

@@ -89,6 +89,11 @@ export const createIdbCache = (
   },
   listNoteSubjects: async () => (await (await dbPromise).getAllKeys("notes")).map(String),
 
+  clearUserData: async () => {
+    const db = await dbPromise;
+    await Promise.all([db.clear("settings"), db.clear("notes")]);
+  },
+
   clear: async () => {
     const db = await dbPromise;
     await Promise.all([

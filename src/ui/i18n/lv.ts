@@ -229,11 +229,11 @@ export const lv = {
   "settings.suggestFeatureAction": "Ieteikt",
   "settings.dangerZone": "Bīstamā zona",
   "settings.resetData": "Dzēst visus datus",
-  "settings.resetDataHint": "Dzēš saglabātos sarakstus, piezīmes un atiestata iestatījumus.",
+  "settings.resetDataHint": "Dzēš piezīmes un atiestata visus iestatījumus.",
   "settings.resetDataAction": "Dzēst",
   "settings.resetDataConfirmTitle": "Dzēst visus datus?",
   "settings.resetDataConfirmBody":
-    "Tiks dzēsti visi lejupielādētie stundu saraksti, izmaiņas, piezīmes un visi iestatījumi tiks atiestatīti uz noklusējuma vērtībām. Lietotne atgriezīsies sākotnējā stāvoklī.",
+    "Tiks dzēstas visas piezīmes un visi iestatījumi tiks atiestatīti uz noklusējuma vērtībām. Lietotne atgriezīsies sākotnējā stāvoklī.",
   "settings.resetDataConfirmButton": "Dzēst visus datus",
   "settings.resetDataCancelButton": "Atcelt",
   "feedback.sheet.title": "Ieteikt funkciju",

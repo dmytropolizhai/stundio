@@ -224,11 +224,11 @@ export const ru: Dict = {
   "settings.suggestFeatureAction": "Предложить",
   "settings.dangerZone": "Опасная зона",
   "settings.resetData": "Сбросить все данные",
-  "settings.resetDataHint": "Удаляет сохранённые расписания, заметки и сбрасывает настройки.",
+  "settings.resetDataHint": "Удаляет заметки и сбрасывает настройки.",
   "settings.resetDataAction": "Сбросить",
   "settings.resetDataConfirmTitle": "Сбросить все данные?",
   "settings.resetDataConfirmBody":
-    "Все сохранённые расписания, замены, заметки будут удалены, а настройки сброшены до исходных. Приложение вернётся к начальной настройке.",
+    "Все заметки будут удалены, а настройки сброшены до исходных. Приложение вернётся к начальной настройке.",
   "settings.resetDataConfirmButton": "Сбросить все данные",
   "settings.resetDataCancelButton": "Отмена",
   "feedback.sheet.title": "Предложить функцию",

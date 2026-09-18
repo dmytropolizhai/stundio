@@ -223,11 +223,11 @@ export const ua: Dict = {
   "settings.suggestFeatureAction": "Запропонувати",
   "settings.dangerZone": "Небезпечна зона",
   "settings.resetData": "Скинути всі дані",
-  "settings.resetDataHint": "Видаляє збережені розклади, нотатки та скидає налаштування.",
+  "settings.resetDataHint": "Видаляє нотатки та скидає налаштування.",
   "settings.resetDataAction": "Скинути",
   "settings.resetDataConfirmTitle": "Скинути всі дані?",
   "settings.resetDataConfirmBody":
-    "Усі збережені розклади, заміни, нотатки будуть видалені, а налаштування скинуті до початкових. Додаток повернеться до початкового налаштування.",
+    "Усі нотатки будуть видалені, а налаштування скинуті до початкових. Додаток повернеться до початкового налаштування.",
   "settings.resetDataConfirmButton": "Скинути всі дані",
   "settings.resetDataCancelButton": "Скасувати",
   "feedback.sheet.title": "Запропонувати функцію",
