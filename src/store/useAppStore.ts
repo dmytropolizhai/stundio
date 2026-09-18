@@ -78,6 +78,8 @@ export type AppState = {
   ) => Promise<void>;
   /** Restores every Customization sheet setting — not the rest of `Settings` — to its default. */
   resetCustomization: () => Promise<void>;
+  /** Clears the entire cache (timetables, substitutions, notes, settings) and resets state. */
+  resetAllData: () => Promise<void>;
   setNotifyLessonReminderMinutes: (minutes: number) => Promise<void>;
   setNotifySubstitutionChanges: (enabled: boolean) => Promise<void>;
   setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
@@ -238,6 +240,10 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           subjectColorCodingEnabled: DEFAULT_SETTINGS.subjectColorCodingEnabled,
           subjectColorOverrides: { ...DEFAULT_SETTINGS.subjectColorOverrides },
         }),
+      resetAllData: async () => {
+        await cache.clear();
+        await readCache();
+      },
       setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>
         persist({ notifyLessonReminderMinutes }),
       setNotifySubstitutionChanges: (notifySubstitutionChanges) =>

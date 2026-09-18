@@ -3,7 +3,7 @@ import { useAppStore } from "@/store";
 import { isNativePlatform, listBuildings, listSubgroups } from "@/lib/edupage";
 import type { Settings } from "@/db";
 import { Icon } from "@/ds/components/ui/icon";
-import { Button, Card, SegmentedTabs, Switch, TopBar } from "@/ds";
+import { BottomSheet, Button, Card, SegmentedTabs, Switch, TopBar } from "@/ds";
 import {
   ensureNotificationPermission,
   openNotificationSettings,
@@ -82,6 +82,23 @@ export const SettingsView = ({
   const setShareLang = useAppStore((s) => s.setShareLang);
   const setShareLangSyncWithApp = useAppStore((s) => s.setShareLangSyncWithApp);
   const refresh = useAppStore((s) => s.refresh);
+  const resetAllData = useAppStore((s) => s.resetAllData);
+  const [confirmResetOpen, setConfirmResetOpen] = useState(false);
+  const [resetting, setResetting] = useState(false);
+
+  const handleResetAllData = async () => {
+    setResetting(true);
+    try {
+      if (!isNativePlatform() && isWebPushSupported()) {
+        await unsubscribeWebPush();
+      }
+      await resetAllData();
+      setConfirmResetOpen(false);
+    } finally {
+      setResetting(false);
+    }
+  };
+
   const isNative = isNativePlatform();
   const {
     result: update,
@@ -565,6 +582,26 @@ export const SettingsView = ({
           )}
         </Section>
 
+        <Section title={t("settings.dangerZone")}>
+          <Row className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="font-text text-body font-bold text-danger">{t("settings.resetData")}</p>
+              <p className="mt-0.5 font-text text-caption text-muted">
+                {t("settings.resetDataHint")}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="danger"
+              onClick={() => {
+                setConfirmResetOpen(true);
+              }}
+            >
+              {t("settings.resetDataAction")}
+            </Button>
+          </Row>
+        </Section>
+
         <div className="flex justify-center pt-2 pb-4">
           <a
             href={REPO_URL}
@@ -592,6 +629,40 @@ export const SettingsView = ({
         }}
         className={selectedClass?.short}
       />
+
+      <BottomSheet
+        open={confirmResetOpen}
+        onClose={() => {
+          if (!resetting) setConfirmResetOpen(false);
+        }}
+        title={t("settings.resetDataConfirmTitle")}
+        footer={
+          <div className="flex flex-col gap-2.5">
+            <Button
+              variant="danger"
+              block
+              disabled={resetting}
+              onClick={() => {
+                void handleResetAllData();
+              }}
+            >
+              {t("settings.resetDataConfirmButton")}
+            </Button>
+            <Button
+              variant="outline"
+              block
+              disabled={resetting}
+              onClick={() => {
+                setConfirmResetOpen(false);
+              }}
+            >
+              {t("settings.resetDataCancelButton")}
+            </Button>
+          </div>
+        }
+      >
+        <p className="font-text text-body text-muted">{t("settings.resetDataConfirmBody")}</p>
+      </BottomSheet>
     </div>
   );
 };

@@ -283,6 +283,33 @@ describe("settings", () => {
     expect(store.getState().settings.reduceMotion).toBe(false);
   });
 
+  it("clears all cache stores and resets store state to defaults on resetAllData", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    const classId = classIdOf(store, "A1-2");
+    await store.getState().setClass(classId);
+    await store.getState().setLang("en");
+    await store.getState().setTheme("dark");
+    await store.getState().setNote("Matemātika", "Piezīme");
+
+    expect(store.getState().settings.selectedClassId).toBe(classId);
+    expect(store.getState().settings.lang).toBe("en");
+    expect(Object.keys(store.getState().timetables).length).toBeGreaterThan(0);
+    expect(Object.keys(store.getState().notes).length).toBeGreaterThan(0);
+
+    await store.getState().resetAllData();
+
+    expect(store.getState().settings.selectedClassId).toBeNull();
+    expect(store.getState().settings.lang).toBe("lv");
+    expect(store.getState().settings.theme).toBe("system");
+    expect(store.getState().metas).toEqual([]);
+    expect(store.getState().timetables).toEqual({});
+    expect(store.getState().substitutions).toEqual({});
+    expect(store.getState().notes).toEqual({});
+    expect(await cache.listTimetableNums()).toEqual([]);
+    expect(await cache.listNoteSubjects()).toEqual([]);
+  });
+
   it("re-resolves against the pinned building", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });

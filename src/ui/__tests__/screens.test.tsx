@@ -554,6 +554,39 @@ describe("SettingsView", () => {
       ),
     ).toBeDefined();
   });
+
+  it("opens confirmation sheet and cancels reset all data", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+
+    expect(screen.getByText("Bīstamā zona")).toBeDefined();
+    const resetButton = screen.getByRole("button", { name: "Dzēst" });
+    fireEvent.click(resetButton);
+
+    expect(screen.getByText("Dzēst visus datus?")).toBeDefined();
+    const cancelButton = screen.getByRole("button", { name: "Atcelt" });
+    fireEvent.click(cancelButton);
+
+    // Class should still be selected
+    expect(harness.store.getState().settings.selectedClassId).not.toBeNull();
+  });
+
+  it("resets all data when confirmed", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+
+    const resetButton = screen.getByRole("button", { name: "Dzēst" });
+    fireEvent.click(resetButton);
+
+    const confirmButton = screen.getByRole("button", { name: "Dzēst visus datus" });
+    await clickAndSettle(() => {
+      fireEvent.click(confirmButton);
+    });
+
+    expect(harness.store.getState().settings.selectedClassId).toBeNull();
+    expect(harness.store.getState().metas).toEqual([]);
+    expect(harness.store.getState().timetables).toEqual({});
+  });
 });
 
 describe("theme", () => {
