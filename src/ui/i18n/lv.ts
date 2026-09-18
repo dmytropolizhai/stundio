@@ -328,6 +328,10 @@ export const lv = {
   "iphoneInstall.dismiss": "Turpināt pārlūkā",
   "settings.iphoneInstall": "Pievienot sākuma ekrānam",
   "settings.iphoneInstallHint": "Instalēt Stundio kā lietotni savā iPhone",
+
+  "error.title": "Kaut kas nogāja greizi",
+  "error.hint": "Neizdevās ielādēt šo skatu.",
+  "error.retry": "Mēģināt vēlreiz",
 } as const;
 
 export type Dict = Record<keyof typeof lv, string>;

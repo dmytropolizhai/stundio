@@ -322,4 +322,8 @@ export const ru: Dict = {
   "iphoneInstall.dismiss": "Продолжить в браузере",
   "settings.iphoneInstall": "Добавить на экран «Домой»",
   "settings.iphoneInstallHint": "Установить Stundio как приложение на iPhone",
+
+  "error.title": "Что-то пошло не так",
+  "error.hint": "Не удалось загрузить этот экран.",
+  "error.retry": "Попробовать снова",
 };
