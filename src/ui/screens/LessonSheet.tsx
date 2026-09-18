@@ -7,7 +7,7 @@ import { formatRange, useT } from "@/ui/i18n";
 const Field = ({ label, value }: { label: string; value: string }) => {
   if (value === "") return null;
   return (
-    <div className="flex justify-between gap-4 border-t border-hairline py-2.5 first:border-t-0">
+    <div className="flex justify-between gap-4 border-t border-hairline py-2.5">
       <dt className="font-text text-caption text-muted">{label}</dt>
       <dd className="text-right font-text text-caption font-bold text-strong">{value}</dd>
     </div>

@@ -3,7 +3,7 @@ import { Button, Card } from "@/ds";
 import { LANGS, LANG_NAMES, useT, type Lang } from "@/ui/i18n";
 
 /**
- * The very first question on first launch — before the feature tour, before the class picker.
+ * The very first question on the first launch — before the feature tour, before the class picker.
  * Every label is written in its own language rather than the current (default `lv`) one, so a
  * non-Latvian speaker can still find their language without reading Latvian first.
  */

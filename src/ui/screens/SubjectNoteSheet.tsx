@@ -45,7 +45,7 @@ export const SubjectNoteSheet = ({
             }}
             placeholder={t("subjects.note.placeholder")}
             rows={6}
-            className="w-full resize-none rounded-2xl bg-card p-4 font-text text-body text-strong shadow-hairline outline-none placeholder:text-muted"
+            className="w-full resize-none rounded-2xl bg-card p-4 font-text text-body text-strong shadow-hairline outline-none"
           />
           <Button variant="inverse" block onClick={save} className="mt-5">
             {t("subjects.note.save")}
