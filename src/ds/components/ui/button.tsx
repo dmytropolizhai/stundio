@@ -26,6 +26,7 @@ const buttonVariants = cva(
         outline: "bg-transparent text-strong inset-ring-2 inset-ring-strong hover:bg-sunken",
         ghost: "bg-transparent text-strong hover:bg-sunken",
         onBrand: "bg-white text-strong hover:bg-ink-050",
+        danger: "bg-danger text-white shadow-card hover:opacity-90 active:opacity-100",
       },
       size: {
         sm: "h-9 gap-1.5 px-4 text-caption",

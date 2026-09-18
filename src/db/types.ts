@@ -170,5 +170,7 @@ export type AppCache = {
   deleteNote: (subject: string) => Promise<void>;
   listNoteSubjects: () => Promise<string[]>;
 
+  /** Clears user-specific data (settings and notes), retaining downloaded timetables and substitutions. */
+  clearUserData: () => Promise<void>;
   clear: () => Promise<void>;
 };

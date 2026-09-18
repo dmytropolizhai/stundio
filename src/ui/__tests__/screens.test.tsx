@@ -36,6 +36,18 @@ describe("ClassPicker", () => {
     expect(screen.getByText("Nav atrasta neviena klase")).toBeDefined();
   });
 
+  it("triggers refresh when classes are empty", async () => {
+    const harness = await bootHarness({ selectedClassId: null });
+    await harness.cache.clear();
+    await harness.store.getState().hydrate();
+    expect(Object.keys(harness.store.getState().timetables).length).toBe(0);
+
+    const refreshSpy = vi.spyOn(harness.store.getState(), "refresh");
+    wrap(harness, <ClassPicker />);
+
+    expect(refreshSpy).toHaveBeenCalled();
+  });
+
   it("remembers the pick and tells the caller, for a class with no subgroups", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
@@ -553,6 +565,39 @@ describe("SettingsView", () => {
         "Bezsaistes atgādinājumi un paziņojumi ir pieejami Android lietotnē. Tīmekļa lietotnē izmaiņas atjaunojas, to atverot.",
       ),
     ).toBeDefined();
+  });
+
+  it("opens confirmation sheet and cancels reset all data", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+
+    expect(screen.getByText("Bīstamā zona")).toBeDefined();
+    const resetButton = screen.getByRole("button", { name: "Dzēst" });
+    fireEvent.click(resetButton);
+
+    expect(screen.getByText("Dzēst visus datus?")).toBeDefined();
+    const cancelButton = screen.getByRole("button", { name: "Atcelt" });
+    fireEvent.click(cancelButton);
+
+    // Class should still be selected
+    expect(harness.store.getState().settings.selectedClassId).not.toBeNull();
+  });
+
+  it("resets all data when confirmed", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+
+    const resetButton = screen.getByRole("button", { name: "Dzēst" });
+    fireEvent.click(resetButton);
+
+    const confirmButton = screen.getByRole("button", { name: "Dzēst visus datus" });
+    await clickAndSettle(() => {
+      fireEvent.click(confirmButton);
+    });
+
+    expect(harness.store.getState().settings.selectedClassId).toBeNull();
+    expect(harness.store.getState().metas.length).toBeGreaterThan(0);
+    expect(Object.keys(harness.store.getState().timetables).length).toBeGreaterThan(0);
   });
 });
 
