@@ -6,7 +6,7 @@
  * notification wiring layer (`src/notifications/`) diffs this against what is currently
  * scheduled and replaces it wholesale on every refresh/settings change.
  */
-import type { ResolvedDay, ResolvedLesson } from "../edupage/index.ts";
+import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { rigaTimeToDate, timedLessons } from "./nextLesson.ts";
 
 export type LessonReminder = {

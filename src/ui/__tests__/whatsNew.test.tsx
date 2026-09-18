@@ -5,10 +5,10 @@
  */
 import { describe, expect, it } from "vitest";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { WhatsNewSheet } from "../screens/WhatsNewSheet.tsx";
 import { useWhatsNew } from "../hooks/useWhatsNew.ts";
-import { CHANGELOG } from "../i18n/index.ts";
+import { CHANGELOG } from "@/ui/i18n";
 import { bootHarness, type Harness } from "./harness.tsx";
 
 const Probe = () => {

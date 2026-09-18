@@ -8,7 +8,7 @@
  * `@capacitor/network` itself — that import is isolated to `lib/network/native.ts` (CLAUDE.md).
  */
 import { App } from "@capacitor/app";
-import type { NetworkPort } from "../lib/network/index.ts";
+import type { NetworkPort } from "@/lib/network";
 
 /** Minimum gap between resume-triggered refreshes; tab-switching should not spam the school. */
 export const RESUME_THROTTLE_MS = 60_000;

@@ -3,7 +3,7 @@
  * app has no holiday calendar (there is no endpoint for one). A holiday simply shows an
  * empty day, which is honest — better than pretending to know term dates.
  */
-import type { ISODate } from "../lib/edupage/index.ts";
+import type { ISODate } from "@/lib/edupage";
 
 const MS_PER_DAY = 86_400_000;
 

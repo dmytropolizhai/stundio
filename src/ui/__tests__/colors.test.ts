@@ -6,7 +6,7 @@
  * full name where the DS wants a 3-letter code.
  */
 import { describe, expect, it } from "vitest";
-import type { ResolvedLesson, SubjectRef } from "../../lib/edupage/index.ts";
+import type { ResolvedLesson, SubjectRef } from "@/lib/edupage";
 import {
   SUBJECT_TONES,
   buildingNotice,

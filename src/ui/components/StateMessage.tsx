@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { EmptyState, type IconName } from "../../ds/index.ts";
+import { EmptyState, type IconName } from "@/ds";
 
 /**
  * The empty/blocked states — no class picked, holiday, nothing cached. A screen that goes

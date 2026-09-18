@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { entriesSince, entriesUpTo, sortByVersionDesc } from "../index.ts";
+import { entriesSince, entriesUpTo, sortByVersionDesc } from "@/lib/version";
 
 const entries = [
   { version: "v1.0.1-ozols" },

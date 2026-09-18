@@ -5,7 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { HttpClient, HttpRequest } from "../../lib/edupage/index.ts";
+import type { HttpClient, HttpRequest } from "@/lib/edupage";
 
 const DATA_DIR = join(import.meta.dirname, "..", "..", "..", "data");
 const read = (name: string): string => readFileSync(join(DATA_DIR, name), "utf8");

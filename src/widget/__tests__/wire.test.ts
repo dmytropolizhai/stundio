@@ -5,11 +5,11 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createFakeServer, type FakeServer } from "../../sync/__tests__/fakeServer.ts";
-import { createMemoryCache, type AppCache } from "../../db/index.ts";
-import { createSyncEngine } from "../../sync/index.ts";
+import { createMemoryCache, type AppCache } from "@/db";
+import { createSyncEngine } from "@/sync";
 import { createAppStore } from "../../store/useAppStore.ts";
-import type { WidgetPayload } from "../../lib/widget/index.ts";
-import { publishWidget, widgetPayloadFor, wireWidget } from "../index.ts";
+import type { WidgetPayload } from "@/lib/widget";
+import { publishWidget, widgetPayloadFor, wireWidget } from "@/widget";
 
 const DATE = "2026-09-09";
 

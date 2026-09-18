@@ -1,5 +1,5 @@
-import { Chip } from "../../ds/index.ts";
-import { useT } from "../i18n/index.ts";
+import { Chip } from "@/ds";
+import { useT } from "@/ui/i18n";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 
 /**

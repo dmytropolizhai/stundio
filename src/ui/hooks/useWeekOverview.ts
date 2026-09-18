@@ -7,10 +7,10 @@
  * a missing week as zero lessons.
  */
 import { useMemo } from "react";
-import { useAppStore } from "../../store/index.ts";
-import { addDays } from "../../sync/index.ts";
-import { weekDates } from "../../lib/schedule/index.ts";
-import type { ISODate } from "../../lib/edupage/index.ts";
+import { useAppStore } from "@/store";
+import { addDays } from "@/sync";
+import { weekDates } from "@/lib/schedule";
+import type { ISODate } from "@/lib/edupage";
 
 export type WeekOverview = {
   totalLessons: number;

@@ -13,7 +13,7 @@ import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { dayProgress, minutesOf } from "@/lib/schedule";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
-import { Button, Card, Icon, Switch, TopBar } from "@/ds";
+import { Button, Card, Icon, IconButton, Switch, TopBar } from "@/ds";
 import { Row, Section } from "./SettingsView.tsx";
 import { LessonRow } from "../components/LessonRow.tsx";
 import { buildingNotice, lessonBuilding } from "@/ui/theme";
@@ -428,15 +428,39 @@ export const DayView = ({
         >
           <TopBar
             title={
-              <Suspense fallback={<span>{dayTitle(date, now.date, t, lang)}</span>}>
-                <DatePicker
-                  date={date}
-                  today={now.date}
-                  open={calendarOpen}
-                  onOpenChange={setCalendarOpen}
-                  onSelect={onDateChange}
+              <div className="flex items-center gap-0.5">
+                <IconButton
+                  icon="chevron-left"
+                  label={t("day.previousDay")}
+                  variant="bare"
+                  size="sm"
+                  onClick={() => {
+                    enterDir.current = -1;
+                    onDateChange(addDays(date, -1));
+                  }}
                 />
-              </Suspense>
+
+                <Suspense fallback={<span>{dayTitle(date, now.date, t, lang)}</span>}>
+                  <DatePicker
+                    date={date}
+                    today={now.date}
+                    open={calendarOpen}
+                    onOpenChange={setCalendarOpen}
+                    onSelect={onDateChange}
+                  />
+                </Suspense>
+
+                <IconButton
+                  icon="chevron-right"
+                  label={t("day.nextDay")}
+                  variant="bare"
+                  size="sm"
+                  onClick={() => {
+                    enterDir.current = 1;
+                    onDateChange(addDays(date, 1));
+                  }}
+                />
+              </div>
             }
             actions={
               <>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkForUpdate, type FetchLatestRelease, type GitHubRelease } from "../index.ts";
+import { checkForUpdate, type FetchLatestRelease, type GitHubRelease } from "@/lib/version";
 
 const fakeFetch =
   (

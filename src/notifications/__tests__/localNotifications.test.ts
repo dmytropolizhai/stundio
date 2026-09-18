@@ -3,7 +3,7 @@
  * plugin module, assert on how this file calls it.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ResolvedLesson } from "../../lib/edupage/index.ts";
+import type { ResolvedLesson } from "@/lib/edupage";
 
 const schedule = vi.hoisted(() => vi.fn());
 const cancel = vi.hoisted(() => vi.fn());

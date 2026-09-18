@@ -14,9 +14,9 @@ import { normalizeTimetable, toTimetableMeta, type RawTables } from "../../edupa
 import { parseDaySubstitutions } from "../../edupage/substitutions.ts";
 import { resolveDay } from "../../edupage/resolve.ts";
 import type { ResolvedDay, ResolvedLesson, Timetable } from "../../edupage/types.ts";
-import { minutesOf } from "../../schedule/index.ts";
-import { buildWidgetPayload } from "../index.ts";
-import type { WidgetStrings } from "../index.ts";
+import { minutesOf } from "@/lib/schedule";
+import { buildWidgetPayload } from "@/lib/widget";
+import type { WidgetStrings } from "@/lib/widget";
 
 type RawRegular = { r: { dbiAccessorRes: { tables: { id: string; data_rows?: unknown[] }[] } } };
 

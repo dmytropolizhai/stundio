@@ -542,7 +542,9 @@ rather than hints.
   `inverse` is the identical treatment kept as its own name for callers on a light hero.
 - **Variants:** `outline` (transparent with a 2px inset ring), `ghost` (transparent, near-black
   text, sunken tint on hover), `onBrand` (white fill, near-black text, for a callsite on the blue
-  hero). None of the variants carry the brand blue any more — see The Neutral Button Rule.
+  hero), `danger` (red fill `--status-danger`, white text, `shadow-card`, reserved for destructive
+  actions in confirmation sheets and danger zones). None of the variants carry the brand blue any
+  more — see The Neutral Button Rule.
 - **Press:** transform only — `scale(0.97)` over 90ms on `--ease-out`. Colour does not change on
   press. Hover tints exist for desktop previews but the device has no hover.
 - **Disabled:** 38% opacity, pointer events off.
@@ -612,10 +614,11 @@ rather than hints.
 
 ### Day Paging
 
-The Day screen has no visible day-to-day control. Swiping left/right anywhere below the top bar
-pages to the adjacent day, with a small same-direction slide (16px, `--dur-base`, `--ease-standard`)
-as the only feedback that it worked; arrow keys do the same for anyone who can't swipe. Jumping to
-an arbitrary day in the week now goes through the Week screen instead of a jump control on Day.
+The Day screen provides left/right chevron buttons flanking the date picker in the top bar (`IconButton`
+`variant="bare"` `size="sm"`), matching the Week screen's navigation pattern. Swiping left/right
+anywhere below the top bar also pages to the adjacent day, with a small same-direction slide (16px,
+`--dur-base`, `--ease-standard`); arrow keys do the same for keyboard accessibility. Jumping to an
+arbitrary date uses the date picker popover, or the Week screen.
 
 ### Week Grid
 

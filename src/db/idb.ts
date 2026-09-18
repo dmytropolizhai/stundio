@@ -13,7 +13,7 @@ import {
   type Settings,
   type SubjectNote,
 } from "./types.ts";
-import type { DaySubstitutions, ISODate, Timetable } from "../lib/edupage/index.ts";
+import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
 
 export const DB_NAME = "rvt-stunda";
 export const DB_VERSION = 2;
@@ -88,6 +88,11 @@ export const createIdbCache = (
     await (await dbPromise).delete("notes", subject);
   },
   listNoteSubjects: async () => (await (await dbPromise).getAllKeys("notes")).map(String),
+
+  clearUserData: async () => {
+    const db = await dbPromise;
+    await Promise.all([db.clear("settings"), db.clear("notes")]);
+  },
 
   clear: async () => {
     const db = await dbPromise;

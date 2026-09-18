@@ -5,7 +5,7 @@
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { DayView } from "../screens/DayView.tsx";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
@@ -202,6 +202,20 @@ describe("DayView", () => {
 
     fireEvent.keyDown(pager, { key: "ArrowLeft" });
     expect(onDateChange).toHaveBeenCalledWith("2026-09-08");
+  });
+
+  it("navigates to previous and next days when clicking the chevron buttons", async () => {
+    const harness = await bootHarness();
+    const { onDateChange } = renderDay(harness);
+
+    const prevButton = screen.getByRole("button", { name: "Iepriekšējā diena" });
+    const nextButton = screen.getByRole("button", { name: "Nākamā diena" });
+
+    fireEvent.click(prevButton);
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-08");
+
+    fireEvent.click(nextButton);
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
   });
 
   it("explains an empty day rather than going blank", async () => {

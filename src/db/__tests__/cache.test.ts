@@ -11,9 +11,9 @@ import {
   DEFAULT_SETTINGS,
   type AppCache,
   type EdupageDB,
-} from "../index.ts";
+} from "@/db";
 import { openDB } from "idb";
-import type { DaySubstitutions, Timetable } from "../../lib/edupage/index.ts";
+import type { DaySubstitutions, Timetable } from "@/lib/edupage";
 
 const timetable = (ttNum: string): Timetable => ({
   meta: {
@@ -151,6 +151,19 @@ describe.each(implementations)("AppCache — %s", (_name, make) => {
 
     expect(await cache.listTimetableNums()).toEqual([]);
     expect(await cache.getSubstitutions("2026-09-09")).toBeNull();
+    expect(await cache.getSettings()).toEqual(DEFAULT_SETTINGS);
+    expect(await cache.getNote("Matemātika")).toBeNull();
+  });
+
+  it("clears user data (settings and notes) while keeping timetables and substitutions", async () => {
+    await cache.putTimetable(timetable("1175"));
+    await cache.putSubstitutions(substitutions("2026-09-09"));
+    await cache.putSettings({ ...DEFAULT_SETTINGS, selectedClassId: "-927" });
+    await cache.putNote({ subject: "Matemātika", text: "Bring calculator", updatedAt: NOW });
+    await cache.clearUserData();
+
+    expect(await cache.listTimetableNums()).toEqual(["1175"]);
+    expect(await cache.getSubstitutions("2026-09-09")).not.toBeNull();
     expect(await cache.getSettings()).toEqual(DEFAULT_SETTINGS);
     expect(await cache.getNote("Matemātika")).toBeNull();
   });
