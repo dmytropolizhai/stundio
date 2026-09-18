@@ -4,10 +4,10 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createFakeServer, type FakeServer } from "../../sync/__tests__/fakeServer.ts";
-import { createMemoryCache, type AppCache } from "../../db/index.ts";
-import { createSyncEngine, nextSchoolDay, todayInRiga } from "../../sync/index.ts";
+import { createMemoryCache, type AppCache } from "@/db";
+import { createSyncEngine, nextSchoolDay, todayInRiga } from "@/sync";
 import { createAppStore } from "../useAppStore.ts";
-import type { AnalyticsClient } from "../../lib/analytics/index.ts";
+import type { AnalyticsClient } from "@/lib/analytics";
 
 const DATE = "2026-09-09";
 const now = () => new Date(`${DATE}T08:00:00Z`);

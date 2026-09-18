@@ -8,7 +8,7 @@
  * (a test renderer, a WebView that has not applied CSS yet).
  */
 import type { SharePalette } from "@/lib/share";
-import { SUBJECT_TONES, type SubjectAccent, type SubjectTone } from "../theme/index.ts";
+import { SUBJECT_TONES, type SubjectAccent, type SubjectTone } from "@/ui/theme";
 
 export type ToneColors = { fill: string; ink: string };
 export type ShareTheme = { palette: SharePalette; tones: Record<SubjectTone, ToneColors> };

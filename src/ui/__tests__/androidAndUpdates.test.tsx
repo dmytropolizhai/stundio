@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { isAndroidDevice } from "../lib/platform";
 import { AndroidDownloadBanner } from "../components/AndroidDownloadBanner.tsx";

@@ -11,9 +11,9 @@ import {
   DEFAULT_SETTINGS,
   type AppCache,
   type EdupageDB,
-} from "../index.ts";
+} from "@/db";
 import { openDB } from "idb";
-import type { DaySubstitutions, Timetable } from "../../lib/edupage/index.ts";
+import type { DaySubstitutions, Timetable } from "@/lib/edupage";
 
 const timetable = (ttNum: string): Timetable => ({
   meta: {

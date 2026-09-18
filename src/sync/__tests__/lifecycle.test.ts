@@ -3,7 +3,7 @@
  * and CLAUDE.md forbids hammering the school's server.
  */
 import { describe, expect, it, vi } from "vitest";
-import type { NetworkPort } from "../../lib/network/index.ts";
+import type { NetworkPort } from "@/lib/network";
 
 type Listener = (state: { isActive: boolean }) => void;
 

@@ -9,9 +9,9 @@
  */
 import { registerPlugin } from "@capacitor/core";
 import { LocalNotifications, type ActionPerformed } from "@capacitor/local-notifications";
-import type { ISODate, ResolvedLesson } from "../lib/edupage/index.ts";
-import { rigaClock, type LessonReminder } from "../lib/schedule/index.ts";
-import { translate, type Lang } from "../ui/i18n/index.ts";
+import type { ISODate, ResolvedLesson } from "@/lib/edupage";
+import { rigaClock, type LessonReminder } from "@/lib/schedule";
+import { translate, type Lang } from "@/ui/i18n";
 
 /**
  * Carried in each notification's `extra` and read back in `onNotificationTap` once the user

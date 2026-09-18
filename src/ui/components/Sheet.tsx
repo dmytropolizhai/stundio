@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BottomSheet } from "../../ds/index.ts";
+import { BottomSheet } from "@/ds";
 
 /**
  * Bottom sheet — the only modal on Android, per the DS.

@@ -1,4 +1,4 @@
-import { Skeleton } from "../../ds/index.ts";
+import { Skeleton } from "@/ds";
 
 /**
  * Cold-open placeholder. Shaped like the lesson list it replaces so the first paint does not

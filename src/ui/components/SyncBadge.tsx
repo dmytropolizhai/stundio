@@ -1,5 +1,5 @@
 import { useAppStore } from "@/store";
-import type { SyncStatus as StoreSyncStatus } from "../../sync/index.ts";
+import type { SyncStatus as StoreSyncStatus } from "@/sync";
 import { SyncStatus, type SyncState } from "@/ds";
 import { formatClock, useLang, useT } from "@/ui/i18n";
 

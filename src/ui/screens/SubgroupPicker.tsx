@@ -1,8 +1,8 @@
-import { useAppStore } from "../../store/index.ts";
-import { Button, Card } from "../../ds/index.ts";
-import { listSubgroups } from "../../lib/edupage/index.ts";
+import { useAppStore } from "@/store";
+import { Button, Card } from "@/ds";
+import { listSubgroups } from "@/lib/edupage";
 import type { ClassOption } from "../hooks/useClasses.ts";
-import { useT } from "../i18n/index.ts";
+import { useT } from "@/ui/i18n";
 
 /**
  * Asked once, right after picking a divided class ("pusgrupa"): which half is the user's.

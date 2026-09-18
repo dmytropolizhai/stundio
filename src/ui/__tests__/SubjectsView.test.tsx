@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { render, renderHook, screen } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { SubjectsView } from "../screens/SubjectsView.tsx";
 import { useSubjects } from "../hooks/useSubjects.ts";
 import { bootHarness, type Harness } from "./harness.tsx";

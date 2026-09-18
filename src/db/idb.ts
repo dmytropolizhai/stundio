@@ -13,7 +13,7 @@ import {
   type Settings,
   type SubjectNote,
 } from "./types.ts";
-import type { DaySubstitutions, ISODate, Timetable } from "../lib/edupage/index.ts";
+import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
 
 export const DB_NAME = "rvt-stunda";
 export const DB_VERSION = 2;

@@ -3,8 +3,8 @@
  * `undefined` on a screen nobody on the team reads in that language.
  */
 import { describe, expect, it } from "vitest";
-import { DICTS, LANGS, translate } from "../i18n/index.ts";
-import { formatDuration, formatLongDate, formatRange, formatWeekdayShort } from "../i18n/index.ts";
+import { DICTS, LANGS, translate } from "@/ui/i18n";
+import { formatDuration, formatLongDate, formatRange, formatWeekdayShort } from "@/ui/i18n";
 
 const keys = Object.keys(DICTS.lv);
 

@@ -8,9 +8,9 @@
  * a subject called "Tehnoloģiju un inovāciju centrs Dārzciema ielā".
  */
 import { useMemo } from "react";
-import { useAppStore } from "../../store/index.ts";
-import { classWeekLessons } from "../../lib/edupage/index.ts";
-import type { SubjectRef, TeacherRef, Timetable } from "../../lib/edupage/index.ts";
+import { useAppStore } from "@/store";
+import { classWeekLessons } from "@/lib/edupage";
+import type { SubjectRef, TeacherRef, Timetable } from "@/lib/edupage";
 
 export type SubjectSummary = {
   subject: SubjectRef;

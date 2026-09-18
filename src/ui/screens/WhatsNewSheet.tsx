@@ -1,6 +1,6 @@
-import { Button } from "../../ds/index.ts";
+import { Button } from "@/ds";
 import { Sheet } from "../components/Sheet.tsx";
-import { formatReleaseDate, useLang, useT, type ChangelogEntry } from "../i18n/index.ts";
+import { formatReleaseDate, useLang, useT, type ChangelogEntry } from "@/ui/i18n";
 
 /**
  * What changed in the update the user just installed, and — below it — everything the build

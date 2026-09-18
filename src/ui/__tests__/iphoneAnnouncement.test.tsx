@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { StoreContext } from "../../store/index.ts";
+import { StoreContext } from "@/store";
 import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { useIphoneAnnouncement } from "../hooks/useIphoneAnnouncement.ts";
 import { IphoneReleaseSheet } from "../screens/IphoneReleaseSheet.tsx";
 import { SettingsView } from "../screens/SettingsView.tsx";
 import { IPHONE_PWA_URL, iphoneShareText, renderIphoneShareImage } from "../share/iphoneImage.ts";
-import { translate } from "../i18n/index.ts";
+import { translate } from "@/ui/i18n";
 
 type StubbedCanvas = { getContext: unknown; toDataURL: unknown };
 const canvasPrototype = HTMLCanvasElement.prototype as unknown as StubbedCanvas;

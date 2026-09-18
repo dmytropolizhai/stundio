@@ -7,7 +7,7 @@
  * decide for itself would be schedule logic living in two places, which is exactly what
  * `src/lib/schedule/` exists to prevent.
  */
-import type { ISODate, ISODateTime } from "../edupage/index.ts";
+import type { ISODate, ISODateTime } from "@/lib/edupage";
 
 /**
  * What the widget is currently saying. The native side keys nothing off this — it exists so

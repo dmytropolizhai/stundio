@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createFakeServer, type FakeServer } from "../../sync/__tests__/fakeServer.ts";
-import { createMemoryCache, type AppCache } from "../../db/index.ts";
-import { createSyncEngine } from "../../sync/index.ts";
+import { createMemoryCache, type AppCache } from "@/db";
+import { createSyncEngine } from "@/sync";
 import { createAppStore } from "../../store/useAppStore.ts";
-import { rigaClock } from "../../lib/schedule/index.ts";
+import { rigaClock } from "@/lib/schedule";
 
 const rescheduleLessonReminders = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const notifySubstitutionsChanged = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
@@ -26,7 +26,7 @@ vi.mock("../localNotifications.ts", () => ({
 }));
 
 const checkForUpdate = vi.hoisted(() => vi.fn());
-vi.mock("../../lib/version/index.ts", () => ({ checkForUpdate }));
+vi.mock("@/lib/version", () => ({ checkForUpdate }));
 
 const { wireNotifications, wireNotificationTaps, notifyOnChanges, checkForAppUpdateNotification } =
   await import("../wire.ts");

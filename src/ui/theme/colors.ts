@@ -14,14 +14,8 @@ import {
   type ResolvedLesson,
   type ResolvedStatus,
   type SubjectRef,
-} from "../../lib/edupage/index.ts";
-import {
-  isHexColor,
-  readableInk,
-  type BadgeProps,
-  type LessonStatus,
-  type LessonTone,
-} from "../../ds/index.ts";
+} from "@/lib/edupage";
+import { isHexColor, readableInk, type BadgeProps, type LessonStatus, type LessonTone } from "@/ds";
 
 /** The six subject accents, in DS order. `brand` is reserved for "now" and is not assignable. */
 export const SUBJECT_TONES = ["amber", "sky", "lilac", "pink", "mint", "lime"] as const;

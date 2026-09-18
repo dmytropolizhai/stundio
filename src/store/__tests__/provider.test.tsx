@@ -9,8 +9,8 @@ import { act, render, screen } from "@testing-library/react";
 import { AppStoreProvider } from "../provider.tsx";
 import { useAppStore } from "../context.ts";
 import { createAppStore } from "../useAppStore.ts";
-import { createMemoryCache } from "../../db/index.ts";
-import { createSyncEngine } from "../../sync/index.ts";
+import { createMemoryCache } from "@/db";
+import { createSyncEngine } from "@/sync";
 import { createFakeServer } from "../../sync/__tests__/fakeServer.ts";
 
 const makeStore = () => {
