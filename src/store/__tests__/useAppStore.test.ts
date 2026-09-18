@@ -283,6 +283,33 @@ describe("settings", () => {
     expect(store.getState().settings.reduceMotion).toBe(false);
   });
 
+  it("clears user data (settings and notes) on resetAllData while preserving timetables", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    const classId = classIdOf(store, "A1-2");
+    await store.getState().setClass(classId);
+    await store.getState().setLang("en");
+    await store.getState().setTheme("dark");
+    await store.getState().setNote("Matemātika", "Piezīme");
+
+    expect(store.getState().settings.selectedClassId).toBe(classId);
+    expect(store.getState().settings.lang).toBe("en");
+    expect(Object.keys(store.getState().timetables).length).toBeGreaterThan(0);
+    expect(Object.keys(store.getState().notes).length).toBeGreaterThan(0);
+
+    await store.getState().resetAllData();
+
+    expect(store.getState().settings.selectedClassId).toBeNull();
+    expect(store.getState().settings.lang).toBe("lv");
+    expect(store.getState().settings.theme).toBe("system");
+    expect(store.getState().notes).toEqual({});
+    expect(await cache.listNoteSubjects()).toEqual([]);
+    // Timetables and metas are preserved so class picker works immediately
+    expect(store.getState().metas.length).toBeGreaterThan(0);
+    expect(Object.keys(store.getState().timetables).length).toBeGreaterThan(0);
+    expect((await cache.listTimetableNums()).length).toBeGreaterThan(0);
+  });
+
   it("re-resolves against the pinned building", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });

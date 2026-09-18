@@ -155,6 +155,19 @@ describe.each(implementations)("AppCache — %s", (_name, make) => {
     expect(await cache.getNote("Matemātika")).toBeNull();
   });
 
+  it("clears user data (settings and notes) while keeping timetables and substitutions", async () => {
+    await cache.putTimetable(timetable("1175"));
+    await cache.putSubstitutions(substitutions("2026-09-09"));
+    await cache.putSettings({ ...DEFAULT_SETTINGS, selectedClassId: "-927" });
+    await cache.putNote({ subject: "Matemātika", text: "Bring calculator", updatedAt: NOW });
+    await cache.clearUserData();
+
+    expect(await cache.listTimetableNums()).toEqual(["1175"]);
+    expect(await cache.getSubstitutions("2026-09-09")).not.toBeNull();
+    expect(await cache.getSettings()).toEqual(DEFAULT_SETTINGS);
+    expect(await cache.getNote("Matemātika")).toBeNull();
+  });
+
   it("stores, updates and deletes a note per subject", async () => {
     expect(await cache.getNote("Matemātika")).toBeNull();
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppStore } from "../../store/index.ts";
 import { Card, Icon, IconButton, TextField } from "../../ds/index.ts";
 import { listSubgroups } from "../../lib/edupage/index.ts";
@@ -29,8 +29,15 @@ export const ClassPicker = ({ onPicked }: { onPicked?: () => void }) => {
   const favorites = useAppStore((s) => s.settings.favorites);
   const setClass = useAppStore((s) => s.setClass);
   const toggleFavorite = useAppStore((s) => s.toggleFavorite);
+  const refresh = useAppStore((s) => s.refresh);
   const [query, setQuery] = useState("");
   const [askSubgroupFor, setAskSubgroupFor] = useState<ClassOption | null>(null);
+
+  useEffect(() => {
+    if (classes.length === 0) {
+      void refresh();
+    }
+  }, [classes.length, refresh]);
 
   const matches = useMemo(() => {
     const needle = query.trim().toLowerCase();

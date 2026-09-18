@@ -66,6 +66,12 @@ export const createMemoryCache = (): AppCache => {
     },
     listNoteSubjects: () => Promise.resolve([...notes.keys()]),
 
+    clearUserData: () => {
+      settings = { ...DEFAULT_SETTINGS };
+      notes.clear();
+      return Promise.resolve();
+    },
+
     clear: () => {
       list = null;
       settings = { ...DEFAULT_SETTINGS };
