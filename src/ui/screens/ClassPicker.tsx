@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useAppStore } from "@/store";
 import { Card, Icon, IconButton, TextField } from "@/ds";
 import { listSubgroups } from "@/lib/edupage";
@@ -132,7 +132,7 @@ export const ClassPicker = ({ onPicked }: { onPicked?: () => void }) => {
         />
       </div>
 
-      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-gutter pb-[104px]">
+      <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-gutter pb-26">
         {matches.length === 0 && <StateMessage icon="search" title={t("class.none")} />}
 
         {pinned.length > 0 && (
