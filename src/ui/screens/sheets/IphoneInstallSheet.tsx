@@ -1,7 +1,7 @@
 import { Button, Card } from "@/ds";
 import { useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
-import { Sheet } from "../components/Sheet.tsx";
+import { Sheet } from "../../components/Sheet.tsx";
 import type { ReactNode } from "react";
 
 export type IphoneInstallSheetProps = {

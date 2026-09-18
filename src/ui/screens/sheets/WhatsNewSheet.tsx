@@ -1,5 +1,5 @@
 import { Button } from "@/ds";
-import { Sheet } from "../components/Sheet.tsx";
+import { Sheet } from "../../components/Sheet.tsx";
 import { formatReleaseDate, useLang, useT, type ChangelogEntry } from "@/ui/i18n";
 
 /**

@@ -5,7 +5,7 @@ import { subjectCode, subjectAccent } from "@/ui/theme";
 import { StateMessage } from "../components/StateMessage.tsx";
 import { DaySkeleton } from "../components/Skeleton.tsx";
 import { useSubjects } from "../hooks/useSubjects.ts";
-import { SubjectNoteSheet } from "./SubjectNoteSheet.tsx";
+import { SubjectNoteSheet } from "./sheets/SubjectNoteSheet.tsx";
 import { useT } from "@/ui/i18n";
 import type { SubjectRef } from "@/lib/edupage";
 

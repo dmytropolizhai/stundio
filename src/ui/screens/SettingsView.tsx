@@ -16,7 +16,7 @@ import { useExactAlarmDenied } from "../hooks/useExactAlarmPermission.ts";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { useUpdateCheck } from "../hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "../hooks/useUpdateInstall.ts";
-import { CustomizationSheet } from "./CustomizationSheet.tsx";
+import { CustomizationSheet } from "./sheets/CustomizationSheet.tsx";
 import { FeedbackSheet } from "../components/FeedbackSheet.tsx";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";

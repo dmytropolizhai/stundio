@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SubjectRef } from "@/lib/edupage";
 import { Button } from "@/ds";
-import { Sheet } from "../components/Sheet.tsx";
+import { Sheet } from "../../components/Sheet.tsx";
 import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
 

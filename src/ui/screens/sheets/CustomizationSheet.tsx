@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { LessonCard } from "@/ds/components/ui/lesson-card";
+import { LessonCard } from "@/ds/components/ui/lesson-card.tsx";
 import { BottomSheet, Button, ColorWheel, SegmentedTabs, Switch, cn, Slider } from "@/ds";
 import { useAppStore } from "@/store";
 import type { Settings, SubjectColorTone } from "@/db";
 import type { SubjectRef } from "@/lib/edupage";
 import { SUBJECT_TONES, subjectAccent, subjectToneKey } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
-import { useSubjects } from "../hooks/useSubjects.ts";
-import { Row, Section } from "./SettingsView.tsx";
+import { useSubjects } from "../../hooks/useSubjects.ts";
+import { Row, Section } from "../SettingsView.tsx";
 
 /** The Card component's own four radius steps, softest to roundest. */
 const RADIUS_STEPS = ["md", "lg", "xl", "2xl"] as const;

@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { BottomSheet } from "@/ds";
 import { StoreContext } from "@/store";
-import { CustomizationSheet } from "../screens/CustomizationSheet.tsx";
+import { CustomizationSheet } from "../screens/sheets/CustomizationSheet.tsx";
 import { bootHarness } from "./harness.tsx";
 
 /** Any `max-h-[…vh]` — the sizing that puts the sheet off the top of an iPhone screen. */

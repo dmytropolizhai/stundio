@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { useIphoneAnnouncement } from "../hooks/useIphoneAnnouncement.ts";
-import { IphoneReleaseSheet } from "../screens/IphoneReleaseSheet.tsx";
+import { IphoneReleaseSheet } from "../screens/sheets/IphoneReleaseSheet.tsx";
 import { SettingsView } from "../screens/SettingsView.tsx";
 import { IPHONE_PWA_URL, iphoneShareText, renderIphoneShareImage } from "../share/iphoneImage.ts";
 import { translate } from "@/ui/i18n";
