@@ -2,12 +2,7 @@ import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import {
-  Button,
-  WeekGrid,
-  type WeekGridCell,
-  type WeekGridPeriod,
-} from "@/ds";
+import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
 import { PullToRefresh } from "@/ui/components/PullToRefresh.tsx";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
@@ -42,12 +37,7 @@ type WeekViewProps = {
  * is comparing days, and the DS sizes the cells for exactly that: a fixed 3-letter subject code,
  * which is the one place in the system abbreviation is allowed.
  */
-export const WeekView = ({
-  date,
-  onDateChange,
-  onOpenDay,
-  onPickClass,
-}: WeekViewProps) => {
+export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekViewProps) => {
   const t = useT();
   const lang = useLang();
   const now = useNow();

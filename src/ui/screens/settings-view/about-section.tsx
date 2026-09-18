@@ -31,11 +31,7 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
         <span className="font-text text-caption font-bold text-strong">
           {t("settings.reportIssue")}
         </span>
-        <Button
-          size="sm"
-          icon="triangle-alert"
-          onClick={() => onOpenFeedback("bug")}
-        >
+        <Button size="sm" icon="triangle-alert" onClick={() => onOpenFeedback("bug")}>
           {t("settings.reportIssueAction")}
         </Button>
       </Row>
@@ -43,20 +39,14 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
         <span className="font-text text-caption font-bold text-strong">
           {t("settings.suggestFeature")}
         </span>
-        <Button
-          size="sm"
-          icon="plus"
-          onClick={() => onOpenFeedback("suggestion")}
-        >
+        <Button size="sm" icon="plus" onClick={() => onOpenFeedback("suggestion")}>
           {t("settings.suggestFeatureAction")}
         </Button>
       </Row>
       <Row className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-text text-body font-bold text-strong">{t("settings.whatsNew")}</p>
-          <p className="mt-0.5 font-text text-caption text-muted">
-            {t("settings.whatsNewHint")}
-          </p>
+          <p className="mt-0.5 font-text text-caption text-muted">{t("settings.whatsNewHint")}</p>
         </div>
         <Button size="sm" icon="info" onClick={onShowWhatsNew}>
           {t("settings.whatsNewAction")}

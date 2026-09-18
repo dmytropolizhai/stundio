@@ -1,4 +1,5 @@
-import { Card, Icon } from "@/ds";
+import { Card } from "@/ds";
+import { Icon } from "@/ds/components/ui/icon";
 import { useT } from "@/ui/i18n";
 
 type WeekBuildingsProps = {

@@ -9,13 +9,7 @@ type DayStatusProps = {
   finished: boolean;
 };
 
-export const DayStatus = ({
-  syncStatus,
-  stale,
-  buildings,
-  isToday,
-  finished,
-}: DayStatusProps) => {
+export const DayStatus = ({ syncStatus, stale, buildings, isToday, finished }: DayStatusProps) => {
   const t = useT();
 
   return (

@@ -35,9 +35,7 @@ export const ScheduleSection = () => {
         <Row className="flex items-start justify-between gap-3">
           <div>
             <p className="font-text text-body font-bold text-strong">{t("settings.showTime")}</p>
-            <p className="mt-0.5 font-text text-caption text-muted">
-              {t("settings.showTimeHint")}
-            </p>
+            <p className="mt-0.5 font-text text-caption text-muted">{t("settings.showTimeHint")}</p>
           </div>
           <Switch
             aria-label={t("settings.showTime")}

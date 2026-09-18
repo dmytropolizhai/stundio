@@ -22,9 +22,7 @@ export const ShareSection = ({
     <Section title={t("settings.share")}>
       <Row className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-text text-body font-bold text-strong">
-            {t("settings.shareSyncLang")}
-          </p>
+          <p className="font-text text-body font-bold text-strong">{t("settings.shareSyncLang")}</p>
           <p className="mt-0.5 font-text text-caption text-muted">
             {t("settings.shareSyncLangHint")}
           </p>
@@ -52,9 +50,7 @@ export const ShareSection = ({
       {onShowIphoneAnnouncement !== undefined && (
         <Row className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="font-text text-body font-bold text-strong">
-              {t("settings.iphoneShare")}
-            </p>
+            <p className="font-text text-body font-bold text-strong">{t("settings.iphoneShare")}</p>
             <p className="mt-0.5 font-text text-caption text-muted">
               {t("settings.iphoneShareHint")}
             </p>

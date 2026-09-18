@@ -29,9 +29,7 @@ export const DataSection = () => {
       <Row className="flex items-start justify-between gap-3">
         <div>
           <p className="font-text text-body font-bold text-strong">{t("settings.analytics")}</p>
-          <p className="mt-0.5 font-text text-caption text-muted">
-            {t("settings.analyticsHint")}
-          </p>
+          <p className="mt-0.5 font-text text-caption text-muted">{t("settings.analyticsHint")}</p>
         </div>
         <Switch
           aria-label={t("settings.analytics")}

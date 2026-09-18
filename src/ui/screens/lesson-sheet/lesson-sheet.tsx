@@ -45,7 +45,10 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
               value={lesson.rooms.map((x) => x.short).join(", ")}
             />
             <LessonField label={t("lesson.group")} value={lesson.group ?? ""} />
-            <LessonField label={t("lesson.building")} value={lesson.building ?? day?.building ?? ""} />
+            <LessonField
+              label={t("lesson.building")}
+              value={lesson.building ?? day?.building ?? ""}
+            />
 
             {lesson.original != null && (
               <>

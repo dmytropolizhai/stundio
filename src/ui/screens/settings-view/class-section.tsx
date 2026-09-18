@@ -1,4 +1,4 @@
-import { Icon } from "@/ds";
+import { Icon } from "@/ds/components/ui/icon";
 import { useT } from "@/ui/i18n";
 import type { ClassOption } from "@/ui/hooks/useClasses.ts";
 import { Section } from "./settings-section.tsx";

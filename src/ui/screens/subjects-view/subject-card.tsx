@@ -28,9 +28,7 @@ export const SubjectCard = ({
     <Card
       tone={accent.tone}
       style={
-        accent.tone === "custom"
-          ? { backgroundColor: accent.fill, color: accent.ink }
-          : undefined
+        accent.tone === "custom" ? { backgroundColor: accent.fill, color: accent.ink } : undefined
       }
       className="min-w-0 text-left"
       data-testid={`subject-${subject.id}`}

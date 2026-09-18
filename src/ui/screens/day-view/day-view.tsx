@@ -1,12 +1,4 @@
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
