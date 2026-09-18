@@ -1,36 +1,38 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
-import { addDays } from "@/sync";
 import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import { Icon } from "@/ds/components/ui/icon";
 import {
   Button,
-  Card,
-  IconButton,
-  Switch,
-  TopBar,
   WeekGrid,
   type WeekGridCell,
   type WeekGridPeriod,
 } from "@/ds";
-import { Row, Section } from "./SettingsView.tsx";
 import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
-import { PullToRefresh } from "../components/PullToRefresh.tsx";
-import { StateMessage } from "../components/StateMessage.tsx";
-import { DaySkeleton } from "../components/Skeleton.tsx";
-import { SyncBadge } from "../components/SyncBadge.tsx";
-import { ClassBadge } from "../components/ClassBadge.tsx";
-import { LessonSheet } from "./LessonSheet.tsx";
-import { useNow } from "../hooks/useNow.ts";
-import { useWeekOverview } from "../hooks/useWeekOverview.ts";
-import { useShareWeek } from "../share/useShareWeek.ts";
-import { ShareLanguageDialog } from "../share/ShareLanguageDialog.tsx";
-import { formatWeekdayLong, formatWeekdayShort, formatWeekRange, useLang, useT } from "@/ui/i18n";
+import { PullToRefresh } from "@/ui/components/PullToRefresh.tsx";
+import { StateMessage } from "@/ui/components/StateMessage.tsx";
+import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
+import { LessonSheet } from "@/ui/screens/lesson-sheet";
+import { useNow } from "@/ui/hooks/useNow.ts";
+import { useWeekOverview } from "@/ui/hooks/useWeekOverview.ts";
+import { useShareWeek } from "@/ui/share/useShareWeek.ts";
+import { ShareLanguageDialog } from "@/ui/share/ShareLanguageDialog.tsx";
+import { formatWeekdayShort, useLang, useT } from "@/ui/i18n";
+import { WeekTopBar } from "./week-top-bar.tsx";
+import { WeekBuildings } from "./week-buildings.tsx";
+import { WeekOverview } from "./week-overview.tsx";
+import { WeekSettings } from "./week-settings.tsx";
 
 const periodNum = (p: string): number => {
   const n = Number(p);
   return Number.isFinite(n) ? n : 0;
+};
+
+type WeekViewProps = {
+  date: ISODate;
+  onDateChange: (date: ISODate) => void;
+  onOpenDay: (date: ISODate) => void;
+  onPickClass: () => void;
 };
 
 /**
@@ -45,12 +47,7 @@ export const WeekView = ({
   onDateChange,
   onOpenDay,
   onPickClass,
-}: {
-  date: ISODate;
-  onDateChange: (date: ISODate) => void;
-  onOpenDay: (date: ISODate) => void;
-  onPickClass: () => void;
-}) => {
+}: WeekViewProps) => {
   const t = useT();
   const lang = useLang();
   const now = useNow();
@@ -63,7 +60,6 @@ export const WeekView = ({
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
-  const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const syncStatus = useAppStore((s) => s.syncStatus);
@@ -209,22 +205,7 @@ export const WeekView = ({
           }}
         />
 
-        {buildingDays.length > 0 && (
-          <Card
-            tone="sunken"
-            radius="lg"
-            elevation="none"
-            className="mt-4 flex flex-col gap-1 font-text text-caption text-fg"
-            data-testid="week-buildings"
-          >
-            {buildingDays.map(([building, weekdays]) => (
-              <span key={building} className="flex items-center gap-2">
-                <Icon name="building-2" size={16} className="shrink-0 text-muted" />
-                {t("week.buildingDays", { building, days: weekdays.join(", ") })}
-              </span>
-            ))}
-          </Card>
-        )}
+        <WeekBuildings buildingDays={buildingDays} />
 
         {/*
           Under the grid rather than in the header: at 375px the header already carries the week
@@ -250,91 +231,7 @@ export const WeekView = ({
           </p>
         )}
 
-        {overview !== null && (
-          <div className="mt-6">
-            <h2 className="mb-3 font-display text-display-2 tracking-display text-strong">
-              {t("week.overview.title")}
-            </h2>
-
-            <div className="grid grid-cols-2 gap-3">
-              <Card>
-                <div className="font-data text-display-2 font-black tabular-nums">
-                  {overview.totalLessons}
-                </div>
-
-                <div className="mt-1 font-text text-caption text-muted">
-                  {t("week.overview.lessons", {
-                    n: overview.totalLessons,
-                  })}
-                </div>
-
-                {overview.lessonDelta !== null && (
-                  <div className="mt-2 font-text text-micro font-bold text-muted">
-                    {overview.lessonDelta > 0
-                      ? t("week.overview.lessonsUp", {
-                          n: overview.lessonDelta,
-                        })
-                      : overview.lessonDelta < 0
-                        ? t("week.overview.lessonsDown", {
-                            n: overview.lessonDelta,
-                          })
-                        : t("week.overview.lessonsSame")}
-                  </div>
-                )}
-              </Card>
-
-              <Card>
-                <div className="font-data text-display-2 font-black tabular-nums">
-                  {overview.changedLessons}
-                </div>
-
-                <div className="mt-1 font-text text-caption text-muted">
-                  {overview.changedLessons > 0
-                    ? t("week.overview.changes", {
-                        n: overview.changedLessons,
-                      })
-                    : t("week.overview.changesNone")}
-                </div>
-              </Card>
-
-              {overview.busiest !== null && (
-                <Card>
-                  <div className="font-text text-micro font-bold tracking-label text-muted uppercase opacity-75">
-                    {t("week.overview.busiestLabel")}
-                  </div>
-
-                  <div className="mt-2 font-display text-[22px] leading-none font-black text-strong">
-                    {formatWeekdayLong(overview.busiest.date, lang)}
-                  </div>
-
-                  <div className="mt-1 font-text text-caption text-muted">
-                    {t("week.overview.lessons", {
-                      n: overview.busiest.count,
-                    })}
-                  </div>
-                </Card>
-              )}
-
-              {overview.lightest !== null && overview.lightest.date !== overview.busiest?.date && (
-                <Card>
-                  <div className="font-text text-micro font-bold tracking-label text-muted uppercase opacity-75">
-                    {t("week.overview.lightestLabel")}
-                  </div>
-
-                  <div className="mt-2 font-display text-[22px] leading-none font-black text-strong">
-                    {formatWeekdayLong(overview.lightest.date, lang)}
-                  </div>
-
-                  <div className="mt-1 font-text text-caption text-muted">
-                    {t("week.overview.lessons", {
-                      n: overview.lightest.count,
-                    })}
-                  </div>
-                </Card>
-              )}
-            </div>
-          </div>
-        )}
+        {overview !== null && <WeekOverview overview={overview} />}
       </>
     );
   };
@@ -353,69 +250,18 @@ export const WeekView = ({
         }}
       >
         <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
-          <TopBar
-            title={
-              <div className="flex items-center gap-0.5">
-                <IconButton
-                  icon="chevron-left"
-                  label={t("week.previousWeek")}
-                  variant="bare"
-                  size="sm"
-                  onClick={() => {
-                    onDateChange(addDays(date, -7));
-                  }}
-                />
-
-                <span className="min-w-0 flex-1 truncate text-center text-title">
-                  {firstDay !== undefined && lastDay !== undefined
-                    ? formatWeekRange(firstDay, lastDay, lang)
-                    : t("nav.week")}
-                </span>
-
-                <IconButton
-                  icon="chevron-right"
-                  label={t("week.nextWeek")}
-                  variant="bare"
-                  size="sm"
-                  onClick={() => {
-                    onDateChange(addDays(date, 7));
-                  }}
-                />
-              </div>
-            }
-            actions={
-              <>
-                <ClassBadge onClick={onPickClass} />
-                <SyncBadge onRetry={() => void refresh({ date, force: true })} />
-              </>
-            }
+          <WeekTopBar
+            date={date}
+            firstDay={firstDay}
+            lastDay={lastDay}
+            onDateChange={onDateChange}
+            onPickClass={onPickClass}
+            onRefresh={() => void refresh({ date, force: true })}
           />
 
           {body()}
 
-          {ready && selectedClassId !== null && (
-            <div className="mt-7">
-              <Section title={t("settings.week")}>
-                <Row className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-text text-body font-bold text-strong">
-                      {t("settings.mergeLessons")}
-                    </p>
-                    <p className="mt-0.5 font-text text-caption text-muted">
-                      {t("settings.mergeLessonsHint")}
-                    </p>
-                  </div>
-                  <Switch
-                    aria-label={t("settings.mergeLessons")}
-                    checked={mergeConsecutive}
-                    onChange={(checked) => {
-                      void setMergeConsecutiveLessons(checked);
-                    }}
-                  />
-                </Row>
-              </Section>
-            </div>
-          )}
+          {ready && selectedClassId !== null && <WeekSettings />}
         </div>
       </PullToRefresh>
 

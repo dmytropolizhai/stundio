@@ -5,7 +5,7 @@ import { useClasses, type ClassOption } from "@/ui/hooks/useClasses.ts";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { ClassSearch } from "./class-search.tsx";
 import { ClassList } from "./class-list.tsx";
-import { SubgroupPicker } from "@/ui/screens/SubgroupPicker.tsx";
+import { SubgroupPicker } from "@/ui/screens/subgroup-picker";
 
 type ClassSelectorProps = {
   onPicked?: () => void;

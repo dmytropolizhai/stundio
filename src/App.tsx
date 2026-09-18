@@ -10,11 +10,11 @@ import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
-import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
-import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
-import { DayView } from "./ui/screens/DayView.tsx";
+import { OnboardingLanguage } from "./ui/screens/onboarding-language";
+import { OnboardingIntro } from "./ui/screens/onboarding-intro";
+import { DayView } from "./ui/screens/day-view";
 import { DaySkeleton } from "./ui/components/Skeleton.tsx";
-import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
+import { SplashScreen } from "./ui/screens/splash-screen";
 import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
 import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
@@ -27,13 +27,13 @@ import { useT } from "@/ui/i18n";
 // Split off the tabs that aren't on screen at launch — only DayView (the default tab) and
 // ClassPicker (onboarding) need to be in the initial bundle.
 const WeekView = lazy(() =>
-  import("./ui/screens/WeekView.tsx").then((m) => ({ default: m.WeekView })),
+  import("./ui/screens/week-view").then((m) => ({ default: m.WeekView })),
 );
 const SubjectsView = lazy(() =>
-  import("./ui/screens/SubjectsView.tsx").then((m) => ({ default: m.SubjectsView })),
+  import("./ui/screens/subjects-view").then((m) => ({ default: m.SubjectsView })),
 );
 const SettingsView = lazy(() =>
-  import("./ui/screens/SettingsView.tsx").then((m) => ({ default: m.SettingsView })),
+  import("./ui/screens/settings-view").then((m) => ({ default: m.SettingsView })),
 );
 
 /**
