@@ -29,6 +29,9 @@ import { useT } from "@/ui/i18n";
 const WeekView = lazy(() =>
   import("./ui/screens/WeekView.tsx").then((m) => ({ default: m.WeekView })),
 );
+const ChangesView = lazy(() =>
+  import("./ui/screens/ChangesView.tsx").then((m) => ({ default: m.ChangesView })),
+);
 const SubjectsView = lazy(() =>
   import("./ui/screens/SubjectsView.tsx").then((m) => ({ default: m.SubjectsView })),
 );
@@ -114,7 +117,9 @@ const Shell = () => {
   // `wireNotificationTaps` rather than acted on directly, since only the shell owns tab/date.
   useEffect(() => {
     if (pendingNavigation === null) return;
-    if (pendingNavigation.tab === "day") setDate(pendingNavigation.date);
+    if (pendingNavigation.tab === "day" || pendingNavigation.tab === "changes") {
+      setDate(pendingNavigation.date);
+    }
     setTab(pendingNavigation.tab);
     setPicking(false);
     clearPendingNavigation();
@@ -158,6 +163,10 @@ const Shell = () => {
           onPickClass={() => {
             setPicking(true);
           }}
+          onOpenChanges={(nextDate) => {
+            setDate(nextDate);
+            setTab("changes");
+          }}
         />
       )}
       {tab === "week" && (
@@ -169,6 +178,17 @@ const Shell = () => {
               setDate(next);
               setTab("day");
             }}
+            onPickClass={() => {
+              setPicking(true);
+            }}
+          />
+        </Suspense>
+      )}
+      {tab === "changes" && (
+        <Suspense fallback={<DaySkeleton rows={4} />}>
+          <ChangesView
+            date={date}
+            onDateChange={setDate}
             onPickClass={() => {
               setPicking(true);
             }}

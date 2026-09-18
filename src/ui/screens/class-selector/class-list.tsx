@@ -5,7 +5,6 @@ import type { ClassOption } from "@/ui/hooks/useClasses";
 import { Card, Icon } from "@/ds";
 import type { PropsWithChildren } from "react";
 
-
 type ClassListProps = {
   classes: ClassOption[];
   favorites: string[];
@@ -86,4 +85,3 @@ const ClassListSection = ({ title, showIcon = false, children }: ClassListSectio
     </section>
   );
 };
-

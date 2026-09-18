@@ -328,4 +328,24 @@ describe("DayView", () => {
 
     expect(harness.store.getState().settings.showTime).toBe(true);
   });
+
+  it("renders changes badge and calls onOpenChanges when tapped", async () => {
+    const harness = await bootHarness();
+    const onOpenChanges = vi.fn();
+    render(
+      <StoreContext.Provider value={harness.store}>
+        <DayView
+          date={FIXTURE_DATE}
+          onDateChange={vi.fn()}
+          onPickClass={vi.fn()}
+          onOpenChanges={onOpenChanges}
+        />
+      </StoreContext.Provider>,
+    );
+
+    const badge = screen.getByTestId("day-changes-badge");
+    expect(badge).toBeDefined();
+    fireEvent.click(badge);
+    expect(onOpenChanges).toHaveBeenCalledWith(FIXTURE_DATE);
+  });
 });

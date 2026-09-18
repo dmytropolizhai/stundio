@@ -4,7 +4,11 @@ import { Sheet } from "../../components/Sheet.tsx";
 import { useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
 import { dataUrlToBase64, shareImage } from "@/lib/share";
-import { IPHONE_PWA_URL, iphoneShareText, renderIphoneShareImage } from "../../share/iphoneImage.ts";
+import {
+  IPHONE_PWA_URL,
+  iphoneShareText,
+  renderIphoneShareImage,
+} from "../../share/iphoneImage.ts";
 
 /*
 Imported from Figma SVG

@@ -29,7 +29,8 @@ import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
  * (`notifications/wire.ts`), consumed once by the shell (`App.tsx`) and cleared — the store
  * doesn't know or care what kind of notification produced it.
  */
-export type NotificationNavigationTarget = { tab: "day"; date: ISODate } | { tab: "settings" };
+export type NotificationNavigationTarget =
+  { tab: "day" | "changes"; date: ISODate } | { tab: "settings" };
 
 export type AppState = {
   ready: boolean;

@@ -5,6 +5,7 @@ export const ua: Dict = {
 
   "nav.day": "День",
   "nav.week": "Тиждень",
+  "nav.changes": "Зміни",
   "nav.subjects": "Предмети",
   "nav.settings": "Налаштування",
 
@@ -82,6 +83,22 @@ export const ua: Dict = {
   "day.updatePrompt.body": "Доступна новіша версія Stundio ({version}).",
   "day.updatePrompt.action": "Оновити",
   "day.updatePrompt.dismiss": "Пізніше",
+  "day.changesBadge": "{n} змін",
+
+  "changes.title": "Зміни",
+  "changes.filter.myClass": "Моя група",
+  "changes.filter.all": "Вся школа",
+  "changes.emptyForClass": "Змін немає",
+  "changes.emptyForClassHint": "У вашої групи уроки йдуть за звичайним розкладом",
+  "changes.emptyAll": "Немає зареєстрованих змін",
+  "changes.emptyAllHint": "Технікум не публікував змін на цей день",
+  "changes.otherGroupsHaveChanges": "Сьогодні є {n} змін для інших груп",
+  "changes.viewOtherGroups": "Дивитися всі зміни",
+  "changes.searchPlaceholder": "Пошук за групою, предметом або викладачем…",
+  "changes.searchNoResults": "Нічого не знайдено",
+  "changes.count": "{n} змін",
+  "changes.badge": "{n} змін",
+  "changes.notesFromSchool": "Оголошення технікуму",
 
   "week.previousWeek": "Попередній тиждень",
   "week.nextWeek": "Наступний тиждень",

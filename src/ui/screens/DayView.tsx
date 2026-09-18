@@ -127,10 +127,12 @@ export const DayView = ({
   date,
   onDateChange,
   onPickClass,
+  onOpenChanges,
 }: {
   date: ISODate;
   onDateChange: (date: ISODate) => void;
   onPickClass: () => void;
+  onOpenChanges?: (date: ISODate) => void;
 }) => {
   const t = useT();
   const lang = useLang();
@@ -159,6 +161,11 @@ export const DayView = ({
   const day = useAppStore((s) => s.resolvedDay(date));
 
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
+
+  const changedLessonsCount = useMemo(
+    () => day?.lessons.filter((l) => l.status !== "normal").length ?? 0,
+    [day],
+  );
 
   const buildings = useMemo(() => (day === null ? null : buildingNotice(day)), [day]);
 
@@ -477,17 +484,32 @@ export const DayView = ({
             }
           />
 
-          {!isToday && (
+          {(!isToday || (changedLessonsCount > 0 && onOpenChanges !== undefined)) && (
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  onDateChange(now.date);
-                }}
-              >
-                {t("day.jumpToday")}
-              </Button>
+              {!isToday && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    onDateChange(now.date);
+                  }}
+                >
+                  {t("day.jumpToday")}
+                </Button>
+              )}
+              {changedLessonsCount > 0 && onOpenChanges !== undefined && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon="repeat"
+                  onClick={() => {
+                    onOpenChanges(date);
+                  }}
+                  data-testid="day-changes-badge"
+                >
+                  {t("day.changesBadge", { n: changedLessonsCount })}
+                </Button>
+              )}
             </div>
           )}
 

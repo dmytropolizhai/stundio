@@ -84,7 +84,11 @@ describe("TabBar", () => {
      */
     expect(screen.getByRole("button", { name: "Diena" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Nedēļa" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Izmaiņas" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Izmaiņas" }));
+    expect(onChange).toHaveBeenCalledWith("changes");
 
     fireEvent.click(screen.getByRole("button", { name: "Iestatījumi" }));
     expect(onChange).toHaveBeenCalledWith("settings");
