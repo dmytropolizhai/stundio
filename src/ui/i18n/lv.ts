@@ -8,6 +8,7 @@
  */
 export const lv = {
   "app.title": "Stundio",
+  "general.continue": "Turpināt",
 
   "nav.day": "Diena",
   "nav.week": "Nedēļa",
