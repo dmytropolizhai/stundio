@@ -1,160 +1,131 @@
+import type { CSSProperties } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { cn } from "@/ds";
+import { Card, WeekGrid, type WeekGridDay, type WeekGridPeriod } from "@/ds";
 
 /**
- * The persona screen's infographic — one diagram per role, built on the same period axis so the
- * two halves are read against each other rather than one at a time.
+ * The persona screen's infographic — a real piece of the app on each half, not a picture of one.
  *
- * The information is the *shape*, not a picture of a person: a student's day is one lane of
- * back-to-back lessons under a single group code, and a teacher's day is the same hours spread
- * across several groups with windows between them. Nothing here is decoration — the lane headers
- * are real group codes from the school's timetable (`data/normalized_1175.json`), the times are
- * the school's real period starts, doubles repeat their subject colour the way a real day does,
- * and the two marked lessons say what the copy beside them promises: a cancellation that stays
- * in place on the student side, a substitution wearing the Day screen's corner dot on the
- * teacher's.
+ * Both halves mount the DS `WeekGrid` the Week screen mounts, on the DS `Card` it sits on, at the
+ * component's own proportions: the miniature is the app scaled down (`zoom`), so it can never
+ * drift from the grid a student meets a minute later. What differs is the shape of the week, and
+ * that is the whole message — a student reads one column, their own group, filled back to back;
+ * a teacher reads several groups at once, with windows between them. The grid's own vocabulary
+ * carries the rest: a double lesson spans its two rows, a cancellation stays in place struck
+ * through, and a lesson in the other building wears the hairline outline the Week screen gives it.
  *
- * `aria-hidden`: the panel's own title and description already name the role, and reading a
- * fabricated timetable aloud would be noise. Group codes and room codes are school-written data,
- * so they stay as they are in every locale (CLAUDE.md).
+ * Group codes, subject codes and period times are the school's own (`data/normalized_1175.json`),
+ * shown as the app shows them and translated in no locale (CLAUDE.md).
+ *
+ * `inert` + `aria-hidden`: the half's own title and description already name the role, so the
+ * miniature is neither read out nor reachable — every tap on the panel belongs to the panel.
  */
 
-/** The school's real first five period starts, straight off the fixture. */
-const PERIODS = ["08:30", "09:15", "10:10", "10:55", "12:05"] as const;
-
-type Block = {
-  /** Index into `PERIODS`. */
-  row: number;
-  /** Index into the variant's `lanes`. */
-  lane: number;
-  /** A DS subject-accent utility — the colour *indexes* the subject, it never means anything. */
-  tone: string;
-  /** The current lesson: the Day screen's 2px ring, and nothing more. */
-  now?: boolean;
-  /** Cancelled — stays in place, dimmed, struck through. */
-  cancelled?: boolean;
-  /** Substituted — the same corner dot the lesson row wears. */
-  substituted?: boolean;
-};
+/** The school's real first five period starts. */
+const TIMES = [
+  { period: 1, start: "08:30", end: "09:10" },
+  { period: 2, start: "09:15", end: "09:55" },
+  { period: 3, start: "10:10", end: "10:50" },
+  { period: 4, start: "10:55", end: "11:35" },
+  { period: 5, start: "12:05", end: "12:45" },
+] as const;
 
 type Variant = {
-  lanes: string[];
-  blocks: Block[];
+  days: readonly WeekGridDay[];
+  periods: readonly WeekGridPeriod[];
+  /** The grid's own width before `zoom` shrinks it — one column needs far less than three. */
+  width: string;
 };
 
-/*
- * One group, one lane, no gaps: three subjects across five periods, two of them doubles. The
- * fourth period is cancelled and keeps its slot; the third is the one running now.
+const periods = (
+  cells: readonly Partial<Record<string, WeekGridPeriod["cells"][string]>>[],
+): WeekGridPeriod[] => TIMES.map((t, i) => ({ ...t, cells: cells[i] ?? {} }));
+
+/**
+ * One group, one column, no windows: a double first thing, then two singles and a cancellation
+ * that keeps its slot — the day a student actually gets.
  */
 const STUDENT: Variant = {
-  lanes: ["A1-1"],
-  blocks: [
-    { row: 0, lane: 0, tone: "bg-sky" },
-    { row: 1, lane: 0, tone: "bg-sky" },
-    { row: 2, lane: 0, tone: "bg-lime", now: true },
-    { row: 3, lane: 0, tone: "bg-mint", cancelled: true },
-    { row: 4, lane: 0, tone: "bg-pink" },
-  ],
+  days: [{ key: "A1-1", weekday: "A1-1", today: true }],
+  periods: periods([
+    { "A1-1": { short: "MAT", name: "Matemātika I", tone: "sky", span: 2 } },
+    {},
+    { "A1-1": { short: "PRG", name: "Programmatūras koda rakstīšana", tone: "lime" } },
+    { "A1-1": { short: "SPO", name: "Sports", tone: "mint", cancelled: true } },
+    { "A1-1": { short: "AUD", name: "Audzināšana", tone: "pink" } },
+  ]),
+  width: "10.5rem",
 };
 
-/*
- * Three groups, four lessons, one window. The same five hours as the student's day and half the
- * blocks — which is the point: a teacher's day is assembled, not continuous.
+/**
+ * Three groups, four lessons, one free period and one lesson in the other building. Half the
+ * blocks of the student's day over the same five hours — a teacher's day is assembled, not
+ * continuous.
  */
 const TEACHER: Variant = {
-  lanes: ["S1", "L3", "S2"],
-  blocks: [
-    { row: 0, lane: 0, tone: "bg-amber" },
-    { row: 1, lane: 1, tone: "bg-lilac", now: true },
-    { row: 3, lane: 2, tone: "bg-sky" },
-    { row: 4, lane: 0, tone: "bg-amber", substituted: true },
+  days: [
+    { key: "S1", weekday: "S1" },
+    { key: "L3", weekday: "L3" },
+    { key: "S2", weekday: "S2" },
   ],
+  periods: periods([
+    { S1: { short: "TEH", name: "Telpu un iekārtu apkope", tone: "amber" } },
+    { L3: { short: "MAT", name: "Matemātika I", tone: "lilac" } },
+    {},
+    { S2: { short: "MTN", name: "Materiālu testēšana", tone: "sky", building: "TIC" } },
+    { S1: { short: "TEH", name: "Telpu un iekārtu apkope", tone: "amber", cancelled: true } },
+  ]),
+  width: "16rem",
 };
 
 const VARIANTS = { student: STUDENT, teacher: TEACHER } as const;
 
-type PersonaTimetableArtProps = {
+export type PersonaTimetableArtProps = {
   persona: keyof typeof VARIANTS;
 };
 
+/*
+ * The miniature is lit, not themed.
+ *
+ * This screen is a dark island whatever the app theme is — both halves are painted gradients and
+ * the theme is not even chosen yet — so the card inside it re-points the DS surface aliases back
+ * to their light values for its own subtree. Under `.dark` an untouched card would be near-black
+ * on near-black and its empty periods would stop reading as windows, which is the one thing the
+ * teacher's grid has to say. No new values: every one of these is the DS's own light token, the
+ * same way `dark.css` re-points the same aliases the other way.
+ */
+const LIT: CSSProperties = {
+  "--surface-card": "var(--white)",
+  "--surface-sunken": "var(--ink-100)",
+  "--text-body": "var(--ink-700)",
+  "--text-strong": "var(--ink-900)",
+  "--text-muted": "var(--ink-500)",
+  "--brand-strong": "var(--blue-600)",
+  "--border-hairline": "var(--ink-200)",
+  "--border-strong": "var(--ink-300)",
+} as CSSProperties;
+
 export const PersonaTimetableArt = ({ persona }: PersonaTimetableArtProps) => {
+  const { days, periods: rows, width } = VARIANTS[persona];
   const reduceMotion = useReducedMotion() ?? false;
-  const { lanes, blocks } = VARIANTS[persona];
 
-  const ease = [0.2, 0.8, 0.2, 1] as const;
-  const dur = reduceMotion ? 0.001 : 0.38;
-  const delay = (row: number) => (reduceMotion ? 0 : 0.08 + row * 0.07);
-
+  /* The screen's one authored moment: the two weeks arrive, the student's a beat ahead. */
   return (
-    <div aria-hidden="true" className="w-full max-w-45 sm:max-w-56">
-      {/* Lane headers — one group code per column. */}
-      <div
-        className="grid gap-1.5 pb-1.5"
-        style={{ gridTemplateColumns: `2.5rem repeat(${lanes.length}, minmax(0, 1fr))` }}
+    <div inert aria-hidden="true" style={LIT}>
+      <motion.div
+        initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: reduceMotion ? 0.001 : 0.38,
+          delay: reduceMotion ? 0 : persona === "student" ? 0.06 : 0.16,
+          ease: [0.2, 0.8, 0.2, 1],
+        }}
+        className="[zoom:0.62] sm:[zoom:0.78]"
+        style={{ width }}
       >
-        <span />
-        {lanes.map((lane) => (
-          <motion.span
-            key={lane}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: dur, ease }}
-            className="truncate text-center font-text text-micro tracking-label text-white/60 uppercase"
-          >
-            {lane}
-          </motion.span>
-        ))}
-      </div>
-
-      {/* The period axis: one hairline row per lesson hour, start time on the rail. */}
-      <div className="flex flex-col gap-1.5">
-        {PERIODS.map((start, row) => (
-          <div
-            key={start}
-            className="grid items-stretch gap-1.5 border-t border-white/12 pt-1.5"
-            style={{ gridTemplateColumns: `2.5rem repeat(${lanes.length}, minmax(0, 1fr))` }}
-          >
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: dur, delay: delay(row), ease }}
-              className="self-center font-data text-micro leading-none text-white/50 tabular-nums"
-            >
-              {start}
-            </motion.span>
-
-            {lanes.map((lane, laneIndex) => {
-              const block = blocks.find((b) => b.row === row && b.lane === laneIndex);
-
-              if (block === undefined) return <span key={lane} className="h-5.5 sm:h-6.5" />;
-
-              return (
-                <motion.span
-                  key={lane}
-                  initial={{ opacity: 0, scaleY: reduceMotion ? 1 : 0.6, y: reduceMotion ? 0 : 4 }}
-                  animate={{ opacity: block.cancelled === true ? 0.55 : 1, scaleY: 1, y: 0 }}
-                  transition={{ duration: dur, delay: delay(row), ease }}
-                  className={cn(
-                    "relative block h-5.5 origin-top rounded-xs sm:h-6.5",
-                    block.tone,
-                    block.now === true && "ring-2 ring-white ring-inset",
-                  )}
-                >
-                  {/* Cancelled keeps its slot and wears the strikethrough the day view gives it. */}
-                  {block.cancelled === true && (
-                    <span className="absolute inset-x-1 top-1/2 h-0.5 -translate-y-1/2 rounded-pill bg-mint-ink" />
-                  )}
-
-                  {/* Substituted — the Day screen's corner dot, at this scale. */}
-                  {block.substituted === true && (
-                    <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-pill bg-white ring-2 ring-[var(--ink-900)] ring-inset" />
-                  )}
-                </motion.span>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+        <Card elevation="raised" className="p-3">
+          <WeekGrid days={days} periods={rows} />
+        </Card>
+      </motion.div>
     </div>
   );
 };
