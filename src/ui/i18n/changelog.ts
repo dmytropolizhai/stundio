@@ -26,6 +26,40 @@ export type ChangelogEntry = {
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: "v1.2.5-artemis",
+    date: "2026-09-20",
+    lines: {
+      lv: [
+        "Jauna saraksta izmaiņu cilne (Izmaiņas) ar visām skolas un grupas izmaiņām, atceltajām stundām un telpu maiņām.",
+        "Iespēja pievienot ekrānuzņēmumus atsauksmju un kļūdu ziņošanas formā.",
+        'Pievienotas dienu pārslēgšanas bultiņas un nosaukumi "Vakar" / "Rīt" dienas skata galvenē.',
+        'Ieviests pilns Android fiziskās un žestu pogas "Atpakaļ" atbalsts logu aizvēršanai un navigācijai.',
+        "Pievienota datu atiestatīšana iestatījumos, uzlabota PWA bezsaistes darbība un atjauninātas iOS ikonas.",
+      ],
+      en: [
+        "Dedicated Changes tab listing all school-wide substitutions, cancellations, and room relocations.",
+        "Added screenshot attachments to the in-app feedback and bug report form.",
+        'Added quick day navigation arrows and "Yesterday" / "Tomorrow" labels to the Day view header.',
+        "Full Android hardware and gesture Back button navigation support for closing sheets and dialogs.",
+        "Added data reset in Settings, improved PWA offline navigation, and fixed crisp home-screen icons on iOS.",
+      ],
+      ru: [
+        "Новая вкладка «Замены» со списком всех школьных изменений, отмен занятий и переносов кабинетов.",
+        "Добавлена возможность прикреплять скриншоты к форме отправки отзывов и сообщений об ошибках.",
+        "Добавлены стрелки быстрого переключения дней и отметки «Вчера» / «Завтра» в заголовке дня.",
+        "Полная поддержка аппаратной и жестовой кнопки «Назад» на Android для закрытия панелей и навигации.",
+        "Добавлен сброс данных в настройках, улучшена офлайн-работа PWA и исправлены четкие иконки для iOS.",
+      ],
+      ua: [
+        "Нова вкладка «Зміни» зі списком усіх шкільних замін, скасованих занять та переносів кабінетів.",
+        "Додано можливість прикріплювати скриншоти до форми відгуків та повідомлень про помилки.",
+        "Додано стрілки швидкого перемикання днів і підписи «Вчора» / «Завтра» у заголовку дня.",
+        "Повна підтримка апаратної та жестової кнопки «Назад» на Android для закриття панелей і навігації.",
+        "Додано скидання даних у налаштуваннях, покращено офлайн-роботу PWA та виправлено чіткі іконки для iOS.",
+      ],
+    },
+  },
+  {
     version: "v1.2.0-vaira",
     date: "2026-09-16",
     lines: {
