@@ -2,6 +2,7 @@ import type { Dict } from "./lv.ts";
 
 export const en: Dict = {
   "app.title": "Stundio",
+  "general.continue": "Continue",
 
   "nav.day": "Day",
   "nav.week": "Week",

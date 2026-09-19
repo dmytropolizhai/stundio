@@ -1,6 +1,7 @@
 import { useT } from "@/ui/i18n";
 import { Button } from "@/ds";
 import { type ReactNode } from "react";
+import { PersonaTimetableArt } from "./persona-timetable-art.tsx";
 
 type Persona = "student" | "teacher";
 
@@ -24,17 +25,17 @@ const PERSONA_STYLES: Record<
 > = {
   student: {
     panel:
-      "border-r border-white/10 bg-gradient-to-b from-[#1e3aff] via-[#1730d6] to-[#0e21a8] dark:from-[#112399] dark:via-[#0c1970] dark:to-[#060b3d]",
-    focus: "focus-visible:ring-white focus-visible:ring-offset-[#1e3aff]",
+      "border-r border-white/10 bg-gradient-to-b from-[var(--blue-500)] via-[var(--blue-600)] to-[var(--blue-700)] dark:from-[var(--blue-700)] dark:via-[var(--blue-800)] dark:to-[var(--blue-900)]",
+    focus: "focus-visible:ring-white focus-visible:ring-offset-[var(--blue-500)]",
     description: "text-white/80",
     decoration: (
       <div className="pointer-events-none absolute -left-20 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-white/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
     ),
   },
   teacher: {
-    panel: "bg-gradient-to-b from-[#0e0f14] via-[#090a0e] to-[#040406]",
-    focus: "focus-visible:ring-[#ffb552] focus-visible:ring-offset-[#0b0c10]",
-    description: "text-[#b9bfce]",
+    panel: "bg-gradient-to-b from-[#0e0f14] via-[var(--ink-900)] to-black",
+    focus: "focus-visible:ring-[var(--accent-amber)] focus-visible:ring-offset-[var(--ink-900)]",
+    description: "text-[var(--ink-300)]",
     decoration: (
       <>
         <div className="pointer-events-none absolute inset-y-0 right-0 w-2.5 bg-linear-to-l from-[#ffb552]/40 via-amber-600/20 to-transparent blur-sm sm:w-4" />
@@ -63,12 +64,11 @@ const PersonaPanel = ({ persona, onSelect }: PersonaPanelProps) => {
     >
       {styles.decoration}
 
-      {/* Top spacer */}
-      <div className="h-6 w-full" />
+      {/* Center content — the diagram leads, the words name what it shows. */}
+      <div className="relative z-10 flex w-full flex-col items-center px-1">
+        <PersonaTimetableArt persona={persona} />
 
-      {/* Center content */}
-      <div className="relative z-10 flex flex-col items-center px-1">
-        <h2 className="mt-5 font-display text-xl font-bold tracking-tight text-white sm:text-3xl">
+        <h2 className="mt-6 font-display text-xl font-bold tracking-tight text-white sm:text-3xl">
           {title}
         </h2>
 
@@ -78,7 +78,15 @@ const PersonaPanel = ({ persona, onSelect }: PersonaPanelProps) => {
           {description}
         </p>
 
-        <Button className="mt-4">{t("general.continue")}</Button>
+        {/*
+         * The whole half is the control, so the call to action renders as a span (`asChild`):
+         * a real <button> here would nest one interactive element inside another — invalid
+         * HTML, and a second tab stop for the same choice. It still presses, via the panel's
+         * own active state.
+         */}
+        <Button asChild className="mt-4 group-active:scale-(--press-scale)">
+          <span>{t("general.continue")}</span>
+        </Button>
       </div>
     </button>
   );
