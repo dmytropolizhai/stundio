@@ -77,7 +77,7 @@ export const ChangesLessonCard = ({ lesson, onOpen }: ChangesLessonCardProps) =>
       </div>
 
       {lesson.changeNote !== null && (
-        <div className="mt-1 rounded-lg bg-sunken p-2 font-text text-caption text-fg">
+        <div className="mt-1 rounded-lg bg-sunken p-4 font-text text-caption text-fg">
           <p className="u-eyebrow text-muted">{t("lesson.fromSchool")}</p>
           <p className="mt-0.5">{lesson.changeNote}</p>
         </div>
