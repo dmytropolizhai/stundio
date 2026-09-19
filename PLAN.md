@@ -400,35 +400,35 @@ they already are.
 
 **`src/lib/edupage/`**
 
-- [ ] `teacher-names.ts`: `teacherKey(name)` (lowercase + token-sort, diacritics kept, LV locale)
+- [x] `teacher-names.ts`: `teacherKey(name)` (lowercase + token-sort, diacritics kept, LV locale)
       and `indexTeachersByKey`. Wired into `resolve.ts` and `notes.ts` too — finding 2.
-- [ ] `resolveTeacherDay(sources, subs, teacherId, date)` beside `resolveDayAcross`: select on
+- [x] `resolveTeacherDay(sources, subs, teacherId, date)` beside `resolveDayAcross`: select on
       `teacherIds ∋ id`, collapse `classIds` onto one card, same multi-building merge and dedup.
-- [ ] `TeacherResolvedLesson` = `ResolvedLesson` minus `group`, plus `classes: ClassRef[]`,
+- [x] `TeacherResolvedLesson` = `ResolvedLesson` minus `group`, plus `classes: ClassRef[]`,
       `role: "own" | "cover"`, `coverFor: TeacherRef | null`.
-- [ ] `coverDuties(subs, teacherId, timetables)` — feed rows naming me where the base day does not.
-- [ ] `absentTeachers` selector in `substitutions.ts` → optional `DaySubstitutions.absentTeachers`
+- [x] `coverDuties(subs, teacherId, timetables)` — feed rows naming me where the base day does not.
+- [x] `absentTeachers` selector in `substitutions.ts` → optional `DaySubstitutions.absentTeachers`
       (optional so a cached day written by an older build still parses).
-- [ ] `listTeachers(timetables)` — only teachers with placed lessons, each with its `formClassIds`.
+- [x] `listTeachers(timetables)` — only teachers with placed lessons, each with its `formClassIds`.
 
 **`src/db` / `src/store` / `src/sync`**
 
-- [ ] `Settings`: `persona`, `selectedTeacherId`, `teacherView: "own" | "form-class"`,
+- [x] `Settings`: `persona`, `selectedTeacherId`, `teacherView: "own" | "form-class"`,
       `highlightCoverLessons`; setters on the store.
-- [ ] `resolvedTeacherDay(date)` selector, mirroring `resolvedDay`.
-- [ ] `sync/` unchanged — same requests, same cadence, same retention.
+- [x] `resolvedTeacherDay(date)` selector, mirroring `resolvedDay`.
+- [x] `sync/` unchanged — same requests, same cadence, same retention.
 
 **`src/ui`**
 
-- [ ] `onboarding-persona/` and `teacher-picker/` (same shape as `class-selector`: search + list).
-- [ ] DayView / WeekView teacher cards: `[Class(es)] [Room] [Subject] [Period times]`, cover
+- [x] `onboarding-persona/` and `teacher-picker/` (same shape as `class-selector`: search + list).
+- [x] DayView / WeekView teacher cards: `[Class(es)] [Room] [Subject] [Period times]`, cover
       lessons badged in high contrast; subgroup and "my class" controls hidden.
-- [ ] ChangesView: `Manas izmaiņas | Visa skola`, plus an "absent today" block.
-- [ ] SubjectsView: "my classes" (class + hours) instead of "my subjects".
-- [ ] i18n: ~25–35 new keys × 4 languages; `lv.ts` is the typed source, so the other three fail the
+- [x] ChangesView: `Manas izmaiņas | Visa skola`, plus an "absent today" block.
+- [x] SubjectsView: "my classes" (class + hours) instead of "my subjects".
+- [x] i18n: ~25–35 new keys × 4 languages; `lv.ts` is the typed source, so the other three fail the
       build until translated.
-- [ ] Notifications: diff over *my* rows; a dedicated string for an assigned cover.
-- [ ] Web/PWA parity verified on `stundio.pages.dev`.
+- [x] Notifications: diff over *my* rows; a dedicated string for an assigned cover.
+- [x] Web/PWA parity verified on `stundio.pages.dev`.
 
 ### PR order
 

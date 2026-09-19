@@ -222,4 +222,11 @@ Arrow glyph is `➔` (U+2794).
 - **Cover duties (*aizvietošana*):** Scraped `mode: "classes"` rows carry `teacher` (substitute)
   and `teacherFrom` (absent teacher). Cover duties assigned to a teacher are derived by filtering
   substitutions where `teacher` matches the current teacher and it is not their own base lesson.
+- **Dual role (form teacher):** When a teacher has an assigned form class (`formClassIds` derived via
+  `classes.teacherid`), the UI presents a segmented toggle between `Manas stundas` (own teaching schedule)
+  and `Mana klase` (their form class's schedule), allowing seamless role switching.
+- **Diff scoping & notifications:** When persona is `teacher`, substitution diffing is scoped to items
+  where `teacherKey(item.teacher) === key || teacherKey(item.teacherFrom) === key`. Unrelated substitutions
+  across the school do not fire notifications. When an assigned cover duty is detected, a specialized
+  notification ("Jauna aizvietošana" / "Tev piešķirta aizvietošanas stunda") is delivered instead of generic change text.
 
