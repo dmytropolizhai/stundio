@@ -233,6 +233,8 @@ export const ua: Dict = {
   "notification.lessonReminder.title": "{subject} через {minutes} хв",
   "notification.changed.title": "Розклад змінився",
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
+  "notification.cover.title": "Нова заміна",
+  "notification.cover.body": "Вам призначено заміну",
   "notification.update.title": "Доступне оновлення",
   "notification.update.body": "Stundio {version} готовий до завантаження.",
   "widget.now": "Зараз",

@@ -137,6 +137,51 @@ describe("notifyOnChanges", () => {
     notifyOnChanges(store, { changedDates: [today] } as never, true);
     expect(notifySubstitutionsChanged).not.toHaveBeenCalled();
   });
+
+  it("fires cover notification when teacher has an assigned cover lesson", async () => {
+    const store = makeStore();
+    await store.getState().setPersona("teacher");
+    await store.getState().setTeacher("-100");
+
+    // Mock resolvedTeacherDay to return a day with a cover lesson
+    const originalResolvedTeacherDay = store.getState().resolvedTeacherDay;
+    store.getState().resolvedTeacherDay = vi.fn().mockReturnValue({
+      date: today,
+      lessons: [{ isCover: true, role: "cover" }],
+    });
+
+    notifyOnChanges(store, { changedDates: [today] } as never, true);
+    expect(notifySubstitutionsChanged).toHaveBeenCalledTimes(1);
+    expect(notifySubstitutionsChanged).toHaveBeenCalledWith(
+      "Jauna aizvietošana",
+      "Tev piešķirta aizvietošanas stunda",
+      today,
+    );
+
+    store.getState().resolvedTeacherDay = originalResolvedTeacherDay;
+  });
+
+  it("fires regular notification when teacher has non-cover changes", async () => {
+    const store = makeStore();
+    await store.getState().setPersona("teacher");
+    await store.getState().setTeacher("-100");
+
+    const originalResolvedTeacherDay = store.getState().resolvedTeacherDay;
+    store.getState().resolvedTeacherDay = vi.fn().mockReturnValue({
+      date: today,
+      lessons: [{ isCover: false, role: "own" }],
+    });
+
+    notifyOnChanges(store, { changedDates: [today] } as never, true);
+    expect(notifySubstitutionsChanged).toHaveBeenCalledTimes(1);
+    expect(notifySubstitutionsChanged).toHaveBeenCalledWith(
+      "Izmaiņas stundu sarakstā",
+      expect.any(String),
+      today,
+    );
+
+    store.getState().resolvedTeacherDay = originalResolvedTeacherDay;
+  });
 });
 
 describe("checkForAppUpdateNotification", () => {

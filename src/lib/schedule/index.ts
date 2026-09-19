@@ -11,4 +11,8 @@ export {
 } from "./nextLesson.ts";
 export { startOfWeek, weekDates, weekPeriods, type WeekPeriod } from "./week.ts";
 export { lessonReminders, type LessonReminder } from "./reminders.ts";
-export { substitutionsChanged } from "./substitutionDiff.ts";
+export {
+  substitutionsChanged,
+  teacherSubstitutionsChanged,
+  teacherHasCoverDuty,
+} from "./substitutionDiff.ts";
