@@ -1,7 +1,7 @@
 import { BottomNav, type BottomNavItem, type IconName } from "@/ds";
 import { useT } from "@/ui/i18n";
 
-export type Tab = "day" | "week" | "subjects" | "settings";
+export type Tab = "day" | "week" | "changes" | "subjects" | "settings";
 
 /**
  * Icons come from the DS working set. Labels are translated — the DS keeps every nav word one
@@ -10,6 +10,7 @@ export type Tab = "day" | "week" | "subjects" | "settings";
 const TABS: { id: Tab; icon: IconName }[] = [
   { id: "day", icon: "calendar-days" },
   { id: "week", icon: "layout-grid" },
+  { id: "changes", icon: "repeat" },
   { id: "subjects", icon: "graduation-cap" },
   { id: "settings", icon: "user-round" },
 ];

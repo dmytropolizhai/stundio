@@ -186,11 +186,11 @@ describe("wireNotificationTaps", () => {
     expect(store.getState().pendingNavigation).toEqual({ tab: "day", date: "2026-09-09" });
   });
 
-  it("routes a substitutions-changed tap to the day tab on the changed date", () => {
+  it("routes a substitutions-changed tap to the changes tab on the changed date", () => {
     const store = makeStore();
     wireNotificationTaps(store);
     tapHandlers[0]?.({ kind: "substitutionsChanged", date: "2026-09-10" });
-    expect(store.getState().pendingNavigation).toEqual({ tab: "day", date: "2026-09-10" });
+    expect(store.getState().pendingNavigation).toEqual({ tab: "changes", date: "2026-09-10" });
   });
 
   it("routes an app-update tap to the settings tab", () => {

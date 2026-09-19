@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { StoreContext } from "@/store";
-import { WhatsNewSheet } from "../screens/WhatsNewSheet.tsx";
+import { WhatsNewSheet } from "../screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "../hooks/useWhatsNew.ts";
 import { CHANGELOG } from "@/ui/i18n";
 import { bootHarness, type Harness } from "./harness.tsx";

@@ -5,6 +5,7 @@ export const en: Dict = {
 
   "nav.day": "Day",
   "nav.week": "Week",
+  "nav.changes": "Changes",
   "nav.subjects": "Subjects",
   "nav.settings": "Settings",
 
@@ -82,6 +83,22 @@ export const en: Dict = {
   "day.updatePrompt.body": "A newer version of Stundio is available ({version}).",
   "day.updatePrompt.action": "Update",
   "day.updatePrompt.dismiss": "Later",
+  "day.changesBadge": "{n} changes",
+
+  "changes.title": "Changes",
+  "changes.filter.myClass": "My group",
+  "changes.filter.all": "All classes",
+  "changes.emptyForClass": "No changes",
+  "changes.emptyForClassHint": "Lessons for your group follow the regular schedule today",
+  "changes.emptyAll": "No registered changes",
+  "changes.emptyAllHint": "The school has not published any changes for this day",
+  "changes.otherGroupsHaveChanges": "There are {n} changes for other groups today",
+  "changes.viewOtherGroups": "View all changes",
+  "changes.searchPlaceholder": "Search group, subject, or teacher…",
+  "changes.searchNoResults": "Nothing found",
+  "changes.count": "{n} changes",
+  "changes.badge": "{n} changes",
+  "changes.notesFromSchool": "School announcements",
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",

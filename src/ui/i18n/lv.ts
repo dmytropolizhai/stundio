@@ -11,6 +11,7 @@ export const lv = {
 
   "nav.day": "Diena",
   "nav.week": "Nedēļa",
+  "nav.changes": "Izmaiņas",
   "nav.subjects": "Priekšmeti",
   "nav.settings": "Iestatījumi",
 
@@ -89,6 +90,22 @@ export const lv = {
   "day.updatePrompt.body": "Pieejama jaunāka Stundio versija ({version}).",
   "day.updatePrompt.action": "Atjaunināt",
   "day.updatePrompt.dismiss": "Vēlāk",
+  "day.changesBadge": "{n} izmaiņas",
+
+  "changes.title": "Izmaiņas",
+  "changes.filter.myClass": "Mana grupa",
+  "changes.filter.all": "Visa skola",
+  "changes.emptyForClass": "Izmaiņu nav",
+  "changes.emptyForClassHint": "Tavai grupai šai dienai stundas notiek pēc pamatsaraksta",
+  "changes.emptyAll": "Nav reģistrētu izmaiņu",
+  "changes.emptyAllHint": "Skola nav publicējusi izmaiņas šai dienai",
+  "changes.otherGroupsHaveChanges": "Šodien ir {n} izmaiņas citām grupām",
+  "changes.viewOtherGroups": "Skatīt visas izmaiņas",
+  "changes.searchPlaceholder": "Meklēt grupu, priekšmetu vai skolotāju…",
+  "changes.searchNoResults": "Nekas netika atrasts",
+  "changes.count": "{n} izmaiņas",
+  "changes.badge": "{n} izmaiņas",
+  "changes.notesFromSchool": "Skolas paziņojumi",
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",

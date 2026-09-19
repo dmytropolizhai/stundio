@@ -1,6 +1,6 @@
 /**
  * App shell: theme, tabs, and the one piece of navigation state the app has (which day you
- * are looking at). No router — four tabs and a modal picker do not need one, and every
+ * are looking at). No router — five tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
 import { useCallback, useEffect, useState } from "react";
@@ -9,26 +9,26 @@ import { todayInRiga } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
-import { ClassPicker } from "./ui/screens/ClassPicker.tsx";
-import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
-import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
-import { DayView } from "./ui/screens/DayView.tsx";
-import { WeekView } from "./ui/screens/WeekView.tsx";
-import { SubjectsView } from "./ui/screens/SubjectsView.tsx";
-import { SettingsView } from "./ui/screens/SettingsView.tsx";
-import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
-import { WhatsNewSheet } from "./ui/screens/WhatsNewSheet.tsx";
+import { ClassSelector } from "./ui/screens/class-selector";
+import { OnboardingLanguage } from "./ui/screens/onboarding-language";
+import { OnboardingIntro } from "./ui/screens/onboarding-intro";
+import { DayView } from "./ui/screens/day-view";
+import { WeekView } from "./ui/screens/week-view";
+import { ChangesView } from "./ui/screens/ChangesView.tsx";
+import { SubjectsView } from "./ui/screens/subjects-view";
+import { SettingsView } from "./ui/screens/settings-view";
+import { SplashScreen } from "./ui/screens/splash-screen";
+import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
-import { IphoneReleaseSheet } from "./ui/screens/IphoneReleaseSheet.tsx";
+import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
 import { useIphoneAnnouncement } from "./ui/hooks/useIphoneAnnouncement.ts";
-import { IphoneInstallSheet } from "./ui/screens/IphoneInstallSheet.tsx";
+import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
 import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 import { nativeApp } from "@/lib/app";
 import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
-
 /**
  * Renders nothing; its only job is to tell the splash that the store hydrated. It sits inside
  * `AppStoreProvider`'s children, which the provider only mounts once boot resolves — so its
@@ -92,7 +92,7 @@ const Onboarding = () => {
         <p className="mt-3 font-text text-body-lg text-white/72">{t("onboarding.subtitle")}</p>
       </div>
       <div className="flex min-h-0 flex-1 flex-col pt-5">
-        <ClassPicker />
+        <ClassSelector />
       </div>
     </div>
   );
@@ -136,7 +136,9 @@ const Shell = () => {
   // `wireNotificationTaps` rather than acted on directly, since only the shell owns tab/date.
   useEffect(() => {
     if (pendingNavigation === null) return;
-    if (pendingNavigation.tab === "day") setDate(pendingNavigation.date);
+    if (pendingNavigation.tab === "day" || pendingNavigation.tab === "changes") {
+      setDate(pendingNavigation.date);
+    }
     setTab(pendingNavigation.tab);
     setPicking(false);
     clearPendingNavigation();
@@ -162,7 +164,7 @@ const Shell = () => {
             }}
           />
         </div>
-        <ClassPicker
+        <ClassSelector
           onPicked={() => {
             setPicking(false);
           }}
@@ -187,6 +189,10 @@ const Shell = () => {
             onPickClass={() => {
               setPicking(true);
             }}
+            onOpenChanges={(nextDate) => {
+              setDate(nextDate);
+              setTab("changes");
+            }}
           />
         )}
         {tab === "week" && (
@@ -197,6 +203,15 @@ const Shell = () => {
               setDate(next);
               setTab("day");
             }}
+            onPickClass={() => {
+              setPicking(true);
+            }}
+          />
+        )}
+        {tab === "changes" && (
+          <ChangesView
+            date={date}
+            onDateChange={setDate}
             onPickClass={() => {
               setPicking(true);
             }}

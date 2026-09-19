@@ -6,7 +6,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { StoreContext } from "@/store";
-import { DayView } from "../screens/DayView.tsx";
+import { DayView } from "../screens/day-view";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 /** 08:50 Riga on the fixture date: inside the first lesson. */
@@ -327,5 +327,25 @@ describe("DayView", () => {
     });
 
     expect(harness.store.getState().settings.showTime).toBe(true);
+  });
+
+  it("renders changes badge and calls onOpenChanges when tapped", async () => {
+    const harness = await bootHarness();
+    const onOpenChanges = vi.fn();
+    render(
+      <StoreContext.Provider value={harness.store}>
+        <DayView
+          date={FIXTURE_DATE}
+          onDateChange={vi.fn()}
+          onPickClass={vi.fn()}
+          onOpenChanges={onOpenChanges}
+        />
+      </StoreContext.Provider>,
+    );
+
+    const badge = screen.getByTestId("day-changes-badge");
+    expect(badge).toBeDefined();
+    fireEvent.click(badge);
+    expect(onOpenChanges).toHaveBeenCalledWith(FIXTURE_DATE);
   });
 });

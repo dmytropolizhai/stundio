@@ -69,8 +69,8 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **`src/ds/`** — the Studio design system: tokens (`ds/tokens/*.css`) plus primitives. Its
   tokens are generated copies from the Claude Design project — regenerate rather than hand-edit;
   `dark.css` and `fonts.css` are documented deliberate deviations.
-- **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: four tabs plus modals,
-  with the four primary tabs bundled together to guarantee instant and reliable offline navigation.
+- **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: five tabs plus modals,
+  with the five primary tabs bundled together to guarantee instant and reliable offline navigation.
 
 ## Rules
 

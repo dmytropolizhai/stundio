@@ -323,7 +323,7 @@ and have substitution cover duties (*aizvietošanas stundas*) highlighted.
 1. **Choose Your Side (Star Wars inspired persona selection):** Onboarding and Settings feature a bold
    "Choose Your Side" selector: **Student** (*Skolēns*) vs. **Teacher** (*Skolotājs*).
 2. **Teacher Picker:** Searchable list of teachers populated directly from EduPage's public `teachers` table
-   (mirrors the existing `ClassPicker`).
+   (mirrors the existing `ClassSelector`).
 3. **Card & Schedule Layout:**
    - On teacher lesson cards, display **`[Class / Group] [Room] [Subject]`** prominently (replacing teacher name, which is redundant).
    - Single group per room (no simultaneous 2-group room splits needed).

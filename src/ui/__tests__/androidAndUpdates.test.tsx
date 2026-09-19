@@ -5,7 +5,7 @@ import { bootHarness, clickAndSettle } from "./harness.tsx";
 import { isAndroidDevice } from "../lib/platform";
 import { AndroidDownloadBanner } from "../components/AndroidDownloadBanner.tsx";
 import { InAppUpdatePrompt } from "../components/InAppUpdatePrompt.tsx";
-import { SettingsView } from "../screens/SettingsView.tsx";
+import { SettingsView } from "../screens/settings-view";
 import * as edupageModule from "@/lib/edupage";
 import * as versionModule from "@/lib/version";
 import * as updateCheckHook from "../hooks/useUpdateCheck";

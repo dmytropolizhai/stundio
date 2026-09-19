@@ -6,9 +6,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
-import { ClassPicker } from "../screens/ClassPicker.tsx";
-import { WeekView } from "../screens/WeekView.tsx";
-import { SettingsView } from "../screens/SettingsView.tsx";
+import { ClassSelector } from "@/ui/screens/class-selector";
+import { WeekView } from "../screens/week-view";
+import { SettingsView } from "../screens/settings-view";
 import { applyTheme, resolveTheme } from "@/ui/theme";
 import { handleBackPress } from "../hooks/useBackButton.ts";
 import { bootHarness, classIdOf, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
@@ -19,7 +19,7 @@ const wrap = (harness: Harness, node: React.ReactNode) =>
 describe("ClassPicker", () => {
   it("lists every cached class and filters as you type", async () => {
     const harness = await bootHarness();
-    wrap(harness, <ClassPicker />);
+    wrap(harness, <ClassSelector />);
 
     expect(screen.getAllByRole("button", { pressed: false }).length).toBeGreaterThan(50);
 
@@ -31,7 +31,7 @@ describe("ClassPicker", () => {
 
   it("says so when nothing matches instead of showing an empty list", async () => {
     const harness = await bootHarness();
-    wrap(harness, <ClassPicker />);
+    wrap(harness, <ClassSelector />);
 
     fireEvent.change(screen.getByLabelText("Meklēt klasi…"), { target: { value: "zzz" } });
     expect(screen.getByText("Nav atrasta neviena klase")).toBeDefined();
@@ -44,7 +44,7 @@ describe("ClassPicker", () => {
     expect(Object.keys(harness.store.getState().timetables).length).toBe(0);
 
     const refreshSpy = vi.spyOn(harness.store.getState(), "refresh");
-    wrap(harness, <ClassPicker />);
+    wrap(harness, <ClassSelector />);
 
     expect(refreshSpy).toHaveBeenCalled();
   });
@@ -52,7 +52,7 @@ describe("ClassPicker", () => {
   it("remembers the pick and tells the caller, for a class with no subgroups", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
-    wrap(harness, <ClassPicker onPicked={onPicked} />);
+    wrap(harness, <ClassSelector onPicked={onPicked} />);
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("A1-1"));
@@ -65,7 +65,7 @@ describe("ClassPicker", () => {
   it("asks which subgroup before committing a divided class, and lets the user skip", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
-    wrap(harness, <ClassPicker onPicked={onPicked} />);
+    wrap(harness, <ClassSelector onPicked={onPicked} />);
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("DT3-2"));
@@ -92,7 +92,7 @@ describe("ClassPicker", () => {
   it("stores the chosen subgroup for a divided class", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
-    wrap(harness, <ClassPicker onPicked={onPicked} />);
+    wrap(harness, <ClassSelector onPicked={onPicked} />);
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("DT3-2"));
@@ -111,7 +111,7 @@ describe("ClassPicker", () => {
   it("returns to class list when back button is pressed while subgroup picker is open", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
-    wrap(harness, <ClassPicker onPicked={onPicked} />);
+    wrap(harness, <ClassSelector onPicked={onPicked} />);
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("DT3-2"));
@@ -131,7 +131,7 @@ describe("ClassPicker", () => {
 
   it("pins favourites above the rest", async () => {
     const harness = await bootHarness();
-    wrap(harness, <ClassPicker />);
+    wrap(harness, <ClassSelector />);
 
     await clickAndSettle(() => {
       const row = screen.getByText("DT3-2").closest("li")!;
@@ -146,7 +146,7 @@ describe("ClassPicker", () => {
 
   it("shows the building next to the class, since names repeat across the two", async () => {
     const harness = await bootHarness();
-    wrap(harness, <ClassPicker />);
+    wrap(harness, <ClassSelector />);
     expect(screen.getAllByText(/Galvenā ēka|TIC/).length).toBeGreaterThan(0);
   });
 });
