@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
-import { ChangesView } from "../screens/ChangesView.tsx";
+import { ChangesView } from "../screens/changes-view";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
@@ -65,6 +65,9 @@ describe("ChangesView", () => {
     // Search for non-existent item
     fireEvent.change(input, { target: { value: "xyznonexistent123" } });
     expect(screen.getByText("Nekas netika atrasts")).toBeDefined();
+
+    // The field stays mounted so the query can be corrected in place.
+    expect(screen.getByPlaceholderText("Meklēt grupu, priekšmetu vai skolotāju…")).toBeDefined();
   });
 
   it("handles day navigation with chevrons", async () => {
