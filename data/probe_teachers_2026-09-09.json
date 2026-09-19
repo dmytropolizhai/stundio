@@ -1,0 +1,45 @@
+{
+  "date": "2026-09-09",
+  "total_teachers_in_table": 147,
+  "active_teaching_teachers": 117,
+  "form_teachers_with_classes": 55,
+  "absent_teachers": [
+    "Egija Baumane",
+    "Liene Elizabete Čakste",
+    "Olga Sabanska",
+    "Valda Salmiņa"
+  ],
+  "sample_covers": [
+    {
+      "class": "A1-2",
+      "period": [
+        2
+      ],
+      "covering_teacher": "Edgars Geislers",
+      "absent_teacher": "Liene Elizabete Čakste",
+      "subject": "Atslēdznieka darbi",
+      "raw": "(Valodas, kultūras izpratne un izpausmes) ➔ Atslēdznieka darbi - Aizvietošana: (Liene Elizabete Čakste) ➔ Edgars Geislers, Kabineta nomaiņa: (130 (30)P) ➔ 109 (19)"
+    },
+    {
+      "class": "DT1-1",
+      "period": [
+        4
+      ],
+      "covering_teacher": "Cīrulis Aigars",
+      "absent_teacher": "Manteifele Zane",
+      "subject": "Vienkāršu algoritmu izstrāde",
+      "raw": "(Sports) ➔ Vienkāršu algoritmu izstrāde - Aizvietošana: (Manteifele Zane) ➔ Cīrulis Aigars, Kabineta nomaiņa: (4_sporta zāle) ➔ 353 D(32) P"
+    },
+    {
+      "class": "DT1-1",
+      "period": [
+        8,
+        9
+      ],
+      "covering_teacher": "Aina Motivāne",
+      "absent_teacher": "Olga Sabanska",
+      "subject": "Informācijas un komunikācijas tehnoloģijas",
+      "raw": "(EIKT pamatprocesi un darbu veidi) ➔ Informācijas un komunikācijas tehnoloģijas - Aizvietošana: (Olga Sabanska) ➔ Aina Motivāne, Kabineta nomaiņa: (354 (34)P) ➔ 131 D(30)TV"
+    }
+  ]
+}
