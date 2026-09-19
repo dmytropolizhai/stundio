@@ -78,10 +78,13 @@ describe("OnboardingPersona", () => {
     expect(screen.getByText("Skolēns")).toBeDefined();
     expect(screen.getByText("Skolotājs")).toBeDefined();
 
-    fireEvent.click(screen.getByText("Skolotājs"));
+    // Each half is picked through the control that covers it, not through its heading: the
+    // heading is a label inside the panel, and the single tab stop per half is the overlay
+    // button carrying the role's name.
+    fireEvent.click(screen.getByRole("button", { name: /Skolotājs/ }));
     expect(onSelect).toHaveBeenCalledWith("teacher");
 
-    fireEvent.click(screen.getByText("Skolēns"));
+    fireEvent.click(screen.getByRole("button", { name: /Skolēns/ }));
     expect(onSelect).toHaveBeenCalledWith("student");
   });
 });
