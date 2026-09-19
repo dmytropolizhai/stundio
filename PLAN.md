@@ -313,41 +313,156 @@ and renders the same DayView/WeekView as Android.
 
 ---
 
-## Phase 8 — Teacher Mode ("Choose Your Side")  (size: M)
+## Phase 8 — Teacher Mode ("Choose Your Side")  (size: L)
 
-**Goal:** Dedicated persona and timetable views for RVT teachers using the same public, anonymous EduPage
-dataset. Teachers select their name, see their teaching periods with class/group + room assignments,
-and have substitution cover duties (*aizvietošanas stundas*) highlighted.
+**Goal:** a second persona over the same public, anonymous EduPage dataset. A teacher picks their
+name, sees their own teaching day (classes + room + building), and gets substitution cover duties
+(*aizvietošanas stundas*) surfaced as the day's most important thing. Zero logins, zero new
+endpoints, zero new network traffic — the cover feed is already inside the cached class-mode
+substitutions.
 
-**Key Design Decisions (from user discovery):**
-1. **Choose Your Side (Star Wars inspired persona selection):** Onboarding and Settings feature a bold
-   "Choose Your Side" selector: **Student** (*Skolēns*) vs. **Teacher** (*Skolotājs*).
-2. **Teacher Picker:** Searchable list of teachers populated directly from EduPage's public `teachers` table
-   (mirrors the existing `ClassSelector`).
-3. **Card & Schedule Layout:**
-   - On teacher lesson cards, display **`[Class / Group] [Room] [Subject]`** prominently (replacing teacher name, which is redundant).
-   - Single group per room (no simultaneous 2-group room splits needed).
-   - WeekView grid and DayView resolve timetable rows indexed by `teacherids` rather than `classids`.
-4. **Cover Lessons (*Aizvietošana*):**
-   - Identify lessons where the teacher is assigned to cover another class from the daily substitution feed.
-   - Visually highlight cover lessons with high-contrast accent badges and dedicated card styling.
-   - User toggle in Settings: "Highlight cover lessons" (*Izcelt aizvietošanas stundas*).
-5. **No Native Widgets in v1:** App and PWA focus; future direction is web-first, so native Android widgets for teachers are deferred.
-6. **Zero Authentication / Strictly Public:** Powered 100% by public EduPage tables (`teachers`, `lessons`, `cards`, `substitutions`); zero teacher logins or private credentials stored.
-7. **Dual-Role Support (Fast-follow):** Quick persona switcher for form teachers (*klases audzinātāji*) to jump between their own teaching timetable and their class schedule will arrive in a subsequent update.
+### What the data actually says (checked against `data/` fixtures, 2026-09-19)
 
-- [ ] `lib/edupage/`: `resolveTeacherDay(timetable, substitutions, teacherId, date)` mirroring `resolveDay()`, joining by `teacherids`, mapping cover lessons (*aizvietošana*) from `substitutions`.
-- [ ] `store/`: add `persona: 'student' | 'teacher'`, `selectedTeacherId`, and `highlightCoverLessons: boolean` to `settings` store and `AppCache`.
-- [ ] UI — "Choose Your Side" Onboarding & Settings:
-  - Persona selection step in onboarding and Settings ("Skolēns" vs "Skolotājs").
-  - `TeacherPicker`: searchable list of RVT teachers parsed from cached timetable.
-- [ ] UI — Teacher DayView & WeekView:
-  - DayView cards display `Class / Group`, `Room`, `Subject`, and `Period times`.
-  - Cover lessons (*aizvietošanas stundas*) highlighted with dedicated visual badges.
-  - Settings toggle: enable/disable cover lesson highlighting.
-- [ ] Web/PWA compatibility: fully tested and functional on `stundio.pages.dev`.
+Five findings that shape everything below; re-derive them before changing any of it.
 
-**Exit:** a teacher selects their profile during onboarding, views their daily and weekly teaching schedule with accurate room and class assignments, and sees substitution cover duties clearly highlighted, online and offline.
+1. **A teacher never has two parallel lessons — but does teach merged classes.** Across the 2768
+   *placed* cards of `regulartt_1175`, there are **0** slots where one teacher has two distinct
+   lessons. The 228 apparent collisions in the class-expanded probe output are one `Lesson` with
+   several `classIds` (132 of 1110 lessons, e.g. `S3-1 + S3-2 · Matemātika I`). A teacher card is
+   therefore **one row listing several classes**, never duplicated rows.
+2. **The substitution feed reverses the name order.** `teachers.short` is `"Ķere Gene"`
+   (Surname Name); the feed prints `"Gene Ķere"` (Name Surname). Exact matching resolves
+   **3 of 18** names in the 2026-09-09 fixture; a token-sorted, lowercased key resolves **18/18**.
+   This is also a live bug in student mode: `resolve.ts`'s `teachersByLabel.get()` almost always
+   misses and falls back to `synthTeacher`, losing the real id and colour, and `notes.ts` filters
+   on the same labels. Fixing it is a prerequisite, not a side quest.
+3. **`mode: "classes"` is enough.** Every row carries `teacher` (who teaches/covers) and
+   `teacherFrom` (who is being covered), so "my cover duties" is a filter over data already in the
+   cache. `mode: "teachers"` stays a `reference/` oracle only — no second fetch, no second parser,
+   no second retention window.
+4. **The absent-teacher line is real and currently dropped.** `Skolotāji, kuri nepiedalās: …`
+   lives in a bare `div[style="text-align:center"]`, not `.subst_note` (MODEL.md §4 flags it as a
+   gap). The fixture lists four names. For a teacher this answers both "am I marked absent?" and
+   "who is out → where the cover is coming from".
+5. **Counts.** 147 rows in `teachers`, but only **116** actually teach — the picker lists the 116,
+   or ~31 profiles open empty. **75** teachers carry `teachers.classids` (17 carry more than one),
+   so the form-teacher ("klases audzinātājs") dual role is derivable from the data, never configured.
+
+Two freebies fall out of the model: pointer rows (MODEL.md §3) carry no teacher, so they are
+excluded from a teacher's day automatically; and the 568 unplaced cards are skipped exactly as
+they already are.
+
+### What matters to a teacher (and what does not)
+
+**P0 — the reason the app gets opened**
+
+- What is on now / next, with **room, class(es) and building**. Room ranks higher than it does for
+  students: the teacher is the one who moves.
+- **Cover duties assigned to me.** The only thing that appears without warning and costs real
+  money to miss.
+- My cancelled / moved lessons — "period 3 is free" is the plan for the day.
+- A building switch inside one day: for a teacher that is a commute, not a staircase.
+
+**P1 — makes the day better**
+
+- Gaps between lessons (`day-gap` already renders these at the ≥20 min threshold).
+- Today's absent colleagues (finding 4).
+- Contact-hour load per day and per week (the busiest teacher in the fixture has 59 slots, 20 of
+  them on Friday — worth showing).
+- Form teacher: one tap to their own class's day and that class's changes.
+- A notification for *an assigned cover*, distinct from the general day diff.
+
+**P2 / explicitly not in this phase**
+
+- Subgroups (`SubgroupPicker`) — a student concept; hidden in teacher mode.
+- The teacher's own name on the card — redundant; the space goes to class and room.
+- Share-the-week image — works, low priority.
+- Home-screen widgets — still deferred (the payload is shared, so this stays cheap later).
+- e-klase grades (Phase 6) — unrelated to this persona.
+- Any login. The persona is a local preference, nothing more.
+
+### "Choose Your Side"
+
+- **Where:** a new onboarding step between `onboarding-intro` and the picker —
+  `step: "language" | "intro" | "persona" | "picker"` in `App.tsx`. Two large cards
+  (*Skolēns* / *Skolotājs*) in the same full-bleed brand treatment as `OnboardingIntro`.
+- **What it changes:** which picker opens next and which resolve branch runs. Nothing else.
+- **Reversible:** a switch in Settings (`class-section` → `identity-section`). Switching persona
+  never clears the cache — the timetable is shared, only the selection changes.
+- **Stored:** `persona: "student" | "teacher"` and `selectedTeacherId` in `Settings`, defaulting to
+  `"student"`, so an existing install is untouched and no migration is needed (asserted by a test
+  over a settings blob that predates the field).
+- **Dual role:** when the selected teacher has `classids`, the DayView header grows a
+  `Manas stundas | Mana klase` segment — no second persona, no second onboarding.
+- **Onboarding gate** becomes `persona === null || (student && !classId) || (teacher && !teacherId)`.
+
+### Work by layer
+
+**`src/lib/edupage/`**
+
+- [ ] `teacher-names.ts`: `teacherKey(name)` (lowercase + token-sort, diacritics kept, LV locale)
+      and `indexTeachersByKey`. Wired into `resolve.ts` and `notes.ts` too — finding 2.
+- [ ] `resolveTeacherDay(sources, subs, teacherId, date)` beside `resolveDayAcross`: select on
+      `teacherIds ∋ id`, collapse `classIds` onto one card, same multi-building merge and dedup.
+- [ ] `TeacherResolvedLesson` = `ResolvedLesson` minus `group`, plus `classes: ClassRef[]`,
+      `role: "own" | "cover"`, `coverFor: TeacherRef | null`.
+- [ ] `coverDuties(subs, teacherId, timetables)` — feed rows naming me where the base day does not.
+- [ ] `absentTeachers` selector in `substitutions.ts` → optional `DaySubstitutions.absentTeachers`
+      (optional so a cached day written by an older build still parses).
+- [ ] `listTeachers(timetables)` — only teachers with placed lessons, each with its `formClassIds`.
+
+**`src/db` / `src/store` / `src/sync`**
+
+- [ ] `Settings`: `persona`, `selectedTeacherId`, `teacherView: "own" | "form-class"`,
+      `highlightCoverLessons`; setters on the store.
+- [ ] `resolvedTeacherDay(date)` selector, mirroring `resolvedDay`.
+- [ ] `sync/` unchanged — same requests, same cadence, same retention.
+
+**`src/ui`**
+
+- [ ] `onboarding-persona/` and `teacher-picker/` (same shape as `class-selector`: search + list).
+- [ ] DayView / WeekView teacher cards: `[Class(es)] [Room] [Subject] [Period times]`, cover
+      lessons badged in high contrast; subgroup and "my class" controls hidden.
+- [ ] ChangesView: `Manas izmaiņas | Visa skola`, plus an "absent today" block.
+- [ ] SubjectsView: "my classes" (class + hours) instead of "my subjects".
+- [ ] i18n: ~25–35 new keys × 4 languages; `lv.ts` is the typed source, so the other three fail the
+      build until translated.
+- [ ] Notifications: diff over *my* rows; a dedicated string for an assigned cover.
+- [ ] Web/PWA parity verified on `stundio.pages.dev`.
+
+### PR order
+
+Every row is its own branch and PR, tested, per AGENT.md. Baseline before this phase:
+799 tests / 65 files green, coverage thresholds 90/80 enforced in `vite.config.ts`.
+
+| # | Branch | Content | Size | Acceptance |
+|---|---|---|---|---|
+| T0 | `chore/probe-teacher-mode` | `reference/probe_teachers.py`: `mode:"teachers"` + absent-line fixtures; MODEL.md §7 | S | Fixture lands in `data/`; zero app code |
+| T1 | `fix/teacher-name-matching` | `teacher-names.ts`, wired into `resolve.ts` / `notes.ts` | S | All 18 fixture names resolve to real `TeacherRef`s, none to `subst:` |
+| T2 | `feat/resolve-teacher-day` | `resolveTeacherDay`, `coverDuties`, `listTeachers` | L | Busiest teacher on 2026-09-09: no duplicate rows, merged classes on one card, covers flagged; property test "no teacher ever holds two lessons in one slot" |
+| T3 | `feat/subst-absent-teachers` | absent-teacher line parser | S | 4 names from the fixture; a missing line never throws |
+| T4 | `feat/persona-settings` | `Settings` + store + defaults | S | A settings blob without `persona` reads back as `student` |
+| T5 | `feat/choose-your-side` | persona onboarding step, `TeacherPicker`, Settings switch | M | Both onboarding branches covered; switching persona keeps the cache |
+| T6 | `feat/teacher-day-week` | teacher cards, cover badge, student-only controls hidden | L | Snapshot tests for both personas off the real fixtures |
+| T7 | `feat/teacher-changes-view` | my-changes tab + absent colleagues | M | Teacher sees only rows naming them; school-wide tab unchanged |
+| T8 | `feat/teacher-dual-role` | form-teacher segment | M | Teacher with `classids` sees it, teacher without does not |
+| T9 | `feat/teacher-notifications` | cover-assignment diff and strings | M | A new cover for me notifies; an unrelated change does not |
+| T10 | `chore/teacher-docs-i18n` | 4 languages, PRODUCT/PLAN/README, PWA check | S | CI green end to end |
+
+### Decisions to lock before T2
+
+1. **Cover source: class-mode feed** — *recommended*. No new request, one parser, works offline
+   from today's cache. `mode:"teachers"` stays an oracle in `reference/`.
+2. **Match on normalised name, not id.** The feed carries no ids, and ids are renumbered on every
+   weekly republish. Needs a canary test: unresolved teacher names must stay < 10%.
+3. **No "favourite teachers".** `favorites` remains class-only; a teacher selects one profile.
+4. **Namesakes.** No collisions on the normalised key in the current table, but a test must assert
+   it, and the picker shows a subject line as a tiebreaker when the key is not unique.
+
+**Exit:** a teacher picks their side and their name during onboarding, sees their teaching day and
+week with correct classes, rooms and buildings, sees assigned cover duties highlighted and who is
+absent today, can jump to their form class if they have one, and all of it works offline and on
+`stundio.pages.dev`.
 
 ---
 
