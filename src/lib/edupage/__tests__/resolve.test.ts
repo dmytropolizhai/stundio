@@ -90,9 +90,11 @@ describe("resolveDay — A1-2, which has real changes that day", () => {
   it("applies the teacher swap and keeps the original for a diff view", () => {
     const swapped = day.lessons.find((l) => l.status === "substituted");
     expect(swapped).toBeDefined();
-    expect(swapped?.teachers.map((t) => t.short)).toEqual(["Edgars Geislers"]);
-    expect(swapped?.original?.teachers?.map((t) => t.short)).not.toEqual(["Edgars Geislers"]);
+    expect(swapped?.teachers.map((t) => t.short)).toEqual(["Geislers Edgars"]);
+    expect(swapped?.teachers[0]?.id).not.toMatch(/^subst:/);
+    expect(swapped?.original?.teachers?.map((t) => t.short)).not.toEqual(["Geislers Edgars"]);
   });
+
 
   it("adds the moved-in lesson as its own row", () => {
     const added = day.lessons.filter((l) => l.status === "added");

@@ -61,3 +61,9 @@ export {
   splitGroupAnnouncements,
   type TeacherIdentifier,
 } from "./notes.ts";
+export {
+  indexTeachersByKey,
+  lookupTeacher,
+  teacherKey,
+} from "./teacher-names.ts";
+
