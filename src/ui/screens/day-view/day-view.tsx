@@ -30,12 +30,7 @@ type DayViewProps = {
   onOpenChanges?: ((date: ISODate) => void) | undefined;
 };
 
-export const DayView = ({
-  date,
-  onDateChange,
-  onPickClass,
-  onOpenChanges,
-}: DayViewProps) => {
+export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayViewProps) => {
   const t = useT();
   const now = useNow();
 
