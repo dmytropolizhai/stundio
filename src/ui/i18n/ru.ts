@@ -232,6 +232,8 @@ export const ru: Dict = {
   "notification.lessonReminder.title": "{subject} через {minutes} мин",
   "notification.changed.title": "Изменения в расписании",
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",
+  "notification.cover.title": "Новая замена",
+  "notification.cover.body": "Вам назначена замена",
   "notification.update.title": "Доступно обновление",
   "notification.update.body": "Stundio {version} готово к загрузке.",
   "widget.now": "Сейчас",

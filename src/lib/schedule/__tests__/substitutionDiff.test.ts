@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { DaySubstitutions, Substitution } from "@/lib/edupage";
-import { substitutionsChanged } from "@/lib/schedule";
+import {
+  substitutionsChanged,
+  teacherSubstitutionsChanged,
+  teacherHasCoverDuty,
+} from "@/lib/schedule";
 
 const MINE = "1DP1";
 
@@ -100,3 +104,113 @@ describe("substitutionsChanged", () => {
     expect(substitutionsChanged(before, after, MINE)).toBe(false);
   });
 });
+
+describe("teacherSubstitutionsChanged", () => {
+  const TEACHER_KEY = "gene ķere";
+
+  it("is false for identical day fetched again later", () => {
+    const d = day({ items: [item({ teacher: "Gene Ķere" })] });
+    expect(
+      teacherSubstitutionsChanged(d, day({ items: [item({ teacher: "Ķere Gene" })], fetchedAt: "2026-09-09T18:00:00Z" }), TEACHER_KEY),
+    ).toBe(false);
+  });
+
+  it("is true when nothing cached before and fetch has teacher items", () => {
+    const d = day({ items: [item({ teacher: "Gene Ķere" })] });
+    expect(teacherSubstitutionsChanged(null, d, TEACHER_KEY)).toBe(true);
+  });
+
+  it("is false when both are null", () => {
+    expect(teacherSubstitutionsChanged(null, null, TEACHER_KEY)).toBe(false);
+  });
+
+  it("is false for first fetch when day has no items for this teacher", () => {
+    const d = day({ items: [item({ teacher: "Jānis Bērziņš" })] });
+    expect(teacherSubstitutionsChanged(null, d, TEACHER_KEY)).toBe(false);
+  });
+
+  it("is false when unrelated teacher's substitution changes", () => {
+    const before = day({ items: [item({ teacher: "Jānis Bērziņš", raw: "A" })] });
+    const after = day({ items: [item({ teacher: "Jānis Bērziņš", raw: "B" })] });
+    expect(teacherSubstitutionsChanged(before, after, TEACHER_KEY)).toBe(false);
+  });
+
+  it("is true when teacher is assigned as substitute (teacher matches)", () => {
+    const before = day({ items: [] });
+    const after = day({ items: [item({ teacher: "Gene Ķere", teacherFrom: "Jānis Bērziņš" })] });
+    expect(teacherSubstitutionsChanged(before, after, TEACHER_KEY)).toBe(true);
+  });
+
+  it("is true when teacher is being substituted for (teacherFrom matches)", () => {
+    const before = day({ items: [] });
+    const after = day({ items: [item({ teacher: "Jānis Bērziņš", teacherFrom: "Gene Ķere" })] });
+    expect(teacherSubstitutionsChanged(before, after, TEACHER_KEY)).toBe(true);
+  });
+
+  it("is false when key is null", () => {
+    const d = day({ items: [item({ teacher: "Gene Ķere" })] });
+    expect(teacherSubstitutionsChanged(null, d, null)).toBe(false);
+  });
+});
+
+describe("teacherHasCoverDuty", () => {
+  const TEACHER_KEY = "gene ķere";
+
+  it("is true when teacher is assigned to cover another teacher", () => {
+    const d = day({
+      items: [
+        item({
+          teacher: "Gene Ķere",
+          teacherFrom: "Jānis Bērziņš",
+          kind: "substitution",
+        }),
+      ],
+    });
+    expect(teacherHasCoverDuty(d, TEACHER_KEY)).toBe(true);
+  });
+
+  it("is true when kind is substitution and teacher matches even without teacherFrom", () => {
+    const d = day({
+      items: [
+        item({
+          teacher: "Gene Ķere",
+          teacherFrom: null,
+          kind: "substitution",
+        }),
+      ],
+    });
+    expect(teacherHasCoverDuty(d, TEACHER_KEY)).toBe(true);
+  });
+
+  it("is false for a cancellation where teacher is absent", () => {
+    const d = day({
+      items: [
+        item({
+          teacher: null,
+          teacherFrom: "Gene Ķere",
+          kind: "cancelled",
+        }),
+      ],
+    });
+    expect(teacherHasCoverDuty(d, TEACHER_KEY)).toBe(false);
+  });
+
+  it("is false for someone else's cover duty", () => {
+    const d = day({
+      items: [
+        item({
+          teacher: "Jānis Bērziņš",
+          teacherFrom: "Other Teacher",
+          kind: "substitution",
+        }),
+      ],
+    });
+    expect(teacherHasCoverDuty(d, TEACHER_KEY)).toBe(false);
+  });
+
+  it("is false for null day or null key", () => {
+    expect(teacherHasCoverDuty(null, TEACHER_KEY)).toBe(false);
+    expect(teacherHasCoverDuty(day(), null)).toBe(false);
+  });
+});
+

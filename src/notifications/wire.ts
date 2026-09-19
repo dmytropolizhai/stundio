@@ -4,7 +4,8 @@
  * re-run those and hands the result to the plugin.
  */
 import { checkForUpdate } from "@/lib/version";
-import { rigaClock, lessonReminders } from "@/lib/schedule";
+import { teacherKey } from "@/lib/edupage";
+import { rigaClock, lessonReminders, teacherHasCoverDuty } from "@/lib/schedule";
 import { translate } from "@/ui/i18n";
 import type { Store } from "@/store";
 import type { SyncOutcome } from "@/sync";
@@ -77,11 +78,39 @@ export const notifyOnChanges = (
         .at(0);
   if (target === undefined) return;
 
-  void notifySubstitutionsChanged(
-    translate(settings.lang, "notification.changed.title"),
-    translate(settings.lang, "notification.changed.body"),
-    target,
-  );
+  const isTeacher = settings.persona === "teacher";
+  let isCover = false;
+  if (isTeacher) {
+    const state = store.getState();
+    const day = state.resolvedTeacherDay(target);
+    if (day && day.lessons.some((l) => l.isCover || l.role === "cover")) {
+      isCover = true;
+    } else if (state.settings.selectedTeacherId) {
+      const subs = state.substitutions[target] ?? null;
+      if (subs) {
+        let key: string | null = null;
+        for (const tt of Object.values(state.timetables)) {
+          const t = tt.teachers.find((x) => x.id === state.settings.selectedTeacherId);
+          if (t) {
+            key = teacherKey(t.short || t.name);
+            break;
+          }
+        }
+        if (key && teacherHasCoverDuty(subs, key)) {
+          isCover = true;
+        }
+      }
+    }
+  }
+
+  const title = isCover
+    ? translate(settings.lang, "notification.cover.title")
+    : translate(settings.lang, "notification.changed.title");
+  const body = isCover
+    ? translate(settings.lang, "notification.cover.body")
+    : translate(settings.lang, "notification.changed.body");
+
+  void notifySubstitutionsChanged(title, body, target);
 };
 
 /**

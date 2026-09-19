@@ -237,6 +237,8 @@ export const lv = {
   "notification.lessonReminder.title": "{subject} pēc {minutes} min",
   "notification.changed.title": "Izmaiņas stundu sarakstā",
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",
+  "notification.cover.title": "Jauna aizvietošana",
+  "notification.cover.body": "Tev piešķirta aizvietošanas stunda",
   "notification.update.title": "Pieejams jauninājums",
   "notification.update.body": "Stundio {version} ir pieejama lejupielādei.",
   "widget.now": "Tagad",

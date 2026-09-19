@@ -230,6 +230,8 @@ export const en: Dict = {
   "notification.lessonReminder.title": "{subject} in {minutes} min",
   "notification.changed.title": "Timetable changed",
   "notification.changed.body": "Today's schedule has changes.",
+  "notification.cover.title": "New cover duty",
+  "notification.cover.body": "You have been assigned a cover lesson",
   "notification.update.title": "Update available",
   "notification.update.body": "Stundio {version} is ready to download.",
   "widget.now": "Now",
