@@ -27,6 +27,8 @@ export const ru: Dict = {
   "teacher.formClass": "Классный руководитель",
   "teacher.cover": "Замена",
   "teacher.coverFor": "Заменяет: {name}",
+  "teacher.view.own": "Мои уроки",
+  "teacher.view.formClass": "Мой класс",
 
   "onboarding.language.title": "Выберите язык",
   "onboarding.language.continue": "Продолжить",

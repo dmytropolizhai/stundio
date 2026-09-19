@@ -33,6 +33,8 @@ export const lv = {
   "teacher.formClass": "Klases audzinātājs",
   "teacher.cover": "Aizvietošana",
   "teacher.coverFor": "Aizvieto: {name}",
+  "teacher.view.own": "Manas stundas",
+  "teacher.view.formClass": "Mana klase",
 
   "onboarding.language.title": "Izvēlies valodu",
   "onboarding.language.continue": "Turpināt",
