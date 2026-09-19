@@ -277,6 +277,9 @@ export const lv = {
   "feedback.sheet.bugSuccessBody": "Paldies par ziņojumu! Mēs to izskatīsim.",
   "feedback.sheet.close": "Aizvērt",
   "feedback.sheet.error": "Neizdevās nosūtīt. Pārbaudi interneta savienojumu.",
+  "feedback.sheet.attachScreenshot": "Pievienot ekrānuzņēmumu",
+  "feedback.sheet.removeScreenshot": "Noņemt ekrānuzņēmumu",
+  "feedback.sheet.screenshotTooLarge": "Attēls ir pārāk liels (maks. 5 MB)",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
 
   "theme.system": "Kā sistēmā",

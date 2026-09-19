@@ -272,6 +272,9 @@ export const ru: Dict = {
   "feedback.sheet.bugSuccessBody": "Спасибо за сообщение! Мы во всём разберёмся.",
   "feedback.sheet.close": "Закрыть",
   "feedback.sheet.error": "Не удалось отправить. Проверь подключение к интернету.",
+  "feedback.sheet.attachScreenshot": "Прикрепить скриншот",
+  "feedback.sheet.removeScreenshot": "Удалить скриншот",
+  "feedback.sheet.screenshotTooLarge": "Изображение слишком большое (макс. 5 МБ)",
   "settings.madeBy": "Dmytro Polizhai сделал с ❤︎",
 
   "theme.system": "Как в системе",

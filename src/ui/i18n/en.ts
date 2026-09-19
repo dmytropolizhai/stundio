@@ -271,6 +271,9 @@ export const en: Dict = {
   "feedback.sheet.bugSuccessBody": "Thank you for letting us know! We'll look into it.",
   "feedback.sheet.close": "Close",
   "feedback.sheet.error": "Could not send. Please check your internet connection.",
+  "feedback.sheet.attachScreenshot": "Attach screenshot",
+  "feedback.sheet.removeScreenshot": "Remove screenshot",
+  "feedback.sheet.screenshotTooLarge": "Image is too large (max 5 MB)",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
 
   "theme.system": "System",

@@ -271,6 +271,9 @@ export const ua: Dict = {
   "feedback.sheet.bugSuccessBody": "Дякуємо за повідомлення! Ми обов'язково розберемося.",
   "feedback.sheet.close": "Закрити",
   "feedback.sheet.error": "Не вдалося надіслати. Перевір підключення до інтернету.",
+  "feedback.sheet.attachScreenshot": "Прикріпити скріншот",
+  "feedback.sheet.removeScreenshot": "Видалити скріншот",
+  "feedback.sheet.screenshotTooLarge": "Зображення занадто велике (макс. 5 МБ)",
   "settings.madeBy": "Зроблено з ❤︎ Дмитром Поліжаєм",
 
   "theme.system": "Системна",

@@ -16,6 +16,7 @@ import {
   ExternalLink,
   Globe,
   GraduationCap,
+  Image as ImageIcon,
   Info,
   LayoutGrid,
   MapPin,
@@ -93,6 +94,7 @@ const ICONS = {
   smartphone: Smartphone,
   check: Check,
   send: Send,
+  image: ImageIcon,
 } as const;
 
 export type IconName = keyof typeof ICONS;
