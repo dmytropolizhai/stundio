@@ -338,4 +338,8 @@ export const en: Dict = {
   "iphoneInstall.dismiss": "Continue in browser",
   "settings.iphoneInstall": "Add to Home Screen",
   "settings.iphoneInstallHint": "Install Stundio as an app on your iPhone",
+
+  "error.title": "Something went wrong",
+  "error.hint": "Could not load this screen.",
+  "error.retry": "Try again",
 };

@@ -6,6 +6,7 @@ import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { ClassSearch } from "./class-search.tsx";
 import { ClassList } from "./class-list.tsx";
 import { SubgroupPicker } from "@/ui/screens/SubgroupPicker.tsx";
+import { useBackButton } from "@/ui/hooks/useBackButton.ts";
 
 type ClassSelectorProps = {
   onPicked?: () => void;
@@ -22,6 +23,13 @@ export const ClassSelector = ({ onPicked }: ClassSelectorProps) => {
 
   const [query, setQuery] = useState("");
   const [askSubgroupFor, setAskSubgroupFor] = useState<ClassOption | null>(null);
+
+  useBackButton(
+    () => {
+      setAskSubgroupFor(null);
+    },
+    { enabled: askSubgroupFor !== null, priority: 20 },
+  );
 
   useEffect(() => {
     if (classes.length === 0) {

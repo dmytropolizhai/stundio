@@ -70,17 +70,17 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   tokens are generated copies from the Claude Design project — regenerate rather than hand-edit;
   `dark.css` and `fonts.css` are documented deliberate deviations.
 - **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: five tabs plus modals,
-  with non-launch tabs code-split via `React.lazy` in `App.tsx`.
+  with the five primary tabs bundled together to guarantee instant and reliable offline navigation.
 
 ## Rules
 
 These are enforced by lint, tests, or CI — breaking one breaks the build:
 
 - **Only `lib/edupage/http.ts`, `lib/analytics/http.ts`, `lib/share/native.ts`,
-  `lib/network/native.ts`, `lib/widget/native.ts` and `lib/systembars/native.ts` may import
-  `@capacitor/*`.** ESLint `no-restricted-imports` enforces this per-module; everything else
-  stays platform-agnostic and testable. (`lib/version/installer.ts` is the one Android-only
-  module by nature — it drives this app's own `ApkInstaller` plugin.)
+  `lib/network/native.ts`, `lib/widget/native.ts`, `lib/systembars/native.ts` and
+  `lib/app/native.ts` may import `@capacitor/*`.** ESLint `no-restricted-imports` enforces this
+  per-module; everything else stays platform-agnostic and testable. (`lib/version/installer.ts` is
+  the one Android-only module by nature — it drives this app's own `ApkInstaller` plugin.)
 - **Import a module through its barrel** (`@/ds`, `@/store`, `@/lib/edupage`, …), never from a
   sibling file across a layer boundary.
 - **Never reach upward.** `lib/` knows nothing about `store/` or `ui/`; `ds/` knows nothing about

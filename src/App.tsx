@@ -1,9 +1,9 @@
 /**
  * App shell: theme, tabs, and the one piece of navigation state the app has (which day you
- * are looking at). No router — four tabs and a modal picker do not need one, and every
+ * are looking at). No router — five tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppStoreProvider, useAppStore } from "@/store";
 import { todayInRiga } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
@@ -13,7 +13,10 @@ import { ClassSelector } from "./ui/screens/class-selector";
 import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
 import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
 import { DayView } from "./ui/screens/DayView.tsx";
-import { DaySkeleton } from "./ui/components/Skeleton.tsx";
+import { WeekView } from "./ui/screens/WeekView.tsx";
+import { ChangesView } from "./ui/screens/ChangesView.tsx";
+import { SubjectsView } from "./ui/screens/SubjectsView.tsx";
+import { SettingsView } from "./ui/screens/SettingsView.tsx";
 import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
 import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
@@ -21,23 +24,11 @@ import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
 import { useIphoneAnnouncement } from "./ui/hooks/useIphoneAnnouncement.ts";
 import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
+import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
 import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
-
-// Split off the tabs that aren't on screen at launch — only DayView (the default tab) and
-// ClassPicker (onboarding) need to be in the initial bundle.
-const WeekView = lazy(() =>
-  import("./ui/screens/WeekView.tsx").then((m) => ({ default: m.WeekView })),
-);
-const ChangesView = lazy(() =>
-  import("./ui/screens/ChangesView.tsx").then((m) => ({ default: m.ChangesView })),
-);
-const SubjectsView = lazy(() =>
-  import("./ui/screens/SubjectsView.tsx").then((m) => ({ default: m.SubjectsView })),
-);
-const SettingsView = lazy(() =>
-  import("./ui/screens/SettingsView.tsx").then((m) => ({ default: m.SettingsView })),
-);
+import { nativeApp } from "@/lib/app";
+import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
 
 /**
  * Renders nothing; its only job is to tell the splash that the store hydrated. It sits inside
@@ -63,6 +54,21 @@ const BootSignal = ({ onReady }: { onReady: () => void }) => {
 const Onboarding = () => {
   const t = useT();
   const [step, setStep] = useState<"language" | "intro" | "picker">("language");
+
+  useBackButton(
+    () => {
+      if (step === "picker") {
+        setStep("intro");
+        return true;
+      }
+      if (step === "intro") {
+        setStep("language");
+        return true;
+      }
+      return false;
+    },
+    { priority: 10 },
+  );
 
   if (step === "language") {
     return (
@@ -108,6 +114,20 @@ const Shell = () => {
   const iphoneInstall = useIphoneInstallPrompt();
   const [date, setDate] = useState<ISODate>(() => todayInRiga());
   const [picking, setPicking] = useState(false);
+
+  useBackButton(
+    () => {
+      setPicking(false);
+    },
+    { enabled: picking, priority: 15 },
+  );
+
+  useBackButton(
+    () => {
+      setTab("day");
+    },
+    { enabled: !picking && tab !== "day", priority: 5 },
+  );
 
   useEffect(() => {
     trackEvent(`view_${tab}`);
@@ -156,21 +176,27 @@ const Shell = () => {
 
   return (
     <div className="flex h-full flex-col">
-      {tab === "day" && (
-        <DayView
-          date={date}
-          onDateChange={setDate}
-          onPickClass={() => {
-            setPicking(true);
-          }}
-          onOpenChanges={(nextDate) => {
-            setDate(nextDate);
-            setTab("changes");
-          }}
-        />
-      )}
-      {tab === "week" && (
-        <Suspense fallback={<DaySkeleton rows={7} />}>
+      <ErrorBoundary
+        key={tab}
+        title={t("error.title")}
+        hint={t("error.hint")}
+        actionLabel={t("error.retry")}
+        onReset={() => setTab("day")}
+      >
+        {tab === "day" && (
+          <DayView
+            date={date}
+            onDateChange={setDate}
+            onPickClass={() => {
+              setPicking(true);
+            }}
+            onOpenChanges={(nextDate) => {
+              setDate(nextDate);
+              setTab("changes");
+            }}
+          />
+        )}
+        {tab === "week" && (
           <WeekView
             date={date}
             onDateChange={setDate}
@@ -182,10 +208,8 @@ const Shell = () => {
               setPicking(true);
             }}
           />
-        </Suspense>
-      )}
-      {tab === "changes" && (
-        <Suspense fallback={<DaySkeleton rows={4} />}>
+        )}
+        {tab === "changes" && (
           <ChangesView
             date={date}
             onDateChange={setDate}
@@ -193,15 +217,9 @@ const Shell = () => {
               setPicking(true);
             }}
           />
-        </Suspense>
-      )}
-      {tab === "subjects" && (
-        <Suspense fallback={<DaySkeleton rows={4} />}>
-          <SubjectsView />
-        </Suspense>
-      )}
-      {tab === "settings" && (
-        <Suspense fallback={<DaySkeleton rows={3} />}>
+        )}
+        {tab === "subjects" && <SubjectsView />}
+        {tab === "settings" && (
           <SettingsView
             onPickClass={() => {
               setPicking(true);
@@ -210,8 +228,8 @@ const Shell = () => {
             onShowIphoneAnnouncement={iphoneAnnouncement.show}
             onShowIphoneInstall={iphoneInstall.show}
           />
-        </Suspense>
-      )}
+        )}
+      </ErrorBoundary>
       <TabBar tab={tab} onChange={setTab} />
       {/*
         Outside the tab switch: the sheet auto-opens on the launch after an update, whichever
@@ -238,8 +256,14 @@ export default function App() {
     setReady(true);
   }, []);
 
+  useEffect(() => {
+    return nativeApp.addBackButtonListener(() => {
+      void handleBackPress();
+    });
+  }, []);
+
   return (
-    <>
+    <ErrorBoundary>
       <AppStoreProvider>
         <BootSignal onReady={markReady} />
         <Shell />
@@ -250,6 +274,6 @@ export default function App() {
         It removes itself once the fade is done, so there is no permanent overlay node.
       */}
       <SplashScreen ready={ready} />
-    </>
+    </ErrorBoundary>
   );
 }

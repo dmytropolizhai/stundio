@@ -13,15 +13,19 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
     </style>
 
     <!--
-      MainActivity's actual, permanent theme (AndroidManifest.xml) — there is no post-splash
-      theme swap, so its edge-to-edge/system-bar items apply for the app's whole lifetime, not
-      just the launch frame.
+      MainActivity's launch theme (AndroidManifest.xml). Uses centered splash_screen layer
+      to prevent bitmap stretching on non-standard device aspect ratios.
     -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
-        <item name="android:background">@drawable/splash</item>
+        <item name="android:background">@drawable/splash_screen</item>
 
         <!--
           Edge-to-edge (PLAN.md Phase 4): both bars are transparent so the WebView's own themed

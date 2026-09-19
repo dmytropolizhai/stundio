@@ -1,11 +1,16 @@
 package com.dmytropolizhai.stundio;
 
+import android.view.View;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import java.util.Locale;
 
 /**
  * Bridges the app's *setting* (system/light/dark — `src/ui/theme/useTheme.ts`) to the status
@@ -32,8 +37,29 @@ public class SystemBarsPlugin extends Plugin {
             );
             controller.setAppearanceLightStatusBars(isLight);
             controller.setAppearanceLightNavigationBars(isLight);
+
+            // Also re-apply the latest safe area insets on theme change / app ready
+            View decorView = getActivity().getWindow().getDecorView();
+            WindowInsetsCompat windowInsets = ViewCompat.getRootWindowInsets(decorView);
+            if (windowInsets != null && getBridge() != null && getBridge().getWebView() != null) {
+                Insets insets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+                );
+                float density = getActivity().getResources().getDisplayMetrics().density;
+                float topDp = insets.top / density;
+                float bottomDp = insets.bottom / density;
+                String js = String.format(
+                    Locale.US,
+                    "document.documentElement.style.setProperty('--safe-area-inset-top', '%.2fpx');" +
+                    "document.documentElement.style.setProperty('--safe-area-inset-bottom', '%.2fpx');",
+                    topDp,
+                    bottomDp
+                );
+                getBridge().getWebView().evaluateJavascript(js, null);
+            }
         });
 
         call.resolve();
     }
 }
+

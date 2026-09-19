@@ -12,4 +12,6 @@
     <color name="colorPrimaryDark">#0F1FA0</color>
     <!-- Mirrors blue-500 again — the DS has one brand blue, not a separate accent colour. -->
     <color name="colorAccent">#1E3AFF</color>
+    <!-- Splash background for light system mode (mirrors Studio Electric / splash.png background) -->
+    <color name="splash_background">#1E3AFF</color>
 </resources>

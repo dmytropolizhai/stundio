@@ -339,4 +339,8 @@ export const ua: Dict = {
   "iphoneInstall.dismiss": "Продовжити в браузері",
   "settings.iphoneInstall": "Додати на початковий екран",
   "settings.iphoneInstallHint": "Встановити Stundio як застосунок на iPhone",
+
+  "error.title": "Щось пішло не так",
+  "error.hint": "Не вдалося завантажити цей екран.",
+  "error.retry": "Спробувати знову",
 };

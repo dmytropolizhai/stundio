@@ -6,25 +6,47 @@
  * which are handled by Stundio's dedicated IndexedDB sync cache.
  */
 
-const CACHE_NAME = "stundio-shell-v2";
+const CACHE_NAME = "stundio-shell-v3";
 
 const PRECACHE_URLS = [
   "/",
   "/index.html",
   "/manifest.webmanifest",
   "/favicon.png",
+  "/favicon.ico",
   "/mark.svg",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/icon-maskable-512.png",
   "/icons/apple-touch-icon.png",
+  "/icons/apple-touch-icon-180.png",
+  "/icons/apple-touch-icon-167.png",
+  "/icons/apple-touch-icon-152.png",
+  "/apple-touch-icon.png",
+  "/apple-touch-icon-precomposed.png",
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
+      .then(async (cache) => {
+        await cache.addAll(PRECACHE_URLS);
+        // Opportunistically precache current build assets referenced in index.html
+        try {
+          const indexResponse = await fetch("/index.html");
+          if (indexResponse.ok) {
+            const html = await indexResponse.text();
+            const assetMatches = html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g);
+            const assetsToCache = Array.from(new Set(Array.from(assetMatches, (m) => m[1])));
+            if (assetsToCache.length > 0) {
+              await cache.addAll(assetsToCache);
+            }
+          }
+        } catch {
+          // Offline or network error during opportunistic precache
+        }
+      })
       .then(() => self.skipWaiting()),
   );
 });
@@ -84,13 +106,17 @@ self.addEventListener("fetch", (event) => {
     caches.match(request).then((cached) => {
       if (cached) return cached;
 
-      return fetch(request).then((response) => {
-        if (response.status === 200) {
-          const copy = response.clone();
-          void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-        }
-        return response;
-      });
+      return fetch(request)
+        .then((response) => {
+          if (response.status === 200) {
+            const copy = response.clone();
+            void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => {
+          return new Response("Asset unavailable offline", { status: 503, statusText: "Offline" });
+        });
     }),
   );
 });

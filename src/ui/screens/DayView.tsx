@@ -1,13 +1,4 @@
-import {
-  Fragment,
-  lazy,
-  Suspense,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
@@ -26,16 +17,9 @@ import { DaySkeleton } from "../components/Skeleton.tsx";
 import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
 import { useNow } from "../hooks/useNow.ts";
-import { formatDuration, useLang, useT } from "@/ui/i18n";
-import { dayTitle } from "../lib/dayTitle.ts";
-
-// Only mounted on tap — keep Radix Dialog + Popover out of the initial bundle.
-const LessonSheet = lazy(() =>
-  import("./LessonSheet.tsx").then((m) => ({ default: m.LessonSheet })),
-);
-const DatePicker = lazy(() =>
-  import("../components/DatePicker.tsx").then((m) => ({ default: m.DatePicker })),
-);
+import { formatDuration, useT } from "@/ui/i18n";
+import { LessonSheet } from "./LessonSheet.tsx";
+import { DatePicker } from "../components/DatePicker.tsx";
 
 const SWIPE_THRESHOLD_PX = 56;
 const GAP_MIN_MINUTES = 20;
@@ -135,7 +119,6 @@ export const DayView = ({
   onOpenChanges?: (date: ISODate) => void;
 }) => {
   const t = useT();
-  const lang = useLang();
   const now = useNow();
 
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
@@ -447,15 +430,13 @@ export const DayView = ({
                   }}
                 />
 
-                <Suspense fallback={<span>{dayTitle(date, now.date, t, lang)}</span>}>
-                  <DatePicker
-                    date={date}
-                    today={now.date}
-                    open={calendarOpen}
-                    onOpenChange={setCalendarOpen}
-                    onSelect={onDateChange}
-                  />
-                </Suspense>
+                <DatePicker
+                  date={date}
+                  today={now.date}
+                  open={calendarOpen}
+                  onOpenChange={setCalendarOpen}
+                  onSelect={onDateChange}
+                />
 
                 <IconButton
                   icon="chevron-right"
@@ -545,15 +526,13 @@ export const DayView = ({
         </div>
       </PullToRefresh>
 
-      <Suspense fallback={null}>
-        <LessonSheet
-          lesson={open}
-          day={day}
-          onClose={() => {
-            setOpen(null);
-          }}
-        />
-      </Suspense>
+      <LessonSheet
+        lesson={open}
+        day={day}
+        onClose={() => {
+          setOpen(null);
+        }}
+      />
     </div>
   );
 };
