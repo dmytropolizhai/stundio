@@ -142,6 +142,95 @@ describe("FeedbackSheet", () => {
     expect(screen.getByPlaceholderText("Tell us everything")).toBeDefined();
     expect(screen.getByRole("button", { name: "Report Now" })).toBeDefined();
   });
+
+  it("attaches a screenshot, displays preview, and allows removing it", async () => {
+    const harness = await bootHarness();
+    const createObjectURLMock = vi.fn().mockReturnValue("blob:mock-screenshot-url");
+    const revokeObjectURLMock = vi.fn();
+    globalThis.URL.createObjectURL = createObjectURLMock;
+    globalThis.URL.revokeObjectURL = revokeObjectURLMock;
+
+    wrap(harness, <FeedbackSheet open={true} onClose={() => {}} />);
+
+    expect(screen.getByText("Pievienot ekrānuzņēmumu")).toBeDefined();
+
+    const fileInput = screen.getByTestId("screenshot-input");
+    const file = new File(["dummy-content"], "bug.png", { type: "image/png" });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    expect(screen.getByText("bug.png")).toBeDefined();
+    const removeBtn = screen.getByRole("button", { name: "Noņemt ekrānuzņēmumu" });
+    expect(removeBtn).toBeDefined();
+
+    fireEvent.click(removeBtn);
+    expect(screen.queryByText("bug.png")).toBeNull();
+    expect(screen.getByText("Pievienot ekrānuzņēmumu")).toBeDefined();
+    expect(revokeObjectURLMock).toHaveBeenCalled();
+  });
+
+  it("shows error when attached screenshot exceeds 5 MB", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <FeedbackSheet open={true} onClose={() => {}} />);
+
+    const fileInput = screen.getByTestId("screenshot-input");
+    const largeFile = new File(["x"], "too-large.png", { type: "image/png" });
+    Object.defineProperty(largeFile, "size", { value: 6 * 1024 * 1024 });
+
+    fireEvent.change(fileInput, { target: { files: [largeFile] } });
+
+    expect(screen.getByText("Attēls ir pārāk liels (maks. 5 MB)")).toBeDefined();
+    expect(screen.queryByText("too-large.png")).toBeNull();
+  });
+
+  it("submits feedback with attachment via FormData", async () => {
+    const harness = await bootHarness();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => ({ success: true }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    globalThis.URL.createObjectURL = vi.fn().mockReturnValue("blob:mock-screenshot-url");
+    globalThis.URL.revokeObjectURL = vi.fn();
+    const onSubmitted = vi.fn();
+
+    wrap(
+      harness,
+      <FeedbackSheet
+        open={true}
+        type="bug"
+        className="12.a"
+        onClose={() => {}}
+        onSubmitted={onSubmitted}
+      />,
+    );
+
+    const textarea = screen.getByPlaceholderText("Apraksti, kas nogāja greizi un ko tu gaidīji…");
+    fireEvent.change(textarea, { target: { value: "Broken UI when rotating screen" } });
+
+    const fileInput = screen.getByTestId("screenshot-input");
+    const file = new File(["image-bytes"], "rotation_bug.jpg", { type: "image/jpeg" });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+    expect(screen.getByText("rotation_bug.jpg")).toBeDefined();
+
+    const submitBtn = screen.getByRole("button", { name: "Nosūtīt ziņojumu" });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ziņojums nosūtīts!")).toBeDefined();
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(options.body).toBeInstanceOf(FormData);
+    const formData = options.body as FormData;
+    expect(formData.get("message")).toBe("Broken UI when rotating screen");
+    expect(formData.get("feedback_type")).toBe("bug");
+    expect(formData.get("class")).toBe("12.a");
+    const attachedFile = formData.get("attachment") as File;
+    expect(attachedFile).toBeDefined();
+    expect(attachedFile.name).toBe("rotation_bug.jpg");
+    expect(onSubmitted).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("FeedbackPrompt", () => {

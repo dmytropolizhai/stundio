@@ -45,6 +45,8 @@ export type SubmitFeedbackParams = {
   className?: string | undefined;
   subject?: string | undefined;
   metadata?: Record<string, unknown> | undefined;
+  attachment?: File | Blob | undefined;
+  attachmentName?: string | undefined;
 };
 
 export type SubmitSuggestionParams = Omit<SubmitFeedbackParams, "type">;
@@ -57,6 +59,8 @@ export async function submitFeedback({
   className,
   subject,
   metadata,
+  attachment,
+  attachmentName,
 }: SubmitFeedbackParams): Promise<void> {
   const trimmed = message.trim();
   if (!trimmed) {
@@ -84,6 +88,42 @@ export async function submitFeedback({
 
   if (metadata && Object.keys(metadata).length > 0) {
     Object.assign(payload, metadata);
+  }
+
+  if (attachment) {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(payload)) {
+      if (value !== undefined && value !== null) {
+        if (typeof value === "string") {
+          formData.append(key, value);
+        } else if (typeof value === "number" || typeof value === "boolean") {
+          formData.append(key, value.toString());
+        } else {
+          formData.append(key, JSON.stringify(value));
+        }
+      }
+    }
+    const filename =
+      attachmentName ?? (attachment instanceof File ? attachment.name : "screenshot.png");
+    formData.append("attachment", attachment, filename);
+
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error ${res.status}`);
+    }
+
+    const data = (await res.json()) as { success?: boolean; message?: string };
+    if (!data.success) {
+      throw new Error(data.message || "Submission failed");
+    }
+    return;
   }
 
   const res = await fetch("https://api.web3forms.com/submit", {

@@ -159,4 +159,53 @@ describe("submitFeedback", () => {
     expect(body.feedback_type).toBe("suggestion");
     expect(body.message).toBe("Idea here");
   });
+
+  it("submits attachment using FormData", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => ({ success: true }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const file = new File(["bytes"], "error_log.png", { type: "image/png" });
+    await submitFeedback({
+      type: "bug",
+      message: "Here is an issue",
+      className: "11.a",
+      attachment: file,
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://api.web3forms.com/submit");
+    expect(options.method).toBe("POST");
+    expect(options.body).toBeInstanceOf(FormData);
+
+    const formData = options.body as FormData;
+    expect(formData.get("access_key")).toBe(WEB3FORMS_ACCESS_KEY);
+    expect(formData.get("feedback_type")).toBe("bug");
+    expect(formData.get("message")).toBe("Here is an issue");
+    expect(formData.get("class")).toBe("11.a");
+    const attached = formData.get("attachment") as File;
+    expect(attached).toBeDefined();
+    expect(attached.name).toBe("error_log.png");
+  });
+
+  it("throws when api fails with attachment", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+      }),
+    );
+
+    const file = new File(["bytes"], "screenshot.png", { type: "image/png" });
+    await expect(
+      submitFeedback({
+        message: "Failed upload",
+        attachment: file,
+      }),
+    ).rejects.toThrow("HTTP error 400");
+  });
 });
