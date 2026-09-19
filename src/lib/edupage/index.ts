@@ -38,7 +38,7 @@ export {
   selectTimetables,
   type TimetableSelection,
 } from "./select.ts";
-export { otherRatio, parseDaySubstitutions } from "./substitutions.ts";
+export { otherRatio, parseAbsentTeachers, parseDaySubstitutions } from "./substitutions.ts";
 export {
   classWeekLessons,
   coverDuties,

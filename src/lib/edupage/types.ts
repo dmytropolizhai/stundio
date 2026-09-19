@@ -131,6 +131,8 @@ export type DaySubstitutions = {
   notes: string[]; // free-text announcements from .subst_note (best-effort split)
   items: Substitution[];
   fetchedAt: ISODateTime;
+  /** Absent teachers listed in header ("Skolotāji, kuri nepiedalās: ..."). */
+  absentTeachers?: string[];
 };
 
 /* ------------------------------------------------------------------ *
