@@ -104,7 +104,9 @@ export const ru: Dict = {
 
   "changes.title": "Замены",
   "changes.filter.myClass": "Моя группа",
+  "changes.filter.myChanges": "Мои изменения",
   "changes.filter.all": "Вся школа",
+  "changes.absentTeachers": "Сегодня отсутствуют",
   "changes.emptyForClass": "Изменений нет",
   "changes.emptyForClassHint": "У вашей группы уроки идут по обычному расписанию",
   "changes.emptyAll": "Нет зарегистрированных изменений",

@@ -103,7 +103,9 @@ export const ua: Dict = {
 
   "changes.title": "Зміни",
   "changes.filter.myClass": "Моя група",
+  "changes.filter.myChanges": "Мої зміни",
   "changes.filter.all": "Вся школа",
+  "changes.absentTeachers": "Сьогодні відсутні",
   "changes.emptyForClass": "Змін немає",
   "changes.emptyForClassHint": "У вашої групи уроки йдуть за звичайним розкладом",
   "changes.emptyAll": "Немає зареєстрованих змін",
