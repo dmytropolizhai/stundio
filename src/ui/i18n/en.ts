@@ -25,6 +25,8 @@ export const en: Dict = {
   "teacher.search": "Search teacher…",
   "teacher.none": "No teacher found",
   "teacher.formClass": "Form teacher",
+  "teacher.cover": "Cover",
+  "teacher.coverFor": "Covering: {name}",
 
   "onboarding.language.title": "Choose your language",
   "onboarding.language.continue": "Continue",

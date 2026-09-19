@@ -25,6 +25,8 @@ export const ru: Dict = {
   "teacher.search": "Поиск преподавателя…",
   "teacher.none": "Преподаватель не найден",
   "teacher.formClass": "Классный руководитель",
+  "teacher.cover": "Замена",
+  "teacher.coverFor": "Заменяет: {name}",
 
   "onboarding.language.title": "Выберите язык",
   "onboarding.language.continue": "Продолжить",

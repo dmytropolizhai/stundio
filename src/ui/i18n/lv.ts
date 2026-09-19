@@ -31,6 +31,8 @@ export const lv = {
   "teacher.search": "Meklēt skolotāju…",
   "teacher.none": "Nav atrasts neviens skolotājs",
   "teacher.formClass": "Klases audzinātājs",
+  "teacher.cover": "Aizvietošana",
+  "teacher.coverFor": "Aizvieto: {name}",
 
   "onboarding.language.title": "Izvēlies valodu",
   "onboarding.language.continue": "Turpināt",
