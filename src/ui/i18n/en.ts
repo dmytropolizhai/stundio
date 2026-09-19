@@ -103,7 +103,9 @@ export const en: Dict = {
 
   "changes.title": "Changes",
   "changes.filter.myClass": "My group",
+  "changes.filter.myChanges": "My changes",
   "changes.filter.all": "All classes",
+  "changes.absentTeachers": "Absent today",
   "changes.emptyForClass": "No changes",
   "changes.emptyForClassHint": "Lessons for your group follow the regular schedule today",
   "changes.emptyAll": "No registered changes",

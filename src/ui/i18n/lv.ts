@@ -110,7 +110,9 @@ export const lv = {
 
   "changes.title": "Izmaiņas",
   "changes.filter.myClass": "Mana grupa",
+  "changes.filter.myChanges": "Manas izmaiņas",
   "changes.filter.all": "Visa skola",
+  "changes.absentTeachers": "Šodien prombūtnē",
   "changes.emptyForClass": "Izmaiņu nav",
   "changes.emptyForClassHint": "Tavai grupai šai dienai stundas notiek pēc pamatsaraksta",
   "changes.emptyAll": "Nav reģistrētu izmaiņu",
