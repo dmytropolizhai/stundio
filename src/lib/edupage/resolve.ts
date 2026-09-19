@@ -35,6 +35,7 @@ import {
   isTeacherMentionedInNote,
   noteTargetsClass,
 } from "./notes.ts";
+import { indexTeachersByKey, lookupTeacher } from "./teacher-names.ts";
 
 const WEEKDAYS: readonly Weekday[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
@@ -389,12 +390,12 @@ export const resolveDayAcross = (
   /* Labels are display strings, so a merged index across sources is safe (and needed: an
      added lesson's teacher may only exist in the building the class actually sits in). */
   const subjectsByLabel = new Map<string, SubjectRef>();
-  const teachersByLabel = new Map<string, TeacherRef>();
+  const teachersByKey = new Map<string, TeacherRef>();
   const roomsByLabel = new Map<string, RoomRef>();
   const periods: Period[] = [];
   for (const { timetable } of sources) {
     indexByLabel(timetable.subjects, subjectsByLabel);
-    indexByLabel(timetable.teachers, teachersByLabel);
+    indexTeachersByKey(timetable.teachers, teachersByKey);
     indexByLabel(timetable.rooms, roomsByLabel);
     for (const p of timetable.periods)
       if (!periods.some((q) => q.period === p.period)) periods.push(p);
@@ -438,13 +439,13 @@ export const resolveDayAcross = (
 
       if (s.teacher !== null && s.kind === "substitution") {
         original.teachers = teacherList;
-        teacherList = [teachersByLabel.get(s.teacher) ?? synthTeacher(s.teacher)];
+        teacherList = [lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)];
       } else if (s.teacherFrom !== null && s.kind === "substitution" && s.teacher === null) {
         if (original.teachers === undefined) {
           original.teachers =
             teacherList.length > 0
               ? teacherList
-              : [teachersByLabel.get(s.teacherFrom) ?? synthTeacher(s.teacherFrom)];
+              : [lookupTeacher(s.teacherFrom, teachersByKey) ?? synthTeacher(s.teacherFrom)];
         }
         teacherList = [];
       }
@@ -481,7 +482,7 @@ export const resolveDayAcross = (
       subject:
         s.subject === null ? null : (subjectsByLabel.get(s.subject) ?? synthSubject(s.subject)),
       teachers:
-        s.teacher === null ? [] : [teachersByLabel.get(s.teacher) ?? synthTeacher(s.teacher)],
+        s.teacher === null ? [] : [lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)],
       rooms: s.room === null ? [] : [roomsByLabel.get(s.room) ?? synthRoom(s.room)],
       group: s.group,
       status: "added",
