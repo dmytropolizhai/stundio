@@ -16,7 +16,7 @@ import { SyncBadge } from "../components/SyncBadge.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
 import { StatusBadge } from "../components/Badge.tsx";
 import { DatePicker } from "../components/DatePicker.tsx";
-import { LessonSheet } from "./LessonSheet.tsx";
+import { LessonSheet } from "./lesson-sheet";
 import { useNow } from "../hooks/useNow.ts";
 import { formatRange, useT } from "@/ui/i18n";
 

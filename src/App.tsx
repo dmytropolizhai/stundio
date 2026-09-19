@@ -10,14 +10,14 @@ import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
-import { OnboardingLanguage } from "./ui/screens/OnboardingLanguage.tsx";
-import { OnboardingIntro } from "./ui/screens/OnboardingIntro.tsx";
-import { DayView } from "./ui/screens/DayView.tsx";
-import { WeekView } from "./ui/screens/WeekView.tsx";
+import { OnboardingLanguage } from "./ui/screens/onboarding-language";
+import { OnboardingIntro } from "./ui/screens/onboarding-intro";
+import { DayView } from "./ui/screens/day-view";
+import { WeekView } from "./ui/screens/week-view";
 import { ChangesView } from "./ui/screens/ChangesView.tsx";
-import { SubjectsView } from "./ui/screens/SubjectsView.tsx";
-import { SettingsView } from "./ui/screens/SettingsView.tsx";
-import { SplashScreen } from "./ui/screens/SplashScreen.tsx";
+import { SubjectsView } from "./ui/screens/subjects-view";
+import { SettingsView } from "./ui/screens/settings-view";
+import { SplashScreen } from "./ui/screens/splash-screen";
 import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
 import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
@@ -29,7 +29,6 @@ import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 import { nativeApp } from "@/lib/app";
 import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
-
 /**
  * Renders nothing; its only job is to tell the splash that the store hydrated. It sits inside
  * `AppStoreProvider`'s children, which the provider only mounts once boot resolves — so its

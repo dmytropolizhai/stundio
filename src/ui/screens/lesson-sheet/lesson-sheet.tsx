@@ -1,33 +1,22 @@
 import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { Button, Card } from "@/ds";
-import { Sheet } from "../components/Sheet.tsx";
-import { StatusBadge } from "../components/Badge.tsx";
+import { Sheet } from "@/ui/components/Sheet.tsx";
+import { StatusBadge } from "@/ui/components/Badge.tsx";
 import { formatRange, useT } from "@/ui/i18n";
+import { LessonField } from "./lesson-field.tsx";
 
-const Field = ({ label, value }: { label: string; value: string }) => {
-  if (value === "") return null;
-  return (
-    <div className="flex justify-between gap-4 border-t border-hairline py-2.5">
-      <dt className="font-text text-caption text-muted">{label}</dt>
-      <dd className="text-right font-text text-caption font-bold text-strong">{value}</dd>
-    </div>
-  );
-};
-
-/**
- * Lesson detail. Its job is the diff: what the base timetable said versus what the school
- * changed. `changeNote` is EduPage's own Latvian sentence — shown verbatim under a
- * "from school" label, never translated (CLAUDE.md).
- */
-export const LessonSheet = ({
-  lesson,
-  day,
-  onClose,
-}: {
+type LessonSheetProps = {
   lesson: ResolvedLesson | null;
   day: ResolvedDay | null;
   onClose: () => void;
-}) => {
+};
+
+/**
+ * Lesson detail sheet. Its job is the diff: what the base timetable said versus what the school
+ * changed. `changeNote` is EduPage's own Latvian sentence — shown verbatim under a
+ * "from school" label, never translated (CLAUDE.md).
+ */
+export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
   const t = useT();
   const open = lesson !== null;
   const title = lesson?.subject?.name ?? lesson?.subject?.short ?? "";
@@ -46,26 +35,32 @@ export const LessonSheet = ({
           </div>
 
           <dl className="flex flex-col">
-            <Field label={t("lesson.period")} value={lesson.period} />
-            <Field
+            <LessonField label={t("lesson.period")} value={lesson.period} />
+            <LessonField
               label={t("lesson.teacher")}
               value={lesson.teachers.map((x) => x.short).join(", ")}
             />
-            <Field label={t("lesson.room")} value={lesson.rooms.map((x) => x.short).join(", ")} />
-            <Field label={t("lesson.group")} value={lesson.group ?? ""} />
-            <Field label={t("lesson.building")} value={lesson.building ?? day?.building ?? ""} />
+            <LessonField
+              label={t("lesson.room")}
+              value={lesson.rooms.map((x) => x.short).join(", ")}
+            />
+            <LessonField label={t("lesson.group")} value={lesson.group ?? ""} />
+            <LessonField
+              label={t("lesson.building")}
+              value={lesson.building ?? day?.building ?? ""}
+            />
 
             {lesson.original != null && (
               <>
-                <Field
+                <LessonField
                   label={`${t("lesson.was")} · ${t("lesson.teacher")}`}
                   value={(lesson.original.teachers ?? []).map((x) => x.short).join(", ")}
                 />
-                <Field
+                <LessonField
                   label={`${t("lesson.was")} · ${t("lesson.room")}`}
                   value={(lesson.original.rooms ?? []).map((x) => x.short).join(", ")}
                 />
-                <Field
+                <LessonField
                   label={`${t("lesson.was")} · ${t("lesson.period")}`}
                   value={lesson.original.period ?? ""}
                 />

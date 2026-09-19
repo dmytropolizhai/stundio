@@ -7,8 +7,8 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { StoreContext } from "@/store";
 import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { ClassSelector } from "@/ui/screens/class-selector";
-import { WeekView } from "../screens/WeekView.tsx";
-import { SettingsView } from "../screens/SettingsView.tsx";
+import { WeekView } from "../screens/week-view";
+import { SettingsView } from "../screens/settings-view";
 import { applyTheme, resolveTheme } from "@/ui/theme";
 import { handleBackPress } from "../hooks/useBackButton.ts";
 import { bootHarness, classIdOf, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";

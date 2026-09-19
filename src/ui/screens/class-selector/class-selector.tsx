@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { listSubgroups } from "@/lib/edupage";
 import { useClasses, type ClassOption } from "@/ui/hooks/useClasses.ts";
+import { useBackButton } from "@/ui/hooks/useBackButton.ts";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { ClassSearch } from "./class-search.tsx";
 import { ClassList } from "./class-list.tsx";
-import { SubgroupPicker } from "@/ui/screens/SubgroupPicker.tsx";
-import { useBackButton } from "@/ui/hooks/useBackButton.ts";
+import { SubgroupPicker } from "@/ui/screens/subgroup-picker";
 
 type ClassSelectorProps = {
   onPicked?: () => void;

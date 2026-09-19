@@ -1,3 +1,12 @@
+import { useEffect, useState } from "react";
+import { WaveMark } from "@/ui/components/WaveMark.tsx";
+import { FADE_MS, HOLD_LEVEL, RISE_MS, TOP_OUT_MS } from "./constants.ts";
+
+export type SplashScreenProps = {
+  /** Flips to true when the app behind the splash is ready to be seen. */
+  ready: boolean;
+};
+
 /**
  * The loading screen: the brand mark, centered, filling with a wave while the app boots.
  *
@@ -10,23 +19,6 @@
  * one frame, so a truthful 0–100 bar would be a flicker. Instead the wave rises to a hold
  * level and ripples there for as long as boot actually takes, then tops out on `ready`.
  */
-import { useEffect, useState } from "react";
-import { WaveMark } from "../components/WaveMark.tsx";
-
-/** Where the wave parks while boot is still running. Never 100 — that would read as done. */
-const HOLD_LEVEL = 90;
-/** The rise. Must match the `duration-*` on `WaveMark`'s lift. */
-const RISE_MS = 900;
-/** Time the topped-out mark stays on screen before the fade starts. */
-const TOP_OUT_MS = 340;
-/** Fade-out duration; must match `duration-*` on the root below. */
-const FADE_MS = 260;
-
-export type SplashScreenProps = {
-  /** Flips to true when the app behind the splash is ready to be seen. */
-  ready: boolean;
-};
-
 export const SplashScreen = ({ ready }: SplashScreenProps) => {
   // Starts empty and rises on the first commit, so the transition has two values to move
   // between — mounting straight at HOLD_LEVEL would just paint a full mark with no rise.
