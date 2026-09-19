@@ -10,6 +10,7 @@
 import { createStore } from "zustand/vanilla";
 import {
   resolveDayAcross,
+  resolveTeacherDayAcross,
   selectTimetables,
   toTimetableMeta,
   type Building,
@@ -18,6 +19,7 @@ import {
   type DaySource,
   type ISODateTime,
   type ResolvedDay,
+  type ResolvedTeacherDay,
   type Timetable,
 } from "@/lib/edupage";
 import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
@@ -61,6 +63,10 @@ export type AppState = {
   setBuilding: (building: Building | null) => Promise<void>;
   /** `null` shows every division merged — only meaningful for the currently selected class. */
   setSubgroup: (subgroup: string | null) => Promise<void>;
+  setPersona: (persona: Settings["persona"]) => Promise<void>;
+  setTeacher: (teacherId: string | null) => Promise<void>;
+  setTeacherView: (view: Settings["teacherView"]) => Promise<void>;
+  setHighlightCoverLessons: (highlight: boolean) => Promise<void>;
   toggleFavorite: (classId: string) => Promise<void>;
   setTheme: (theme: Settings["theme"]) => Promise<void>;
   setLang: (lang: Settings["lang"]) => Promise<void>;
@@ -106,6 +112,7 @@ export type AppState = {
   /** No-op when the user has opted out. Screen views, manual refreshes — nothing PII-bearing. */
   trackEvent: (event: string) => void;
   resolvedDay: (date: ISODate, classId?: string) => ResolvedDay | null;
+  resolvedTeacherDay: (date: ISODate, teacherId?: string) => ResolvedTeacherDay | null;
   /**
    * The selected class's display short ("1DP1"), or `null` while none is picked or no cached
    * timetable knows that id yet. The substitution feed only ever speaks in these shorts — the
@@ -135,6 +142,18 @@ const createResolveMemo = () => {
       memo.clear();
     },
   };
+};
+
+const getTeacherFormClassId = (state: AppState, teacherId: string): string | null => {
+  for (const timetable of Object.values(state.timetables)) {
+    const teacher = timetable.teachers.find((t) => t.id === teacherId);
+    if (teacher?.classIds && teacher.classIds.length > 0) {
+      return teacher.classIds[0] ?? null;
+    }
+    const cls = timetable.classes.find((c) => c.teacherId === teacherId);
+    if (cls) return cls.id;
+  }
+  return null;
 };
 
 export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: StoreDeps) => {
@@ -220,6 +239,10 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setClass: (classId) => persist({ selectedClassId: classId, subgroup: null }),
       setBuilding: (building) => persist({ building }),
       setSubgroup: (subgroup) => persist({ subgroup }),
+      setPersona: (persona) => persist({ persona }),
+      setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),
+      setTeacherView: (teacherView) => persist({ teacherView }),
+      setHighlightCoverLessons: (highlightCoverLessons) => persist({ highlightCoverLessons }),
       setTheme: (theme) => persist({ theme }),
       setLang: (lang) => persist({ lang }),
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
@@ -322,8 +345,49 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         return null;
       },
 
+      resolvedTeacherDay: (date, teacherId) => {
+        const state = get();
+        const id = teacherId ?? state.settings.selectedTeacherId;
+        if (id === null || id === undefined) return null;
+
+        const sources: DaySource[] = selectTimetables(
+          state.metas,
+          date,
+          state.settings.building ?? undefined,
+        ).flatMap((selection) => {
+          const timetable = state.timetables[selection.meta.ttNum];
+          return timetable === undefined ? [] : [{ timetable, stale: selection.stale }];
+        });
+        if (sources.length === 0) return null;
+
+        const subs = state.substitutions[date] ?? null;
+        const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
+        const key = `teacher|${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}`;
+        const hit = memo.get(key);
+        if (hit !== undefined) return hit as ResolvedTeacherDay;
+
+        const res = resolveTeacherDayAcross(sources, subs, id, date);
+        return memo.set(key, res) as ResolvedTeacherDay;
+      },
+
       resolvedDay: (date, classId) => {
         const state = get();
+        if (
+          classId === undefined &&
+          state.settings.persona === "teacher" &&
+          state.settings.selectedTeacherId
+        ) {
+          if (state.settings.teacherView === "own") {
+            return get().resolvedTeacherDay(date, state.settings.selectedTeacherId);
+          }
+          if (state.settings.teacherView === "form-class") {
+            const formClassId = getTeacherFormClassId(state, state.settings.selectedTeacherId);
+            if (formClassId !== null) {
+              return get().resolvedDay(date, formClassId);
+            }
+          }
+        }
+
         const id = classId ?? state.settings.selectedClassId;
         if (id === null || id === undefined) return null;
 
