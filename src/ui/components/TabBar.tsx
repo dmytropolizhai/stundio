@@ -1,5 +1,6 @@
 import { BottomNav, type BottomNavItem, type IconName } from "@/ds";
 import { useT } from "@/ui/i18n";
+import { useAppStore } from "@/store";
 
 export type Tab = "day" | "week" | "changes" | "subjects" | "settings";
 
@@ -7,7 +8,7 @@ export type Tab = "day" | "week" | "changes" | "subjects" | "settings";
  * Icons come from the DS working set. Labels are translated — the DS keeps every nav word one
  * word wide precisely so it survives being rendered in Latvian.
  */
-const TABS: { id: Tab; icon: IconName }[] = [
+const STUDENT_TABS: { id: Tab; icon: IconName }[] = [
   { id: "day", icon: "calendar-days" },
   { id: "week", icon: "layout-grid" },
   { id: "changes", icon: "repeat" },
@@ -15,6 +16,12 @@ const TABS: { id: Tab; icon: IconName }[] = [
   { id: "settings", icon: "user-round" },
 ];
 
+const TEACHER_TABS: { id: Tab; icon: IconName }[] = [
+  { id: "day", icon: "calendar-days" },
+  { id: "week", icon: "layout-grid" },
+  { id: "changes", icon: "repeat" },
+  { id: "settings", icon: "user-round" }
+]
 /**
  * The floating nav pill. It sits 20px above the bottom edge with a 16px side inset, on top
  * of the scrolling content rather than in the layout flow — which is why every screen pads its
@@ -22,7 +29,10 @@ const TABS: { id: Tab; icon: IconName }[] = [
  */
 export const TabBar = ({ tab, onChange }: { tab: Tab; onChange: (tab: Tab) => void }) => {
   const t = useT();
-  const items: BottomNavItem<Tab>[] = TABS.map(({ id, icon }) => ({
+  const persona = useAppStore((s) => s.settings.persona);
+  const tabs = persona === "teacher" ? TEACHER_TABS : STUDENT_TABS;
+
+  const items: BottomNavItem<Tab>[] = tabs.map(({ id, icon }) => ({
     key: id,
     icon,
     label: t(`nav.${id}`),
