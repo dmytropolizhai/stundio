@@ -41,6 +41,13 @@ That’s why the app is **local-first**. Your timetable is stored on your device
 * **In-app feedback** — Report bugs or submit feature suggestions directly inside the app without third-party forms.
 * **Share your week as an image** — Turn the week view into a picture: your class, your form teacher, every lesson with its start and end time, and a note about which days are at another building. Under the grid, every subject code is spelled out in full, and it ends with a QR code so whoever you send it to can scan it and get the app. The image is drawn on your own device and passed straight to Android's share sheet, so it works offline and nothing is uploaded anywhere.
 * **Class picker** — Save your favourite classes and switch between them whenever you need to. Your selection is stored on the device.
+* **Teacher Mode ("Choose Your Side")** — A dedicated persona for educators:
+  * Select your name from the staff directory with zero login and zero extra network requests.
+  * Day and week views show classes taught, room, and building per period, grouping merged classes on a single card.
+  * Substitution cover duties (*aizvietošanas stundas*) are prominently surfaced and badged.
+  * Absent staff banner in Changes view highlights absent colleagues (*Skolotāji, kuri šodien nepiedalās*).
+  * Dual-role support for form teachers (*klases audzinātājs*): easily toggle between your own teaching day and your form class's schedule.
+  * Tailored schedule change and cover duty notifications.
 * **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh, or return to the app. Offline detection warns when network is unavailable without blocking access to cached schedules.
 * **Four languages** — The app interface is available in Latvian, English, Russian, and Ukrainian. Substitution notes from the school are kept exactly as published and clearly marked as school-provided text.
 
@@ -56,17 +63,18 @@ Stundio isn't trying to be a replacement for EduPage.
 
 ## Project status
 
-Phases 0 through 4, the widget track, and Phase 7 are complete:
+Phases 0 through 4, the widget track, Phase 7, and Phase 8 are complete:
 - Core scraper, parser, offline caching, and synchronization.
 - Full UI (Day, Week, Subjects, Class Picker, Settings, Lesson Sheet, Subgroups).
 - Customization: custom color wheel, subject color overrides, and theme controls.
 - Android packaging, edge-to-edge system bars, local change notifications, and background refresh via WorkManager.
 - Native Android home-screen widgets (Next Lesson 2×1, Countdown, and All-Day 4×2 list).
 - Web and iOS as a PWA on Cloudflare Pages, with an edge proxy for EduPage requests and Web Push for schedule changes.
+- Phase 8: Teacher Mode with staff directory, cover duty badging, dual role support, absent staff banner, and targeted notifications.
 
 Phase 5 (release and distribution) is in progress. There will be no Google Play release: for an unofficial timetable parser, app-store distribution carries legal risk the project doesn't want, so APKs ship through GitHub Releases and the app updates itself from there.
 
-After that come Phase 6 (an e-klase grades integration, still undecided) and Phase 8 (Teacher Mode).
+Phase 6 (an e-klase grades integration) is still undecided.
 
 For the detailed roadmap and progress history, see [PLAN.md](PLAN.md). For an explanation of how the EduPage scraping works, see [MODEL.md](MODEL.md).
 
