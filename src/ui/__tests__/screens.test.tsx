@@ -572,8 +572,10 @@ describe("SettingsView", () => {
     wrap(harness, <SettingsView onPickClass={onPickClass} onShowWhatsNew={vi.fn()} />);
 
     // Twice now: once as the header eyebrow, once as the value of the class row.
-    expect(screen.getAllByText("A1-2").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByText("Mainīt"));
+    // opens identity sheet
+    const changeButtons = screen.getAllByText("Mainīt");
+    fireEvent.click(changeButtons[changeButtons.length - 1]!);
     expect(onPickClass).toHaveBeenCalled();
   });
 

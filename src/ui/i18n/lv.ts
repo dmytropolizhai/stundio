@@ -18,6 +18,20 @@ export const lv = {
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",
 
+  "onboarding.persona.title": "Izvēlies savu pusi",
+  "onboarding.persona.subtitle": "Pielāgo sarakstu savām vajadzībām",
+  "onboarding.persona.student.title": "Skolēns",
+  "onboarding.persona.student.desc": "Gribu redzēt savas klases stundas un izmaiņas",
+  "onboarding.persona.teacher.title": "Skolotājs",
+  "onboarding.persona.teacher.desc": "Gribu redzēt savas stundas, kabinetus un aizvietošanas",
+
+  "onboarding.teacher.title": "Izvēlies skolotāju",
+  "onboarding.teacher.subtitle": "Meklē pēc vārda vai uzvārda",
+
+  "teacher.search": "Meklēt skolotāju…",
+  "teacher.none": "Nav atrasts neviens skolotājs",
+  "teacher.formClass": "Klases audzinātājs",
+
   "onboarding.language.title": "Izvēlies valodu",
   "onboarding.language.continue": "Turpināt",
 
@@ -170,6 +184,10 @@ export const lv = {
   "subjects.note.badge": "Ir piezīme",
 
   "settings.title": "Iestatījumi",
+  "settings.identity": "Loma un saraksts",
+  "settings.persona.student": "Skolēns",
+  "settings.persona.teacher": "Skolotājs",
+  "settings.identity.sheetTitle": "Izvēlies lomu",
   "settings.class": "Mana grupa",
   "settings.change": "Mainīt",
   "settings.building": "Ēka",

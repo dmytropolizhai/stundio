@@ -3,11 +3,13 @@ import { useAppStore } from "@/store";
 import { listBuildings, listSubgroups } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
+import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
 import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
+import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
 import { FeedbackSheet } from "@/ui/components/FeedbackSheet.tsx";
 import { useT } from "@/ui/i18n";
 import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
-import { ClassSection } from "./class-section.tsx";
+import { IdentitySection } from "./class-section.tsx";
 import { CustomizationSection } from "./customization-section.tsx";
 import { GeneralSection } from "./general-section.tsx";
 import { ShareSection } from "./share-section.tsx";
@@ -19,6 +21,7 @@ import { DangerSection } from "./danger-section.tsx";
 
 type SettingsViewProps = {
   onPickClass: () => void;
+  onPickTeacher?: () => void;
   onShowWhatsNew: () => void;
   onShowIphoneAnnouncement?: (() => void) | undefined;
   onShowIphoneInstall?: (() => void) | undefined;
@@ -35,18 +38,22 @@ type SettingsViewProps = {
  */
 export const SettingsView = ({
   onPickClass,
+  onPickTeacher,
   onShowWhatsNew,
   onShowIphoneAnnouncement,
   onShowIphoneInstall,
 }: SettingsViewProps) => {
   const t = useT();
   const [customizing, setCustomizing] = useState(false);
+  const [identitySheetOpen, setIdentitySheetOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState<{ open: boolean; type: FeedbackType }>({
     open: false,
     type: "suggestion",
   });
 
+  const persona = useAppStore((s) => s.settings.persona);
   const selectedClass = useSelectedClass();
+  const selectedTeacher = useSelectedTeacher();
   const metas = useAppStore((s) => s.metas);
   const timetables = useAppStore((s) => s.timetables);
 
@@ -62,7 +69,12 @@ export const SettingsView = ({
       <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
         <TopBar title={t("settings.title")} />
 
-        <ClassSection selectedClass={selectedClass} onPickClass={onPickClass} />
+        <IdentitySection
+          persona={persona}
+          selectedClass={selectedClass}
+          selectedTeacher={selectedTeacher}
+          onChangeIdentity={() => setIdentitySheetOpen(true)}
+        />
 
         <CustomizationSection onOpenCustomization={() => setCustomizing(true)} />
 
@@ -100,6 +112,13 @@ export const SettingsView = ({
           </a>
         </div>
       </div>
+
+      <IdentitySheet
+        open={identitySheetOpen}
+        onClose={() => setIdentitySheetOpen(false)}
+        onPickClass={onPickClass}
+        onPickTeacher={() => onPickTeacher?.()}
+      />
 
       <CustomizationSheet
         open={customizing}

@@ -12,6 +12,20 @@ export const ua: Dict = {
   "onboarding.title": "Оберіть свій клас",
   "onboarding.subtitle": "Ваш розклад та його зміни — працює і офлайн.",
 
+  "onboarding.persona.title": "Обери свою сторону",
+  "onboarding.persona.subtitle": "Налаштуй розклад під свою роль",
+  "onboarding.persona.student.title": "Учень",
+  "onboarding.persona.student.desc": "Хочу бачити розклад своєї групи та заміни",
+  "onboarding.persona.teacher.title": "Викладач",
+  "onboarding.persona.teacher.desc": "Хочу бачити свої уроки, кабінети та заміни",
+
+  "onboarding.teacher.title": "Обери викладача",
+  "onboarding.teacher.subtitle": "Пошук за ім'ям або прізвищем",
+
+  "teacher.search": "Пошук викладача…",
+  "teacher.none": "Викладача не знайдено",
+  "teacher.formClass": "Класний керівник",
+
   "onboarding.language.title": "Оберіть мову",
   "onboarding.language.continue": "Продовжити",
 
@@ -163,6 +177,10 @@ export const ua: Dict = {
   "subjects.note.badge": "Є нотатка",
 
   "settings.title": "Налаштування",
+  "settings.identity": "Роль та розклад",
+  "settings.persona.student": "Учень",
+  "settings.persona.teacher": "Викладач",
+  "settings.identity.sheetTitle": "Вибір ролі",
   "settings.class": "Моя група",
   "settings.change": "Змінити",
   "settings.building": "Корпус",

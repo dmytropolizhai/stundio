@@ -9,8 +9,22 @@ export const en: Dict = {
   "nav.subjects": "Subjects",
   "nav.settings": "Settings",
 
-  "onboarding.title": "Pick your class",
-  "onboarding.subtitle": "Your timetable and its changes — offline too.",
+  "onboarding.title": "Choose your class",
+  "onboarding.subtitle": "Timetable and changes — even offline.",
+
+  "onboarding.persona.title": "Choose your side",
+  "onboarding.persona.subtitle": "Tailor the schedule to your daily role",
+  "onboarding.persona.student.title": "Student",
+  "onboarding.persona.student.desc": "See your class lessons and daily substitutions",
+  "onboarding.persona.teacher.title": "Teacher",
+  "onboarding.persona.teacher.desc": "See your teaching day, rooms, and cover duties",
+
+  "onboarding.teacher.title": "Select teacher",
+  "onboarding.teacher.subtitle": "Search by first or last name",
+
+  "teacher.search": "Search teacher…",
+  "teacher.none": "No teacher found",
+  "teacher.formClass": "Form teacher",
 
   "onboarding.language.title": "Choose your language",
   "onboarding.language.continue": "Continue",
@@ -163,6 +177,10 @@ export const en: Dict = {
   "subjects.note.badge": "Has a note",
 
   "settings.title": "Settings",
+  "settings.identity": "Role and schedule",
+  "settings.persona.student": "Student",
+  "settings.persona.teacher": "Teacher",
+  "settings.identity.sheetTitle": "Choose role",
   "settings.class": "My group",
   "settings.change": "Change",
   "settings.building": "Building",

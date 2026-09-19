@@ -12,6 +12,20 @@ export const ru: Dict = {
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",
 
+  "onboarding.persona.title": "Выбери свою сторону",
+  "onboarding.persona.subtitle": "Настрой расписание под свою роль",
+  "onboarding.persona.student.title": "Ученик",
+  "onboarding.persona.student.desc": "Хочу видеть уроки своей группы и замены",
+  "onboarding.persona.teacher.title": "Преподаватель",
+  "onboarding.persona.teacher.desc": "Хочу видеть свои уроки, кабинеты и замены",
+
+  "onboarding.teacher.title": "Выбери преподавателя",
+  "onboarding.teacher.subtitle": "Поиск по имени или фамилии",
+
+  "teacher.search": "Поиск преподавателя…",
+  "teacher.none": "Преподаватель не найден",
+  "teacher.formClass": "Классный руководитель",
+
   "onboarding.language.title": "Выберите язык",
   "onboarding.language.continue": "Продолжить",
 
@@ -164,6 +178,10 @@ export const ru: Dict = {
   "subjects.note.badge": "Есть заметка",
 
   "settings.title": "Настройки",
+  "settings.identity": "Роль и расписание",
+  "settings.persona.student": "Ученик",
+  "settings.persona.teacher": "Преподаватель",
+  "settings.identity.sheetTitle": "Выбор роли",
   "settings.class": "Моя группа",
   "settings.change": "Изменить",
   "settings.building": "Корпус",
