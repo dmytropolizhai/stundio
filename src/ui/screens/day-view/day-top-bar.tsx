@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Button, IconButton, TopBar } from "@/ds";
+import { Button, IconButton, SegmentedTabs, TopBar } from "@/ds";
 import { addDays } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
 import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
 import { DatePicker } from "@/ui/components/DatePicker.tsx";
 import { useT } from "@/ui/i18n";
+import { useAppStore } from "@/store";
+import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
 
 type DayTopBarProps = {
   date: ISODate;
@@ -32,6 +34,12 @@ export const DayTopBar = ({
 }: DayTopBarProps) => {
   const t = useT();
   const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const persona = useAppStore((s) => s.settings.persona);
+  const teacherView = useAppStore((s) => s.settings.teacherView);
+  const setTeacherView = useAppStore((s) => s.setTeacherView);
+  const selectedTeacher = useSelectedTeacher();
+  const isFormTeacher = persona === "teacher" && (selectedTeacher?.formClassIds.length ?? 0) > 0;
 
   return (
     <>
@@ -76,6 +84,22 @@ export const DayTopBar = ({
           </>
         }
       />
+
+      {isFormTeacher && (
+        <div className="mb-4 flex justify-center" data-testid="form-teacher-segment">
+          <SegmentedTabs<"own" | "form-class">
+            label={t("teacher.formClass")}
+            items={[
+              { key: "own", label: t("teacher.view.own") },
+              { key: "form-class", label: t("teacher.view.formClass") },
+            ]}
+            value={teacherView}
+            onChange={(v) => {
+              void setTeacherView(v);
+            }}
+          />
+        </div>
+      )}
 
       {(!isToday || ((changedLessonsCount ?? 0) > 0 && onOpenChanges !== undefined)) && (
         <div className="mb-4 flex flex-wrap items-center gap-2">

@@ -27,6 +27,8 @@ export const en: Dict = {
   "teacher.formClass": "Form teacher",
   "teacher.cover": "Cover",
   "teacher.coverFor": "Covering: {name}",
+  "teacher.view.own": "My lessons",
+  "teacher.view.formClass": "My class",
 
   "onboarding.language.title": "Choose your language",
   "onboarding.language.continue": "Continue",
