@@ -53,7 +53,7 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     const swCode = readFileSync(swPath, "utf-8");
 
     // Cache versioning
-    expect(swCode).toContain('const CACHE_NAME = "stundio-shell-v2";');
+    expect(swCode).toContain('const CACHE_NAME = "stundio-shell-v3";');
 
     // Old cache deletion in activate listener
     expect(swCode).toMatch(/caches\s*\.\s*keys\s*\(\)/);
@@ -75,6 +75,8 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(precachedUrls).toContain("/icons/icon-192.png");
     expect(precachedUrls).toContain("/icons/icon-512.png");
     expect(precachedUrls).toContain("/icons/icon-maskable-512.png");
+    expect(precachedUrls).toContain("/icons/apple-touch-icon-180.png");
+    expect(precachedUrls).toContain("/apple-touch-icon.png");
 
     for (const url of precachedUrls) {
       if (url === "/") continue;
@@ -88,10 +90,54 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(swCode).toMatch(/url\.pathname\s*===\s*["']\/sw\.js["']/);
   });
 
-  it("index.html references valid PWA manifest and apple-touch-icon", () => {
+  it("index.html references valid PWA manifest and apple-touch-icons", () => {
     const html = readFileSync(indexPath, "utf-8");
     expect(html).toContain('<link rel="manifest" href="/manifest.webmanifest"');
-    expect(html).toContain('<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"');
+    expect(html).toContain('<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png"');
+
+    for (const size of [180, 167, 152]) {
+      expect(html).toContain(
+        `<link rel="apple-touch-icon" sizes="${size}x${size}" href="/icons/apple-touch-icon-${size}.png"`,
+      );
+      expect(existsSync(resolve(rootDir, `public/icons/apple-touch-icon-${size}.png`))).toBe(true);
+    }
+
     expect(existsSync(resolve(rootDir, "public/icons/apple-touch-icon.png"))).toBe(true);
+  });
+
+  // iOS probes these two root paths when it captures a home-screen icon. On a SPA
+  // host every unknown path answers 200 with index.html, so without real files here
+  // iOS receives HTML as a PNG, fails to decode it, and falls back to a snapshot of
+  // the not-yet-painted page — the pure black home-screen icon.
+  it("serves real icon files at the root paths iOS probes", () => {
+    for (const name of ["apple-touch-icon.png", "apple-touch-icon-precomposed.png"]) {
+      const iconPath = resolve(rootDir, "public", name);
+      expect(existsSync(iconPath), `Missing root icon: /${name}`).toBe(true);
+      expect(readFileSync(iconPath).subarray(0, 8)).toEqual(
+        Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+      );
+    }
+  });
+
+  // iOS composites any transparency onto black, so an apple-touch-icon with an
+  // alpha channel renders as a black (or black-cornered) tile. PNG colour type 2
+  // is truecolour without alpha; 6 is truecolour with alpha.
+  it("ships opaque, correctly sized apple-touch-icons", () => {
+    const icons: Array<[string, number]> = [
+      ["public/apple-touch-icon.png", 180],
+      ["public/apple-touch-icon-precomposed.png", 180],
+      ["public/icons/apple-touch-icon.png", 180],
+      ["public/icons/apple-touch-icon-180.png", 180],
+      ["public/icons/apple-touch-icon-167.png", 167],
+      ["public/icons/apple-touch-icon-152.png", 152],
+    ];
+
+    for (const [relPath, expectedSize] of icons) {
+      const png = readFileSync(resolve(rootDir, relPath));
+      // IHDR payload starts at byte 16: width, height, bit depth, colour type.
+      expect(png.readUInt32BE(16), `${relPath} width`).toBe(expectedSize);
+      expect(png.readUInt32BE(20), `${relPath} height`).toBe(expectedSize);
+      expect(png.readUInt8(25), `${relPath} must have no alpha channel`).toBe(2);
+    }
   });
 });

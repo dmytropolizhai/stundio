@@ -6,7 +6,7 @@
  * which are handled by Stundio's dedicated IndexedDB sync cache.
  */
 
-const CACHE_NAME = "stundio-shell-v2";
+const CACHE_NAME = "stundio-shell-v3";
 
 const PRECACHE_URLS = [
   "/",
@@ -18,6 +18,11 @@ const PRECACHE_URLS = [
   "/icons/icon-512.png",
   "/icons/icon-maskable-512.png",
   "/icons/apple-touch-icon.png",
+  "/icons/apple-touch-icon-180.png",
+  "/icons/apple-touch-icon-167.png",
+  "/icons/apple-touch-icon-152.png",
+  "/apple-touch-icon.png",
+  "/apple-touch-icon-precomposed.png",
 ];
 
 self.addEventListener("install", (event) => {

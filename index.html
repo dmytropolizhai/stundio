@@ -18,8 +18,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Stundio" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <!--
+      iOS only ever renders an opaque square here, so every apple-touch-icon is
+      flattened RGB (no alpha) — a transparent one is composited onto black.
+      The unsized link is the one iOS falls back to; `/apple-touch-icon.png` and
+      its precomposed twin also exist at the site root, because when iOS probes
+      those legacy paths the SPA fallback would otherwise answer with HTML.
+    -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152.png" />
 
     <title>Stundio</title>
   </head>
