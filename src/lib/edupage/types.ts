@@ -38,7 +38,10 @@ export type ClassRef = EntityRef & {
   teacherId?: string | null;
 };
 export type SubjectRef = EntityRef;
-export type TeacherRef = EntityRef; // NOTE: RVT populates only `short` ("Surname Name")
+export type TeacherRef = EntityRef & {
+  /** Form class IDs (klases audzinātājs) — aSc teachers.classids. */
+  classIds?: string[];
+};
 export type RoomRef = Omit<EntityRef, "color">;
 
 export type Period = {
@@ -156,6 +159,14 @@ export type ResolvedLesson = {
    * merged from several buildings' timetables (see `resolveDayAcross`).
    */
   building?: Building;
+  /** Classes taught in this lesson (prominent in teacher mode). */
+  classes?: ClassRef[];
+  /** In teacher mode: whether this is the teacher's own regular lesson or a cover duty. */
+  role?: "own" | "cover";
+  /** If role is "cover", the absent teacher being covered. */
+  coverFor?: TeacherRef | null;
+  /** Whether this lesson is an assigned substitution cover duty. */
+  isCover?: boolean;
   /**
    * Verbatim announcements naming one of this lesson's periods, always a subset of
    * `ResolvedDay.notes`. Display-only; never affects `status`.
@@ -163,10 +174,17 @@ export type ResolvedLesson = {
   noteRefs?: string[];
 };
 
+export type TeacherResolvedLesson = ResolvedLesson & {
+  classes: ClassRef[];
+  role: "own" | "cover";
+  coverFor: TeacherRef | null;
+};
+
 export type ResolvedDay = {
   date: ISODate;
   weekday: Weekday;
   classId: string;
+  teacherId?: string;
   building: Building; // primary source — the first building that contributed lessons
   /** Every building that contributed a lesson to this day, primary first. Usually one. */
   buildings: Building[];
@@ -176,6 +194,11 @@ export type ResolvedDay = {
   notes: string[]; // filtered announcements for this class (plus general school announcements)
   allNotes?: string[]; // pass-through of all DaySubstitutions.notes for the day
   stale: boolean; // true if base ttNum.validFrom week != date's week
+};
+
+export type ResolvedTeacherDay = ResolvedDay & {
+  teacherId: string;
+  lessons: TeacherResolvedLesson[];
 };
 
 /* ------------------------------------------------------------------ *
