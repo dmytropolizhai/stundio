@@ -205,3 +205,21 @@ Arrow glyph is `➔` (U+2794).
 - `getSubstViewerDayDataHtml`: on app open and on pull-to-refresh, for today + next school day.
   This is the only thing that changes intraday.
 - Be gentle: cache aggressively, custom `User-Agent`, no tight polling.
+
+---
+
+## 7. Teacher Mode & Absent Staff
+
+- **Teacher resolution:** Join `Timetable.lessons` on `teacherIds ∋ teacherId`. A teacher card is
+  one row per period (parallel class splits share one `Lesson` with multiple `classIds`),
+  displaying `classes`, `room`, `subject`, and `period`.
+- **Name order reversal:** `teachers.short` is formatted as `"Surname Name"`, while substitutions
+  format teacher names as `"Name Surname"`. Teacher matching must use a normalized, token-sorted
+  lowercased key (`teacherKey`) to avoid fallback to synthetic ids.
+- **Absent teacher line:** HTML carries a centered `div` above class sections:
+  `<div style="text-align:center"><span ...>Skolotāji, kuri nepiedalās: T1 , T2 , ...</span></div>`.
+  Extracted into `DaySubstitutions.absentTeachers`.
+- **Cover duties (*aizvietošana*):** Scraped `mode: "classes"` rows carry `teacher` (substitute)
+  and `teacherFrom` (absent teacher). Cover duties assigned to a teacher are derived by filtering
+  substitutions where `teacher` matches the current teacher and it is not their own base lesson.
+
