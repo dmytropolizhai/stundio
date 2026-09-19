@@ -13,6 +13,11 @@
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <!--
+      Browsers probe /favicon.ico by convention. On a SPA host an absent file is
+      answered by the index.html fallback with a 200, so a real one ships here.
+    -->
+    <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/favicon.ico" />
 
     <!-- iOS Safari Standalone PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />

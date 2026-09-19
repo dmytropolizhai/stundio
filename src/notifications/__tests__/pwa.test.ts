@@ -77,6 +77,7 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(precachedUrls).toContain("/icons/icon-maskable-512.png");
     expect(precachedUrls).toContain("/icons/apple-touch-icon-180.png");
     expect(precachedUrls).toContain("/apple-touch-icon.png");
+    expect(precachedUrls).toContain("/favicon.ico");
 
     for (const url of precachedUrls) {
       if (url === "/") continue;
@@ -103,19 +104,33 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     }
 
     expect(existsSync(resolve(rootDir, "public/icons/apple-touch-icon.png"))).toBe(true);
+
+    expect(html).toContain('href="/favicon.ico"');
   });
 
-  // iOS probes these two root paths when it captures a home-screen icon. On a SPA
-  // host every unknown path answers 200 with index.html, so without real files here
-  // iOS receives HTML as a PNG, fails to decode it, and falls back to a snapshot of
-  // the not-yet-painted page — the pure black home-screen icon.
-  it("serves real icon files at the root paths iOS probes", () => {
-    for (const name of ["apple-touch-icon.png", "apple-touch-icon-precomposed.png"]) {
+  // Browsers probe these root paths by convention — iOS the two apple-touch-icons
+  // when it captures a home-screen icon, everything else /favicon.ico. On a SPA host
+  // every unknown path answers 200 with index.html, so without real files here the
+  // client receives HTML where it expects an image. iOS then fails to decode it and
+  // falls back to a snapshot of the not-yet-painted page: the pure black icon.
+  it("serves real icon files at the root paths browsers probe", () => {
+    const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    // An .ico starts with a 6-byte ICONDIR: reserved 0, type 1, then the image count.
+    const ICO_MAGIC = Buffer.from([0x00, 0x00, 0x01, 0x00]);
+
+    const rootIcons: Array<[string, Buffer]> = [
+      ["apple-touch-icon.png", PNG_MAGIC],
+      ["apple-touch-icon-precomposed.png", PNG_MAGIC],
+      ["favicon.ico", ICO_MAGIC],
+    ];
+
+    for (const [name, magic] of rootIcons) {
       const iconPath = resolve(rootDir, "public", name);
       expect(existsSync(iconPath), `Missing root icon: /${name}`).toBe(true);
-      expect(readFileSync(iconPath).subarray(0, 8)).toEqual(
-        Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-      );
+      expect(
+        readFileSync(iconPath).subarray(0, magic.length),
+        `/${name} is not a real image`,
+      ).toEqual(magic);
     }
   });
 
