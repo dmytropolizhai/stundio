@@ -12,6 +12,16 @@ Stundio is made specifically for students at the school. The idea is simple: you
 
 That’s why the app is **local-first**. Your timetable is stored on your device and updated in the background, so the app remains useful even when you’re offline.
 
+## Screenshots
+
+<div align="center">
+
+| Day view | Week view | Subjects & Colors | Settings |
+| :---: | :---: | :---: | :---: |
+| <img src=".github/assets/screenshots/day-view.png" alt="Day view" width="220" /> | <img src=".github/assets/screenshots/week-view.png" alt="Week view" width="220" /> | <img src=".github/assets/screenshots/subjects-view.png" alt="Subjects view" width="220" /> | <img src=".github/assets/screenshots/settings-view.png" alt="Settings view" width="220" /> |
+
+</div>
+
 ## What it does
 
 * **Day view** — See today’s lessons in one place. The current lesson is highlighted with a live progress bar, free periods appear as gaps, and cancelled lessons stay visible but are crossed out.
