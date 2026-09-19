@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { FIXTURE_DATE, FIXTURES, readFixture, readJsonFixture } from "./fixtures.ts";
 import {
   otherRatio,
+  parseAbsentTeachers,
   parseDaySubstitutions,
   parseInfo,
   parsePeriods,
@@ -165,6 +166,15 @@ describe("parseDaySubstitutions vs the Python oracle", () => {
     expect(otherRatio(parsed)).toBe(0);
   });
 
+  it("extracts absent teachers from fixture", () => {
+    expect(parsed.absentTeachers).toEqual([
+      "Egija Baumane",
+      "Liene Elizabete Čakste",
+      "Olga Sabanska",
+      "Valda Salmiņa",
+    ]);
+  });
+
   it("always keeps raw populated", () => {
     expect(parsed.items.every((i) => i.raw.length > 0)).toBe(true);
   });
@@ -176,5 +186,30 @@ describe("splitNotes", () => {
       "A1 grupai brīvs.",
       "B2 grupai nav.",
     ]);
+  });
+});
+
+describe("parseAbsentTeachers", () => {
+  it("returns absent teachers list when banner is present", () => {
+    const doc = new DOMParser().parseFromString(
+      '<div style="text-align:center"><span>Skolotāji, kuri nepiedalās: Jānis Bērziņš , Anna Kalniņa ; Pēteris Ozols </span></div>',
+      "text/html",
+    );
+    expect(parseAbsentTeachers(doc)).toEqual([
+      "Jānis Bērziņš",
+      "Anna Kalniņa",
+      "Pēteris Ozols",
+    ]);
+  });
+
+  it("returns empty array when banner is missing or empty", () => {
+    const doc1 = new DOMParser().parseFromString("<div>Nav izmaiņu</div>", "text/html");
+    expect(parseAbsentTeachers(doc1)).toEqual([]);
+
+    const doc2 = new DOMParser().parseFromString(
+      "<div>Skolotāji, kuri nepiedalās:   </div>",
+      "text/html",
+    );
+    expect(parseAbsentTeachers(doc2)).toEqual([]);
   });
 });
