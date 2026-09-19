@@ -15,6 +15,7 @@
  */
 import type {
   Building,
+  ClassRef,
   DaySubstitutions,
   ISODate,
   Lesson,
@@ -22,15 +23,18 @@ import type {
   ResolvedDay,
   ResolvedLesson,
   ResolvedStatus,
+  ResolvedTeacherDay,
   RoomRef,
   SubjectRef,
   Substitution,
   TeacherRef,
+  TeacherResolvedLesson,
   Timetable,
   Weekday,
 } from "./types.ts";
-import { filterNotesForClass } from "./notes.ts";
-import { indexTeachersByKey, lookupTeacher } from "./teacher-names.ts";
+import { filterNotesForClass, isTeacherMentionedInNote } from "./notes.ts";
+import { indexTeachersByKey, lookupTeacher, teacherKey } from "./teacher-names.ts";
+
 
 
 const WEEKDAYS: readonly Weekday[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -566,4 +570,336 @@ const isRef = <T>(v: T | undefined): v is T => v !== undefined;
 const coversDate = (timetable: Timetable, date: ISODate): boolean => {
   const { validFrom, validTo } = timetable.meta;
   return validFrom <= date && (validTo === undefined || date <= validTo);
+};
+
+const synthClass = (short: string): ClassRef => ({
+  id: `subst:${short}`,
+  name: short,
+  short,
+});
+
+export type TeacherListItem = TeacherRef & {
+  buildings: Building[];
+  formClassIds: string[];
+};
+
+/**
+ * Lists active teachers who have at least one placed teaching lesson across the given timetables.
+ * Omits teachers with no placed lessons (~31 rows in RVT) so teacher pickers show only active staff.
+ * Preserves formClassIds (klases audzinātājs). Sorted alphabetically by Latvian locale.
+ */
+export const listTeachers = (timetables: readonly Timetable[]): TeacherListItem[] => {
+  const byId = new Map<string, TeacherListItem>();
+  for (const timetable of timetables) {
+    const placedTeacherIds = new Set<string>();
+    for (const lesson of timetable.lessons) {
+      for (const tid of lesson.teacherIds) {
+        placedTeacherIds.add(tid);
+      }
+    }
+    for (const teacher of timetable.teachers) {
+      if (!placedTeacherIds.has(teacher.id)) continue;
+      const b = timetable.meta.building;
+      const existing = byId.get(teacher.id);
+      if (existing === undefined) {
+        byId.set(teacher.id, {
+          ...teacher,
+          buildings: b ? [b] : [],
+          formClassIds: teacher.classIds ? [...teacher.classIds] : [],
+        });
+      } else {
+        if (b && !existing.buildings.includes(b)) existing.buildings.push(b);
+        for (const cid of teacher.classIds ?? []) {
+          if (!existing.formClassIds.includes(cid)) existing.formClassIds.push(cid);
+        }
+      }
+    }
+  }
+  return [...byId.values()].sort((a, b) => a.short.localeCompare(b.short, "lv"));
+};
+
+/**
+ * Extracts cover duties assigned to a specific teacher from the day's substitutions.
+ */
+export const coverDuties = (
+  subs: DaySubstitutions | null,
+  teacherId: string,
+  timetables: readonly Timetable[],
+): Substitution[] => {
+  if (!subs || subs.items.length === 0) return [];
+  let teacherShort = "";
+  for (const tt of timetables) {
+    const t = tt.teachers.find((x) => x.id === teacherId);
+    if (t) {
+      teacherShort = t.short || t.name;
+      break;
+    }
+  }
+  if (!teacherShort) return [];
+  const myKey = teacherKey(teacherShort);
+
+  return subs.items.filter((item) => {
+    if (!item.teacher) return false;
+    if (teacherKey(item.teacher) !== myKey) return false;
+    if (item.teacherFrom && teacherKey(item.teacherFrom) !== myKey) return true;
+    if (item.kind === "substitution" || item.kind === "added" || item.kind === "moved_in") {
+      return true;
+    }
+    return false;
+  });
+};
+
+export const resolveTeacherDay = (
+  timetable: Timetable,
+  subs: DaySubstitutions | null,
+  teacherId: string,
+  date: ISODate,
+  options: ResolveOptions = {},
+): ResolvedTeacherDay =>
+  resolveTeacherDayAcross(
+    [{ timetable, ...(options.stale === undefined ? {} : { stale: options.stale }) }],
+    subs,
+    teacherId,
+    date,
+    options,
+  );
+
+export const resolveTeacherDayAcross = (
+  sources: readonly DaySource[],
+  subs: DaySubstitutions | null,
+  teacherId: string,
+  date: ISODate,
+  options: ResolveOptions = {},
+): ResolvedTeacherDay => {
+  const weekday = weekdayOf(date);
+  const primary = sources[0]?.timetable;
+
+  // Find teacher ref and their normalized key
+  let teacher: TeacherRef | undefined;
+  for (const s of sources) {
+    const found = s.timetable.teachers.find((t) => t.id === teacherId);
+    if (found) {
+      teacher = found;
+      break;
+    }
+  }
+  if (!teacher) teacher = synthTeacher(teacherId);
+  const myKey = teacherKey(teacher.short || teacher.name);
+
+  // Dictionaries across sources
+  const classesById = new Map<string, ClassRef>();
+  const classesByShort = new Map<string, ClassRef>();
+  const subjectsById = new Map<string, SubjectRef>();
+  const subjectsByLabel = new Map<string, SubjectRef>();
+  const roomsById = new Map<string, RoomRef>();
+  const roomsByLabel = new Map<string, RoomRef>();
+  const teachersByKey = new Map<string, TeacherRef>();
+  const periods: Period[] = [];
+
+  for (const { timetable } of sources) {
+    for (const c of timetable.classes) {
+      if (c.id && !classesById.has(c.id)) classesById.set(c.id, c);
+      if (c.short && !classesByShort.has(c.short)) classesByShort.set(c.short, c);
+    }
+    for (const s of timetable.subjects) {
+      if (s.id && !subjectsById.has(s.id)) subjectsById.set(s.id, s);
+    }
+    for (const r of timetable.rooms) {
+      if (r.id && !roomsById.has(r.id)) roomsById.set(r.id, r);
+    }
+    indexByLabel(timetable.subjects, subjectsByLabel);
+    indexByLabel(timetable.rooms, roomsByLabel);
+    indexTeachersByKey(timetable.teachers, teachersByKey);
+    for (const p of timetable.periods) {
+      if (!periods.some((q) => q.period === p.period)) periods.push(p);
+    }
+  }
+  const timeOf = periodTimes(periods);
+
+  // Group base lessons by period
+  type TeacherBaseEntry = {
+    lesson: Lesson;
+    timetable: Timetable;
+    periods: number[];
+  };
+  const entriesByPeriod = new Map<string, TeacherBaseEntry[]>();
+  for (const { timetable } of sources) {
+    for (const lesson of timetable.lessons) {
+      if (
+        lesson.teacherIds.includes(teacherId) &&
+        lesson.day === weekday &&
+        matchesWeek(lesson.weekMask, options.weekIndex)
+      ) {
+        const list = entriesByPeriod.get(lesson.period) ?? [];
+        list.push({
+          lesson,
+          timetable,
+          periods: lessonPeriods(lesson),
+        });
+        entriesByPeriod.set(lesson.period, list);
+      }
+    }
+  }
+
+  // Build base lessons (merging parallel class splits into one row per period)
+  type BaseTeacherLessonEntry = {
+    lesson: TeacherResolvedLesson;
+    periods: number[];
+    classNames: string[];
+  };
+  const baseEntriesList: BaseTeacherLessonEntry[] = [];
+  for (const [p, entries] of entriesByPeriod.entries()) {
+    const lead = entries[0]!;
+    const allClassIds = [...new Set(entries.flatMap((e) => e.lesson.classIds))];
+    const allRoomIds = [...new Set(entries.flatMap((e) => e.lesson.roomIds))];
+    const span = Math.max(1, lead.lesson.periodSpan);
+    const start = periodNum(p);
+    const subject = subjectsById.get(lead.lesson.subjectId) ?? null;
+    const classes = allClassIds.map((cid) => classesById.get(cid)).filter(isRef);
+    const rooms = allRoomIds.map((rid) => roomsById.get(rid)).filter(isRef);
+
+    baseEntriesList.push({
+      periods: lead.periods,
+      classNames: classes.map((c) => c.short).filter(Boolean),
+      lesson: {
+        period: p,
+        ...timeOf(start, span),
+        span,
+        subject,
+        teachers: [teacher],
+        rooms,
+        classes,
+        group: null,
+        status: "normal",
+        role: "own",
+        coverFor: null,
+        changeNote: null,
+        original: null,
+        building: lead.timetable.meta.building,
+      },
+    });
+  }
+
+  const allSubs = subs?.items ?? [];
+  const consumed = new Set<Substitution>();
+  const out: TeacherResolvedLesson[] = [];
+
+  // Apply substitutions to base lessons
+  for (const entry of baseEntriesList) {
+    const applied = allSubs.filter((s) => {
+      if (s.kind === "moved_in" || s.kind === "added") return false;
+      const classMatch = entry.classNames.includes(s.className);
+      const periodMatch = overlaps(s.periods, entry.periods);
+      return classMatch && periodMatch;
+    });
+
+    for (const s of applied) consumed.add(s);
+
+    let status: ResolvedStatus = "normal";
+    let changeNote: string | null = null;
+    let roomList = entry.lesson.rooms;
+    let coverFor: TeacherRef | null = null;
+    const role: "own" | "cover" = "own";
+    const original: NonNullable<ResolvedLesson["original"]> = {};
+
+    for (const s of applied) {
+      status = strongerStatus(status, STATUS_FOR_KIND[s.kind] ?? "normal");
+      changeNote = changeNote === null ? s.raw : `${changeNote} · ${s.raw}`;
+
+      if (s.teacherFrom && teacherKey(s.teacherFrom) === myKey) {
+        // Teacher is being covered by another teacher!
+        original.teachers = [teacher];
+        const covering = s.teacher ? (lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)) : null;
+        if (covering) coverFor = covering;
+        status = "substituted";
+      }
+      if (s.room !== null) {
+        original.rooms = roomList;
+        roomList = [roomsByLabel.get(s.room) ?? synthRoom(s.room)];
+      }
+      if (s.movedToPeriod !== null || s.movedToDate !== null) {
+        original.period = entry.lesson.period;
+      }
+    }
+
+    out.push({
+      ...entry.lesson,
+      rooms: roomList,
+      status,
+      role,
+      coverFor,
+      changeNote,
+      original: Object.keys(original).length > 0 ? original : null,
+    });
+  }
+
+  // Cover duties from substitutions
+  const leadBuilding = sources[0]?.timetable.meta.building;
+  for (const s of allSubs) {
+    if (!s.teacher || teacherKey(s.teacher) !== myKey) continue;
+    if (consumed.has(s)) continue;
+
+    // Check if it was already an in-place edit on teacher's own base lesson
+    const isOwnBaseLesson = baseEntriesList.some(
+      (b) => b.classNames.includes(s.className) && overlaps(b.periods, s.periods),
+    );
+    if (isOwnBaseLesson) continue;
+
+    const start = s.periods[0];
+    if (start === undefined) continue;
+    const span = Math.max(1, s.periods.length);
+
+    const cls = classesByShort.get(s.className) ?? synthClass(s.className);
+    const subj = s.subject ? (subjectsByLabel.get(s.subject) ?? synthSubject(s.subject)) : null;
+    const rm = s.room ? [roomsByLabel.get(s.room) ?? synthRoom(s.room)] : [];
+    const absentColleague = s.teacherFrom
+      ? (lookupTeacher(s.teacherFrom, teachersByKey) ?? synthTeacher(s.teacherFrom))
+      : null;
+
+    out.push({
+      period: String(start),
+      ...timeOf(start, span),
+      span,
+      subject: subj,
+      teachers: [teacher],
+      rooms: rm,
+      classes: [cls],
+      group: s.group,
+      status: s.kind === "substitution" ? "substituted" : "added",
+      role: "cover",
+      coverFor: absentColleague,
+      isCover: true,
+      changeNote: s.raw,
+      original: s.movedFromPeriod !== null ? { period: String(s.movedFromPeriod) } : null,
+      ...(leadBuilding === undefined ? {} : { building: leadBuilding }),
+    });
+  }
+
+  out.sort((a, b) => periodNum(a.period) - periodNum(b.period));
+
+  const buildings: Building[] = [];
+  for (const l of out) {
+    if (l.building !== undefined && !buildings.includes(l.building)) {
+      buildings.push(l.building);
+    }
+  }
+
+  const leadSource = sources[0];
+  const rawNotes = subs?.notes ?? [];
+  const relevantNotes = rawNotes.filter((note) => isTeacherMentionedInNote(note, teacher));
+
+  return {
+    date,
+    weekday,
+    classId: teacherId,
+    teacherId,
+    building: buildings[0] ?? primary?.meta.building ?? "",
+    buildings,
+    ttNum: primary?.meta.ttNum ?? "",
+    lessons: out,
+    notes: relevantNotes,
+    allNotes: rawNotes,
+    stale:
+      options.stale ?? leadSource?.stale ?? (primary === undefined ? false : !coversDate(primary, date)),
+  };
 };

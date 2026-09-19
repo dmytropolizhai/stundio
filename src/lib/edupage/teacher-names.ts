@@ -19,14 +19,16 @@ import type { TeacherRef } from "./types.ts";
  *   - "Gene Ķere" -> "gene ķere"
  *   - "Liene Elizabete Čakste" -> "čakste elizabete liene"
  */
-export const teacherKey = (name: string): string =>
-  name
+export const teacherKey = (name: string | null | undefined): string => {
+  if (!name) return "";
+  return name
     .trim()
     .toLowerCase()
     .split(/\s+/)
     .filter((token) => token !== "")
     .sort((a, b) => a.localeCompare(b, "lv"))
     .join(" ");
+};
 
 /**
  * Builds a Map indexing teachers by their normalised name key.
