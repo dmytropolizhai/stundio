@@ -14,7 +14,7 @@ import { OnboardingLanguage } from "./ui/screens/onboarding-language";
 import { OnboardingIntro } from "./ui/screens/onboarding-intro";
 import { DayView } from "./ui/screens/day-view";
 import { WeekView } from "./ui/screens/week-view";
-import { ChangesView } from "./ui/screens/ChangesView.tsx";
+import { ChangesView } from "./ui/screens/changes-view";
 import { SubjectsView } from "./ui/screens/subjects-view";
 import { SettingsView } from "./ui/screens/settings-view";
 import { SplashScreen } from "./ui/screens/splash-screen";
