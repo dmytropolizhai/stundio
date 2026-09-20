@@ -52,6 +52,19 @@ export type SubmitFeedbackParams = {
 export type SubmitSuggestionParams = Omit<SubmitFeedbackParams, "type">;
 export type SubmitBugReportParams = Omit<SubmitFeedbackParams, "type">;
 
+/**
+ * Web3Forms' multipart "attachment" field only works on their paid plan; on the free key this
+ * app uses it silently fails the whole submission. Screenshots are inlined as a base64 data URL
+ * in an ordinary JSON field instead, which the free plan accepts like any other text field.
+ */
+const attachmentToDataUrl = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error ?? new Error("Could not read screenshot"));
+    reader.readAsDataURL(blob);
+  });
+
 export async function submitFeedback({
   type = "suggestion",
   message,
@@ -91,39 +104,9 @@ export async function submitFeedback({
   }
 
   if (attachment) {
-    const formData = new FormData();
-    for (const [key, value] of Object.entries(payload)) {
-      if (value !== undefined && value !== null) {
-        if (typeof value === "string") {
-          formData.append(key, value);
-        } else if (typeof value === "number" || typeof value === "boolean") {
-          formData.append(key, value.toString());
-        } else {
-          formData.append(key, JSON.stringify(value));
-        }
-      }
-    }
-    const filename =
+    payload.attachment_filename =
       attachmentName ?? (attachment instanceof File ? attachment.name : "screenshot.png");
-    formData.append("attachment", attachment, filename);
-
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
-      body: formData,
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP error ${res.status}`);
-    }
-
-    const data = (await res.json()) as { success?: boolean; message?: string };
-    if (!data.success) {
-      throw new Error(data.message || "Submission failed");
-    }
-    return;
+    payload.attachment_base64 = await attachmentToDataUrl(attachment);
   }
 
   const res = await fetch("https://api.web3forms.com/submit", {

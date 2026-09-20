@@ -182,7 +182,7 @@ describe("FeedbackSheet", () => {
     expect(screen.queryByText("too-large.png")).toBeNull();
   });
 
-  it("submits feedback with attachment via FormData", async () => {
+  it("submits feedback with attachment inlined as base64 JSON", async () => {
     const harness = await bootHarness();
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -221,14 +221,18 @@ describe("FeedbackSheet", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(options.body).toBeInstanceOf(FormData);
-    const formData = options.body as FormData;
-    expect(formData.get("message")).toBe("Broken UI when rotating screen");
-    expect(formData.get("feedback_type")).toBe("bug");
-    expect(formData.get("class")).toBe("12.a");
-    const attachedFile = formData.get("attachment") as File;
-    expect(attachedFile).toBeDefined();
-    expect(attachedFile.name).toBe("rotation_bug.jpg");
+    const body = JSON.parse(options.body as string) as {
+      message: string;
+      feedback_type: string;
+      class: string;
+      attachment_filename?: string;
+      attachment_base64?: string;
+    };
+    expect(body.message).toBe("Broken UI when rotating screen");
+    expect(body.feedback_type).toBe("bug");
+    expect(body.class).toBe("12.a");
+    expect(body.attachment_filename).toBe("rotation_bug.jpg");
+    expect(body.attachment_base64).toMatch(/^data:image\/jpeg;base64,/);
     expect(onSubmitted).toHaveBeenCalledTimes(1);
   });
 });

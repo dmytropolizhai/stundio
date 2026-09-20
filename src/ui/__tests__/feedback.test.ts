@@ -160,7 +160,7 @@ describe("submitFeedback", () => {
     expect(body.message).toBe("Idea here");
   });
 
-  it("submits attachment using FormData", async () => {
+  it("submits attachment as a base64 JSON field, not multipart", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: () => ({ success: true }),
@@ -179,16 +179,22 @@ describe("submitFeedback", () => {
     const [url, options] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("https://api.web3forms.com/submit");
     expect(options.method).toBe("POST");
-    expect(options.body).toBeInstanceOf(FormData);
+    expect(typeof options.body).toBe("string");
 
-    const formData = options.body as FormData;
-    expect(formData.get("access_key")).toBe(WEB3FORMS_ACCESS_KEY);
-    expect(formData.get("feedback_type")).toBe("bug");
-    expect(formData.get("message")).toBe("Here is an issue");
-    expect(formData.get("class")).toBe("11.a");
-    const attached = formData.get("attachment") as File;
-    expect(attached).toBeDefined();
-    expect(attached.name).toBe("error_log.png");
+    const body = JSON.parse(options.body as string) as {
+      access_key: string;
+      feedback_type: string;
+      message: string;
+      class: string;
+      attachment_filename?: string;
+      attachment_base64?: string;
+    };
+    expect(body.access_key).toBe(WEB3FORMS_ACCESS_KEY);
+    expect(body.feedback_type).toBe("bug");
+    expect(body.message).toBe("Here is an issue");
+    expect(body.class).toBe("11.a");
+    expect(body.attachment_filename).toBe("error_log.png");
+    expect(body.attachment_base64).toMatch(/^data:image\/png;base64,/);
   });
 
   it("throws when api fails with attachment", async () => {
