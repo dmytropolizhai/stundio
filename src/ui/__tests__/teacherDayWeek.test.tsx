@@ -40,14 +40,7 @@ describe("Teacher Day and Week Views", () => {
       void harness.store.getState().setTeacher(null);
     });
 
-    wrap(
-      harness,
-      <DayView
-        date={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
+    wrap(harness, <DayView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     expect(screen.getByText("Nav atrasts neviens skolotājs")).toBeDefined();
   });
@@ -73,14 +66,7 @@ describe("Teacher Day and Week Views", () => {
       void harness.store.getState().setTeacher(activeTeacher.id);
     });
 
-    wrap(
-      harness,
-      <DayView
-        date={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
+    wrap(harness, <DayView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     const resolved = harness.store.getState().resolvedTeacherDay(FIXTURE_DATE)!;
     expect(resolved.lessons.length).toBeGreaterThan(0);
@@ -136,8 +122,11 @@ describe("Teacher Day and Week Views", () => {
     expect(coverBadge).toBeDefined();
     expect(coverBadge.textContent).toContain("Aizvieto: Bērziņš Jānis");
 
-    // Subtitle contains subject and time
-    expect(screen.getByText("Matemātika · 10:00 – 10:40")).toBeDefined();
+    // Subtitle contains subject
+    expect(screen.getByText("Matemātika")).toBeDefined();
+    // Time is revealed separately in LessonCard when showTime=true
+    expect(screen.getByText("10:00")).toBeDefined();
+    expect(screen.getByText("10:40")).toBeDefined();
     // Primary title contains class and room
     expect(screen.getByText("10a · 101")).toBeDefined();
   });
@@ -198,14 +187,7 @@ describe("Teacher Day and Week Views", () => {
     };
 
     const { LessonSheet } = await import("../screens/lesson-sheet");
-    wrap(
-      harness,
-      <LessonSheet
-        lesson={mockCoverLesson}
-        day={null}
-        onClose={vi.fn()}
-      />,
-    );
+    wrap(harness, <LessonSheet lesson={mockCoverLesson} day={null} onClose={vi.fn()} />);
 
     expect(screen.getByText("10a")).toBeDefined();
     expect(screen.getByText("Bērziņš Jānis")).toBeDefined();

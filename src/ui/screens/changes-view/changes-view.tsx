@@ -36,13 +36,14 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
   const persona = useAppStore((s) => s.settings.persona);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
-  const selectedClassShort = useAppStore((s) => s.selectedClassShort());
+  const selectedClassShort = useAppStore((s) =>
+    s.settings.persona === "teacher" ? null : s.selectedClassShort(),
+  );
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
   const substitutions = useAppStore((s) => s.substitutions);
 
-  const hasIdentity =
-    persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
+  const hasIdentity = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   const day = useAppStore((s) => s.resolvedDay(date));
   const daySubst = substitutions[date];
