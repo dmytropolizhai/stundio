@@ -36,7 +36,8 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
   const persona = useAppStore((s) => s.settings.persona);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
-  const selectedClassShort = useAppStore((s) => s.selectedClassShort());
+  const selectedClassShort =
+    persona === "teacher" ? null : useAppStore((s) => s.selectedClassShort());
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
   const substitutions = useAppStore((s) => s.substitutions);

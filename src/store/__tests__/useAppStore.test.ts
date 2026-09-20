@@ -381,6 +381,16 @@ describe("selectedClassShort", () => {
     const store = makeStore();
     expect(store.getState().selectedClassShort()).toBeNull();
   });
+
+  it("is null when persona is teacher even if a class was previously chosen", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "A1-2"));
+    expect(store.getState().selectedClassShort()).toBe("A1-2");
+
+    await store.getState().setPersona("teacher");
+    expect(store.getState().selectedClassShort()).toBeNull();
+  });
 });
 
 describe("resolvedDay memoisation", () => {

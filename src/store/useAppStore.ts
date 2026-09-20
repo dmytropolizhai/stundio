@@ -336,6 +336,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
 
       selectedClassShort: () => {
         const state = get();
+        if (state.settings.persona === "teacher") return null;
         const id = state.settings.selectedClassId;
         if (id === null) return null;
         for (const timetable of Object.values(state.timetables)) {

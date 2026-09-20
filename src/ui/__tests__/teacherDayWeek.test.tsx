@@ -136,8 +136,11 @@ describe("Teacher Day and Week Views", () => {
     expect(coverBadge).toBeDefined();
     expect(coverBadge.textContent).toContain("Aizvieto: Bērziņš Jānis");
 
-    // Subtitle contains subject and time
-    expect(screen.getByText("Matemātika · 10:00 – 10:40")).toBeDefined();
+    // Subtitle contains subject
+    expect(screen.getByText("Matemātika")).toBeDefined();
+    // Time is revealed separately in LessonCard when showTime=true
+    expect(screen.getByText("10:00")).toBeDefined();
+    expect(screen.getByText("10:40")).toBeDefined();
     // Primary title contains class and room
     expect(screen.getByText("10a · 101")).toBeDefined();
   });
