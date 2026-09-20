@@ -3,10 +3,10 @@
  * timetable instantly; going online refreshes it and exposes a "last updated" timestamp.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createFakeServer, type FakeServer } from "../../sync/__tests__/fakeServer.ts";
+import { createFakeServer, type FakeServer } from "@/sync/__tests__/fakeServer.ts";
 import { createMemoryCache, type AppCache } from "@/db";
 import { createSyncEngine, nextSchoolDay, todayInRiga } from "@/sync";
-import { createAppStore } from "../useAppStore.ts";
+import { createAppStore } from "@/store";
 import type { AnalyticsClient } from "@/lib/analytics";
 
 const DATE = "2026-09-09";
@@ -381,6 +381,16 @@ describe("selectedClassShort", () => {
     const store = makeStore();
     expect(store.getState().selectedClassShort()).toBeNull();
   });
+
+  it("is null when persona is teacher even if a class was previously chosen", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "A1-2"));
+    expect(store.getState().selectedClassShort()).toBe("A1-2");
+
+    await store.getState().setPersona("teacher");
+    expect(store.getState().selectedClassShort()).toBeNull();
+  });
 });
 
 describe("resolvedDay memoisation", () => {
@@ -451,5 +461,89 @@ describe("setSubgroup", () => {
 
     await store.getState().setClass(classIdOf(store, "A1-2"));
     expect(store.getState().settings.subgroup).toBeNull();
+  });
+});
+
+describe("persona and teacher mode", () => {
+  const teacherIdOf = (store: ReturnType<typeof makeStore>, name: string): string => {
+    const timetables = Object.values(store.getState().timetables);
+    for (const t of timetables) {
+      const found = t.teachers.find((tc) => tc.name === name || tc.short === name);
+      if (found) return found.id;
+    }
+    return "";
+  };
+
+  it("defaults preserve student persona", () => {
+    const store = makeStore();
+    const settings = store.getState().settings;
+    expect(settings.persona).toBe("student");
+    expect(settings.selectedTeacherId).toBeNull();
+    expect(settings.teacherView).toBe("own");
+    expect(settings.highlightCoverLessons).toBe(true);
+  });
+
+  it("persists persona and teacher settings", async () => {
+    const store = makeStore();
+    await store.getState().setPersona("teacher");
+    await store.getState().setTeacher("-403");
+    await store.getState().setTeacherView("form-class");
+    await store.getState().setHighlightCoverLessons(false);
+
+    const s = store.getState().settings;
+    expect(s.persona).toBe("teacher");
+    expect(s.selectedTeacherId).toBe("-403");
+    expect(s.teacherView).toBe("form-class");
+    expect(s.highlightCoverLessons).toBe(false);
+
+    // Switching teacher resets teacherView to "own"
+    await store.getState().setTeacher("-230");
+    expect(store.getState().settings.selectedTeacherId).toBe("-230");
+    expect(store.getState().settings.teacherView).toBe("own");
+  });
+
+  it("routes resolvedDay to teacher schedule when persona is teacher", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    const teacherId = teacherIdOf(store, "Alksne Santa");
+    expect(teacherId).toBeTruthy();
+
+    await store.getState().setPersona("teacher");
+    await store.getState().setTeacher(teacherId);
+
+    const day = store.getState().resolvedDay(DATE);
+    expect(day).not.toBeNull();
+    expect(day?.teacherId).toBe(teacherId);
+    expect(day?.lessons.length).toBeGreaterThan(0);
+  });
+
+  it("switches between own lessons and form-class lessons based on teacherView", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    const teacherId = teacherIdOf(store, "Alksne Santa");
+
+    await store.getState().setPersona("teacher");
+    await store.getState().setTeacher(teacherId);
+    await store.getState().setTeacherView("own");
+
+    const ownDay = store.getState().resolvedDay(DATE);
+    expect(ownDay?.teacherId).toBe(teacherId);
+
+    await store.getState().setTeacherView("form-class");
+    const formDay = store.getState().resolvedDay(DATE);
+    expect(formDay?.teacherId).toBeUndefined();
+    expect(formDay?.classId).toBe("-987");
+    expect(formDay).not.toBe(ownDay);
+  });
+
+  it("resolvedTeacherDay resolves teacher schedule directly", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    const teacherId = teacherIdOf(store, "Alksne Santa");
+
+    const teacherDay = store.getState().resolvedTeacherDay(DATE, teacherId);
+    expect(teacherDay).not.toBeNull();
+    expect(teacherDay?.teacherId).toBe(teacherId);
+    expect(teacherDay?.lessons.every((l) => Array.isArray(l.classes))).toBe(true);
   });
 });

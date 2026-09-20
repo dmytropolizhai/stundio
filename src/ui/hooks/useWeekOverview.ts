@@ -26,9 +26,14 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
   const timetables = useAppStore((s) => s.timetables);
   const substitutions = useAppStore((s) => s.substitutions);
   const classId = useAppStore((s) => s.settings.selectedClassId);
+  const persona = useAppStore((s) => s.settings.persona);
+  const teacherId = useAppStore((s) => s.settings.selectedTeacherId);
+  const teacherView = useAppStore((s) => s.settings.teacherView);
+
+  const hasIdentity = persona === "teacher" ? teacherId !== null : classId !== null;
 
   return useMemo(() => {
-    if (classId === null) return null;
+    if (!hasIdentity) return null;
 
     const dates = weekDates(date);
     const days = dates.map((d) => resolvedDay(d));
@@ -64,5 +69,5 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
       lessonDelta: prevAvailable ? totalLessons - prevTotal : null,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the store data drives the result
-  }, [date, resolvedDay, timetables, substitutions, classId]);
+  }, [date, resolvedDay, timetables, substitutions, classId, persona, teacherId, teacherView]);
 };

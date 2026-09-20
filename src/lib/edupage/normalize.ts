@@ -57,6 +57,11 @@ const toClassRef = (r: Row): ClassRef => ({
   teacherId: strOrNull(r["teacherid"]),
 });
 
+const toTeacherRef = (r: Row): TeacherRef => ({
+  ...toEntityRef(r),
+  classIds: strList(r["classids"]),
+});
+
 const toRoomRef = (r: Row): RoomRef => ({
   id: str(r["id"]),
   name: str(r["name"]) || str(r["short"]),
@@ -71,7 +76,7 @@ const toPeriod = (r: Row): Period => ({
 });
 
 /* ------------------------------------------------------------------ *
- * The join
+ * The join (MODEL.md §2)
  * ------------------------------------------------------------------ */
 
 export type NormalizeStats = {
@@ -85,7 +90,7 @@ export type NormalizeResult = { timetable: Timetable; stats: NormalizeStats };
 
 export const normalizeTimetable = (tables: RawTables, meta: TimetableMeta): NormalizeResult => {
   const classes = (tables["classes"] ?? []).map(toClassRef);
-  const teachers: TeacherRef[] = (tables["teachers"] ?? []).map(toEntityRef);
+  const teachers = (tables["teachers"] ?? []).map(toTeacherRef);
   const subjects: SubjectRef[] = (tables["subjects"] ?? []).map(toEntityRef);
   const rooms = (tables["classrooms"] ?? []).map(toRoomRef);
   const periods = (tables["periods"] ?? []).map(toPeriod);

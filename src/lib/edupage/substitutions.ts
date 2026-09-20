@@ -181,6 +181,24 @@ const parseDocument = (html: string): Document | null => {
   }
 };
 
+/**
+ * Absent teachers banner: "Skolotāji, kuri nepiedalās: Name1 , Name2 , Name3".
+ * EduPage substitution pages put this in a centered div/span above the class sections.
+ */
+export const parseAbsentTeachers = (doc: Document): string[] => {
+  for (const el of doc.querySelectorAll("div, span")) {
+    const text = collapseWs(el.textContent ?? "");
+    const match = /^Skolotāji,\s*kuri\s*nepiedalās:\s*(.*)$/i.exec(text);
+    if (match?.[1] !== undefined) {
+      return match[1]
+        .split(/[,;]/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+    }
+  }
+  return [];
+};
+
 export const parseDaySubstitutions = (
   html: string,
   date: ISODate,
@@ -196,6 +214,8 @@ export const parseDaySubstitutions = (
   const notes = [...doc.querySelectorAll(".subst_note")].flatMap((el) =>
     splitNotes(collapseWs(el.textContent ?? "")),
   );
+
+  const absentTeachers = parseAbsentTeachers(doc);
 
   const items: Substitution[] = [];
   for (const section of doc.querySelectorAll(".section")) {
@@ -215,7 +235,14 @@ export const parseDaySubstitutions = (
     }
   }
 
-  return { date, mode, notes, items, fetchedAt };
+  return {
+    date,
+    mode,
+    notes,
+    items,
+    fetchedAt,
+    ...(absentTeachers.length > 0 ? { absentTeachers } : {}),
+  };
 };
 
 /** Share of rows the grammar failed to classify — the "canary" from CLAUDE.md. */

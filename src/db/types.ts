@@ -100,6 +100,14 @@ export type Settings = {
   iphoneAnnouncementDismissed: boolean;
   /** Whether the prompt to add the app to iPhone home screen has been dismissed. */
   iphoneInstallPromptDismissed: boolean;
+  /** User persona: student browsing by class, or teacher browsing by teacher name. */
+  persona: "student" | "teacher";
+  /** The selected teacher's id, or null if none selected. */
+  selectedTeacherId: string | null;
+  /** In teacher mode: "own" for teacher's timetable + covers, "form-class" for their audzināmā klase. */
+  teacherView: "own" | "form-class";
+  /** In teacher mode: whether to highlight cover / substitution lessons with a prominent badge. */
+  highlightCoverLessons: boolean;
   /** Whether the download Android APK banner in the web app has been dismissed. */
   androidApkBannerDismissed: boolean;
 };
@@ -109,6 +117,10 @@ export const DEFAULT_SETTINGS: Settings = {
   building: null,
   subgroup: null,
   favorites: [],
+  persona: "student",
+  selectedTeacherId: null,
+  teacherView: "own",
+  highlightCoverLessons: true,
   theme: "system",
   lang: "lv",
   mergeConsecutiveLessons: false,

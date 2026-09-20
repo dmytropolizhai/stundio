@@ -18,6 +18,7 @@ import {
   normalizeTimetable,
   parseDaySubstitutions,
   selectTimetables,
+  teacherKey,
   toTimetableMeta,
   type Building,
   type HttpClient,
@@ -26,7 +27,7 @@ import {
   type TimetableMeta,
 } from "@/lib/edupage";
 import type { AppCache } from "@/db";
-import { substitutionsChanged } from "@/lib/schedule";
+import { substitutionsChanged, teacherSubstitutionsChanged } from "@/lib/schedule";
 import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
 export type SyncStatus = "idle" | "syncing" | "offline" | "error";
@@ -156,9 +157,28 @@ export const createSyncEngine = (deps: SyncDeps) => {
     return null;
   };
 
+  const selectedTeacherKey = async (
+    teacherId: string | null,
+    selections: readonly { meta: TimetableMeta }[],
+  ): Promise<string | null> => {
+    if (teacherId === null) return null;
+    for (const selection of selections) {
+      const timetable = await cache.getTimetable(selection.meta.ttNum);
+      const teacher = timetable?.teachers.find((t) => t.id === teacherId);
+      if (teacher !== undefined) {
+        return teacherKey(teacher.short || teacher.name);
+      }
+    }
+    return null;
+  };
+
+  type RefreshScope =
+    | { persona: "student"; className: string | null }
+    | { persona: "teacher"; teacherKey: string | null };
+
   const refreshSubstitutions = async (
     dates: readonly ISODate[],
-    className: string | null,
+    scope: RefreshScope,
     errors: SyncFailure[],
   ): Promise<{ done: ISODate[]; changed: ISODate[] }> => {
     const done: ISODate[] = [];
@@ -171,7 +191,11 @@ export const createSyncEngine = (deps: SyncDeps) => {
         const after = parseDaySubstitutions(html, date, now().toISOString());
         await cache.putSubstitutions(after);
         done.push(date);
-        if (substitutionsChanged(before, after, className)) changed.push(date);
+        const hasChanged =
+          scope.persona === "teacher"
+            ? teacherSubstitutionsChanged(before, after, scope.teacherKey)
+            : substitutionsChanged(before, after, scope.className);
+        if (hasChanged) changed.push(date);
       } catch (err) {
         errors.push(failure(`substitutions ${date}`, err));
       }
@@ -213,9 +237,20 @@ export const createSyncEngine = (deps: SyncDeps) => {
       }
     }
 
+    const scope: RefreshScope =
+      settings.persona === "teacher"
+        ? {
+            persona: "teacher",
+            teacherKey: await selectedTeacherKey(settings.selectedTeacherId, selections),
+          }
+        : {
+            persona: "student",
+            className: await selectedClassName(settings.selectedClassId, selections),
+          };
+
     const { done: refreshedDates, changed: changedDates } = await refreshSubstitutions(
       daysToRefresh(today),
-      await selectedClassName(settings.selectedClassId, selections),
+      scope,
       errors,
     );
 

@@ -2,6 +2,7 @@ import type { Dict } from "./lv.ts";
 
 export const ru: Dict = {
   "app.title": "Stundio",
+  "general.continue": "Продолжить",
 
   "nav.day": "День",
   "nav.week": "Неделя",
@@ -11,6 +12,24 @@ export const ru: Dict = {
 
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",
+
+  "onboarding.persona.title": "Выбери свою сторону",
+  "onboarding.persona.subtitle": "Настрой расписание под свою роль",
+  "onboarding.persona.student.title": "Ученик",
+  "onboarding.persona.student.desc": "Хочу видеть уроки своей группы и замены",
+  "onboarding.persona.teacher.title": "Преподаватель",
+  "onboarding.persona.teacher.desc": "Хочу видеть свои уроки, кабинеты и замены",
+
+  "onboarding.teacher.title": "Выбери преподавателя",
+  "onboarding.teacher.subtitle": "Поиск по имени или фамилии",
+
+  "teacher.search": "Поиск преподавателя…",
+  "teacher.none": "Преподаватель не найден",
+  "teacher.formClass": "Классный руководитель",
+  "teacher.cover": "Замена",
+  "teacher.coverFor": "Заменяет: {name}",
+  "teacher.view.own": "Мои уроки",
+  "teacher.view.formClass": "Мой класс",
 
   "onboarding.language.title": "Выберите язык",
   "onboarding.language.continue": "Продолжить",
@@ -88,7 +107,9 @@ export const ru: Dict = {
 
   "changes.title": "Замены",
   "changes.filter.myClass": "Моя группа",
+  "changes.filter.myChanges": "Мои изменения",
   "changes.filter.all": "Вся школа",
+  "changes.absentTeachers": "Сегодня отсутствуют",
   "changes.emptyForClass": "Изменений нет",
   "changes.emptyForClassHint": "У вашей группы уроки идут по обычному расписанию",
   "changes.emptyAll": "Нет зарегистрированных изменений",
@@ -164,6 +185,11 @@ export const ru: Dict = {
   "subjects.note.badge": "Есть заметка",
 
   "settings.title": "Настройки",
+  "settings.identity": "Роль и расписание",
+  "settings.persona.student": "Ученик",
+  "settings.persona.teacher": "Преподаватель",
+  "settings.identity.sheetTitle": "Выбор роли",
+  "settings.identity.confirm": "Подтвердить",
   "settings.class": "Моя группа",
   "settings.change": "Изменить",
   "settings.building": "Корпус",
@@ -208,6 +234,8 @@ export const ru: Dict = {
   "notification.lessonReminder.title": "{subject} через {minutes} мин",
   "notification.changed.title": "Изменения в расписании",
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",
+  "notification.cover.title": "Новая замена",
+  "notification.cover.body": "Вам назначена замена",
   "notification.update.title": "Доступно обновление",
   "notification.update.body": "Stundio {version} готово к загрузке.",
   "widget.now": "Сейчас",

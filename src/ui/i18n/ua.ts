@@ -2,6 +2,7 @@ import type { Dict } from "./lv.ts";
 
 export const ua: Dict = {
   "app.title": "Stundio",
+  "general.continue": "Продовжити",
 
   "nav.day": "День",
   "nav.week": "Тиждень",
@@ -11,6 +12,24 @@ export const ua: Dict = {
 
   "onboarding.title": "Оберіть свій клас",
   "onboarding.subtitle": "Ваш розклад та його зміни — працює і офлайн.",
+
+  "onboarding.persona.title": "Обери свою сторону",
+  "onboarding.persona.subtitle": "Налаштуй розклад під свою роль",
+  "onboarding.persona.student.title": "Учень",
+  "onboarding.persona.student.desc": "Хочу бачити розклад своєї групи та заміни",
+  "onboarding.persona.teacher.title": "Викладач",
+  "onboarding.persona.teacher.desc": "Хочу бачити свої уроки, кабінети та заміни",
+
+  "onboarding.teacher.title": "Обери викладача",
+  "onboarding.teacher.subtitle": "Пошук за ім'ям або прізвищем",
+
+  "teacher.search": "Пошук викладача…",
+  "teacher.none": "Викладача не знайдено",
+  "teacher.formClass": "Класний керівник",
+  "teacher.cover": "Заміна",
+  "teacher.coverFor": "Замінює: {name}",
+  "teacher.view.own": "Мої уроки",
+  "teacher.view.formClass": "Мій клас",
 
   "onboarding.language.title": "Оберіть мову",
   "onboarding.language.continue": "Продовжити",
@@ -87,7 +106,9 @@ export const ua: Dict = {
 
   "changes.title": "Зміни",
   "changes.filter.myClass": "Моя група",
+  "changes.filter.myChanges": "Мої зміни",
   "changes.filter.all": "Вся школа",
+  "changes.absentTeachers": "Сьогодні відсутні",
   "changes.emptyForClass": "Змін немає",
   "changes.emptyForClassHint": "У вашої групи уроки йдуть за звичайним розкладом",
   "changes.emptyAll": "Немає зареєстрованих змін",
@@ -163,6 +184,11 @@ export const ua: Dict = {
   "subjects.note.badge": "Є нотатка",
 
   "settings.title": "Налаштування",
+  "settings.identity": "Роль та розклад",
+  "settings.persona.student": "Учень",
+  "settings.persona.teacher": "Викладач",
+  "settings.identity.sheetTitle": "Вибір ролі",
+  "settings.identity.confirm": "Підтвердити",
   "settings.class": "Моя група",
   "settings.change": "Змінити",
   "settings.building": "Корпус",
@@ -207,6 +233,8 @@ export const ua: Dict = {
   "notification.lessonReminder.title": "{subject} через {minutes} хв",
   "notification.changed.title": "Розклад змінився",
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
+  "notification.cover.title": "Нова заміна",
+  "notification.cover.body": "Вам призначено заміну",
   "notification.update.title": "Доступне оновлення",
   "notification.update.body": "Stundio {version} готовий до завантаження.",
   "widget.now": "Зараз",

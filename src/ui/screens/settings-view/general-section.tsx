@@ -43,7 +43,7 @@ export const GeneralSection = ({ buildings, subgroups }: GeneralSectionProps) =>
         </Section>
       )}
 
-      {subgroups.length > 1 && (
+      {settings.persona !== "teacher" && subgroups.length > 1 && (
         <Section title={t("settings.subgroup")}>
           <Row>
             <SegmentedTabs

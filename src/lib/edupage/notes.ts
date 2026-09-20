@@ -1,4 +1,5 @@
 import type { TeacherRef } from "./types.ts";
+import { teacherKey } from "./teacher-names.ts";
 
 export type TeacherIdentifier = TeacherRef | string;
 
@@ -166,9 +167,11 @@ export const areTeachersEqual = (a: TeacherIdentifier, b: TeacherIdentifier): bo
   if (typeof a === "object" && typeof b === "object" && a.id && b.id && a.id === b.id) {
     return true;
   }
-  const labelA = (typeof a === "string" ? a : a.short || a.name || "").trim().toUpperCase();
-  const labelB = (typeof b === "string" ? b : b.short || b.name || "").trim().toUpperCase();
-  if (labelA === labelB && labelA !== "") return true;
+  const labelA = typeof a === "string" ? a : a.short || a.name || "";
+  const labelB = typeof b === "string" ? b : b.short || b.name || "";
+  if (labelA.trim() !== "" && labelB.trim() !== "" && teacherKey(labelA) === teacherKey(labelB)) {
+    return true;
+  }
 
   const tokensA = getTeacherTokens(a).map((t) => t.toUpperCase());
   const tokensB = getTeacherTokens(b).map((t) => t.toUpperCase());

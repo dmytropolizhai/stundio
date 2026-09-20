@@ -2,6 +2,7 @@ import type { Dict } from "./lv.ts";
 
 export const en: Dict = {
   "app.title": "Stundio",
+  "general.continue": "Continue",
 
   "nav.day": "Day",
   "nav.week": "Week",
@@ -9,8 +10,26 @@ export const en: Dict = {
   "nav.subjects": "Subjects",
   "nav.settings": "Settings",
 
-  "onboarding.title": "Pick your class",
-  "onboarding.subtitle": "Your timetable and its changes — offline too.",
+  "onboarding.title": "Choose your class",
+  "onboarding.subtitle": "Timetable and changes — even offline.",
+
+  "onboarding.persona.title": "Choose your side",
+  "onboarding.persona.subtitle": "Tailor the schedule to your daily role",
+  "onboarding.persona.student.title": "Student",
+  "onboarding.persona.student.desc": "See your class lessons and daily substitutions",
+  "onboarding.persona.teacher.title": "Teacher",
+  "onboarding.persona.teacher.desc": "See your teaching day, rooms, and cover duties",
+
+  "onboarding.teacher.title": "Select teacher",
+  "onboarding.teacher.subtitle": "Search by first or last name",
+
+  "teacher.search": "Search teacher…",
+  "teacher.none": "No teacher found",
+  "teacher.formClass": "Form teacher",
+  "teacher.cover": "Cover",
+  "teacher.coverFor": "Covering: {name}",
+  "teacher.view.own": "My lessons",
+  "teacher.view.formClass": "My class",
 
   "onboarding.language.title": "Choose your language",
   "onboarding.language.continue": "Continue",
@@ -87,7 +106,9 @@ export const en: Dict = {
 
   "changes.title": "Changes",
   "changes.filter.myClass": "My group",
+  "changes.filter.myChanges": "My changes",
   "changes.filter.all": "All classes",
+  "changes.absentTeachers": "Absent today",
   "changes.emptyForClass": "No changes",
   "changes.emptyForClassHint": "Lessons for your group follow the regular schedule today",
   "changes.emptyAll": "No registered changes",
@@ -163,6 +184,11 @@ export const en: Dict = {
   "subjects.note.badge": "Has a note",
 
   "settings.title": "Settings",
+  "settings.identity": "Role and schedule",
+  "settings.persona.student": "Student",
+  "settings.persona.teacher": "Teacher",
+  "settings.identity.sheetTitle": "Choose role",
+  "settings.identity.confirm": "Confirm",
   "settings.class": "My group",
   "settings.change": "Change",
   "settings.building": "Building",
@@ -206,6 +232,8 @@ export const en: Dict = {
   "notification.lessonReminder.title": "{subject} in {minutes} min",
   "notification.changed.title": "Timetable changed",
   "notification.changed.body": "Today's schedule has changes.",
+  "notification.cover.title": "New cover duty",
+  "notification.cover.body": "You have been assigned a cover lesson",
   "notification.update.title": "Update available",
   "notification.update.body": "Stundio {version} is ready to download.",
   "widget.now": "Now",

@@ -15,7 +15,7 @@
  * as `resolveDay` matches them; `null` means "no class picked", which nobody can have a changed
  * timetable for, so nothing is ever a change.
  */
-import { filterNotesForClass, type DaySubstitutions } from "@/lib/edupage";
+import { filterNotesForClass, teacherKey, type DaySubstitutions } from "@/lib/edupage";
 
 /**
  * The rows and announcements this class would actually see, in a stable, `fetchedAt`-free
@@ -39,3 +39,47 @@ export const substitutionsChanged = (
   after: DaySubstitutions | null,
   className: string | null,
 ): boolean => fingerprint(before, className) !== fingerprint(after, className);
+
+/**
+ * The rows this teacher would actually see, in a stable, `fetchedAt`-free shape.
+ * Filters items where teacherKey(item.teacher) === key || teacherKey(item.teacherFrom) === key.
+ */
+const teacherFingerprint = (day: DaySubstitutions | null, key: string | null): string => {
+  if (day === null || key === null || key === "") return "";
+
+  const items = day.items
+    .filter(
+      (item) =>
+        (item.teacher && teacherKey(item.teacher) === key) ||
+        (item.teacherFrom && teacherKey(item.teacherFrom) === key),
+    )
+    .map((item) => ({
+      ...item,
+      teacher: item.teacher ? teacherKey(item.teacher) : null,
+      teacherFrom: item.teacherFrom ? teacherKey(item.teacherFrom) : null,
+    }));
+
+  return items.length === 0 ? "" : JSON.stringify({ items });
+};
+
+export const teacherSubstitutionsChanged = (
+  before: DaySubstitutions | null,
+  after: DaySubstitutions | null,
+  key: string | null,
+): boolean => teacherFingerprint(before, key) !== teacherFingerprint(after, key);
+
+/**
+ * Checks whether a DaySubstitutions has any cover duty assigned to this teacher.
+ */
+export const teacherHasCoverDuty = (
+  day: DaySubstitutions | null,
+  key: string | null,
+): boolean => {
+  if (day === null || key === null || key === "") return false;
+  return day.items.some((item) => {
+    if (!item.teacher || teacherKey(item.teacher) !== key) return false;
+    const fromKey = item.teacherFrom ? teacherKey(item.teacherFrom) : "";
+    if (fromKey !== "" && fromKey !== key) return true;
+    return item.kind === "substitution";
+  });
+};

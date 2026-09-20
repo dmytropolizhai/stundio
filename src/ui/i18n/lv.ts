@@ -8,6 +8,7 @@
  */
 export const lv = {
   "app.title": "Stundio",
+  "general.continue": "Turpināt",
 
   "nav.day": "Diena",
   "nav.week": "Nedēļa",
@@ -17,6 +18,24 @@ export const lv = {
 
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",
+
+  "onboarding.persona.title": "Izvēlies savu pusi",
+  "onboarding.persona.subtitle": "Pielāgo sarakstu savām vajadzībām",
+  "onboarding.persona.student.title": "Skolēns",
+  "onboarding.persona.student.desc": "Gribu redzēt savas klases stundas un izmaiņas",
+  "onboarding.persona.teacher.title": "Skolotājs",
+  "onboarding.persona.teacher.desc": "Gribu redzēt savas stundas, kabinetus un aizvietošanas",
+
+  "onboarding.teacher.title": "Izvēlies skolotāju",
+  "onboarding.teacher.subtitle": "Meklē pēc vārda vai uzvārda",
+
+  "teacher.search": "Meklēt skolotāju…",
+  "teacher.none": "Nav atrasts neviens skolotājs",
+  "teacher.formClass": "Klases audzinātājs",
+  "teacher.cover": "Aizvietošana",
+  "teacher.coverFor": "Aizvieto: {name}",
+  "teacher.view.own": "Manas stundas",
+  "teacher.view.formClass": "Mana klase",
 
   "onboarding.language.title": "Izvēlies valodu",
   "onboarding.language.continue": "Turpināt",
@@ -94,7 +113,9 @@ export const lv = {
 
   "changes.title": "Izmaiņas",
   "changes.filter.myClass": "Mana grupa",
+  "changes.filter.myChanges": "Manas izmaiņas",
   "changes.filter.all": "Visa skola",
+  "changes.absentTeachers": "Šodien prombūtnē",
   "changes.emptyForClass": "Izmaiņu nav",
   "changes.emptyForClassHint": "Tavai grupai šai dienai stundas notiek pēc pamatsaraksta",
   "changes.emptyAll": "Nav reģistrētu izmaiņu",
@@ -170,6 +191,11 @@ export const lv = {
   "subjects.note.badge": "Ir piezīme",
 
   "settings.title": "Iestatījumi",
+  "settings.identity": "Loma un saraksts",
+  "settings.persona.student": "Skolēns",
+  "settings.persona.teacher": "Skolotājs",
+  "settings.identity.sheetTitle": "Izvēlies lomu",
+  "settings.identity.confirm": "Apstiprināt",
   "settings.class": "Mana grupa",
   "settings.change": "Mainīt",
   "settings.building": "Ēka",
@@ -213,6 +239,8 @@ export const lv = {
   "notification.lessonReminder.title": "{subject} pēc {minutes} min",
   "notification.changed.title": "Izmaiņas stundu sarakstā",
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",
+  "notification.cover.title": "Jauna aizvietošana",
+  "notification.cover.body": "Tev piešķirta aizvietošanas stunda",
   "notification.update.title": "Pieejams jauninājums",
   "notification.update.body": "Stundio {version} ir pieejama lejupielādei.",
   "widget.now": "Tagad",

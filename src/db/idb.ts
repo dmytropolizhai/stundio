@@ -16,7 +16,7 @@ import {
 import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
 
 export const DB_NAME = "rvt-stunda";
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 
 const LIST_KEY = "timetableList";
 const SETTINGS_KEY = "app";

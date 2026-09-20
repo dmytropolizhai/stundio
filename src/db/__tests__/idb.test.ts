@@ -89,6 +89,18 @@ describe("openAppDb", () => {
     expect(settings.subjectColorCodingEnabled).toBe(true);
     expect(settings.theme).toBe("dark");
   });
+
+  it("backfills persona fields for a record written before they existed", async () => {
+    const db = await openAppDb();
+    await db.put("settings", { selectedClassId: "-927" } as never, "app");
+    db.close();
+
+    const settings = await createIdbCache(track(openAppDb())).getSettings();
+    expect(settings.persona).toBe("student");
+    expect(settings.selectedTeacherId).toBeNull();
+    expect(settings.teacherView).toBe("own");
+    expect(settings.highlightCoverLessons).toBe(true);
+  });
 });
 
 describe("createCache", () => {
