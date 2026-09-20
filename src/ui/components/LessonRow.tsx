@@ -50,11 +50,7 @@ export const LessonRow = memo(
         : classNames || rooms || subjectName
       : subjectName;
 
-    const subtitle = isTeacherMode
-      ? showTime
-        ? `${subjectName} · ${lesson.start} – ${lesson.end}`
-        : subjectName
-      : undefined;
+    const subtitle = isTeacherMode ? subjectName : undefined;
 
     const isCover = lesson.isCover === true || teacherLesson.role === "cover";
     const coverBadgeText = teacherLesson.coverFor?.name
@@ -85,7 +81,7 @@ export const LessonRow = memo(
             : {})}
           filled={filled}
           status={status}
-          timeVisible={isTeacherMode ? false : showTime}
+          timeVisible={showTime}
           badge={
             live || isCover || hasNote ? (
               <div className="flex items-center gap-1.5">
