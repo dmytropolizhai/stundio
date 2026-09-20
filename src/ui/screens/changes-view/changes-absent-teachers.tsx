@@ -49,9 +49,7 @@ export const ChangesAbsentTeachers = ({ teachers }: ChangesAbsentTeachersProps) 
       )}
 
       {(!isLong || isOpen) && (
-        <p className="font-text text-caption text-muted leading-relaxed">
-          {text}
-        </p>
+        <p className="font-text text-caption text-muted leading-relaxed">{text}</p>
       )}
     </Card>
   );

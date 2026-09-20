@@ -27,6 +27,16 @@ export const IdentitySheet = ({
     void setPersona(newPersona);
   };
 
+  const handleConfirm = () => {
+    void setPersona(persona);
+    onClose();
+    if (persona === "teacher" && !selectedTeacher) {
+      onPickTeacher();
+    } else if (persona === "student" && !selectedClass) {
+      onPickClass();
+    }
+  };
+
   return (
     <BottomSheet open={open} onClose={onClose} title={t("settings.identity.sheetTitle")}>
       <div className="flex flex-col gap-6 p-4">
@@ -62,7 +72,9 @@ export const IdentitySheet = ({
         ) : (
           <div className="flex flex-col gap-3">
             <div className="rounded-xl border border-hairline bg-card p-4">
-              <span className="font-text text-caption text-muted">{t("onboarding.teacher.title")}</span>
+              <span className="font-text text-caption text-muted">
+                {t("onboarding.teacher.title")}
+              </span>
               <p className="mt-1 font-text text-body font-bold text-strong">
                 {selectedTeacher?.short || selectedTeacher?.name || t("teacher.none")}
               </p>
@@ -80,6 +92,10 @@ export const IdentitySheet = ({
             </Button>
           </div>
         )}
+
+        <Button variant="primary" block onClick={handleConfirm}>
+          {t("settings.identity.confirm")}
+        </Button>
       </div>
     </BottomSheet>
   );

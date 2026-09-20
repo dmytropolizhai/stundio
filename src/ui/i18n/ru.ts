@@ -189,6 +189,7 @@ export const ru: Dict = {
   "settings.persona.student": "Ученик",
   "settings.persona.teacher": "Преподаватель",
   "settings.identity.sheetTitle": "Выбор роли",
+  "settings.identity.confirm": "Подтвердить",
   "settings.class": "Моя группа",
   "settings.change": "Изменить",
   "settings.building": "Корпус",

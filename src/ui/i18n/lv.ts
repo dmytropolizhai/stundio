@@ -195,6 +195,7 @@ export const lv = {
   "settings.persona.student": "Skolēns",
   "settings.persona.teacher": "Skolotājs",
   "settings.identity.sheetTitle": "Izvēlies lomu",
+  "settings.identity.confirm": "Apstiprināt",
   "settings.class": "Mana grupa",
   "settings.change": "Mainīt",
   "settings.building": "Ēka",

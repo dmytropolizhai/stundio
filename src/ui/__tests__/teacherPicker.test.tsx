@@ -135,4 +135,33 @@ describe("IdentitySheet", () => {
     fireEvent.click(screen.getByText("Mainīt"));
     expect(onPickTeacher).toHaveBeenCalled();
   });
+
+  it("confirms persona selection and closes or opens picker if identity missing", async () => {
+    const harness = await bootHarness();
+    const onPickClass = vi.fn();
+    const onPickTeacher = vi.fn();
+    const onClose = vi.fn();
+
+    wrap(
+      harness,
+      <IdentitySheet
+        open={true}
+        onClose={onClose}
+        onPickClass={onPickClass}
+        onPickTeacher={onPickTeacher}
+      />,
+    );
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText("Skolotājs"));
+    });
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Apstiprināt" }));
+    });
+
+    expect(onClose).toHaveBeenCalled();
+    expect(onPickTeacher).toHaveBeenCalled();
+    expect(harness.store.getState().settings.persona).toBe("teacher");
+  });
 });

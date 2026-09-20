@@ -21,14 +21,7 @@ describe("Teacher Changes View (T7)", () => {
       void harness.store.getState().setTeacher(teacher.id);
     });
 
-    wrap(
-      harness,
-      <ChangesView
-        date={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
+    wrap(harness, <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     expect(screen.getByText("Manas izmaiņas")).toBeDefined();
     expect(screen.getByText("Visa skola")).toBeDefined();
@@ -43,14 +36,7 @@ describe("Teacher Changes View (T7)", () => {
       void harness.store.getState().setTeacher(teachers[0]!.id);
     });
 
-    wrap(
-      harness,
-      <ChangesView
-        date={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
+    wrap(harness, <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     const absentBanner = screen.getByTestId("absent-teachers");
     expect(absentBanner).toBeDefined();
@@ -101,14 +87,7 @@ describe("Teacher Changes View (T7)", () => {
       void harness.store.getState().setTeacher(teachers[0]!.id);
     });
 
-    wrap(
-      harness,
-      <ChangesView
-        date={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
+    wrap(harness, <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     const allTab = screen.getByRole("radio", { name: "Visa skola" });
     await clickAndSettle(() => {
@@ -161,14 +140,7 @@ describe("Teacher Changes View (T7)", () => {
       void harness.store.getState().setTeacher(teachers[0]!.id);
     });
 
-    wrap(
-      harness,
-      <ChangesView
-        date={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
+    wrap(harness, <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     const allTab = screen.getByRole("radio", { name: "Visa skola" });
     await clickAndSettle(() => {
@@ -185,14 +157,7 @@ describe("Teacher Changes View (T7)", () => {
       void harness.store.getState().setTeacher(null);
     });
 
-    wrap(
-      harness,
-      <ChangesView
-        date={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
+    wrap(harness, <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     expect(screen.getByText("Nav atrasts neviens skolotājs")).toBeDefined();
   });

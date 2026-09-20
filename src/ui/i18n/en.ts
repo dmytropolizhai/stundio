@@ -188,6 +188,7 @@ export const en: Dict = {
   "settings.persona.student": "Student",
   "settings.persona.teacher": "Teacher",
   "settings.identity.sheetTitle": "Choose role",
+  "settings.identity.confirm": "Confirm",
   "settings.class": "My group",
   "settings.change": "Change",
   "settings.building": "Building",
