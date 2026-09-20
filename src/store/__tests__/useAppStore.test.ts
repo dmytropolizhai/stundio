@@ -3,10 +3,10 @@
  * timetable instantly; going online refreshes it and exposes a "last updated" timestamp.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createFakeServer, type FakeServer } from "../../sync/__tests__/fakeServer.ts";
+import { createFakeServer, type FakeServer } from "@/sync/__tests__/fakeServer.ts";
 import { createMemoryCache, type AppCache } from "@/db";
 import { createSyncEngine, nextSchoolDay, todayInRiga } from "@/sync";
-import { createAppStore } from "../useAppStore.ts";
+import { createAppStore } from "@/store";
 import type { AnalyticsClient } from "@/lib/analytics";
 
 const DATE = "2026-09-09";

@@ -188,6 +188,7 @@ export const ua: Dict = {
   "settings.persona.student": "Учень",
   "settings.persona.teacher": "Викладач",
   "settings.identity.sheetTitle": "Вибір ролі",
+  "settings.identity.confirm": "Підтвердити",
   "settings.class": "Моя група",
   "settings.change": "Змінити",
   "settings.building": "Корпус",
