@@ -54,3 +54,4 @@ export const ChangesAbsentTeachers = ({ teachers }: ChangesAbsentTeachersProps) 
     </Card>
   );
 };
+

@@ -162,3 +162,4 @@ describe("Teacher Changes View (T7)", () => {
     expect(screen.getByText("Nav atrasts neviens skolotājs")).toBeDefined();
   });
 });
+
