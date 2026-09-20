@@ -140,7 +140,10 @@ describe("Teacher Changes View (T7)", () => {
       void harness.store.getState().setTeacher(teachers[0]!.id);
     });
 
-    wrap(harness, <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
+    wrap(
+      harness,
+      <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />,
+    );
 
     const allTab = screen.getByRole("radio", { name: "Visa skola" });
     await clickAndSettle(() => {
@@ -162,3 +165,4 @@ describe("Teacher Changes View (T7)", () => {
     expect(screen.getByText("Nav atrasts neviens skolotājs")).toBeDefined();
   });
 });
+
