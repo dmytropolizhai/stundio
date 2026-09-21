@@ -236,17 +236,19 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
         label={t("sync.pull")}
         releaseLabel={t("sync.release")}
         onRefresh={() => {
-          void refresh({ date, force: true });
+          void refresh({ date, scope: "week", force: true });
         }}
       >
         <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
           <WeekTopBar
             date={date}
+            today={now.date}
+            isThisWeek={dates.includes(now.date)}
             firstDay={firstDay}
             lastDay={lastDay}
             onDateChange={onDateChange}
             onPickClass={onPickClass}
-            onRefresh={() => void refresh({ date, force: true })}
+            onRefresh={() => void refresh({ date, scope: "week", force: true })}
           />
 
           {body()}

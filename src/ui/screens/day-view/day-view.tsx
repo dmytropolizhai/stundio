@@ -193,6 +193,7 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
         onRefresh={() => {
           void refresh({
             date,
+            scope: "day",
             force: true,
           });
         }}
@@ -228,6 +229,7 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
             onRefresh={() =>
               void refresh({
                 date,
+                scope: "day",
                 force: true,
               })
             }

@@ -359,6 +359,33 @@ describe("WeekView", () => {
     expect(onPickClass).toHaveBeenCalled();
   });
 
+  it("allows navigating between weeks and jumping back to today", async () => {
+    const harness = await bootHarness();
+    const onDateChange = vi.fn();
+    wrap(
+      harness,
+      <WeekView
+        date="2026-01-01" // A different week from today
+        onDateChange={onDateChange}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    // Chevron next week (+7 days)
+    fireEvent.click(screen.getByLabelText("Nākamā nedēļa"));
+    expect(onDateChange).toHaveBeenCalledWith("2026-01-08");
+
+    // Chevron prev week (-7 days)
+    fireEvent.click(screen.getByLabelText("Iepriekšējā nedēļa"));
+    expect(onDateChange).toHaveBeenCalledWith("2025-12-25");
+
+    // Jump today button is visible when not in current week
+    const jumpBtn = screen.getByText("Uz šodienu");
+    fireEvent.click(jumpBtn);
+    expect(onDateChange).toHaveBeenCalled();
+  });
+
   it("allows toggling merge-lessons preference directly from WeekView", async () => {
     const harness = await bootHarness();
     wrap(
