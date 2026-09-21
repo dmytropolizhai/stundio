@@ -106,6 +106,9 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(existsSync(resolve(rootDir, "public/icons/apple-touch-icon.png"))).toBe(true);
 
     expect(html).toContain('href="/favicon.ico"');
+    expect(html).toContain(
+      '<meta name="google-site-verification" content="kTGVB54XhxyR5GTBg6vm2fv982s3msWHykFb7-qJpCU" />',
+    );
   });
 
   // Browsers probe these root paths by convention — iOS the two apple-touch-icons
