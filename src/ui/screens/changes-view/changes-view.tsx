@@ -189,7 +189,7 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
         label={t("sync.pull")}
         releaseLabel={t("sync.release")}
         onRefresh={() => {
-          void refresh({ date, force: true });
+          void refresh({ date, scope: "day", force: true });
         }}
       >
         <div
@@ -218,7 +218,7 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
             isToday={isToday}
             onDateChange={onDateChange}
             onPickClass={onPickClass}
-            onRefresh={() => void refresh({ date, force: true })}
+            onRefresh={() => void refresh({ date, scope: "day", force: true })}
             onNavigate={(dir) => {
               enterDir.current = dir;
             }}

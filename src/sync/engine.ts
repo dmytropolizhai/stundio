@@ -26,7 +26,7 @@ import {
   type TimetableMeta,
 } from "@/lib/edupage";
 import type { AppCache } from "@/db";
-import { substitutionsChanged } from "@/lib/schedule";
+import { substitutionsChanged, weekDates } from "@/lib/schedule";
 import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
 export type SyncStatus = "idle" | "syncing" | "offline" | "error";
@@ -59,6 +59,8 @@ export type SyncDeps = {
 export type SyncRequest = {
   /** The date the user is looking at. Defaults to today in Europe/Riga. */
   date?: ISODate;
+  /** Whether to sync the active 2-day window ("day") or the full displayed week ("week"). Defaults to "day". */
+  scope?: "day" | "week";
   building?: Building | null;
   /** Skip the 12h freshness check on the timetable list (pull-to-refresh). */
   force?: boolean;
@@ -213,8 +215,13 @@ export const createSyncEngine = (deps: SyncDeps) => {
       }
     }
 
+    const targetDates =
+      request.scope === "week"
+        ? [...new Set([...weekDates(date), ...daysToRefresh(today)])]
+        : [...new Set([date, ...daysToRefresh(today)])];
+
     const { done: refreshedDates, changed: changedDates } = await refreshSubstitutions(
-      daysToRefresh(today),
+      targetDates,
       await selectedClassName(settings.selectedClassId, selections),
       errors,
     );

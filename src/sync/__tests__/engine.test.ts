@@ -275,3 +275,18 @@ describe("retention", () => {
     expect(await cache.getSubstitutions("2026-08-20")).toBeNull();
   });
 });
+
+describe("sync with scope: 'week'", () => {
+  it("refreshes substitutions for all days of the displayed week", async () => {
+    const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE, scope: "week" });
+
+    expect(outcome.status).toBe("idle");
+    expect(outcome.refreshedDates).toEqual([
+      "2026-09-07",
+      "2026-09-08",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-11",
+    ]);
+  });
+});

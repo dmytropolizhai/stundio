@@ -5,8 +5,6 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { AppStoreProvider, useAppStore } from "@/store";
-import { todayInRiga } from "@/sync";
-import type { ISODate } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
@@ -24,6 +22,7 @@ import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
 import { useIphoneAnnouncement } from "./ui/hooks/useIphoneAnnouncement.ts";
 import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
+import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
 import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
 import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
@@ -111,7 +110,7 @@ const Shell = () => {
   const whatsNew = useWhatsNew();
   const iphoneAnnouncement = useIphoneAnnouncement();
   const iphoneInstall = useIphoneInstallPrompt();
-  const [date, setDate] = useState<ISODate>(() => todayInRiga());
+  const scheduleNav = useScheduleNavigation();
   const [picking, setPicking] = useState(false);
 
   useBackButton(
@@ -137,12 +136,12 @@ const Shell = () => {
   useEffect(() => {
     if (pendingNavigation === null) return;
     if (pendingNavigation.tab === "day" || pendingNavigation.tab === "changes") {
-      setDate(pendingNavigation.date);
+      scheduleNav.setDate(pendingNavigation.date);
     }
     setTab(pendingNavigation.tab);
     setPicking(false);
     clearPendingNavigation();
-  }, [pendingNavigation, clearPendingNavigation]);
+  }, [pendingNavigation, clearPendingNavigation, scheduleNav]);
 
   if (selectedClassId === null) {
     return (
@@ -184,23 +183,23 @@ const Shell = () => {
       >
         {tab === "day" && (
           <DayView
-            date={date}
-            onDateChange={setDate}
+            date={scheduleNav.date}
+            onDateChange={scheduleNav.setDate}
             onPickClass={() => {
               setPicking(true);
             }}
             onOpenChanges={(nextDate) => {
-              setDate(nextDate);
+              scheduleNav.setDate(nextDate);
               setTab("changes");
             }}
           />
         )}
         {tab === "week" && (
           <WeekView
-            date={date}
-            onDateChange={setDate}
+            date={scheduleNav.date}
+            onDateChange={scheduleNav.setDate}
             onOpenDay={(next) => {
-              setDate(next);
+              scheduleNav.setDate(next);
               setTab("day");
             }}
             onPickClass={() => {
@@ -210,8 +209,8 @@ const Shell = () => {
         )}
         {tab === "changes" && (
           <ChangesView
-            date={date}
-            onDateChange={setDate}
+            date={scheduleNav.date}
+            onDateChange={scheduleNav.setDate}
             onPickClass={() => {
               setPicking(true);
             }}

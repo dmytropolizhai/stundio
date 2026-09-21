@@ -10,12 +10,14 @@ export const DatePicker = ({
   open,
   onOpenChange,
   onSelect,
+  title,
 }: {
   date: ISODate;
   today: ISODate;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (date: ISODate) => void;
+  title?: React.ReactNode;
 }) => {
   const t = useT();
   const lang = useLang();
@@ -28,7 +30,7 @@ export const DatePicker = ({
           aria-label={t("day.openCalendar")}
           className="inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)"
         >
-          <span>{dayTitle(date, today, t, lang)}</span>
+          <span>{title ?? dayTitle(date, today, t, lang)}</span>
 
           <Icon
             name="chevron-down"

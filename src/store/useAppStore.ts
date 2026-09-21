@@ -47,7 +47,11 @@ export type AppState = {
   pendingNavigation: NotificationNavigationTarget | null;
 
   hydrate: () => Promise<void>;
-  refresh: (options?: { date?: ISODate; force?: boolean }) => Promise<SyncOutcome>;
+  refresh: (options?: {
+    date?: ISODate;
+    scope?: "day" | "week";
+    force?: boolean;
+  }) => Promise<SyncOutcome>;
   /**
    * The device's own connectivity (`lib/network`), wired in from `watchConnectivity` — not a
    * second, parallel "offline" concept next to `syncStatus`. Losing connectivity sets
@@ -195,6 +199,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         set({ syncStatus: "syncing" });
         const outcome = await engine.sync({
           ...(options.date === undefined ? {} : { date: options.date }),
+          ...(options.scope === undefined ? {} : { scope: options.scope }),
           ...(options.force === undefined ? {} : { force: options.force }),
           building: get().settings.building,
         });
