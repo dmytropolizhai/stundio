@@ -29,7 +29,10 @@ export const TabBar = ({ tab, onChange }: { tab: Tab; onChange: (tab: Tab) => vo
   }));
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-nav-inset pb-[calc(--spacing(5)+var(--app-inset-bottom))]">
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-nav-inset pb-[calc(var(--space-5)+var(--app-inset-bottom))]"
+      style={{ transform: "translateZ(0)" }}
+    >
       <BottomNav
         items={items}
         value={tab}
