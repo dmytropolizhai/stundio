@@ -29,7 +29,12 @@ import type {
   Timetable,
   Weekday,
 } from "./types.ts";
-import { filterNotesForClass } from "./notes.ts";
+import {
+  extractNotePeriods,
+  filterNotesForClass,
+  isTeacherMentionedInNote,
+  noteTargetsClass,
+} from "./notes.ts";
 
 const WEEKDAYS: readonly Weekday[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
@@ -543,6 +548,36 @@ export const resolveDayAcross = (
     [...classTeacherNames],
     [...allTeacherNames],
   );
+
+  for (const lesson of out) {
+    const start = periodNum(lesson.period);
+    const lessonPeriodsList = Array.from({ length: Math.max(1, lesson.span) }, (_, i) => start + i);
+
+    const matchingNotes: string[] = [];
+    for (const note of filteredNotes.relevant) {
+      // Gate 1: the note names at least one period
+      const periods = extractNotePeriods(note);
+      if (periods.length === 0) continue;
+
+      // Must overlap the lesson's span
+      if (!overlaps(lessonPeriodsList, periods)) continue;
+
+      // Gate 2: the note is ADDRESSED: either noteTargetsClass(...) is true, or
+      // isTeacherMentionedInNote(note, t) matches one of that lesson's own teachers
+      const targetsClass = noteTargetsClass(note, className, allClasses);
+      const mentionsTeacher = lesson.teachers.some((t) => isTeacherMentionedInNote(note, t));
+
+      if (targetsClass || mentionsTeacher) {
+        if (!matchingNotes.includes(note)) {
+          matchingNotes.push(note);
+        }
+      }
+    }
+
+    if (matchingNotes.length > 0) {
+      lesson.noteRefs = matchingNotes;
+    }
+  }
 
   return {
     date,

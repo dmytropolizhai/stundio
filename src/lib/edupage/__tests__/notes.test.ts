@@ -3,14 +3,17 @@ import {
   areTeachersEqual,
   buildLatvianStem,
   extractMentionedTeachers,
+  extractNotePeriods,
   extractTargetGroups,
   filterNotesForClass,
   getTeacherTokens,
   isNoteRelevantForClass,
   isTargetMatch,
   isTeacherMentionedInNote,
+  noteTargetsClass,
   splitGroupAnnouncements,
 } from "../notes.ts";
+import { FIXTURES, readJsonFixture } from "./fixtures.ts";
 
 describe("splitGroupAnnouncements", () => {
   it("leaves single announcements intact", () => {
@@ -406,5 +409,69 @@ describe("filterNotesForClass with teacher names & surnames", () => {
     );
     expect(avRelevant).toEqual(notes);
     expect(avOther).toEqual([]);
+  });
+});
+
+describe("extractNotePeriods", () => {
+  const fixture = readJsonFixture<{ notes: string[] }>(FIXTURES.substJson);
+
+  it("extracts periods across every note string in data/subst_2026-09-09_classes.json", () => {
+    const expected: number[][] = [
+      [6, 7, 8, 9], // "SC2 grupai Sliežu ceļu virsbūves elementu uzturēšana 6-9 stunda - atcelta."
+      [10, 11], // "Pārvedu un to elementu uzturēšana 10-11 stunda - atcelta."
+      [1, 2, 3, 4, 5], // "PRT grupai 1-4 stunda Iespieddarba ražošanas procesa plānošana, 5 stunda brīva."
+      [5], // "PRT4 grupai 5 stunda Iespieddarba ražošanas procesa nodrošināšana, kontrole un uzskaite sk."
+      [], // "N."
+      [6], // "Tiltiņš.6 stunda brīva."
+      [6], // "N2-1 grupai 6. stunda- audzināšana."
+      [], // "A4-2 grupai stundas pašvadītas."
+      [], // "A3-2 grupai stundas pašvadītas."
+      [], // "A4-1 grupai stundas pašvadītas."
+      [4, 5, 10, 11, 12], // "A3-1 grupai 4-5 stunda -pašvadīti AV2-1 grupai 10-12 stundai - pašvadīti."
+      [6, 7, 8, 9], // "VA1 grupai 7-9 stunda - pašvadīti AV3-1 grupai 6-8 stunda -pašvadīti EA4 grupai stundas pašvaditas N1 grupai 8-9 stunda -pašvadīti"
+    ];
+
+    expect(fixture.notes.map((n) => extractNotePeriods(n))).toEqual(expected);
+  });
+
+  it("handles negative cases without false positives", () => {
+    // Digits not adjacent to "stund"
+    expect(extractNotePeriods("A4-2 grupai stundas pašvadītas.")).toEqual([]);
+    expect(extractNotePeriods("A3-2 grupai stundas pašvadītas.")).toEqual([]);
+    expect(extractNotePeriods("A4-1 grupai stundas pašvadītas.")).toEqual([]);
+    expect(extractNotePeriods("EA4 grupai stundas pašvaditas")).toEqual([]);
+
+    // Reversed range dropped whole
+    expect(extractNotePeriods("9-6 stunda")).toEqual([]);
+
+    // Implausible ranges dropped whole
+    expect(extractNotePeriods("20-25 stunda")).toEqual([]);
+    expect(extractNotePeriods("15 stunda")).toEqual([]);
+
+    // Clamped range to 0..12
+    expect(extractNotePeriods("10-14 stunda")).toEqual([10, 11, 12]);
+
+    // General note with no periods
+    expect(extractNotePeriods("Skolas bibliotēka šodien slēgta.")).toEqual([]);
+  });
+
+  it("handles dash separator between period and stunda", () => {
+    expect(extractNotePeriods("N3 grupai 6 - stunda atcelta, 7 stunda sports Sk.")).toEqual([6, 7]);
+  });
+});
+
+describe("noteTargetsClass", () => {
+  it("returns true when note explicitly targets the class", () => {
+    expect(noteTargetsClass("SC2 grupai 6-9 stunda - atcelta.", "SC2")).toBe(true);
+    expect(
+      noteTargetsClass("PRT grupai 1-4 stunda Iespieddarba ražošanas procesa plānošana", "PRT1"),
+    ).toBe(true);
+    expect(noteTargetsClass("DP2-1: 3. stunda atcelta", "DP2-1")).toBe(true);
+  });
+
+  it("returns false when note targets a different class or is general", () => {
+    expect(noteTargetsClass("SC2 grupai 6-9 stunda - atcelta.", "DP2-1")).toBe(false);
+    expect(noteTargetsClass("Skolas bibliotēka šodien slēgta.", "DP2-1")).toBe(false);
+    expect(noteTargetsClass("Šodien 6. stundā pasākums visiem.", "DP2-1")).toBe(false);
   });
 });

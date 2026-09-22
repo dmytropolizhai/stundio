@@ -457,3 +457,84 @@ describe("classWeekLessons", () => {
     expect(classWeekLessons([pointerDay], "c1")).toHaveLength(1);
   });
 });
+
+describe("soft linking of school announcements to lesson cards", () => {
+  const testTimetable = fakeTimetable("Galvenā ēka", "1175", [
+    { period: "6", span: 2, subject: "Informātika", teacher: "Bērziņš J", room: "101" },
+  ]);
+
+  it("links note naming periods 6-7 to period 6 span 2 lesson while keeping status normal and day.notes intact", () => {
+    const note = "AV1-1 grupai 6-7 stunda informāciju un komunikāciju tehnoloģijas - nenotiek.";
+    const subst: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [note],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [],
+    };
+
+    const day = resolveDay(testTimetable, subst, "c1", FIXTURE_DATE);
+    expect(day.lessons).toHaveLength(1);
+
+    const lesson = day.lessons[0]!;
+    expect(lesson.status).toBe("normal");
+    expect(lesson.noteRefs).toEqual([note]);
+    expect(day.notes).toContain(note);
+  });
+
+  it("attaches nothing when a note targets a different class", () => {
+    const otherNote = "SC2 grupai 6-7 stunda atcelta.";
+    const subst: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [otherNote],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [],
+    };
+
+    const day = resolveDay(testTimetable, subst, "c1", FIXTURE_DATE);
+    expect(day.lessons[0]?.noteRefs).toBeUndefined();
+  });
+
+  it("attaches nothing when a general announcement contains a period number", () => {
+    const generalNote = "Šodien 6. stundā pasākums skolas zālē visiem.";
+    const subst: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [generalNote],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [],
+    };
+
+    const day = resolveDay(testTimetable, subst, "c1", FIXTURE_DATE);
+    expect(day.lessons[0]?.noteRefs).toBeUndefined();
+  });
+
+  it("attaches nothing when a note has no periods", () => {
+    const noPeriodNote = "AV1-1 grupai stundas pašvadītas.";
+    const subst: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [noPeriodNote],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [],
+    };
+
+    const day = resolveDay(testTimetable, subst, "c1", FIXTURE_DATE);
+    expect(day.lessons[0]?.noteRefs).toBeUndefined();
+  });
+
+  it("attaches continuation line mentioning teacher to that teacher's lesson", () => {
+    const teacherNote = "Bērziņš.6 stunda brīva.";
+    const subst: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [teacherNote],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [],
+    };
+
+    const day = resolveDay(testTimetable, subst, "c1", FIXTURE_DATE);
+    expect(day.lessons[0]?.noteRefs).toEqual([teacherNote]);
+  });
+});

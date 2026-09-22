@@ -53,11 +53,13 @@ export {
   areTeachersEqual,
   buildLatvianStem,
   extractMentionedTeachers,
+  extractNotePeriods,
   extractTargetGroups,
   filterNotesForClass,
   getTeacherTokens,
   isNoteRelevantForClass,
   isTeacherMentionedInNote,
+  noteTargetsClass,
   splitGroupAnnouncements,
   type TeacherIdentifier,
 } from "./notes.ts";

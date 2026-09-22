@@ -131,6 +131,80 @@ export const isTargetMatch = (target: string, className: string): boolean => {
 };
 
 /**
+ * Checks whether an announcement text is explicitly targeted to the specified class.
+ * In this school "X grupai" designates the class (e.g. SC2, PRT4, N2-1).
+ */
+export const noteTargetsClass = (
+  note: string,
+  className: string,
+  allClasses: readonly string[] = [],
+): boolean => {
+  const targets = extractTargetGroups(note, allClasses);
+  return targets.some((t) => isTargetMatch(t, className));
+};
+
+/**
+ * Regex matching period numbers or ranges directly preceding Latvian "stunda":
+ * e.g. "6-9 stunda", "5 stunda brīva", "6. stunda- audzināšana", "10-12 stundai",
+ * "1-4 stunda", "7-9 stunda", "6 - stunda atcelta", "Tiltiņš.6 stunda brīva.".
+ *
+ * Negative lookbehind ensures we do not pick up digits in class identifiers or suffixes
+ * (e.g. "A4-2 grupai stundas pašvadītas" -> "4-2" is preceded by "A" and followed by "grupai").
+ */
+const NOTE_PERIOD_RE =
+  /(?<![\p{L}\d-])((?:\d{1,2}\.?\s*(?:[-–—]|,|un)\s*)*\d{1,2}\.?)\s*(?:[-–—]\s*)?stund\p{L}*/giu;
+
+const RANGE_RE = /^(\d{1,2})\.?\s*[-–—]\s*(\d{1,2})\.?$/;
+const SINGLE_RE = /^(\d{1,2})\.?$/;
+
+/**
+ * Extracts period numbers a note explicitly names, ascending, de-duplicated, and with ranges
+ * expanded. Digits must sit adjacent to "stund<declension>". Clamped to 0..12 (`Period.period` range);
+ * reversed or implausible ranges are dropped whole.
+ */
+export const extractNotePeriods = (note: string): number[] => {
+  const periods = new Set<number>();
+  const matches = note.matchAll(NOTE_PERIOD_RE);
+
+  for (const match of matches) {
+    const raw = match[1];
+    if (!raw) continue;
+
+    const parts = raw
+      .split(/(?:,|\bun\b)/i)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const part of parts) {
+      const rm = RANGE_RE.exec(part);
+      if (rm?.[1] !== undefined && rm[2] !== undefined) {
+        const start = parseInt(rm[1], 10);
+        const end = parseInt(rm[2], 10);
+        // Drop reversed ranges whole
+        if (start > end) continue;
+        // Drop implausible ranges whole (beyond timetable period range or span > 12)
+        if (start > 12 || end < 0 || end - start > 12) continue;
+        const s = Math.max(0, start);
+        const e = Math.min(12, end);
+        for (let p = s; p <= e; p++) {
+          periods.add(p);
+        }
+      } else {
+        const sm = SINGLE_RE.exec(part);
+        if (sm?.[1] !== undefined) {
+          const p = parseInt(sm[1], 10);
+          if (p >= 0 && p <= 12) {
+            periods.add(p);
+          }
+        }
+      }
+    }
+  }
+
+  return [...periods].sort((a, b) => a - b);
+};
+
+/**
  * Extracts name and surname tokens from a teacher label or TeacherRef.
  * Ignores 1-2 character initials (e.g. "N.", "J.").
  */

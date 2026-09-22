@@ -139,6 +139,7 @@ export const lv = {
   "lesson.building": "Ēka",
   "lesson.was": "Bija",
   "lesson.fromSchool": "No skolas",
+  "lesson.note": "Paziņojums",
   "lesson.close": "Aizvērt",
 
   "status.cancelled": "Atcelta",

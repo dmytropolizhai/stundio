@@ -132,6 +132,7 @@ export const ua: Dict = {
   "lesson.building": "Корпус",
   "lesson.was": "Було",
   "lesson.fromSchool": "Від школи",
+  "lesson.note": "Оголошення",
   "lesson.close": "Закрити",
 
   "status.cancelled": "Скасовано",

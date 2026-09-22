@@ -68,12 +68,30 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
             )}
           </dl>
 
-          {lesson.changeNote !== null && (
-            <Card tone="sunken" radius="lg" elevation="none" className="mt-4">
-              <p className="u-eyebrow">{t("lesson.fromSchool")}</p>
-              <p className="mt-1 font-text text-body text-fg">{lesson.changeNote}</p>
-            </Card>
-          )}
+          {(() => {
+            const schoolNotes: string[] = [];
+            if (lesson.changeNote !== null) {
+              schoolNotes.push(lesson.changeNote);
+            }
+            if (lesson.noteRefs !== undefined) {
+              for (const ref of lesson.noteRefs) {
+                if (!schoolNotes.includes(ref)) {
+                  schoolNotes.push(ref);
+                }
+              }
+            }
+            if (schoolNotes.length === 0) return null;
+            return (
+              <Card tone="sunken" radius="lg" elevation="none" className="mt-4">
+                <p className="u-eyebrow">{t("lesson.fromSchool")}</p>
+                {schoolNotes.map((note) => (
+                  <p key={note} className="mt-1 font-text text-body text-fg">
+                    {note}
+                  </p>
+                ))}
+              </Card>
+            );
+          })()}
 
           <Button variant="inverse" block onClick={onClose} className="mt-5">
             {t("lesson.close")}

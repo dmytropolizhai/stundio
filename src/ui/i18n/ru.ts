@@ -133,6 +133,7 @@ export const ru: Dict = {
   "lesson.building": "Корпус",
   "lesson.was": "Было",
   "lesson.fromSchool": "От школы",
+  "lesson.note": "Объявление",
   "lesson.close": "Закрыть",
 
   "status.cancelled": "Отменён",

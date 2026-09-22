@@ -132,6 +132,7 @@ export const en: Dict = {
   "lesson.building": "Building",
   "lesson.was": "Was",
   "lesson.fromSchool": "From school",
+  "lesson.note": "Announcement",
   "lesson.close": "Close",
 
   "status.cancelled": "Cancelled",
