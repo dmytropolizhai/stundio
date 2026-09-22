@@ -182,7 +182,9 @@ Arrow glyph is `➔` (U+2794).
 
 ### Known parser gaps (2026-09-09 sample: 55 rows, 0 × `other` after cross-day handling)
 - `.subst_note` sentence-splitting is heuristic; a surname like `"N. Tiltiņš"` can split wrong.
-  Treat notes as display-only free text.
+  Treat notes as display-only free text. Notes are soft-linked to `ResolvedLesson.noteRefs`
+  by period span and class/teacher addressing for display, while remaining deliberately
+  unparsed for `status` (never deriving `cancelled`).
 - `other` rows: inspect `raw`, extend `parse_info` patterns as new phrasings show up.
 - If the school switches UI language, every pattern above changes → re-derive from a fresh sample.
 

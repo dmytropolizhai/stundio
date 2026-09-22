@@ -37,6 +37,8 @@ export const LessonRow = memo(
     const status = live ? "now" : STATUS_TREATMENT[lesson.status];
     const accent = subjectAccent(lesson.subject, subjectColorOverrides, colorCodingEnabled);
 
+    const hasNote = (lesson.noteRefs?.length ?? 0) > 0;
+
     return (
       <li className="relative">
         <LessonCard
@@ -55,10 +57,19 @@ export const LessonRow = memo(
           status={status}
           timeVisible={showTime}
           badge={
-            live ? (
-              <Badge tone="brand" data-testid="status-now">
-                {t("day.now")}
-              </Badge>
+            live || hasNote ? (
+              <>
+                {live && (
+                  <Badge tone="brand" data-testid="status-now">
+                    {t("day.now")}
+                  </Badge>
+                )}
+                {hasNote && (
+                  <Badge tone="quiet" data-testid="lesson-note-badge" aria-label={t("lesson.note")}>
+                    {t("lesson.note")}
+                  </Badge>
+                )}
+              </>
             ) : undefined
           }
           indicator={

@@ -156,6 +156,11 @@ export type ResolvedLesson = {
    * merged from several buildings' timetables (see `resolveDayAcross`).
    */
   building?: Building;
+  /**
+   * Verbatim announcements naming one of this lesson's periods, always a subset of
+   * `ResolvedDay.notes`. Display-only; never affects `status`.
+   */
+  noteRefs?: string[];
 };
 
 export type ResolvedDay = {
