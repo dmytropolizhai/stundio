@@ -134,6 +134,7 @@ const STATUS_FOR_KIND: Partial<Record<Substitution["kind"], ResolvedStatus>> = {
   room_change: "room_change",
   moved_in: "added",
   added: "added",
+  other: "substituted",
 };
 
 /* ------------------------------------------------------------------ *
@@ -438,6 +439,14 @@ export const resolveDayAcross = (
       if (s.teacher !== null && s.kind === "substitution") {
         original.teachers = teacherList;
         teacherList = [teachersByLabel.get(s.teacher) ?? synthTeacher(s.teacher)];
+      } else if (s.teacherFrom !== null && s.kind === "substitution" && s.teacher === null) {
+        if (original.teachers === undefined) {
+          original.teachers =
+            teacherList.length > 0
+              ? teacherList
+              : [teachersByLabel.get(s.teacherFrom) ?? synthTeacher(s.teacherFrom)];
+        }
+        teacherList = [];
       }
       if (s.room !== null) {
         original.rooms = roomList;

@@ -41,15 +41,19 @@ export const ChangesLessonCard = ({ lesson, onOpen }: ChangesLessonCardProps) =>
       </div>
 
       <div className="flex flex-col gap-1 font-text text-caption text-muted">
-        {teacher !== "" && (
+        {(teacher !== "" || origTeacher !== "") && (
           <div className="flex items-center gap-1.5">
             <Icon name="user-round" size={14} className="shrink-0" />
             <span>
               {origTeacher !== "" && origTeacher !== teacher ? (
                 <>
                   <span className="line-through opacity-70">{origTeacher}</span>
-                  <span className="mx-1">{ARROW}</span>
-                  <strong className="text-fg">{teacher}</strong>
+                  {teacher !== "" && (
+                    <>
+                      <span className="mx-1">{ARROW}</span>
+                      <strong className="text-fg">{teacher}</strong>
+                    </>
+                  )}
                 </>
               ) : (
                 <span className="text-fg">{teacher}</span>

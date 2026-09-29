@@ -126,6 +126,24 @@ describe("parseInfo", () => {
     expect(r.teacher).toBe("Edgars Geislers");
     expect(r.room).toBe("109 (19)");
   });
+
+  it("classifies absent teacher in parentheses as substitution", () => {
+    const r = parseInfo("Programmatūras koda rakstīšana - (Vadims Malickis)", 2026);
+    expect(r.kind).toBe("substitution");
+    expect(r.subject).toBe("Programmatūras koda rakstīšana");
+    expect(r.teacherFrom).toBe("Vadims Malickis");
+    expect(r.teacher).toBeNull();
+  });
+
+  it("classifies teacher assignment via Skolotājs without Aizvietošana as substitution", () => {
+    const r = parseInfo(
+      "Preču uzskaite un dokumentēšana - Skolotājs: Lāsma Balceraite, +315 D(25) P",
+      2026,
+    );
+    expect(r.kind).toBe("substitution");
+    expect(r.subject).toBe("Preču uzskaite un dokumentēšana");
+    expect(r.teacher).toBe("Lāsma Balceraite");
+  });
 });
 
 describe("parseDaySubstitutions vs the Python oracle", () => {

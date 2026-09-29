@@ -137,6 +137,12 @@ export const parseInfo = (info: string, year: number): ParsedInfo => {
     kind = "substitution";
   }
 
+  const absentTeacher = /^\s*\(([^)]+)\)\s*(?:,|$)/.exec(rest);
+  if (absentTeacher?.[1] !== undefined) {
+    out.teacherFrom = absentTeacher[1].trim();
+    if (kind === "other") kind = "substitution";
+  }
+
   const roomChange = /Kabineta nomaiņa:\s*(.+?)(?:,\s|$)/.exec(rest);
   if (roomChange?.[1] !== undefined) {
     const { from, to } = oldNew(roomChange[1]);
@@ -147,7 +153,10 @@ export const parseInfo = (info: string, year: number): ParsedInfo => {
   }
 
   const teacher = /Skolotājs:\s*([^,]+)/.exec(rest);
-  if (teacher?.[1] !== undefined) out.teacher = teacher[1].trim();
+  if (teacher?.[1] !== undefined) {
+    out.teacher = teacher[1].trim();
+    if (kind === "other") kind = "substitution";
+  }
 
   const room = /Kabinets:\s*([^,]+)/.exec(rest);
   if (room?.[1] !== undefined) out.room = room[1].trim();

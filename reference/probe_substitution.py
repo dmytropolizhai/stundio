@@ -223,12 +223,18 @@ def parse_info(info: str) -> dict:
     if m := re.search(r"Aizvietošana:\s*(.+?)(?:,\s*Kabineta|,\s*Kabinets|$)", rest):
         out["teacher_from"], out["teacher"] = _old_new(m.group(1))
         kind = "substitution"
+    if m := re.search(r"^\s*\(([^)]+)\)\s*(?:,|$)", rest):
+        out["teacher_from"] = m.group(1).strip()
+        if kind == "other":
+            kind = "substitution"
     if m := re.search(r"Kabineta nomaiņa:\s*(.+?)(?:,\s|$)", rest):
         out["room_from"], out["room"] = _old_new(m.group(1))
         if kind == "other":
             kind = "room_change"
     if m := re.search(r"Skolotājs:\s*([^,]+)", rest):
         out["teacher"] = m.group(1).strip()
+        if kind == "other":
+            kind = "substitution"
     if m := re.search(r"Kabinets:\s*([^,]+)", rest):
         out["room"] = m.group(1).strip()
 
