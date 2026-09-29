@@ -62,6 +62,40 @@ describe("weekPeriods", () => {
     expect(weekPeriods([day(lesson("3", "10:10", "11:40", 2))])[0]?.end).toBe("11:40");
   });
 
+  it("includes all periods covered by a multi-period lesson span", () => {
+    // A 5-period block starting at period 8 (14:20) runs until period 12 (18:00).
+    const periods = weekPeriods([day(lesson("8", "14:20", "18:00", 5))]);
+    expect(periods.map((p) => p.period)).toEqual(["8", "9", "10", "11", "12"]);
+    expect(periods.find((p) => p.period === "8")?.start).toBe("14:20");
+    expect(periods.find((p) => p.period === "12")).toEqual({
+      period: "12",
+      start: "17:20",
+      end: "18:00",
+    });
+  });
+
+  it("uses day.periods bell schedule when available for covered periods", () => {
+    const dayWithPeriods = {
+      lessons: [lesson("8", "14:20", "18:00", 5)],
+      periods: [
+        { period: "8", name: "8", start: "14:20", end: "15:00" },
+        { period: "9", name: "9", start: "15:05", end: "15:45" },
+        { period: "10", name: "10", start: "15:50", end: "16:30" },
+        { period: "11", name: "11", start: "16:35", end: "17:15" },
+        { period: "12", name: "12", start: "17:20", end: "18:00" },
+      ],
+    } as unknown as ResolvedDay;
+
+    const periods = weekPeriods([dayWithPeriods]);
+    expect(periods).toEqual([
+      { period: "8", start: "14:20", end: "15:00" },
+      { period: "9", start: "15:05", end: "15:45" },
+      { period: "10", start: "15:50", end: "16:30" },
+      { period: "11", start: "16:35", end: "17:15" },
+      { period: "12", start: "17:20", end: "18:00" },
+    ]);
+  });
+
   it("ignores days with nothing cached", () => {
     expect(weekPeriods([null, null])).toEqual([]);
   });

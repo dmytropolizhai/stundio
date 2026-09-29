@@ -174,6 +174,48 @@ describe("buildWeekImageData", () => {
     expect(data.rows).toEqual([]);
     expect(data.classTeacher).toBeNull();
   });
+
+  it("populates cells across all periods of a multi-period lesson", () => {
+    const multiPeriodDay = {
+      date: "2026-09-07",
+      weekday: "mon",
+      classId: "test",
+      building: "TIC",
+      buildings: ["TIC"],
+      ttNum: "1",
+      lessons: [
+        {
+          period: "8",
+          start: "14:20",
+          end: "18:00",
+          span: 5,
+          subject: { id: "s1", name: "Elektrotehnikas pamati", short: "EPE" },
+          teachers: [],
+          rooms: [{ id: "r1", name: "DK-237", short: "DK-237" }],
+          group: null,
+          status: "normal",
+          changeNote: null,
+        },
+      ],
+      notes: [],
+      stale: false,
+    } as unknown as ResolvedDay;
+
+    const data = buildWeekImageData({
+      dates: ["2026-09-07"],
+      days: [multiPeriodDay],
+      className: "EA2",
+      classTeacher: null,
+      theme: shareTheme(),
+      lang: "lv",
+      t,
+    });
+
+    expect(data.rows.map((r) => r.period)).toEqual(["8", "9", "10", "11", "12"]);
+    for (const row of data.rows) {
+      expect(row.cells[0]?.label).toBe("EPE");
+    }
+  });
 });
 
 describe("the message the image travels with", () => {

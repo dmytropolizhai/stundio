@@ -587,6 +587,7 @@ export const resolveDayAcross = (
     buildings,
     ttNum: lead?.meta.ttNum ?? "",
     lessons: out,
+    periods,
     notes: filteredNotes.relevant,
     allNotes: rawNotes,
     stale:

@@ -114,7 +114,11 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
       if (day === null || d === undefined) return;
 
       for (const lesson of day.lessons) {
-        map.set(`${d}|${lesson.period}`, { lesson, day });
+        const start = periodNum(lesson.period);
+        const span = Math.max(1, lesson.span);
+        for (let offset = 0; offset < span; offset += 1) {
+          map.set(`${d}|${String(start + offset)}`, { lesson, day });
+        }
       }
     });
 

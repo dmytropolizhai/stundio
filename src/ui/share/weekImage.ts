@@ -179,7 +179,17 @@ export const buildWeekImageData = ({
     start: slot.start,
     end: slot.end,
     cells: days.map((day) => {
-      const lesson = day?.lessons.find((l) => l.period === slot.period);
+      const lesson = day?.lessons.find((l) => {
+        if (l.period === slot.period) return true;
+        const start = Number(l.period);
+        const current = Number(slot.period);
+        return (
+          Number.isFinite(start) &&
+          Number.isFinite(current) &&
+          current >= start &&
+          current < start + Math.max(1, l.span)
+        );
+      });
       return day === null || lesson === undefined
         ? null
         : toCell(day, lesson, theme, subjectColorOverrides, subjectColorCodingEnabled);
