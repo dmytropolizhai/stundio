@@ -39,14 +39,20 @@ export const ChangesSubstCard = ({ item }: ChangesSubstCardProps) => {
       )}
 
       <div className="flex flex-col gap-1 font-text text-caption text-muted">
-        {item.teacher !== null && (
+        {(item.teacher !== null || item.teacherFrom !== null) && (
           <div className="flex items-center gap-1.5">
             <Icon name="user-round" size={14} className="shrink-0" />
             <span>
               {item.teacherFrom !== null ? (
                 <>
-                  <span className="line-through opacity-70">{item.teacherFrom}</span> {ARROW}{" "}
-                  <strong className="text-fg">{item.teacher}</strong>
+                  <span className="line-through opacity-70">{item.teacherFrom}</span>
+                  {item.teacher !== null && (
+                    <>
+                      {" "}
+                      {ARROW}{" "}
+                      <strong className="text-fg">{item.teacher}</strong>
+                    </>
+                  )}
                 </>
               ) : (
                 <strong className="text-fg">{item.teacher}</strong>

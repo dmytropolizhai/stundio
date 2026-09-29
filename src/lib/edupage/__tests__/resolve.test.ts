@@ -538,3 +538,83 @@ describe("soft linking of school announcements to lesson cards", () => {
     expect(day.lessons[0]?.noteRefs).toEqual([teacherNote]);
   });
 });
+
+describe("resolveDay with absent teacher or unclassified substitution", () => {
+  const testTimetable = fakeTimetable("Galvenā ēka", "1175", [
+    { period: "1", subject: "Programmatūra", teacher: "Malickis V" },
+  ]);
+
+  it("marks unclassified substitution as substituted and keeps changeNote", () => {
+    const subst: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [
+        {
+          date: FIXTURE_DATE,
+          className: "AV1-1",
+          group: null,
+          periods: [1],
+          isOriginalSlot: false,
+          kind: "other",
+          subject: "Programmatūra",
+          subjectFrom: null,
+          teacher: null,
+          teacherFrom: null,
+          room: null,
+          roomFrom: null,
+          movedFromPeriod: null,
+          movedToPeriod: null,
+          movedFromDate: null,
+          movedToDate: null,
+          raw: "Programmatūra - unclassified change note",
+        },
+      ],
+    };
+
+    const day = resolveDay(testTimetable, subst, "c1", FIXTURE_DATE);
+    expect(day.lessons).toHaveLength(1);
+    const lesson = day.lessons[0]!;
+    expect(lesson.status).toBe("substituted");
+    expect(lesson.changeNote).toBe("Programmatūra - unclassified change note");
+  });
+
+  it("handles absent teacher without replacement: records original teacher and sets status substituted", () => {
+    const subst: DaySubstitutions = {
+      date: FIXTURE_DATE,
+      mode: "classes",
+      notes: [],
+      fetchedAt: "2026-09-09T00:00:00.000Z",
+      items: [
+        {
+          date: FIXTURE_DATE,
+          className: "AV1-1",
+          group: null,
+          periods: [1],
+          isOriginalSlot: false,
+          kind: "substitution",
+          subject: "Programmatūra",
+          subjectFrom: null,
+          teacher: null,
+          teacherFrom: "Malickis V",
+          room: null,
+          roomFrom: null,
+          movedFromPeriod: null,
+          movedToPeriod: null,
+          movedFromDate: null,
+          movedToDate: null,
+          raw: "Programmatūra - (Malickis V)",
+        },
+      ],
+    };
+
+    const day = resolveDay(testTimetable, subst, "c1", FIXTURE_DATE);
+    expect(day.lessons).toHaveLength(1);
+    const lesson = day.lessons[0]!;
+    expect(lesson.status).toBe("substituted");
+    expect(lesson.original?.teachers?.map((t) => t.short)).toEqual(["Malickis V"]);
+    expect(lesson.teachers).toEqual([]);
+    expect(lesson.changeNote).toBe("Programmatūra - (Malickis V)");
+  });
+});
