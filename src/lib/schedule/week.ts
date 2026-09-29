@@ -31,27 +31,90 @@ const periodNum = (period: string): number => {
   return Number.isFinite(n) ? n : 0;
 };
 
+export const DEFAULT_PERIOD_TIMES: Record<string, { start: HHMM; end: HHMM }> = {
+  "0": { start: "07:45", end: "08:25" },
+  "1": { start: "08:30", end: "09:10" },
+  "2": { start: "09:15", end: "09:55" },
+  "3": { start: "10:10", end: "10:50" },
+  "4": { start: "10:55", end: "11:35" },
+  "5": { start: "12:05", end: "12:45" },
+  "6": { start: "12:50", end: "13:30" },
+  "7": { start: "13:35", end: "14:15" },
+  "8": { start: "14:20", end: "15:00" },
+  "9": { start: "15:05", end: "15:45" },
+  "10": { start: "15:50", end: "16:30" },
+  "11": { start: "16:35", end: "17:15" },
+  "12": { start: "17:20", end: "18:00" },
+};
+
 /**
  * The period rows a week actually uses, with the clock times that row runs between.
  *
  * An empty row 0 or row 12 is a wasted row in the grid — and a wasted band on a shared card —
- * so only periods some day in the week fills come back. A double lesson's `end` is the end of
- * the *whole block* (`resolveDay`), which would make row N claim row N+1's finishing time, so a
- * single-period lesson wins the row's times whenever the week has one.
+ * so only periods some day in the week fills come back. Multi-period lessons (span > 1) occupy
+ * all periods across their duration, and each covered period row is included. A double lesson's
+ * `end` is the end of the *whole block* (`resolveDay`), which would make row N claim row N+1's
+ * finishing time, so a single-period lesson or the school's period bells win the row's times
+ * whenever available.
  */
 export const weekPeriods = (days: readonly (ResolvedDay | null)[]): WeekPeriod[] => {
+  const periodDefs = new Map<string, { start: HHMM; end: HHMM }>();
+  for (const day of days) {
+    for (const p of day?.periods ?? []) {
+      if (!periodDefs.has(p.period) && p.start !== "" && p.end !== "") {
+        periodDefs.set(p.period, { start: p.start, end: p.end });
+      }
+    }
+  }
+
   const rows = new Map<string, { times: WeekPeriod; exact: boolean }>();
 
   for (const day of days) {
     for (const lesson of day?.lessons ?? []) {
-      const exact = lesson.span <= 1;
-      const known = rows.get(lesson.period);
-      if (known !== undefined && (known.exact || !exact)) continue;
+      const startNum = periodNum(lesson.period);
+      const span = Math.max(1, lesson.span);
 
-      rows.set(lesson.period, {
-        exact,
-        times: { period: lesson.period, start: lesson.start, end: lesson.end },
-      });
+      for (let offset = 0; offset < span; offset += 1) {
+        const pKey = String(startNum + offset);
+        const exact = span === 1;
+
+        const known = rows.get(pKey);
+        if (known !== undefined && (known.exact || !exact)) continue;
+
+        const def = periodDefs.get(pKey);
+        const fallbackDef = DEFAULT_PERIOD_TIMES[pKey];
+
+        if (exact) {
+          rows.set(pKey, {
+            exact: true,
+            times: { period: pKey, start: lesson.start, end: lesson.end },
+          });
+        } else if (def !== undefined) {
+          rows.set(pKey, {
+            exact: false,
+            times: { period: pKey, start: def.start, end: def.end },
+          });
+        } else if (offset === 0) {
+          rows.set(pKey, {
+            exact: false,
+            times: { period: pKey, start: lesson.start, end: lesson.end },
+          });
+        } else if (fallbackDef !== undefined) {
+          rows.set(pKey, {
+            exact: false,
+            times: { period: pKey, start: fallbackDef.start, end: fallbackDef.end },
+          });
+        } else {
+          rows.set(pKey, {
+            exact: false,
+            times: {
+              period: pKey,
+              start: known?.times.start ?? "",
+              end: offset === span - 1 ? lesson.end : (known?.times.end ?? lesson.end),
+            },
+          });
+        }
+      }
     }
   }
 

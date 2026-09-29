@@ -188,6 +188,11 @@ describe("WeekGrid merge", () => {
     render(<WeekGrid days={days} periods={gappy} mergeConsecutive />);
     expect(screen.getAllByTestId("week-cell")).toHaveLength(2);
   });
+
+  it("renders the last period's end time as a closing label below the grid", () => {
+    render(<WeekGrid days={days} periods={periods} />);
+    expect(screen.getByText("10:55")).toBeDefined();
+  });
 });
 
 describe("WeekView", () => {

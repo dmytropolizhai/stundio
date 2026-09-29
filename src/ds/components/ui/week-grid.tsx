@@ -209,6 +209,20 @@ export const WeekGrid = <K extends string>({
       </span>
     ))}
 
+    {/*
+      Every other row's label is its *start* time — the next row down implies where it ends.
+      The last row has no next row, so without this the grid's final lesson (and any block that
+      merges into it) reads as if it stops at the last period's start rather than its actual end.
+    */}
+    {periods.length > 0 && (
+      <span
+        className="u-data flex h-4 items-start text-muted"
+        style={{ gridColumn: 1, gridRow: periods.length + 2 }}
+      >
+        {periods[periods.length - 1]?.end}
+      </span>
+    )}
+
     {days.map((day, colIndex) =>
       placementsFor(day, periods, mergeConsecutive).map((placement, rowIndex) => {
         const gridColumn = colIndex + 2;
