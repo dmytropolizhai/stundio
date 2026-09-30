@@ -2,6 +2,7 @@ import type { Dict } from "./lv.ts";
 
 export const ua: Dict = {
   "app.title": "Stundio",
+  "general.continue": "Продовжити",
 
   "nav.day": "День",
   "nav.week": "Тиждень",
@@ -11,6 +12,24 @@ export const ua: Dict = {
 
   "onboarding.title": "Оберіть свій клас",
   "onboarding.subtitle": "Ваш розклад та його зміни — працює і офлайн.",
+
+  "onboarding.persona.title": "Обери свою сторону",
+  "onboarding.persona.subtitle": "Налаштуй розклад під свою роль",
+  "onboarding.persona.student.title": "Учень",
+  "onboarding.persona.student.desc": "Хочу бачити розклад своєї групи та заміни",
+  "onboarding.persona.teacher.title": "Викладач",
+  "onboarding.persona.teacher.desc": "Хочу бачити свої уроки, кабінети та заміни",
+
+  "onboarding.teacher.title": "Обери викладача",
+  "onboarding.teacher.subtitle": "Пошук за ім'ям або прізвищем",
+
+  "teacher.search": "Пошук викладача…",
+  "teacher.none": "Викладача не знайдено",
+  "teacher.formClass": "Класний керівник",
+  "teacher.cover": "Заміна",
+  "teacher.coverFor": "Замінює: {name}",
+  "teacher.view.own": "Мої уроки",
+  "teacher.view.formClass": "Мій клас",
 
   "onboarding.language.title": "Оберіть мову",
   "onboarding.language.continue": "Продовжити",
@@ -87,7 +106,9 @@ export const ua: Dict = {
 
   "changes.title": "Зміни",
   "changes.filter.myClass": "Моя група",
+  "changes.filter.myChanges": "Мої зміни",
   "changes.filter.all": "Вся школа",
+  "changes.absentTeachers": "Сьогодні відсутні",
   "changes.emptyForClass": "Змін немає",
   "changes.emptyForClassHint": "У вашої групи уроки йдуть за звичайним розкладом",
   "changes.emptyAll": "Немає зареєстрованих змін",
@@ -165,6 +186,11 @@ export const ua: Dict = {
   "subjects.note.badge": "Є нотатка",
 
   "settings.title": "Налаштування",
+  "settings.identity": "Роль та розклад",
+  "settings.persona.student": "Учень",
+  "settings.persona.teacher": "Викладач",
+  "settings.identity.sheetTitle": "Вибір ролі",
+  "settings.identity.confirm": "Підтвердити",
   "settings.class": "Моя група",
   "settings.change": "Змінити",
   "settings.building": "Корпус",
@@ -209,6 +235,8 @@ export const ua: Dict = {
   "notification.lessonReminder.title": "{subject} через {minutes} хв",
   "notification.changed.title": "Розклад змінився",
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
+  "notification.cover.title": "Нова заміна",
+  "notification.cover.body": "Вам призначено заміну",
   "notification.update.title": "Доступне оновлення",
   "notification.update.body": "Stundio {version} готовий до завантаження.",
   "widget.now": "Зараз",
@@ -313,26 +341,6 @@ export const ua: Dict = {
   "customization.subjectColors.empty": "Вибери клас, щоб налаштувати кольори предметів.",
   "customization.preview.subject": "Приклад предмета",
   "customization.reset": "Скинути налаштування",
-  "iphoneAnnouncement.badge": "НОВЕ",
-  "iphoneAnnouncement.title": "Stundio на iPhone",
-  "iphoneAnnouncement.headline": "Тепер також доступно на iPhone",
-  "iphoneAnnouncement.subtitle":
-    "Зручний розклад, заміни та робота без інтернету тепер доступні в Safari.",
-  "iphoneAnnouncement.step1.title": "Відкрийте Safari",
-  "iphoneAnnouncement.step1.desc": "Перейдіть на stundio.pages.dev",
-  "iphoneAnnouncement.step2.title": "Натисніть «Поділитися»",
-  "iphoneAnnouncement.step2.desc": "Іконка квадрата зі стрілкою вгору внизу екрана",
-  "iphoneAnnouncement.step3.title": "На початковий екран",
-  "iphoneAnnouncement.step3.desc": "Оберіть «На початковий екран», щоб встановити застосунок",
-  "iphoneAnnouncement.share": "Поділитися з друзями",
-  "iphoneAnnouncement.shareWorking": "Створюємо зображення…",
-  "iphoneAnnouncement.done": "Зрозуміло",
-  "iphoneAnnouncement.shareTitle": "Stundio на iPhone",
-  "iphoneAnnouncement.shareMessage":
-    "Stundio тепер доступний на iPhone! 📱\n\nЯк встановити:\n1. Відкрийте Safari та перейдіть на https://stundio.pages.dev\n2. Натисніть «Поділитися» (іконка зі стрілкою вгору)\n3. Оберіть «На початковий екран»\n\nЗручний розклад та заміни: https://stundio.pages.dev",
-  "settings.iphoneShare": "Stundio на iPhone",
-  "settings.iphoneShareHint": "Інструкція та посилання для встановлення Stundio на iPhone",
-  "settings.iphoneShareAction": "Поділитися",
 
   "iphoneInstall.title": "Додайте Stundio на початковий екран",
   "iphoneInstall.subtitle":
@@ -341,6 +349,21 @@ export const ua: Dict = {
     "Натисніть кнопку «На початковий екран» нижче або кнопку Поділитися в Safari",
   "iphoneInstall.step2": "У меню виберіть «На початковий екран»",
   "iphoneInstall.action": "Додати на початковий екран",
+  "teacherAnnouncement.title": "Stundio для вчителів",
+  "teacherAnnouncement.headline": "Тепер доступно і вчителям",
+  "teacherAnnouncement.subtitle":
+    "Вчителі тепер можуть використовувати Stundio для перегляду свого розкладу та замін.",
+  "teacherAnnouncement.step1.title": "Перейдіть до налаштувань",
+  "teacherAnnouncement.step1.desc": "Відкрийте вкладку налаштувань",
+  "teacherAnnouncement.step2.title": "Змініть профіль",
+  "teacherAnnouncement.step2.desc": "Виберіть профіль вчителя",
+  "teacherAnnouncement.step3.title": "Виберіть своє ім'я",
+  "teacherAnnouncement.step3.desc": "Знайдіть себе у списку, щоб отримати розклад",
+  "teacherAnnouncement.tryIt": "Спробувати",
+  "teacherAnnouncement.done": "Зрозуміло",
+  "settings.teacherShare": "Функції для вчителів",
+  "settings.teacherShareHint": "Показати сповіщення про функції для вчителів",
+  "settings.teacherShareAction": "Переглянути",
   "iphoneInstall.dismiss": "Продовжити в браузері",
   "settings.iphoneInstall": "Додати на початковий екран",
   "settings.iphoneInstallHint": "Встановити Stundio як застосунок на iPhone",

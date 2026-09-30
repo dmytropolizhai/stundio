@@ -38,16 +38,21 @@ export {
   selectTimetables,
   type TimetableSelection,
 } from "./select.ts";
-export { otherRatio, parseDaySubstitutions } from "./substitutions.ts";
+export { otherRatio, parseAbsentTeachers, parseDaySubstitutions } from "./substitutions.ts";
 export {
   classWeekLessons,
+  coverDuties,
   listSubgroups,
+  listTeachers,
   resolveDay,
   resolveDayAcross,
+  resolveTeacherDay,
+  resolveTeacherDayAcross,
   weekdayOf,
   type ClassWeekLesson,
   type DaySource,
   type ResolveOptions,
+  type TeacherListItem,
 } from "./resolve.ts";
 export {
   areTeachersEqual,
@@ -63,3 +68,4 @@ export {
   splitGroupAnnouncements,
   type TeacherIdentifier,
 } from "./notes.ts";
+export { indexTeachersByKey, lookupTeacher, teacherKey } from "./teacher-names.ts";

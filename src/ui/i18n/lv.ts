@@ -8,6 +8,7 @@
  */
 export const lv = {
   "app.title": "Stundio",
+  "general.continue": "Turpināt",
 
   "nav.day": "Diena",
   "nav.week": "Nedēļa",
@@ -17,6 +18,24 @@ export const lv = {
 
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",
+
+  "onboarding.persona.title": "Izvēlies savu pusi",
+  "onboarding.persona.subtitle": "Pielāgo sarakstu savām vajadzībām",
+  "onboarding.persona.student.title": "Skolēns",
+  "onboarding.persona.student.desc": "Gribu redzēt savas klases stundas un izmaiņas",
+  "onboarding.persona.teacher.title": "Skolotājs",
+  "onboarding.persona.teacher.desc": "Gribu redzēt savas stundas, kabinetus un aizvietošanas",
+
+  "onboarding.teacher.title": "Izvēlies skolotāju",
+  "onboarding.teacher.subtitle": "Meklē pēc vārda vai uzvārda",
+
+  "teacher.search": "Meklēt skolotāju…",
+  "teacher.none": "Nav atrasts neviens skolotājs",
+  "teacher.formClass": "Klases audzinātājs",
+  "teacher.cover": "Aizvietošana",
+  "teacher.coverFor": "Aizvieto: {name}",
+  "teacher.view.own": "Manas stundas",
+  "teacher.view.formClass": "Mana klase",
 
   "onboarding.language.title": "Izvēlies valodu",
   "onboarding.language.continue": "Turpināt",
@@ -94,7 +113,9 @@ export const lv = {
 
   "changes.title": "Izmaiņas",
   "changes.filter.myClass": "Mana grupa",
+  "changes.filter.myChanges": "Manas izmaiņas",
   "changes.filter.all": "Visa skola",
+  "changes.absentTeachers": "Šodien prombūtnē",
   "changes.emptyForClass": "Izmaiņu nav",
   "changes.emptyForClassHint": "Tavai grupai šai dienai stundas notiek pēc pamatsaraksta",
   "changes.emptyAll": "Nav reģistrētu izmaiņu",
@@ -172,6 +193,11 @@ export const lv = {
   "subjects.note.badge": "Ir piezīme",
 
   "settings.title": "Iestatījumi",
+  "settings.identity": "Loma un saraksts",
+  "settings.persona.student": "Skolēns",
+  "settings.persona.teacher": "Skolotājs",
+  "settings.identity.sheetTitle": "Izvēlies lomu",
+  "settings.identity.confirm": "Apstiprināt",
   "settings.class": "Mana grupa",
   "settings.change": "Mainīt",
   "settings.building": "Ēka",
@@ -215,6 +241,8 @@ export const lv = {
   "notification.lessonReminder.title": "{subject} pēc {minutes} min",
   "notification.changed.title": "Izmaiņas stundu sarakstā",
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",
+  "notification.cover.title": "Jauna aizvietošana",
+  "notification.cover.body": "Tev piešķirta aizvietošanas stunda",
   "notification.update.title": "Pieejams jauninājums",
   "notification.update.body": "Stundio {version} ir pieejama lejupielādei.",
   "widget.now": "Tagad",
@@ -320,26 +348,6 @@ export const lv = {
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",
-  "iphoneAnnouncement.badge": "JAUNUMS",
-  "iphoneAnnouncement.title": "Stundio uz iPhone",
-  "iphoneAnnouncement.headline": "Tagad arī pieejams uz iPhone",
-  "iphoneAnnouncement.subtitle":
-    "Ērts stundu saraksts, aizvietošanas un bezsaistes režīms tagad pieejams arī Safari pārlūkā.",
-  "iphoneAnnouncement.step1.title": "Atver Safari",
-  "iphoneAnnouncement.step1.desc": "Dodies uz vietni stundio.pages.dev",
-  "iphoneAnnouncement.step2.title": "Nospied «Kopīgot»",
-  "iphoneAnnouncement.step2.desc": "Ikona ar kvadrātu un bultiņu uz augšu ekrāna apakšā",
-  "iphoneAnnouncement.step3.title": "Pievieno sākuma ekrānam",
-  "iphoneAnnouncement.step3.desc": "Izvēlies «Pievienot sākuma ekrānam», lai instalētu lietotni",
-  "iphoneAnnouncement.share": "Kopīgot ar draugiem",
-  "iphoneAnnouncement.shareWorking": "Sagatavo attēlu…",
-  "iphoneAnnouncement.done": "Sapratu",
-  "iphoneAnnouncement.shareTitle": "Stundio uz iPhone",
-  "iphoneAnnouncement.shareMessage":
-    "Stundio tagad pieejams iPhone! 📱\n\nKā uzstādīt:\n1. Atver Safari un dodies uz https://stundio.pages.dev\n2. Nospied «Kopīgot» (ikona ar bultiņu uz augšu)\n3. Izvēlies «Pievienot sākuma ekrānam»\n\nĒrts stundu saraksts un aizvietošanas: https://stundio.pages.dev",
-  "settings.iphoneShare": "Stundio uz iPhone",
-  "settings.iphoneShareHint": "Pamācība un saite, kā uzstādīt Stundio uz iPhone",
-  "settings.iphoneShareAction": "Kopīgot",
 
   "iphoneInstall.title": "Pievieno Stundio sākuma ekrānam",
   "iphoneInstall.subtitle":
@@ -347,6 +355,21 @@ export const lv = {
   "iphoneInstall.step1": "Nospied pogu zemāk «Pievienot sākuma ekrānam» vai pārlūka pogu Kopīgot",
   "iphoneInstall.step2": "Izvēlnē izvēlies «Pievienot sākuma ekrānam»",
   "iphoneInstall.action": "Pievienot sākuma ekrānam",
+  "teacherAnnouncement.title": "Stundio skolotājiem",
+  "teacherAnnouncement.headline": "Tagad pieejams arī skolotājiem",
+  "teacherAnnouncement.subtitle":
+    "Skolotāji tagad var izmantot Stundio, lai apskatītu savas stundas, kabinetus un aizvietošanas.",
+  "teacherAnnouncement.step1.title": "Dodies uz iestatījumiem",
+  "teacherAnnouncement.step1.desc": "Atver iestatījumu sadaļu",
+  "teacherAnnouncement.step2.title": "Maini profilu",
+  "teacherAnnouncement.step2.desc": "Izvēlies skolotāja profilu",
+  "teacherAnnouncement.step3.title": "Izvēlies savu vārdu",
+  "teacherAnnouncement.step3.desc": "Atrodi sevi sarakstā un saņem savu stundu sarakstu",
+  "teacherAnnouncement.tryIt": "Izmēģināt",
+  "teacherAnnouncement.done": "Sapratu",
+  "settings.teacherShare": "Paziņojums skolotājiem",
+  "settings.teacherShareHint": "Parādīt paziņojumu par funkcijām skolotājiem",
+  "settings.teacherShareAction": "Skatīt",
   "iphoneInstall.dismiss": "Turpināt pārlūkā",
   "settings.iphoneInstall": "Pievienot sākuma ekrānam",
   "settings.iphoneInstallHint": "Instalēt Stundio kā lietotni savā iPhone",

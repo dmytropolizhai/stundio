@@ -1,7 +1,7 @@
 {
   "name": "stundio",
   "private": true,
-  "version": "v1.3-elna",
+  "version": "v2.0.0",
   "type": "module",
   "engines": {
     "node": ">=20"

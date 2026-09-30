@@ -121,6 +121,40 @@ describe("what counts as a change", () => {
 
     expect(outcome.changedDates).toContain(DATE);
   });
+
+  it("scopes changes to selected teacher when persona is teacher", async () => {
+    server.substitutionsHtml = `
+      <div class="section">
+        <div class="header"><span>A1-2</span></div>
+        <div class="row"><div class="period">1</div><div class="info">Mat - Aizvietošana: Jānis Bērziņš ➔ Pēteris Kalniņš</div></div>
+      </div>`;
+    await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
+    const tt = await cache.getTimetable("1175");
+    const teacher = tt?.teachers.find((t) => t.short.includes("Ķere"));
+    expect(teacher).toBeDefined();
+
+    await cache.putSettings({
+      ...(await cache.getSettings()),
+      persona: "teacher",
+      selectedTeacherId: teacher!.id,
+    });
+
+    server.substitutionsHtml = `
+      <div class="section">
+        <div class="header"><span>A1-2</span></div>
+        <div class="row"><div class="period">1</div><div class="info">Mat - Aizvietošana: Jānis Bērziņš ➔ Ilze Ozoliņa</div></div>
+      </div>`;
+    const outcome1 = await engineAt(`${DATE}T09:00:00Z`).sync({ date: DATE });
+    expect(outcome1.changedDates).toEqual([]);
+
+    server.substitutionsHtml = `
+      <div class="section">
+        <div class="header"><span>A1-2</span></div>
+        <div class="row"><div class="period">1</div><div class="info">Mat - Aizvietošana: Jānis Bērziņš ➔ Gene Ķere</div></div>
+      </div>`;
+    const outcome2 = await engineAt(`${DATE}T10:00:00Z`).sync({ date: DATE });
+    expect(outcome2.changedDates).toContain(DATE);
+  });
 });
 
 describe("re-syncing with nothing new", () => {

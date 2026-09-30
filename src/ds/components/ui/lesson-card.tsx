@@ -83,6 +83,7 @@ export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
     start: string;
     end: string;
     subject: ReactNode;
+    subtitle?: ReactNode;
     teacher?: ReactNode;
     room?: ReactNode;
     /**
@@ -118,6 +119,7 @@ export const LessonCard = ({
   start,
   end,
   subject,
+  subtitle,
   teacher,
   room,
   building,
@@ -208,6 +210,12 @@ export const LessonCard = ({
         >
           {subject}
         </h3>
+
+        {subtitle !== undefined && (
+          <div className={cn("font-text text-caption", meta, cancelled && "line-through")}>
+            {subtitle}
+          </div>
+        )}
 
         {(room !== undefined || teacher !== undefined || building !== undefined) && (
           <div className={cn("flex flex-wrap gap-3.5 font-text text-caption", meta)}>

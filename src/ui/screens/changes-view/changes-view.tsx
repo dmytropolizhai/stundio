@@ -12,6 +12,7 @@ import { LessonSheet } from "@/ui/screens/lesson-sheet";
 import { ChangesTopBar } from "./changes-top-bar.tsx";
 import { ChangesMyClass } from "./changes-my-class.tsx";
 import { ChangesAllClasses } from "./changes-all-classes.tsx";
+import { ChangesAbsentTeachers } from "./changes-absent-teachers.tsx";
 
 const SWIPE_THRESHOLD_PX = 56;
 
@@ -32,11 +33,17 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
   const [openLesson, setOpenLesson] = useState<ResolvedLesson | null>(null);
 
   const ready = useAppStore((s) => s.ready);
+  const persona = useAppStore((s) => s.settings.persona);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedClassShort = useAppStore((s) => s.selectedClassShort());
+  const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
+  const selectedClassShort = useAppStore((s) =>
+    s.settings.persona === "teacher" ? null : s.selectedClassShort(),
+  );
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
   const substitutions = useAppStore((s) => s.substitutions);
+
+  const hasIdentity = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   const day = useAppStore((s) => s.resolvedDay(date));
   const daySubst = substitutions[date];
@@ -44,7 +51,7 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
   const isToday = date === now.date;
 
   const changedLessons = useMemo(
-    () => day?.lessons.filter((l) => l.status !== "normal") ?? [],
+    () => day?.lessons.filter((l) => l.status !== "normal" || l.isCover === true) ?? [],
     [day],
   );
 
@@ -122,11 +129,11 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
       );
     }
 
-    if (selectedClassId === null) {
+    if (!hasIdentity) {
       return (
         <StateMessage
-          icon="graduation-cap"
-          title={t("day.noClass")}
+          icon={persona === "teacher" ? "briefcase" : "graduation-cap"}
+          title={persona === "teacher" ? t("teacher.none") : t("day.noClass")}
           action={<Button onClick={onPickClass}>{t("settings.change")}</Button>}
         />
       );
@@ -146,10 +153,20 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
           </Card>
         )}
 
+        {daySubst?.absentTeachers && daySubst.absentTeachers.length > 0 && (
+          <ChangesAbsentTeachers teachers={daySubst.absentTeachers} />
+        )}
+
         <div className="mt-4 flex justify-center">
           <SegmentedTabs<ChangesScope>
             items={[
-              { key: "myClass", label: t("changes.filter.myClass") },
+              {
+                key: "myClass",
+                label:
+                  persona === "teacher"
+                    ? t("changes.filter.myChanges")
+                    : t("changes.filter.myClass"),
+              },
               { key: "all", label: t("changes.filter.all") },
             ]}
             value={scope}

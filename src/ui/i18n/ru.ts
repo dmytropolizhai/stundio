@@ -2,6 +2,7 @@ import type { Dict } from "./lv.ts";
 
 export const ru: Dict = {
   "app.title": "Stundio",
+  "general.continue": "Продолжить",
 
   "nav.day": "День",
   "nav.week": "Неделя",
@@ -11,6 +12,24 @@ export const ru: Dict = {
 
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",
+
+  "onboarding.persona.title": "Выбери свою сторону",
+  "onboarding.persona.subtitle": "Настрой расписание под свою роль",
+  "onboarding.persona.student.title": "Ученик",
+  "onboarding.persona.student.desc": "Хочу видеть уроки своей группы и замены",
+  "onboarding.persona.teacher.title": "Преподаватель",
+  "onboarding.persona.teacher.desc": "Хочу видеть свои уроки, кабинеты и замены",
+
+  "onboarding.teacher.title": "Выбери преподавателя",
+  "onboarding.teacher.subtitle": "Поиск по имени или фамилии",
+
+  "teacher.search": "Поиск преподавателя…",
+  "teacher.none": "Преподаватель не найден",
+  "teacher.formClass": "Классный руководитель",
+  "teacher.cover": "Замена",
+  "teacher.coverFor": "Заменяет: {name}",
+  "teacher.view.own": "Мои уроки",
+  "teacher.view.formClass": "Мой класс",
 
   "onboarding.language.title": "Выберите язык",
   "onboarding.language.continue": "Продолжить",
@@ -88,7 +107,9 @@ export const ru: Dict = {
 
   "changes.title": "Замены",
   "changes.filter.myClass": "Моя группа",
+  "changes.filter.myChanges": "Мои изменения",
   "changes.filter.all": "Вся школа",
+  "changes.absentTeachers": "Сегодня отсутствуют",
   "changes.emptyForClass": "Изменений нет",
   "changes.emptyForClassHint": "У вашей группы уроки идут по обычному расписанию",
   "changes.emptyAll": "Нет зарегистрированных изменений",
@@ -166,6 +187,11 @@ export const ru: Dict = {
   "subjects.note.badge": "Есть заметка",
 
   "settings.title": "Настройки",
+  "settings.identity": "Роль и расписание",
+  "settings.persona.student": "Ученик",
+  "settings.persona.teacher": "Преподаватель",
+  "settings.identity.sheetTitle": "Выбор роли",
+  "settings.identity.confirm": "Подтвердить",
   "settings.class": "Моя группа",
   "settings.change": "Изменить",
   "settings.building": "Корпус",
@@ -210,6 +236,8 @@ export const ru: Dict = {
   "notification.lessonReminder.title": "{subject} через {minutes} мин",
   "notification.changed.title": "Изменения в расписании",
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",
+  "notification.cover.title": "Новая замена",
+  "notification.cover.body": "Вам назначена замена",
   "notification.update.title": "Доступно обновление",
   "notification.update.body": "Stundio {version} готово к загрузке.",
   "widget.now": "Сейчас",
@@ -314,26 +342,6 @@ export const ru: Dict = {
   "customization.subjectColors.empty": "Выбери класс, чтобы настроить цвета предметов.",
   "customization.preview.subject": "Пример предмета",
   "customization.reset": "Сбросить настройки",
-  "iphoneAnnouncement.badge": "НОВОЕ",
-  "iphoneAnnouncement.title": "Stundio на iPhone",
-  "iphoneAnnouncement.headline": "Теперь также доступно на iPhone",
-  "iphoneAnnouncement.subtitle":
-    "Удобное расписание, замены и работа без интернета теперь доступны в Safari.",
-  "iphoneAnnouncement.step1.title": "Откройте Safari",
-  "iphoneAnnouncement.step1.desc": "Перейдите на stundio.pages.dev",
-  "iphoneAnnouncement.step2.title": "Нажмите «Поделиться»",
-  "iphoneAnnouncement.step2.desc": "Иконка квадрата со стрелкой вверх внизу экрана",
-  "iphoneAnnouncement.step3.title": "На экран «Домой»",
-  "iphoneAnnouncement.step3.desc": "Выберите «На экран „Домой“», чтобы установить приложение",
-  "iphoneAnnouncement.share": "Поделиться с друзьями",
-  "iphoneAnnouncement.shareWorking": "Создаём изображение…",
-  "iphoneAnnouncement.done": "Понятно",
-  "iphoneAnnouncement.shareTitle": "Stundio на iPhone",
-  "iphoneAnnouncement.shareMessage":
-    "Stundio теперь доступен на iPhone! 📱\n\nКак установить:\n1. Откройте Safari и перейдите на https://stundio.pages.dev\n2. Нажмите «Поделиться» (иконка со стрелкой вверх)\n3. Выберите «На экран „Домой“»\n\nУдобное расписание и замены: https://stundio.pages.dev",
-  "settings.iphoneShare": "Stundio на iPhone",
-  "settings.iphoneShareHint": "Инструкция и ссылка для установки Stundio на iPhone",
-  "settings.iphoneShareAction": "Поделиться",
 
   "iphoneInstall.title": "Добавьте Stundio на экран «Домой»",
   "iphoneInstall.subtitle":
@@ -341,6 +349,21 @@ export const ru: Dict = {
   "iphoneInstall.step1": "Нажмите кнопку «На экран „Домой“» ниже или кнопку Поделиться в Safari",
   "iphoneInstall.step2": "В меню выберите «На экран „Домой“»",
   "iphoneInstall.action": "Добавить на экран «Домой»",
+  "teacherAnnouncement.title": "Stundio для учителей",
+  "teacherAnnouncement.headline": "Теперь доступно и учителям",
+  "teacherAnnouncement.subtitle":
+    "Учителя теперь могут использовать Stundio для просмотра своего расписания и замен.",
+  "teacherAnnouncement.step1.title": "Перейдите в настройки",
+  "teacherAnnouncement.step1.desc": "Откройте вкладку настроек",
+  "teacherAnnouncement.step2.title": "Измените профиль",
+  "teacherAnnouncement.step2.desc": "Выберите профиль учителя",
+  "teacherAnnouncement.step3.title": "Выберите свое имя",
+  "teacherAnnouncement.step3.desc": "Найдите себя в списке, чтобы получить расписание",
+  "teacherAnnouncement.tryIt": "Попробовать",
+  "teacherAnnouncement.done": "Понятно",
+  "settings.teacherShare": "Функции для учителей",
+  "settings.teacherShareHint": "Показать уведомление о функциях для учителей",
+  "settings.teacherShareAction": "Смотреть",
   "iphoneInstall.dismiss": "Продолжить в браузере",
   "settings.iphoneInstall": "Добавить на экран «Домой»",
   "settings.iphoneInstallHint": "Установить Stundio как приложение на iPhone",

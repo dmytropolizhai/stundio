@@ -8,8 +8,10 @@ import { AppStoreProvider, useAppStore } from "@/store";
 import { TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
+import { TeacherPicker } from "./ui/screens/teacher-picker";
 import { OnboardingLanguage } from "./ui/screens/onboarding-language";
 import { OnboardingIntro } from "./ui/screens/onboarding-intro";
+import { OnboardingPersona } from "./ui/screens/onboarding-persona";
 import { DayView } from "./ui/screens/day-view";
 import { WeekView } from "./ui/screens/week-view";
 import { ChangesView } from "./ui/screens/changes-view";
@@ -18,8 +20,8 @@ import { SettingsView } from "./ui/screens/settings-view";
 import { SplashScreen } from "./ui/screens/splash-screen";
 import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
-import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
-import { useIphoneAnnouncement } from "./ui/hooks/useIphoneAnnouncement.ts";
+import { TeacherAnnouncementSheet } from "./ui/screens/sheets/TeacherAnnouncementSheet.tsx";
+import { useTeacherAnnouncement } from "./ui/hooks/useTeacherAnnouncement.ts";
 import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
@@ -51,11 +53,18 @@ const BootSignal = ({ onReady }: { onReady: () => void }) => {
  */
 const Onboarding = () => {
   const t = useT();
-  const [step, setStep] = useState<"language" | "intro" | "picker">("language");
+  const [step, setStep] = useState<
+    "language" | "intro" | "persona" | "classPicker" | "teacherPicker"
+  >("language");
+  const setPersona = useAppStore((s) => s.setPersona);
 
   useBackButton(
     () => {
-      if (step === "picker") {
+      if (step === "classPicker" || step === "teacherPicker") {
+        setStep("persona");
+        return true;
+      }
+      if (step === "persona") {
         setStep("intro");
         return true;
       }
@@ -79,7 +88,38 @@ const Onboarding = () => {
   if (step === "intro") {
     return (
       <div className="flex h-full flex-col">
-        <OnboardingIntro onDone={() => setStep("picker")} />
+        <OnboardingIntro onDone={() => setStep("persona")} />
+      </div>
+    );
+  }
+
+  if (step === "persona") {
+    return (
+      <div className="flex h-full flex-col">
+        <OnboardingPersona
+          onSelectPersona={(persona) => {
+            void setPersona(persona);
+            setStep(persona === "teacher" ? "teacherPicker" : "classPicker");
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (step === "teacherPicker") {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="bg-card px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-brand">
+          <h1 className="mt-5 font-display text-hero tracking-hero">
+            {t("onboarding.teacher.title")}
+          </h1>
+          <p className="mt-3 font-text text-body-lg text-white/72">
+            {t("onboarding.teacher.subtitle")}
+          </p>
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col pt-5">
+          <TeacherPicker />
+        </div>
       </div>
     );
   }
@@ -102,29 +142,33 @@ const Shell = () => {
   useTheme();
   useCustomization();
 
+  const persona = useAppStore((s) => s.settings.persona);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
+  const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
+  const isOnboarded = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
+
   const trackEvent = useAppStore((s) => s.trackEvent);
   const pendingNavigation = useAppStore((s) => s.pendingNavigation);
   const clearPendingNavigation = useAppStore((s) => s.clearPendingNavigation);
   const [tab, setTab] = useState<Tab>("day");
   const whatsNew = useWhatsNew();
-  const iphoneAnnouncement = useIphoneAnnouncement();
+  const teacherAnnouncement = useTeacherAnnouncement();
   const iphoneInstall = useIphoneInstallPrompt();
   const scheduleNav = useScheduleNavigation();
-  const [picking, setPicking] = useState(false);
+  const [picking, setPicking] = useState<"class" | "teacher" | null>(null);
 
   useBackButton(
     () => {
-      setPicking(false);
+      setPicking(null);
     },
-    { enabled: picking, priority: 15 },
+    { enabled: picking !== null, priority: 15 },
   );
 
   useBackButton(
     () => {
       setTab("day");
     },
-    { enabled: !picking && tab !== "day", priority: 5 },
+    { enabled: picking === null && tab !== "day", priority: 5 },
   );
 
   useEffect(() => {
@@ -139,11 +183,11 @@ const Shell = () => {
       scheduleNav.setDate(pendingNavigation.date);
     }
     setTab(pendingNavigation.tab);
-    setPicking(false);
+    setPicking(null);
     clearPendingNavigation();
   }, [pendingNavigation, clearPendingNavigation, scheduleNav]);
 
-  if (selectedClassId === null) {
+  if (!isOnboarded) {
     return (
       <>
         <Onboarding />
@@ -152,20 +196,40 @@ const Shell = () => {
     );
   }
 
-  if (picking) {
+  if (picking === "class") {
     return (
       <div className="flex h-full flex-col">
         <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
           <TopBar
             title={t("settings.class")}
             onBack={() => {
-              setPicking(false);
+              setPicking(null);
             }}
           />
         </div>
         <ClassSelector
           onPicked={() => {
-            setPicking(false);
+            setPicking(null);
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (picking === "teacher") {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
+          <TopBar
+            title={t("onboarding.teacher.title")}
+            onBack={() => {
+              setPicking(null);
+            }}
+          />
+        </div>
+        <TeacherPicker
+          onPicked={() => {
+            setPicking(null);
           }}
         />
       </div>
@@ -186,7 +250,7 @@ const Shell = () => {
             date={scheduleNav.date}
             onDateChange={scheduleNav.setDate}
             onPickClass={() => {
-              setPicking(true);
+              setPicking(persona === "teacher" ? "teacher" : "class");
             }}
             onOpenChanges={(nextDate) => {
               scheduleNav.setDate(nextDate);
@@ -203,7 +267,7 @@ const Shell = () => {
               setTab("day");
             }}
             onPickClass={() => {
-              setPicking(true);
+              setPicking(persona === "teacher" ? "teacher" : "class");
             }}
           />
         )}
@@ -212,7 +276,7 @@ const Shell = () => {
             date={scheduleNav.date}
             onDateChange={scheduleNav.setDate}
             onPickClass={() => {
-              setPicking(true);
+              setPicking(persona === "teacher" ? "teacher" : "class");
             }}
           />
         )}
@@ -220,10 +284,13 @@ const Shell = () => {
         {tab === "settings" && (
           <SettingsView
             onPickClass={() => {
-              setPicking(true);
+              setPicking("class");
+            }}
+            onPickTeacher={() => {
+              setPicking("teacher");
             }}
             onShowWhatsNew={whatsNew.show}
-            onShowIphoneAnnouncement={iphoneAnnouncement.show}
+            onShowTeacherAnnouncement={teacherAnnouncement.show}
             onShowIphoneInstall={iphoneInstall.show}
           />
         )}
@@ -239,9 +306,9 @@ const Shell = () => {
         history={whatsNew.history}
         onClose={whatsNew.dismiss}
       />
-      <IphoneReleaseSheet
-        open={iphoneAnnouncement.open && !whatsNew.open}
-        onClose={iphoneAnnouncement.dismiss}
+      <TeacherAnnouncementSheet
+        open={teacherAnnouncement.open && !whatsNew.open}
+        onClose={teacherAnnouncement.dismiss}
       />
       <IphoneInstallSheet open={iphoneInstall.open} onClose={iphoneInstall.dismiss} />
     </div>

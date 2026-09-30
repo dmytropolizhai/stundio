@@ -26,6 +26,40 @@ export type ChangelogEntry = {
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: "v2.0.0",
+    date: "2026-09-30",
+    lines: {
+      lv: [
+        "Jauns skolotāja režīms: iespēja izvēlēties savu vārdu no pedagogu saraksta un skatīt nodarbību grafiku bez pieteikšanās.",
+        "Aizvietošanas stundas tagad tiek īpaši izceltas un skaidri atzīmētas dienas un nedēļas skatos.",
+        "Izmaiņu cilnē pievienots paziņojumu bloks ar skolotājiem, kuri šodien nepiedalās.",
+        "Atbalsts klases audzinātājiem ar ērtu pārslēgšanos starp personīgajām stundām un savas klases grafiku.",
+        "Mērķtiecīgi paziņojumi skolotājiem par piešķirtajām aizvietošanas stundām un saraksta izmaiņām.",
+      ],
+      en: [
+        "Brand new Teacher Mode: select your name from the staff directory and view your teaching schedule with zero login.",
+        "Cover duties (substitutions) are prominently highlighted and badged across Day and Week views.",
+        "Added an absent colleagues banner in the Changes tab showing staff absent today.",
+        "Dual-role support for form teachers with seamless switching between your lessons and your class schedule.",
+        "Targeted notifications for educators about assigned cover duties and timetable changes.",
+      ],
+      ru: [
+        "Новый режим преподавателя: выбор имени из списка преподавателей и просмотр своего расписания без входа.",
+        "Замещения уроков теперь наглядно выделяются специальными значками в расписании дня и недели.",
+        "Во вкладку «Замены» добавлен баннер с коллегами, которые сегодня отсутствуют.",
+        "Поддержка классных руководителей с быстрым переключением между своими уроками и расписанием класса.",
+        "Целевые уведомления для учителей о назначенных заменах и личных изменениях в расписании.",
+      ],
+      ua: [
+        "Новий режим викладача: вибір імені зі списку вчителів та перегляд власного розкладу занять без входу.",
+        "Заміщення уроків відтепер чітко виділяються спеціальними позначками у розкладі дня й тижня.",
+        "У вкладку «Зміни» додано блок зі списком колег, які сьогодні відсутні.",
+        "Підтримка класних керівників зі швидким перемиканням між власними уроками та розкладом класу.",
+        "Персоналізовані сповіщення для вчителів про призначені заміни та зміни у розкладі.",
+      ],
+    },
+  },
+  {
     version: "v1.3-elna",
     date: "2026-09-30",
     lines: {
