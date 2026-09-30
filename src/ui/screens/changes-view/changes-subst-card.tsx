@@ -49,8 +49,7 @@ export const ChangesSubstCard = ({ item }: ChangesSubstCardProps) => {
                   {item.teacher !== null && (
                     <>
                       {" "}
-                      {ARROW}{" "}
-                      <strong className="text-fg">{item.teacher}</strong>
+                      {ARROW} <strong className="text-fg">{item.teacher}</strong>
                     </>
                   )}
                 </>
