@@ -20,8 +20,8 @@ import { SettingsView } from "./ui/screens/settings-view";
 import { SplashScreen } from "./ui/screens/splash-screen";
 import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
-import { IphoneReleaseSheet } from "./ui/screens/sheets/IphoneReleaseSheet.tsx";
-import { useIphoneAnnouncement } from "./ui/hooks/useIphoneAnnouncement.ts";
+import { TeacherAnnouncementSheet } from "./ui/screens/sheets/TeacherAnnouncementSheet.tsx";
+import { useTeacherAnnouncement } from "./ui/hooks/useTeacherAnnouncement.ts";
 import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
@@ -152,7 +152,7 @@ const Shell = () => {
   const clearPendingNavigation = useAppStore((s) => s.clearPendingNavigation);
   const [tab, setTab] = useState<Tab>("day");
   const whatsNew = useWhatsNew();
-  const iphoneAnnouncement = useIphoneAnnouncement();
+  const teacherAnnouncement = useTeacherAnnouncement();
   const iphoneInstall = useIphoneInstallPrompt();
   const scheduleNav = useScheduleNavigation();
   const [picking, setPicking] = useState<"class" | "teacher" | null>(null);
@@ -290,7 +290,7 @@ const Shell = () => {
               setPicking("teacher");
             }}
             onShowWhatsNew={whatsNew.show}
-            onShowIphoneAnnouncement={iphoneAnnouncement.show}
+            onShowIphoneAnnouncement={teacherAnnouncement.show}
             onShowIphoneInstall={iphoneInstall.show}
           />
         )}
@@ -306,9 +306,9 @@ const Shell = () => {
         history={whatsNew.history}
         onClose={whatsNew.dismiss}
       />
-      <IphoneReleaseSheet
-        open={iphoneAnnouncement.open && !whatsNew.open}
-        onClose={iphoneAnnouncement.dismiss}
+      <TeacherAnnouncementSheet
+        open={teacherAnnouncement.open && !whatsNew.open}
+        onClose={teacherAnnouncement.dismiss}
       />
       <IphoneInstallSheet open={iphoneInstall.open} onClose={iphoneInstall.dismiss} />
     </div>

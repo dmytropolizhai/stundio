@@ -97,7 +97,7 @@ export type Settings = {
   /** Closed the home-screen feedback card. The Settings entry stays reachable regardless. */
   feedbackPromptDismissed: boolean;
   /** Whether the startup announcement about iPhone release has been dismissed. */
-  iphoneAnnouncementDismissed: boolean;
+  teacherAnnouncementDismissed: boolean;
   /** Whether the prompt to add the app to iPhone home screen has been dismissed. */
   iphoneInstallPromptDismissed: boolean;
   /** User persona: student browsing by class, or teacher browsing by teacher name. */
@@ -143,7 +143,7 @@ export const DEFAULT_SETTINGS: Settings = {
   shareLangPromptShown: false,
   appOpenCount: 0,
   feedbackPromptDismissed: false,
-  iphoneAnnouncementDismissed: false,
+  teacherAnnouncementDismissed: false,
   iphoneInstallPromptDismissed: false,
   androidApkBannerDismissed: false,
 };

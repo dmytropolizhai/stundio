@@ -5,12 +5,12 @@ import { isIosDevice, isStandalonePwa } from "@/ui/lib/platform.ts";
 import { Row, Section } from "./settings-section.tsx";
 
 type ShareSectionProps = {
-  onShowIphoneAnnouncement?: (() => void) | undefined;
+  onShowTeacherAnnouncement?: (() => void) | undefined;
   onShowIphoneInstall?: (() => void) | undefined;
 };
 
 export const ShareSection = ({
-  onShowIphoneAnnouncement,
+  onShowTeacherAnnouncement,
   onShowIphoneInstall,
 }: ShareSectionProps) => {
   const t = useT();
@@ -47,16 +47,16 @@ export const ShareSection = ({
           />
         </Row>
       )}
-      {onShowIphoneAnnouncement !== undefined && (
+      {onShowTeacherAnnouncement !== undefined && (
         <Row className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="font-text text-body font-bold text-strong">{t("settings.iphoneShare")}</p>
+            <p className="font-text text-body font-bold text-strong">{t("settings.teacherShare")}</p>
             <p className="mt-0.5 font-text text-caption text-muted">
-              {t("settings.iphoneShareHint")}
+              {t("settings.teacherShareHint")}
             </p>
           </div>
-          <Button size="sm" icon="share-2" onClick={onShowIphoneAnnouncement}>
-            {t("settings.iphoneShareAction")}
+          <Button size="sm" icon="share-2" onClick={onShowTeacherAnnouncement}>
+            {t("settings.teacherShareAction")}
           </Button>
         </Row>
       )}

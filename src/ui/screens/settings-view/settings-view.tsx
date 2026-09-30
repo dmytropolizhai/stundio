@@ -23,7 +23,7 @@ type SettingsViewProps = {
   onPickClass: () => void;
   onPickTeacher?: () => void;
   onShowWhatsNew: () => void;
-  onShowIphoneAnnouncement?: (() => void) | undefined;
+  onShowTeacherAnnouncement?: (() => void) | undefined;
   onShowIphoneInstall?: (() => void) | undefined;
 };
 
@@ -40,7 +40,7 @@ export const SettingsView = ({
   onPickClass,
   onPickTeacher,
   onShowWhatsNew,
-  onShowIphoneAnnouncement,
+  onShowTeacherAnnouncement,
   onShowIphoneInstall,
 }: SettingsViewProps) => {
   const t = useT();
@@ -81,7 +81,7 @@ export const SettingsView = ({
         <GeneralSection buildings={buildings} subgroups={subgroups} />
 
         <ShareSection
-          onShowIphoneAnnouncement={onShowIphoneAnnouncement}
+          onShowTeacherAnnouncement={onShowTeacherAnnouncement}
           onShowIphoneInstall={onShowIphoneInstall}
         />
 
