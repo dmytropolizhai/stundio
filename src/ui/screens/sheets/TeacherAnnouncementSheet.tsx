@@ -35,10 +35,10 @@ export const TeacherAnnouncementSheet = ({ open, onClose }: TeacherAnnouncementS
     <Sheet open={open} onClose={onClose} title={t("teacherAnnouncement.title")}>
       <div className="pb-2">
         <div className="flex flex-col items-center text-center pt-4 pb-3">
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand text-white shadow-sm mb-4">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand text-on-brand shadow-sm mb-4">
             <Icon name="briefcase" size={24} />
           </div>
-          <h2 className="font-display text-heading font-extrabold text-strong">
+          <h2 className="font-display text-display-2 font-bold text-strong">
             {t("teacherAnnouncement.headline")}
           </h2>
           <p className="mt-1.5 font-text text-body text-muted max-w-70">
@@ -48,8 +48,8 @@ export const TeacherAnnouncementSheet = ({ open, onClose }: TeacherAnnouncementS
 
         <div className="mt-2 space-y-2.5">
           {steps.map((step) => (
-            <Card key={step.num} tone="custom" className="flex items-center gap-3.5 p-3.5">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full font-display text-caption font-bold text-strong shadow-sm bg-surface">
+            <Card key={step.num} tone="sunken" className="flex items-center gap-3.5 p-3.5">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-full font-display text-caption font-bold text-strong shadow-card bg-card">
                 {step.num}
               </div>
               <div className="min-w-0 flex-1">
@@ -76,7 +76,7 @@ export const TeacherAnnouncementSheet = ({ open, onClose }: TeacherAnnouncementS
           >
             {t("teacherAnnouncement.tryIt")}
           </Button>
-          <Button variant="inverse" block onClick={onClose}>
+          <Button variant="ghost" block onClick={onClose}>
             {t("teacherAnnouncement.done")}
           </Button>
         </div>
