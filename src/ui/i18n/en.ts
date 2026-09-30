@@ -341,8 +341,6 @@ export const en: Dict = {
   "customization.subjectColors.empty": "Pick a class to customize its subject colours.",
   "customization.preview.subject": "Sample subject",
   "customization.reset": "Reset to defaults",
-    
-    
 
   "iphoneInstall.title": "Add Stundio to Home Screen",
   "iphoneInstall.subtitle":
@@ -350,9 +348,10 @@ export const en: Dict = {
   "iphoneInstall.step1": "Tap «Add to Home Screen» below or the browser Share button",
   "iphoneInstall.step2": "In the menu, select «Add to Home Screen»",
   "iphoneInstall.action": "Add to Home Screen",
-    "teacherAnnouncement.title": "Stundio for Teachers",
+  "teacherAnnouncement.title": "Stundio for Teachers",
   "teacherAnnouncement.headline": "Now available for teachers",
-  "teacherAnnouncement.subtitle": "Teachers can now use Stundio to check their schedules, rooms and substitutions.",
+  "teacherAnnouncement.subtitle":
+    "Teachers can now use Stundio to check their schedules, rooms and substitutions.",
   "teacherAnnouncement.step1.title": "Go to Settings",
   "teacherAnnouncement.step1.desc": "Open the Settings tab",
   "teacherAnnouncement.step2.title": "Change Profile",
@@ -364,7 +363,7 @@ export const en: Dict = {
   "settings.teacherShare": "Teacher features",
   "settings.teacherShareHint": "Show the announcement about features for teachers",
   "settings.teacherShareAction": "View",
-"iphoneInstall.dismiss": "Continue in browser",
+  "iphoneInstall.dismiss": "Continue in browser",
   "settings.iphoneInstall": "Add to Home Screen",
   "settings.iphoneInstallHint": "Install Stundio as an app on your iPhone",
 

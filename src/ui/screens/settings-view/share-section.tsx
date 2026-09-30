@@ -50,7 +50,9 @@ export const ShareSection = ({
       {onShowTeacherAnnouncement !== undefined && (
         <Row className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="font-text text-body font-bold text-strong">{t("settings.teacherShare")}</p>
+            <p className="font-text text-body font-bold text-strong">
+              {t("settings.teacherShare")}
+            </p>
             <p className="mt-0.5 font-text text-caption text-muted">
               {t("settings.teacherShareHint")}
             </p>

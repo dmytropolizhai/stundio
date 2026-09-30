@@ -21,7 +21,8 @@ export const useTeacherAnnouncement = (): TeacherAnnouncement => {
   useEffect(() => {
     if (!ready || dismissed || autoOpenedRef.current) return;
     // Auto-open only if onboarded and not already a teacher (if already teacher, they know)
-    const isOnboarded = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
+    const isOnboarded =
+      persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
     if (!isOnboarded || persona === "teacher") return;
 
     autoOpenedRef.current = true;

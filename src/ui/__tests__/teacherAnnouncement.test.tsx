@@ -27,7 +27,10 @@ describe("Teacher announcement", () => {
     };
 
     it("auto-opens on launch if announcement has not been dismissed and user is student", async () => {
-      const harness = await bootHarness({ teacherAnnouncementDismissed: false, selectedClassId: "class-1" });
+      const harness = await bootHarness({
+        teacherAnnouncementDismissed: false,
+        selectedClassId: "class-1",
+      });
       act(() => {
         render(
           <StoreContext.Provider value={harness.store}>
@@ -40,7 +43,10 @@ describe("Teacher announcement", () => {
     });
 
     it("does not auto-open if already dismissed", async () => {
-      const harness = await bootHarness({ teacherAnnouncementDismissed: true, selectedClassId: "class-1" });
+      const harness = await bootHarness({
+        teacherAnnouncementDismissed: true,
+        selectedClassId: "class-1",
+      });
       act(() => {
         render(
           <StoreContext.Provider value={harness.store}>
@@ -53,7 +59,10 @@ describe("Teacher announcement", () => {
     });
 
     it("persists dismissal when user taps 'Sapratu' (Got it)", async () => {
-      const harness = await bootHarness({ teacherAnnouncementDismissed: false, selectedClassId: "class-1" });
+      const harness = await bootHarness({
+        teacherAnnouncementDismissed: false,
+        selectedClassId: "class-1",
+      });
       act(() => {
         render(
           <StoreContext.Provider value={harness.store}>

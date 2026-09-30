@@ -348,8 +348,6 @@ export const lv = {
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",
-    
-    
 
   "iphoneInstall.title": "Pievieno Stundio sākuma ekrānam",
   "iphoneInstall.subtitle":
@@ -357,9 +355,10 @@ export const lv = {
   "iphoneInstall.step1": "Nospied pogu zemāk «Pievienot sākuma ekrānam» vai pārlūka pogu Kopīgot",
   "iphoneInstall.step2": "Izvēlnē izvēlies «Pievienot sākuma ekrānam»",
   "iphoneInstall.action": "Pievienot sākuma ekrānam",
-    "teacherAnnouncement.title": "Stundio skolotājiem",
+  "teacherAnnouncement.title": "Stundio skolotājiem",
   "teacherAnnouncement.headline": "Tagad pieejams arī skolotājiem",
-  "teacherAnnouncement.subtitle": "Skolotāji tagad var izmantot Stundio, lai apskatītu savas stundas, kabinetus un aizvietošanas.",
+  "teacherAnnouncement.subtitle":
+    "Skolotāji tagad var izmantot Stundio, lai apskatītu savas stundas, kabinetus un aizvietošanas.",
   "teacherAnnouncement.step1.title": "Dodies uz iestatījumiem",
   "teacherAnnouncement.step1.desc": "Atver iestatījumu sadaļu",
   "teacherAnnouncement.step2.title": "Maini profilu",
@@ -371,7 +370,7 @@ export const lv = {
   "settings.teacherShare": "Paziņojums skolotājiem",
   "settings.teacherShareHint": "Parādīt paziņojumu par funkcijām skolotājiem",
   "settings.teacherShareAction": "Skatīt",
-"iphoneInstall.dismiss": "Turpināt pārlūkā",
+  "iphoneInstall.dismiss": "Turpināt pārlūkā",
   "settings.iphoneInstall": "Pievienot sākuma ekrānam",
   "settings.iphoneInstallHint": "Instalēt Stundio kā lietotni savā iPhone",
 

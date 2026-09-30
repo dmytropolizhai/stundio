@@ -342,7 +342,6 @@ export const ru: Dict = {
   "customization.subjectColors.empty": "Выбери класс, чтобы настроить цвета предметов.",
   "customization.preview.subject": "Пример предмета",
   "customization.reset": "Сбросить настройки",
-    
 
   "iphoneInstall.title": "Добавьте Stundio на экран «Домой»",
   "iphoneInstall.subtitle":
@@ -350,9 +349,10 @@ export const ru: Dict = {
   "iphoneInstall.step1": "Нажмите кнопку «На экран „Домой“» ниже или кнопку Поделиться в Safari",
   "iphoneInstall.step2": "В меню выберите «На экран „Домой“»",
   "iphoneInstall.action": "Добавить на экран «Домой»",
-    "teacherAnnouncement.title": "Stundio для учителей",
+  "teacherAnnouncement.title": "Stundio для учителей",
   "teacherAnnouncement.headline": "Теперь доступно и учителям",
-  "teacherAnnouncement.subtitle": "Учителя теперь могут использовать Stundio для просмотра своего расписания и замен.",
+  "teacherAnnouncement.subtitle":
+    "Учителя теперь могут использовать Stundio для просмотра своего расписания и замен.",
   "teacherAnnouncement.step1.title": "Перейдите в настройки",
   "teacherAnnouncement.step1.desc": "Откройте вкладку настроек",
   "teacherAnnouncement.step2.title": "Измените профиль",
@@ -364,7 +364,7 @@ export const ru: Dict = {
   "settings.teacherShare": "Функции для учителей",
   "settings.teacherShareHint": "Показать уведомление о функциях для учителей",
   "settings.teacherShareAction": "Смотреть",
-"iphoneInstall.dismiss": "Продолжить в браузере",
+  "iphoneInstall.dismiss": "Продолжить в браузере",
   "settings.iphoneInstall": "Добавить на экран «Домой»",
   "settings.iphoneInstallHint": "Установить Stundio как приложение на iPhone",
 

@@ -341,7 +341,6 @@ export const ua: Dict = {
   "customization.subjectColors.empty": "Вибери клас, щоб налаштувати кольори предметів.",
   "customization.preview.subject": "Приклад предмета",
   "customization.reset": "Скинути налаштування",
-    
 
   "iphoneInstall.title": "Додайте Stundio на початковий екран",
   "iphoneInstall.subtitle":
@@ -350,9 +349,10 @@ export const ua: Dict = {
     "Натисніть кнопку «На початковий екран» нижче або кнопку Поділитися в Safari",
   "iphoneInstall.step2": "У меню виберіть «На початковий екран»",
   "iphoneInstall.action": "Додати на початковий екран",
-    "teacherAnnouncement.title": "Stundio для вчителів",
+  "teacherAnnouncement.title": "Stundio для вчителів",
   "teacherAnnouncement.headline": "Тепер доступно і вчителям",
-  "teacherAnnouncement.subtitle": "Вчителі тепер можуть використовувати Stundio для перегляду свого розкладу та замін.",
+  "teacherAnnouncement.subtitle":
+    "Вчителі тепер можуть використовувати Stundio для перегляду свого розкладу та замін.",
   "teacherAnnouncement.step1.title": "Перейдіть до налаштувань",
   "teacherAnnouncement.step1.desc": "Відкрийте вкладку налаштувань",
   "teacherAnnouncement.step2.title": "Змініть профіль",
@@ -364,7 +364,7 @@ export const ua: Dict = {
   "settings.teacherShare": "Функції для вчителів",
   "settings.teacherShareHint": "Показати сповіщення про функції для вчителів",
   "settings.teacherShareAction": "Переглянути",
-"iphoneInstall.dismiss": "Продовжити в браузері",
+  "iphoneInstall.dismiss": "Продовжити в браузері",
   "settings.iphoneInstall": "Додати на початковий екран",
   "settings.iphoneInstallHint": "Встановити Stundio як застосунок на iPhone",
 
