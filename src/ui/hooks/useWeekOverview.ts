@@ -9,7 +9,7 @@
 import { useMemo } from "react";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
-import { weekDates } from "@/lib/schedule";
+import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate } from "@/lib/edupage";
 
 export type WeekOverview = {
@@ -41,9 +41,20 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
     dates.forEach((d, i) => {
       const day = days[i];
       if (day === null || day === undefined) return;
-      const count = day.lessons.length;
+
+      const count = weekPeriods([day]).length;
+
+      const seenStart = new Set<string>();
+      let dayChanged = 0;
+      for (const l of day.lessons) {
+        if (!seenStart.has(l.period)) {
+          seenStart.add(l.period);
+          if (l.status !== "normal") dayChanged += 1;
+        }
+      }
+
       totalLessons += count;
-      changedLessons += day.lessons.filter((l) => l.status !== "normal").length;
+      changedLessons += dayChanged;
       if (count === 0) return;
       if (busiest === null || count > busiest.count) busiest = { date: d, count };
       if (lightest === null || count < lightest.count) lightest = { date: d, count };
@@ -54,7 +65,10 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
     const prevDates = weekDates(addDays(date, -7));
     const prevDays = prevDates.map((d) => resolvedDay(d));
     const prevAvailable = prevDays.some((d) => d !== null);
-    const prevTotal = prevDays.reduce((sum, day) => sum + (day?.lessons.length ?? 0), 0);
+    const prevTotal = prevDays.reduce(
+      (sum, day) => sum + (day ? weekPeriods([day]).length : 0),
+      0,
+    );
 
     return {
       totalLessons,
