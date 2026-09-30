@@ -178,6 +178,18 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
             />
           )}
         </motion.div>
+
+        <div className="mt-8 flex justify-center pb-8">
+          <Button variant="outline" icon="external-link" asChild>
+            <a
+              href="https://pikcrvt.edupage.org/timetable/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t("changes.rvtWebsite")}
+            </a>
+          </Button>
+        </div>
       </>
     );
   };

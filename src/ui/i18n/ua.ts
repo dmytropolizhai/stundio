@@ -99,6 +99,7 @@ export const ua: Dict = {
   "changes.count": "{n} змін",
   "changes.badge": "{n} змін",
   "changes.notesFromSchool": "Оголошення технікуму",
+  "changes.rvtWebsite": "Сайт RVT",
 
   "week.previousWeek": "Попередній тиждень",
   "week.nextWeek": "Наступний тиждень",

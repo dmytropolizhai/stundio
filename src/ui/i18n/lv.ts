@@ -106,6 +106,7 @@ export const lv = {
   "changes.count": "{n} izmaiņas",
   "changes.badge": "{n} izmaiņas",
   "changes.notesFromSchool": "Skolas paziņojumi",
+  "changes.rvtWebsite": "Skatīt RVT lapā",
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",

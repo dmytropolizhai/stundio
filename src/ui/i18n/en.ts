@@ -99,6 +99,7 @@ export const en: Dict = {
   "changes.count": "{n} changes",
   "changes.badge": "{n} changes",
   "changes.notesFromSchool": "School announcements",
+  "changes.rvtWebsite": "RVT website",
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",
