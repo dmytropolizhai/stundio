@@ -6,7 +6,8 @@ import {
   corsHeaders,
   jsonResponse,
   sha256Hex,
-  subscriptionClass,
+  subscriptionIndex,
+  TEACHER_KEY_HASH,
   type EventContext,
   type PushSubscriptionPayload,
 } from "./types.ts";
@@ -50,8 +51,16 @@ export const onRequest = async (context: EventContext): Promise<Response> => {
     return jsonResponse({ error: "Invalid keys: p256dh and auth are required" }, 400);
   }
 
-  if (!className || typeof className !== "string") {
-    return jsonResponse({ error: "className is required" }, 400);
+  // A teacher is filed by a hash of their name key, a student by class — exactly one of them.
+  const { teacherKeyHash } = body;
+  const isTeacher = teacherKeyHash !== undefined;
+
+  if (isTeacher && (typeof teacherKeyHash !== "string" || !TEACHER_KEY_HASH.test(teacherKeyHash))) {
+    return jsonResponse({ error: "teacherKeyHash must be a SHA-256 hex digest" }, 400);
+  }
+
+  if (!isTeacher && (!className || typeof className !== "string")) {
+    return jsonResponse({ error: "className or teacherKeyHash is required" }, 400);
   }
 
   const normalizedLang = lang && typeof lang === "string" ? lang : "lv";
@@ -62,31 +71,37 @@ export const onRequest = async (context: EventContext): Promise<Response> => {
       p256dh: keys.p256dh,
       auth: keys.auth,
     },
-    className: className.trim(),
+    ...(isTeacher ? { teacherKeyHash } : { className: (className ?? "").trim() }),
     lang: normalizedLang,
     updatedAt: Date.now(),
   };
+  const index = subscriptionIndex(record) ?? "";
 
   /*
-   * Drop the old index entry when the class this device is filed under changes — including the
-   * one-off change from a pre-rename id to a real class short, which is how an existing
-   * installation migrates itself off a key nothing was ever dispatched to.
+   * Drop the old index entry when what this device is filed under changes — another class,
+   * a switch between student and teacher, or the one-off move from a pre-rename id to a real
+   * class short, which is how an existing installation migrates off a key nothing was ever
+   * dispatched to.
    */
   const prev = (await env.PUSH_KV.get(`sub:${id}`, "json")) as PushSubscriptionPayload | null;
-  const previousClass = subscriptionClass(prev);
-  if (previousClass !== null && previousClass !== record.className) {
-    await env.PUSH_KV.delete(`class:${previousClass}:${id}`);
+  const previousIndex = subscriptionIndex(prev);
+  if (previousIndex !== null && previousIndex !== index) {
+    await env.PUSH_KV.delete(`${previousIndex}${id}`);
   }
 
   // 90 days TTL (7,776,000 seconds)
   const expirationTtl = 7776000;
   await Promise.all([
     env.PUSH_KV.put(`sub:${id}`, JSON.stringify(record), { expirationTtl }),
-    env.PUSH_KV.put(`class:${record.className}:${id}`, JSON.stringify(record), {
+    env.PUSH_KV.put(`${index}${id}`, JSON.stringify(record), {
       expirationTtl,
       metadata: record,
     }),
   ]);
 
-  return jsonResponse({ ok: true, id, className: record.className });
+  return jsonResponse({
+    ok: true,
+    id,
+    ...(isTeacher ? { role: "teacher" } : { role: "student", className: record.className }),
+  });
 };

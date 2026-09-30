@@ -86,10 +86,7 @@ export const SettingsView = ({
 
         <ScheduleSection />
 
-        <NotificationsSection
-          selectedClass={selectedClass}
-          onShowIphoneInstall={onShowIphoneInstall}
-        />
+        <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 
         <DataSection />
 

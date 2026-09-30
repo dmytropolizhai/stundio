@@ -6,6 +6,32 @@
  * Function `/api-push/subscribe`.
  */
 import type { Lang } from "@/ui/i18n";
+import { teacherKey } from "@/lib/edupage";
+import type { Persona } from "@/lib/persona";
+
+/**
+ * Whom this device wants pushes about: the active role plus the name the feed knows them by
+ * (`store.identityLabel()`) — a class short for a student, a teacher's name for a teacher.
+ */
+export type PushTarget = { persona: Persona; label: string };
+
+const sha256Hex = async (message: string): Promise<string> => {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(message));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+};
+
+/**
+ * The registration body's role half. A teacher is sent as the SHA-256 of their normalised
+ * name key, never the name: the server only has to recognise the teacher in the feed (it
+ * hashes the names it reads the same way), not know who is subscribed.
+ */
+const targetFields = async ({
+  persona,
+  label,
+}: PushTarget): Promise<{ className: string } | { teacherKeyHash: string }> =>
+  persona === "teacher"
+    ? { teacherKeyHash: await sha256Hex(teacherKey(label)) }
+    : { className: label };
 
 export const VAPID_PUBLIC_KEY =
   "BBb4nnU3LcNCjbU9tSotemIqe6m10tH5mXExCi5CO78DpOljO3e1UX1kXem2goXDcNG3z0dcqZc5K1iaTYtTuYA";
@@ -58,13 +84,13 @@ export const getExistingWebPushSubscription = async (): Promise<PushSubscription
  * Registers this device for "your timetable changed" pushes, prompting for permission if it has
  * never been asked — so only call it from somewhere the user has just asked for notifications.
  *
- * `className` is the class's DISPLAY SHORT ("1DP1"), never `selectedClassId`: the checker files
- * subscribers under the section headers EduPage publishes, and an id matches none of them.
- * Re-registering under a different class is also how a device migrates off a stale key, so this
- * is safe (and cheap) to call again with the same subscription.
+ * A student's label is the class's DISPLAY SHORT ("1DP1"), never `selectedClassId`: the checker
+ * files subscribers under the section headers EduPage publishes, and an id matches none of them.
+ * Re-registering under a different class — or role — is also how a device migrates off a stale
+ * key, so this is safe (and cheap) to call again with the same subscription.
  */
 export const subscribeWebPush = async (
-  className: string,
+  target: PushTarget,
   lang: Lang,
 ): Promise<PushSubscription | null> => {
   if (!isWebPushSupported()) return null;
@@ -102,7 +128,7 @@ export const subscribeWebPush = async (
       body: JSON.stringify({
         endpoint: sub.endpoint,
         keys: { p256dh, auth },
-        className,
+        ...(await targetFields(target)),
         lang,
       }),
     });
@@ -115,12 +141,12 @@ export const subscribeWebPush = async (
 
 /**
  * The same registration, but never prompting: for re-filing an existing subscription on boot
- * (the class it is indexed under changed, or it was registered before the app sent a usable
- * one at all). A device that has not granted permission has nothing to re-file.
+ * (the class or role it is indexed under changed, or it was registered before the app sent a
+ * usable one at all). A device that has not granted permission has nothing to re-file.
  */
-export const refreshWebPushSubscription = async (className: string, lang: Lang): Promise<void> => {
+export const refreshWebPushSubscription = async (target: PushTarget, lang: Lang): Promise<void> => {
   if (!isWebPushSupported() || getWebPushPermission() !== "granted") return;
-  await subscribeWebPush(className, lang);
+  await subscribeWebPush(target, lang);
 };
 
 export const unsubscribeWebPush = async (): Promise<boolean> => {

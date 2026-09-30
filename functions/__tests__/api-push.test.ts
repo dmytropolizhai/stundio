@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import {
   onRequest as onSubscribeRequest,
@@ -14,11 +15,16 @@ import {
 } from "../api-push/check.ts";
 import {
   extractClassSubstitutions,
+  extractTeacherSubstitutions,
   getTargetDates,
   sendWebPush,
   checkAndDispatchSubstitutions,
 } from "../api-push/checker.ts";
-import type { EventContext, KVNamespace, PushEnv } from "../api-push/types.ts";
+import { sha256Hex, type EventContext, type KVNamespace, type PushEnv } from "../api-push/types.ts";
+import { teacherKey } from "../../src/lib/edupage/teacher-names.ts";
+
+/** What the app sends for a teacher: the hash of the normalised name key, never the name. */
+const teacherHash = (name: string) => sha256Hex(teacherKey(name));
 
 const createMockKv = (initialData: Record<string, unknown> = {}): KVNamespace => {
   const store = new Map<string, unknown>(Object.entries(initialData));
@@ -218,6 +224,98 @@ describe("Cloudflare Pages Function: /api-push", () => {
       await subscribe(kv, payload);
       expect((await kv.list({ prefix: "class:-928:" })).keys).toHaveLength(0);
       expect((await kv.list({ prefix: "class:1DP1:" })).keys).toHaveLength(1);
+    });
+  });
+
+  describe("teacher subscriptions", () => {
+    const subscribe = (kv: KVNamespace, body: unknown) =>
+      onSubscribeRequest({
+        request: new Request("https://stundio.pages.dev/api-push/subscribe", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }),
+        params: {},
+        env: { PUSH_KV: kv },
+        waitUntil: vi.fn(),
+        next: vi.fn(),
+      });
+    const device = {
+      endpoint: "https://fcm.googleapis.com/teacher-device",
+      keys: { p256dh: "dummy-p256dh", auth: "dummy-auth" },
+      lang: "lv",
+    };
+
+    it("files a teacher under the hash, and stores no name or class", async () => {
+      const kv = createMockKv();
+      const hash = await teacherHash("Alksne Santa");
+
+      const res = await subscribe(kv, { ...device, teacherKeyHash: hash });
+      expect(res.status).toBe(200);
+      expect(((await res.json()) as { role: string }).role).toBe("teacher");
+
+      const indexed = await kv.list({ prefix: `teacher:${hash}:` });
+      expect(indexed.keys).toHaveLength(1);
+      const stored = JSON.stringify(
+        await kv.get(`sub:${await sha256Hex(device.endpoint)}`, "json"),
+      );
+      expect(stored).not.toMatch(/alksne|santa/i);
+      expect(stored).not.toContain("className");
+    });
+
+    it("rejects anything that isn't a SHA-256 digest — a plain name included", async () => {
+      const res = await subscribe(createMockKv(), { ...device, teacherKeyHash: "Alksne Santa" });
+      expect(res.status).toBe(400);
+    });
+
+    it("re-files the device when it switches role, in either direction", async () => {
+      const kv = createMockKv();
+      const hash = await teacherHash("Alksne Santa");
+
+      await subscribe(kv, { ...device, className: "1DP1" });
+      await subscribe(kv, { ...device, teacherKeyHash: hash });
+      expect((await kv.list({ prefix: "class:1DP1:" })).keys).toHaveLength(0);
+      expect((await kv.list({ prefix: `teacher:${hash}:` })).keys).toHaveLength(1);
+
+      await subscribe(kv, { ...device, className: "1DP1" });
+      expect((await kv.list({ prefix: `teacher:${hash}:` })).keys).toHaveLength(0);
+      expect((await kv.list({ prefix: "class:1DP1:" })).keys).toHaveLength(1);
+    });
+
+    it("unsubscribes a teacher from the teacher index", async () => {
+      const kv = createMockKv();
+      const hash = await teacherHash("Alksne Santa");
+      await subscribe(kv, { ...device, teacherKeyHash: hash });
+
+      await onUnsubscribeRequest({
+        request: new Request("https://stundio.pages.dev/api-push/unsubscribe", {
+          method: "POST",
+          body: JSON.stringify({ endpoint: device.endpoint }),
+        }),
+        params: {},
+        env: { PUSH_KV: kv },
+        waitUntil: vi.fn(),
+        next: vi.fn(),
+      });
+      expect((await kv.list({ prefix: `teacher:${hash}:` })).keys).toHaveLength(0);
+    });
+  });
+
+  describe("extractTeacherSubstitutions", () => {
+    const html = readFileSync("data/subst_2026-09-09_classes.html", "utf8");
+
+    it("regroups the real page by teacher, under either name order", async () => {
+      const byTeacher = await extractTeacherSubstitutions(html, "2026-09-09");
+      // The feed writes "Name Surname"; the timetable (what the app hashes) "Surname Name".
+      const covering = byTeacher.get(await teacherHash("Geislers Edgars"));
+      expect(covering?.rowCount).toBeGreaterThan(0);
+      expect(covering?.hasCover).toBe(true);
+    });
+
+    it("gives the absent teacher the row too, but not as a cover", async () => {
+      const byTeacher = await extractTeacherSubstitutions(html, "2026-09-09");
+      const absent = byTeacher.get(await teacherHash("Čakste Liene Elizabete"));
+      expect(absent?.rowCount).toBeGreaterThan(0);
+      expect(absent?.hasCover).toBe(false);
     });
   });
 
@@ -465,6 +563,50 @@ describe("Cloudflare Pages Function: /api-push", () => {
 
         expect(res.changedClasses).toEqual([`1DP1@${DATE}`]);
         expect(res.notifiedDevices).toBe(1);
+      });
+
+      it("pushes a teacher's own change as a cover duty, without naming them", async () => {
+        const hash = await teacherHash("Bērziņš Jānis");
+        const kv = createMockKv({
+          [`teacher:${hash}:abc`]: JSON.stringify({
+            endpoint: subscriber.endpoint,
+            keys: subscriber.keys,
+            teacherKeyHash: hash,
+            lang: "lv",
+          }),
+        });
+        const sent: string[] = [];
+        const fetchMock = routedFetch(dayHtml("Matematika - Atcelts"));
+        global.fetch = fetchMock;
+
+        // Baseline: Jānis is not on the page yet, so there is nothing of his to compare.
+        await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        global.fetch = routedFetch(
+          dayHtml("Matematika - Aizvietošana: (Anna Liepa) ➔ Jānis Bērziņš"),
+        );
+        const first = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+        // First time he appears on this date is his baseline — same rule as a class.
+        expect(first.changedTeachers).toBe(0);
+
+        const pushes = vi.fn((input: RequestInfo | URL) => {
+          const url = input instanceof Request ? input.url : String(input);
+          if (url.includes("edupage.org")) {
+            const html = dayHtml(
+              "Matematika - Aizvietošana: (Anna Liepa) ➔ Jānis Bērziņš, Kabineta nomaiņa: (101) ➔ 202",
+            );
+            return Promise.resolve(new Response(JSON.stringify({ r: html }), { status: 200 }));
+          }
+          sent.push(url);
+          return Promise.resolve(new Response(null, { status: 201 }));
+        });
+        global.fetch = pushes;
+        const res = await checkAndDispatchSubstitutions({ PUSH_KV: kv }, [DATE]);
+
+        expect(res.changedTeachers).toBe(2); // Jānis and the teacher he covers for
+        expect(res.notifiedDevices).toBe(1);
+        expect(sent).toEqual([subscriber.endpoint]);
+        expect(JSON.stringify(res)).not.toMatch(/Bērziņš|Liepa/);
       });
 
       it("stays quiet when the school republishes the same day", async () => {

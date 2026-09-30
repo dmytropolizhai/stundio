@@ -46,7 +46,14 @@ export type PushSubscriptionPayload = {
    * `selectedClassId` ("-928") instead, which matches no section header EduPage ever renders,
    * so every change the checker found dispatched to nobody.
    */
-  className: string;
+  className?: string;
+  /**
+   * Teacher subscriptions only, instead of `className`: the SHA-256 hex of the teacher's
+   * normalised name key (`teacherKey`, token-sorted and lowercased, so "Surname Name" and
+   * "Name Surname" agree). The client hashes before sending, so no teacher's name is ever
+   * stored here — the checker hashes the names it reads in the feed and compares.
+   */
+  teacherKeyHash?: string;
   lang: string;
   updatedAt?: number;
   /** What `className` was called while it held an id. Read-only, to migrate stored records. */
@@ -57,6 +64,21 @@ export type PushSubscriptionPayload = {
 export const subscriptionClass = (
   record: Partial<PushSubscriptionPayload> | null | undefined,
 ): string | null => record?.className ?? record?.classId ?? null;
+
+export const TEACHER_KEY_HASH = /^[0-9a-f]{64}$/;
+
+/**
+ * The KV index prefix a subscription is listed under — `class:<short>:` for a student,
+ * `teacher:<hash>:` for a teacher — or `null` for a record that names neither. Both roles
+ * share the `sub:<id>` record, so switching role re-files the device rather than doubling it.
+ */
+export const subscriptionIndex = (
+  record: Partial<PushSubscriptionPayload> | null | undefined,
+): string | null => {
+  if (record?.teacherKeyHash !== undefined) return `teacher:${record.teacherKeyHash}:`;
+  const className = subscriptionClass(record);
+  return className === null ? null : `class:${className}:`;
+};
 
 export const DEFAULT_VAPID_PUBLIC_KEY =
   "BBb4nnU3LcNCjbU9tSotemIqe6m10tH5mXExCi5CO78DpOljO3e1UX1kXem2goXDcNG3z0dcqZc5K1iaTYtTuYA";

@@ -130,6 +130,13 @@ export type AppState = {
    * code reads it through `ui/persona`'s `useIdentity`, which memoises on the primitives.
    */
   identity: () => Identity;
+  /**
+   * Whom the active role is keyed by, by the name the substitution feed uses: the class
+   * short for a student, the teacher's short (or full name) for a teacher. `null` while
+   * nothing is picked or no cached timetable knows the pick yet. Web Push files a device
+   * under this (hashed, for a teacher).
+   */
+  identityLabel: () => string | null;
 };
 
 export type StoreDeps = { cache: AppCache; engine: SyncEngine; analytics?: AnalyticsClient };
@@ -360,6 +367,20 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       },
 
       identity: () => resolveIdentity(get().settings),
+
+      identityLabel: () =>
+        matchPersona(get().identity(), {
+          student: () => get().selectedClassShort(),
+          teacher: ({ teacherId }) => {
+            if (teacherId === null) return null;
+            for (const timetable of Object.values(get().timetables)) {
+              const teacher = timetable.teachers.find((t) => t.id === teacherId);
+              const label = teacher?.short || teacher?.name;
+              if (label !== undefined && label !== "") return label;
+            }
+            return null;
+          },
+        }),
 
       resolvedTeacherDay: (date, teacherId) => {
         const state = get();

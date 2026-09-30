@@ -11,6 +11,10 @@ import {
   reportSubstitutionChangeToServer,
   VAPID_PUBLIC_KEY,
 } from "../webPush.ts";
+import { teacherKey } from "@/lib/edupage";
+import type { PushTarget } from "@/notifications";
+
+const STUDENT: PushTarget = { persona: "student", label: "1DP1" };
 
 describe("webPush", () => {
   beforeEach(() => {
@@ -103,7 +107,7 @@ describe("webPush", () => {
       configurable: true,
     });
 
-    const sub = await subscribeWebPush("1DP1", "lv");
+    const sub = await subscribeWebPush(STUDENT, "lv");
     expect(sub).toBe(mockSub);
     expect(subscribeMock).toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledWith(
@@ -117,6 +121,41 @@ describe("webPush", () => {
     // else (an EduPage id, as this used to) registers the device under a key nobody reads.
     const [, init] = fetchMock.mock.calls[0] as [string, { body: string }];
     expect(JSON.parse(init.body)).toMatchObject({ className: "1DP1", lang: "lv" });
+  });
+
+  it("registers a teacher by a hash of their name key — never the name, never a class", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    vi.stubGlobal("fetch", fetchMock);
+    const mockSub = {
+      endpoint: "https://fcm.googleapis.com/test",
+      toJSON: () => ({ keys: { p256dh: "mockP256dh", auth: "mockAuth" } }),
+    };
+    vi.stubGlobal("Notification", { permission: "granted", requestPermission: vi.fn() });
+    Reflect.set(window, "PushManager", class {});
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        ready: Promise.resolve({
+          pushManager: { getSubscription: vi.fn().mockResolvedValue(mockSub) },
+        }),
+      },
+      configurable: true,
+    });
+
+    await subscribeWebPush({ persona: "teacher", label: "Alksne Santa" }, "lv");
+
+    const [, init] = fetchMock.mock.calls[0] as [string, { body: string }];
+    const body = JSON.parse(init.body) as Record<string, unknown>;
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(teacherKey("Santa Alksne")),
+    );
+    const expected = [...new Uint8Array(digest)]
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    // Either name order hashes the same — the feed and the timetable disagree on it.
+    expect(body.teacherKeyHash).toBe(expected);
+    expect(body).not.toHaveProperty("className");
+    expect(init.body).not.toMatch(/alksne|santa/i);
   });
 
   it("re-files an existing subscription without ever prompting", async () => {
@@ -140,7 +179,7 @@ describe("webPush", () => {
       configurable: true,
     });
 
-    await refreshWebPushSubscription("1DP1", "lv");
+    await refreshWebPushSubscription(STUDENT, "lv");
 
     expect(requestPermission).not.toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledWith("/api-push/subscribe", expect.anything());
@@ -157,7 +196,7 @@ describe("webPush", () => {
       configurable: true,
     });
 
-    await refreshWebPushSubscription("1DP1", "lv");
+    await refreshWebPushSubscription(STUDENT, "lv");
 
     expect(requestPermission).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
@@ -197,7 +236,7 @@ describe("webPush", () => {
 
   it("handles subscribeWebPush failure branches", async () => {
     // Not supported
-    expect(await subscribeWebPush("1DP1", "lv")).toBeNull();
+    expect(await subscribeWebPush(STUDENT, "lv")).toBeNull();
 
     // Permission denied
     vi.stubGlobal("Notification", {
@@ -209,7 +248,7 @@ describe("webPush", () => {
       value: { ready: Promise.resolve({ pushManager: {} }) },
       configurable: true,
     });
-    expect(await subscribeWebPush("1DP1", "lv")).toBeNull();
+    expect(await subscribeWebPush(STUDENT, "lv")).toBeNull();
 
     // Missing keys
     const mockSubWithoutKeys = {
@@ -227,7 +266,7 @@ describe("webPush", () => {
       configurable: true,
     });
     vi.stubGlobal("Notification", { permission: "granted" });
-    expect(await subscribeWebPush("1DP1", "lv")).toBeNull();
+    expect(await subscribeWebPush(STUDENT, "lv")).toBeNull();
 
     // Fetch rejection
     const mockSub = {
@@ -245,7 +284,7 @@ describe("webPush", () => {
       configurable: true,
     });
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network fail")));
-    expect(await subscribeWebPush("1DP1", "lv")).toBeNull();
+    expect(await subscribeWebPush(STUDENT, "lv")).toBeNull();
   });
 
   it("handles unsubscribeWebPush failure and edge branches", async () => {

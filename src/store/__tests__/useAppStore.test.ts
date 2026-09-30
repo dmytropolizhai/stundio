@@ -570,6 +570,23 @@ describe("persona and teacher mode", () => {
     expect(after?.lessons).toHaveLength(before?.lessons.length ?? -1);
   });
 
+  it("identityLabel names whoever the active role is keyed by", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "A1-2"));
+    expect(store.getState().identityLabel()).toBe("A1-2");
+
+    await store.getState().setPersona("teacher");
+    // The class is still stored, but it isn't this role's — nothing to name yet.
+    expect(store.getState().identityLabel()).toBeNull();
+
+    await store.getState().setTeacher(teacherIdOf(store, "Alksne Santa"));
+    expect(store.getState().identityLabel()).toBe("Alksne Santa");
+
+    await store.getState().setTeacher("-no-such-teacher");
+    expect(store.getState().identityLabel()).toBeNull();
+  });
+
   it("resolvedTeacherDay resolves teacher schedule directly", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });
