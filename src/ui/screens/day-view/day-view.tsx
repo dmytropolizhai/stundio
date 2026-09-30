@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
+import { usePersona } from "@/ui/persona";
 import { addDays } from "@/sync";
 import { dayProgress } from "@/lib/schedule";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
@@ -44,17 +45,13 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
   }
 
   const ready = useAppStore((s) => s.ready);
-  const persona = useAppStore((s) => s.settings.persona);
-  const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
+  const { identified: hasIdentity, profile } = usePersona();
   const showTime = useAppStore((s) => s.settings.showTime);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const filled = useAppStore((s) => s.settings.lessonCardStyle === "filled");
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
-
-  const hasIdentity = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   const day = useAppStore((s) => s.resolvedDay(date));
 
@@ -139,8 +136,8 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
     if (!hasIdentity) {
       return (
         <StateMessage
-          icon={persona === "teacher" ? "briefcase" : "graduation-cap"}
-          title={persona === "teacher" ? t("teacher.none") : t("day.noClass")}
+          icon={profile.icon}
+          title={t(profile.noneSelected)}
           action={<Button onClick={onPickClass}>{t("settings.change")}</Button>}
         />
       );

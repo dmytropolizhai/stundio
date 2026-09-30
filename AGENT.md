@@ -57,6 +57,15 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   side does no schedule maths at all. Only `native.ts` touches Capacitor. The store wiring
   (`src/widget/`) publishes it after every sync; `NextLessonWidget.refresh(context)` is the
   native re-render seam.
+- **`src/lib/persona/`** — role resolution. Student and teacher are separate at the root (a
+  class + subgroup vs. a teacher + view), so the flat `Settings` fields are resolved once into a
+  discriminated `Identity` (`resolveIdentity`) and branched on with the exhaustive
+  `matchPersona`; `isIdentified` / `identityKey` are the gate and the memo key. Pure, settings-
+  shape only. The store exposes it as `identity()`; `sync/`, `widget/` and `notifications/`
+  branch through it too.
+- **`src/ui/persona/`** — the UI side of the same split: `PERSONA_PROFILES` is the per-role
+  strategy table (tabs, picker, icon, copy keys, feature flags), and `usePersona()` /
+  `useIdentity()` / `useIsFormTeacher()` are what screens and hooks read.
 - **`src/lib/version/`**, **`src/lib/analytics/`** — GitHub release update checks; anonymous
   Plausible pings (opt-out, no cookies or persistent id).
 - **`src/db/`** — the `AppCache` port (`types.ts`) with an `idb` implementation and a memory
@@ -99,6 +108,11 @@ These are enforced by lint, tests, or CI — breaking one breaks the build:
 - **Chrome is translated (LV/EN/RU/UA); school-written text is not.** Substitution `raw` strings
   render verbatim behind a "from school" label. `lv.ts` is the typed source dictionary — adding a
   key there forces the other three.
+- **Never branch on `settings.persona` directly.** Resolve the role (`usePersona()` in React,
+  `state.identity()` / `resolveIdentity` elsewhere) and use `matchPersona` for data-dependent
+  branches or a `PERSONA_PROFILES` field for static per-role differences. A new role difference
+  is a new profile field, not another ternary — that's how a leftover class id or subgroup
+  stops leaking into teacher mode.
 - **No PII, anywhere.** No accounts, no backend, no user identifiers in analytics.
 
 ## Style

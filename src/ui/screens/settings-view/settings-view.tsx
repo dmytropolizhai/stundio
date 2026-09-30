@@ -8,6 +8,7 @@ import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
 import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
 import { FeedbackSheet } from "@/ui/components/FeedbackSheet.tsx";
 import { useT } from "@/ui/i18n";
+import { useIdentity } from "@/ui/persona";
 import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
 import { IdentitySection } from "./class-section.tsx";
 import { CustomizationSection } from "./customization-section.tsx";
@@ -51,7 +52,7 @@ export const SettingsView = ({
     type: "suggestion",
   });
 
-  const persona = useAppStore((s) => s.settings.persona);
+  const identity = useIdentity();
   const selectedClass = useSelectedClass();
   const selectedTeacher = useSelectedTeacher();
   const metas = useAppStore((s) => s.metas);
@@ -70,7 +71,7 @@ export const SettingsView = ({
         <TopBar title={t("settings.title")} />
 
         <IdentitySection
-          persona={persona}
+          identity={identity}
           selectedClass={selectedClass}
           selectedTeacher={selectedTeacher}
           onChangeIdentity={() => setIdentitySheetOpen(true)}

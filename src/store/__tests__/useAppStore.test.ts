@@ -536,6 +536,40 @@ describe("persona and teacher mode", () => {
     expect(formDay).not.toBe(ownDay);
   });
 
+  it("never falls back to a leftover class while a teacher has none picked", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    await store.getState().setClass(classIdOf(store, "A1-2"));
+    expect(store.getState().resolvedDay(DATE)).not.toBeNull();
+
+    await store.getState().setPersona("teacher");
+    expect(store.getState().identity()).toEqual({
+      persona: "teacher",
+      teacherId: null,
+      view: "own",
+    });
+    expect(store.getState().resolvedDay(DATE)).toBeNull();
+  });
+
+  it("doesn't apply the student's subgroup to a teacher's form class", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    // Abrama Ivita's form class has a division that drops lessons on the fixture day, so a
+    // leaked subgroup would be visible.
+    const teacherId = teacherIdOf(store, "Abrama Ivita");
+
+    await store.getState().setPersona("teacher");
+    await store.getState().setTeacher(teacherId);
+    await store.getState().setTeacherView("form-class");
+    const before = store.getState().resolvedDay(DATE);
+    expect(before?.classId).toBe("-963");
+
+    // A subgroup left over from student mode — not the teacher's to apply.
+    await store.getState().setSubgroup("1");
+    const after = store.getState().resolvedDay(DATE);
+    expect(after?.lessons).toHaveLength(before?.lessons.length ?? -1);
+  });
+
   it("resolvedTeacherDay resolves teacher schedule directly", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });

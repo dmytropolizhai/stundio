@@ -1,8 +1,15 @@
 import { Chip } from "@/ds";
-import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
+import { matchPersona } from "@/lib/persona";
+import { usePersona } from "@/ui/persona";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { useSelectedTeacher } from "../hooks/useTeachers.ts";
+
+/** "Surname Firstname" → "F. Surname" — a chip is too narrow for the full name. */
+const teacherChipLabel = (short: string): string => {
+  const [surname = "", firstName = ""] = short.trim().split(/\s+/);
+  return surname ? `${firstName[0]?.toUpperCase() || ""}. ${surname}` : firstName;
+};
 
 /**
  * "10.A · Mainīt" (or teacher name) — the tappable counterpart to `SyncBadge`.
@@ -10,40 +17,25 @@ import { useSelectedTeacher } from "../hooks/useTeachers.ts";
  */
 export const ClassBadge = ({ onClick }: { onClick: () => void }) => {
   const t = useT();
-  const persona = useAppStore((s) => s.settings.persona);
+  const { identity, profile } = usePersona();
   const selectedClass = useSelectedClass();
   const selectedTeacher = useSelectedTeacher();
 
-  if (persona === "teacher") {
-    if (!selectedTeacher || !selectedTeacher.short) return null;
-
-    const nameParts = selectedTeacher.short.trim().split(/\s+/);
-
-    const firstName = nameParts[1] || "";
-    const surname = nameParts[0] || "";
-
-    const displayName = surname ? `${firstName[0]?.toUpperCase() || ""}. ${surname}` : firstName;
-
-    return (
-      <Chip
-        icon="briefcase"
-        onClick={onClick}
-        aria-label={t("onboarding.teacher.title")}
-        data-testid="class-badge"
-      >
-        {displayName}
-      </Chip>
-    );
-  }
+  // `null` hides the chip: a teacher whose record isn't cached has nothing to show yet.
+  const label = matchPersona<string | undefined | null>(identity, {
+    student: () => selectedClass?.short,
+    teacher: () => (selectedTeacher?.short ? teacherChipLabel(selectedTeacher.short) : null),
+  });
+  if (label === null) return null;
 
   return (
     <Chip
-      icon="graduation-cap"
+      icon={profile.icon}
       onClick={onClick}
-      aria-label={t("day.changeClass")}
+      aria-label={t(profile.changeIdentityLabel)}
       data-testid="class-badge"
     >
-      {selectedClass?.short}
+      {label}
     </Chip>
   );
 };

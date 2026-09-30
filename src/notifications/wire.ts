@@ -78,19 +78,19 @@ export const notifyOnChanges = (
         .at(0);
   if (target === undefined) return;
 
-  const isTeacher = settings.persona === "teacher";
+  const identity = store.getState().identity();
   let isCover = false;
-  if (isTeacher) {
+  if (identity.persona === "teacher" && identity.teacherId !== null) {
     const state = store.getState();
-    const day = state.resolvedTeacherDay(target);
+    const day = state.resolvedTeacherDay(target, identity.teacherId);
     if (day && day.lessons.some((l) => l.isCover || l.role === "cover")) {
       isCover = true;
-    } else if (state.settings.selectedTeacherId) {
+    } else {
       const subs = state.substitutions[target] ?? null;
       if (subs) {
         let key: string | null = null;
         for (const tt of Object.values(state.timetables)) {
-          const t = tt.teachers.find((x) => x.id === state.settings.selectedTeacherId);
+          const t = tt.teachers.find((x) => x.id === identity.teacherId);
           if (t) {
             key = teacherKey(t.short || t.name);
             break;

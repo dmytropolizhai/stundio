@@ -8,6 +8,7 @@
  */
 import { useMemo } from "react";
 import { useAppStore } from "@/store";
+import { usePersona } from "@/ui/persona";
 import { addDays } from "@/sync";
 import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate } from "@/lib/edupage";
@@ -25,12 +26,7 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
   const resolvedDay = useAppStore((s) => s.resolvedDay);
   const timetables = useAppStore((s) => s.timetables);
   const substitutions = useAppStore((s) => s.substitutions);
-  const classId = useAppStore((s) => s.settings.selectedClassId);
-  const persona = useAppStore((s) => s.settings.persona);
-  const teacherId = useAppStore((s) => s.settings.selectedTeacherId);
-  const teacherView = useAppStore((s) => s.settings.teacherView);
-
-  const hasIdentity = persona === "teacher" ? teacherId !== null : classId !== null;
+  const { identified: hasIdentity, key: identityKey } = usePersona();
 
   return useMemo(() => {
     if (!hasIdentity) return null;
@@ -80,5 +76,5 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
       lessonDelta: prevAvailable ? totalLessons - prevTotal : null,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the store data drives the result
-  }, [date, resolvedDay, timetables, substitutions, classId, persona, teacherId, teacherView]);
+  }, [date, resolvedDay, timetables, substitutions, hasIdentity, identityKey]);
 };

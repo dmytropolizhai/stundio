@@ -15,6 +15,7 @@ import {
   type WidgetStrings,
 } from "@/lib/widget";
 import { rigaClock, type RigaClock } from "@/lib/schedule";
+import { isIdentified, matchPersona } from "@/lib/persona";
 import { translate, type Lang } from "@/ui/i18n";
 import type { AppState, Store } from "@/store";
 
@@ -28,17 +29,31 @@ const stringsFor = (lang: Lang): WidgetStrings => ({
   minutesUntil: (minutes) => translate(lang, "widget.minutesUntil", { minutes }),
 });
 
-/** The picked class's display label, merged across buildings the way the picker does it. */
-const classLabel = (state: AppState): string | null => {
-  const id = state.settings.selectedClassId;
-  if (id === null) return null;
-  for (const timetable of Object.values(state.timetables)) {
-    const match = timetable.classes.find((c) => c.id === id);
-    if (match !== undefined && match.short !== "") return match.short;
-  }
-  // A class is chosen but its timetable is not cached yet — "no-data", not "no-class".
-  return id;
-};
+/**
+ * Whose timetable the tile shows: the picked class's short for a student, the teacher's short
+ * for a teacher — merged across buildings the way the pickers do it.
+ */
+const identityLabel = (state: AppState): string | null =>
+  matchPersona(state.identity(), {
+    student: ({ classId }) => {
+      if (classId === null) return null;
+      for (const timetable of Object.values(state.timetables)) {
+        const match = timetable.classes.find((c) => c.id === classId);
+        if (match !== undefined && match.short !== "") return match.short;
+      }
+      // A class is chosen but its timetable is not cached yet — "no-data", not "no-class".
+      return classId;
+    },
+    teacher: ({ teacherId }) => {
+      if (teacherId === null) return null;
+      for (const timetable of Object.values(state.timetables)) {
+        const match = timetable.teachers.find((t) => t.id === teacherId);
+        const label = match?.short || match?.name;
+        if (label !== undefined && label !== "") return label;
+      }
+      return teacherId;
+    },
+  });
 
 /** What the widget should be showing for this store state, right now. */
 export const widgetPayloadFor = (
@@ -47,9 +62,9 @@ export const widgetPayloadFor = (
   updatedAt: Date = new Date(),
 ): WidgetPayload =>
   buildWidgetPayload({
-    day: state.settings.selectedClassId === null ? null : state.resolvedDay(now.date),
+    day: isIdentified(state.identity()) ? state.resolvedDay(now.date) : null,
     now,
-    className: classLabel(state),
+    className: identityLabel(state),
     strings: stringsFor(state.settings.lang),
     updatedAt,
   });

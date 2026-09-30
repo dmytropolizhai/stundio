@@ -25,6 +25,7 @@ import {
 import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
+import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
 
 /**
  * Where a tapped notification wants the app to go. Set by the notification-tap listener
@@ -124,6 +125,11 @@ export type AppState = {
    * the feed (the Web Push registration, in particular) has to go through here.
    */
   selectedClassShort: () => string | null;
+  /**
+   * The active role and only its selection (`lib/persona`). A fresh object per call — React
+   * code reads it through `ui/persona`'s `useIdentity`, which memoises on the primitives.
+   */
+  identity: () => Identity;
 };
 
 export type StoreDeps = { cache: AppCache; engine: SyncEngine; analytics?: AnalyticsClient };
@@ -341,8 +347,10 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
 
       selectedClassShort: () => {
         const state = get();
-        if (state.settings.persona === "teacher") return null;
-        const id = state.settings.selectedClassId;
+        const id = matchPersona(state.identity(), {
+          student: (s) => s.classId,
+          teacher: () => null,
+        });
         if (id === null) return null;
         for (const timetable of Object.values(state.timetables)) {
           const short = timetable.classes.find((c) => c.id === id)?.short;
@@ -350,6 +358,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         }
         return null;
       },
+
+      identity: () => resolveIdentity(get().settings),
 
       resolvedTeacherDay: (date, teacherId) => {
         const state = get();
@@ -378,24 +388,21 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
 
       resolvedDay: (date, classId) => {
         const state = get();
-        if (
-          classId === undefined &&
-          state.settings.persona === "teacher" &&
-          state.settings.selectedTeacherId
-        ) {
-          if (state.settings.teacherView === "own") {
-            return get().resolvedTeacherDay(date, state.settings.selectedTeacherId);
-          }
-          if (state.settings.teacherView === "form-class") {
-            const formClassId = getTeacherFormClassId(state, state.settings.selectedTeacherId);
-            if (formClassId !== null) {
-              return get().resolvedDay(date, formClassId);
-            }
+        if (classId === undefined) {
+          const identity = state.identity();
+          if (identity.persona === "teacher") {
+            const { teacherId, view } = identity;
+            if (teacherId === null) return null;
+            if (view === "own") return get().resolvedTeacherDay(date, teacherId);
+            const formClassId = getTeacherFormClassId(state, teacherId);
+            return formClassId === null
+              ? get().resolvedTeacherDay(date, teacherId)
+              : get().resolvedDay(date, formClassId);
           }
         }
 
         const id = classId ?? state.settings.selectedClassId;
-        if (id === null || id === undefined) return null;
+        if (id === null) return null;
 
         /*
          * One source per building, not one overall: in automatic mode a class's lessons live in
@@ -414,7 +421,11 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         if (sources.length === 0) return null;
 
         const subs = state.substitutions[date] ?? null;
-        const subgroup = state.settings.subgroup;
+        // A subgroup is the student's own division — never applied to a teacher's form class.
+        const subgroup = matchPersona(state.identity(), {
+          student: (s) => s.subgroup,
+          teacher: () => null,
+        });
         const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
         const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}|${subgroup ?? ""}`;
         const hit = memo.get(key);
