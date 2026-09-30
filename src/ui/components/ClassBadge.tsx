@@ -15,6 +15,15 @@ export const ClassBadge = ({ onClick }: { onClick: () => void }) => {
   const selectedTeacher = useSelectedTeacher();
 
   if (persona === "teacher") {
+    if (!selectedTeacher || !selectedTeacher.short) return null;
+
+    const nameParts = selectedTeacher.short.trim().split(/\s+/);
+
+    const firstName = nameParts[1] || "";
+    const surname = nameParts[0] || "";
+
+    const displayName = surname ? `${firstName[0]?.toUpperCase() || ""}. ${surname}` : firstName;
+
     return (
       <Chip
         icon="briefcase"
@@ -22,10 +31,11 @@ export const ClassBadge = ({ onClick }: { onClick: () => void }) => {
         aria-label={t("onboarding.teacher.title")}
         data-testid="class-badge"
       >
-        {selectedTeacher?.short ?? selectedTeacher?.name ?? t("app.title")}
+        {displayName}
       </Chip>
     );
   }
+
 
   return (
     <Chip
@@ -34,7 +44,7 @@ export const ClassBadge = ({ onClick }: { onClick: () => void }) => {
       aria-label={t("day.changeClass")}
       data-testid="class-badge"
     >
-      {selectedClass?.short ?? t("app.title")}
+      {selectedClass?.short}
     </Chip>
   );
 };
