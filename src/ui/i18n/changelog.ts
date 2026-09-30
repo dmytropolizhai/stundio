@@ -26,6 +26,40 @@ export type ChangelogEntry = {
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: "v1.3-elna",
+    date: "2026-09-30",
+    lines: {
+      lv: [
+        "Pievienota poga tiešai pārejai uz oficiālo RVT EduPage izmaiņu lapu izmaiņu cilnē.",
+        "Skolas paziņojumi tagad tiek sasaistīti un parādīti tieši pie attiecīgajām stundu kartītēm.",
+        "Uzlabota grupas izmaiņu atpazīšana, precīzi parādot skolotāju prombūtni un neformatētos paziņojumus.",
+        "Precizēts kopējais stundu skaits un pareizs nodarbību beigu laiks nedēļas pārskatā apvienotajām stundām.",
+        "Sinhronizēta dienas un nedēļas skatu navigācija un novērsta navigācijas joslas nobīde iOS Safari.",
+      ],
+      en: [
+        "Added a direct link button in the Changes tab to open RVT's official EduPage substitutions page.",
+        "School announcements are now linked and shown directly on relevant lesson cards.",
+        "Improved class substitutions matching, accurately showing absent teachers and unformatted notes.",
+        "Accurate lesson counts and correct ending times in Week view for multi-period and subgroup lessons.",
+        "Synchronized Day and Week view navigation and fixed bottom navigation bar behavior on iOS Safari.",
+      ],
+      ru: [
+        "Добавлена кнопка быстрого перехода на официальную страницу замен RVT EduPage во вкладке «Замены».",
+        "Школьные объявления теперь привязываются и отображаются прямо на карточках соответствующих уроков.",
+        "Улучшено распознавание замен группы, включая отсутствие преподавателей и неразобранные объявления.",
+        "Точный подсчет уроков и корректное время окончания в расписании недели для спаренных занятий и подгрупп.",
+        "Синхронизирована навигация между днем и неделей и исправлено поведение нижней панели в iOS Safari.",
+      ],
+      ua: [
+        "Додано кнопку швидкого переходу на офіційну сторінку замін RVT EduPage у вкладці «Зміни».",
+        "Шкільні оголошення відтепер прив'язуються та відображаються безпосередньо на картках відповідних уроків.",
+        "Покращено розпізнавання замін для групи, враховуючи відсутність викладачів та нерозібрані оголошення.",
+        "Точний підрахунок уроків і правильний час завершення в розкладі тижня для спарених занять та підгруп.",
+        "Синхронізовано навігацію між днем і тижнем та виправлено поведінку нижньої панелі в iOS Safari.",
+      ],
+    },
+  },
+  {
     version: "v1.2.5-artemis",
     date: "2026-09-20",
     lines: {

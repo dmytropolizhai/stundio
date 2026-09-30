@@ -65,10 +65,7 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
     const prevDates = weekDates(addDays(date, -7));
     const prevDays = prevDates.map((d) => resolvedDay(d));
     const prevAvailable = prevDays.some((d) => d !== null);
-    const prevTotal = prevDays.reduce(
-      (sum, day) => sum + (day ? weekPeriods([day]).length : 0),
-      0,
-    );
+    const prevTotal = prevDays.reduce((sum, day) => sum + (day ? weekPeriods([day]).length : 0), 0);
 
     return {
       totalLessons,
