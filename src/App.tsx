@@ -173,7 +173,7 @@ const Shell = () => {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col overflow-hidden">
       <ErrorBoundary
         key={tab}
         title={t("error.title")}
