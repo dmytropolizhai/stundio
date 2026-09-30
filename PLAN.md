@@ -1,11 +1,12 @@
 # EduPage timetable app — action plan
 
-Status: Phases 0–4, the Parallel Widget Track, and Phase 7 (Web/iOS PWA on Cloudflare Pages)
-are complete (scaffold, tooling, Capacitor, scraper + parser, offline cache + sync, UI, customization
-& themes, Android packaging, edge-to-edge, local notifications, WorkManager background refresh, native
-2×1, countdown & 4×2 home-screen widgets, Cloudflare Pages edge proxy + PWA + Web Push).
-Next: Phase 5 (Release & Distribution via GitHub Releases, Cloudflare download site, and OTA updates),
-Phase 6 (e-klase grades integration exploration), and Phase 8 (Teacher Mode).
+Status: Phases 0–4, the Parallel Widget Track, Phase 7 (Web/iOS PWA on Cloudflare Pages),
+and Phase 8 (Teacher Mode) are complete (scaffold, tooling, Capacitor, scraper + parser,
+offline cache + sync, UI, customization & themes, Android packaging, edge-to-edge, local notifications,
+WorkManager background refresh, native 2×1, countdown & 4×2 home-screen widgets, Cloudflare Pages
+edge proxy + PWA + Web Push, Teacher Mode persona & split-screen onboarding).
+Next: Phase 5 (Release & Distribution final polish via GitHub Releases and Cloudflare download site)
+and Phase 6 (e-klase grades integration exploration).
 Research artefacts: `MODEL.md`, `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1 & Cloudflare PWA.
 
@@ -313,7 +314,7 @@ and renders the same DayView/WeekView as Android.
 
 ---
 
-## Phase 8 — Teacher Mode ("Choose Your Side")  (size: L)
+## Phase 8 — Teacher Mode ("Choose Your Side")  (size: L — complete)
 
 **Goal:** a second persona over the same public, anonymous EduPage dataset. A teacher picks their
 name, sees their own teaching day (classes + room + building), and gets substitution cover duties
@@ -435,19 +436,19 @@ they already are.
 Every row is its own branch and PR, tested, per AGENT.md. Baseline before this phase:
 799 tests / 65 files green, coverage thresholds 90/80 enforced in `vite.config.ts`.
 
-| # | Branch | Content | Size | Acceptance |
-|---|---|---|---|---|
-| T0 | `chore/probe-teacher-mode` | `reference/probe_teachers.py`: `mode:"teachers"` + absent-line fixtures; MODEL.md §7 | S | Fixture lands in `data/`; zero app code |
-| T1 | `fix/teacher-name-matching` | `teacher-names.ts`, wired into `resolve.ts` / `notes.ts` | S | All 18 fixture names resolve to real `TeacherRef`s, none to `subst:` |
-| T2 | `feat/resolve-teacher-day` | `resolveTeacherDay`, `coverDuties`, `listTeachers` | L | Busiest teacher on 2026-09-09: no duplicate rows, merged classes on one card, covers flagged; property test "no teacher ever holds two lessons in one slot" |
-| T3 | `feat/subst-absent-teachers` | absent-teacher line parser | S | 4 names from the fixture; a missing line never throws |
-| T4 | `feat/persona-settings` | `Settings` + store + defaults | S | A settings blob without `persona` reads back as `student` |
-| T5 | `feat/choose-your-side` | persona onboarding step, `TeacherPicker`, Settings switch | M | Both onboarding branches covered; switching persona keeps the cache |
-| T6 | `feat/teacher-day-week` | teacher cards, cover badge, student-only controls hidden | L | Snapshot tests for both personas off the real fixtures |
-| T7 | `feat/teacher-changes-view` | my-changes tab + absent colleagues | M | Teacher sees only rows naming them; school-wide tab unchanged |
-| T8 | `feat/teacher-dual-role` | form-teacher segment | M | Teacher with `classids` sees it, teacher without does not |
-| T9 | `feat/teacher-notifications` | cover-assignment diff and strings | M | A new cover for me notifies; an unrelated change does not |
-| T10 | `chore/teacher-docs-i18n` | 4 languages, PRODUCT/PLAN/README, PWA check | S | CI green end to end |
+| # | Branch | Content | Size | Acceptance | Status |
+|---|---|---|---|---|---|
+| T0 | `chore/probe-teacher-mode` | `reference/probe_teachers.py`: `mode:"teachers"` + absent-line fixtures; MODEL.md §7 | S | Fixture lands in `data/`; zero app code | ✅ Merged |
+| T1 | `fix/teacher-name-matching` | `teacher-names.ts`, wired into `resolve.ts` / `notes.ts` | S | All 18 fixture names resolve to real `TeacherRef`s, none to `subst:` | ✅ Merged |
+| T2 | `feat/resolve-teacher-day` | `resolveTeacherDay`, `coverDuties`, `listTeachers` | L | Busiest teacher on 2026-09-09: no duplicate rows, merged classes on one card, covers flagged; property test "no teacher ever holds two lessons in one slot" | ✅ Merged |
+| T3 | `feat/subst-absent-teachers` | absent-teacher line parser | S | 4 names from the fixture; a missing line never throws | ✅ Merged |
+| T4 | `feat/persona-settings` | `Settings` + store + defaults | S | A settings blob without `persona` reads back as `student` | ✅ Merged |
+| T5 | `feat/choose-your-side` | persona onboarding step, `TeacherPicker`, Settings switch | M | Both onboarding branches covered; switching persona keeps the cache | ✅ Merged |
+| T6 | `feat/teacher-day-week` | teacher cards, cover badge, student-only controls hidden | L | Snapshot tests for both personas off the real fixtures | ✅ Merged |
+| T7 | `feat/teacher-changes-view` | my-changes tab + absent colleagues | M | Teacher sees only rows naming them; school-wide tab unchanged | ✅ Merged |
+| T8 | `feat/teacher-dual-role` | form-teacher segment | M | Teacher with `classids` sees it, teacher without does not | ✅ Merged |
+| T9 | `feat/teacher-notifications` | cover-assignment diff and strings | M | A new cover for me notifies; an unrelated change does not | ✅ Merged |
+| T10 | `chore/teacher-docs-i18n` | 4 languages, PRODUCT/PLAN/README, PWA check | S | CI green end to end | ✅ Merged |
 
 ### Decisions to lock before T2
 
@@ -459,10 +460,7 @@ Every row is its own branch and PR, tested, per AGENT.md. Baseline before this p
 4. **Namesakes.** No collisions on the normalised key in the current table, but a test must assert
    it, and the picker shows a subject line as a tiebreaker when the key is not unique.
 
-**Exit:** a teacher picks their side and their name during onboarding, sees their teaching day and
-week with correct classes, rooms and buildings, sees assigned cover duties highlighted and who is
-absent today, can jump to their form class if they have one, and all of it works offline and on
-`stundio.pages.dev`.
+**Exit:** ✅ met. All T0–T10 steps implemented, integrated, and verified (893 tests / 73 files green, CI coverage thresholds passing: 91.36% statements, 80.75% branches, 90.62% functions, 92.05% lines). A teacher picks their side and their name during onboarding, sees their teaching day and week with correct classes, rooms and buildings, sees assigned cover duties highlighted and who is absent today, can jump to their form class if they have one, and all of it works offline and on `stundio.pages.dev`.
 
 ---
 
@@ -519,12 +517,12 @@ Capacitor has no App Widget API — native Kotlin and Java AppWidgetProviders we
 Telegram bot · per-student login (messages, lunch) · multi-school support ·
 FCM server push (handled via Android WorkManager locally and Cloudflare cron Web Push for PWA) ·
 Google Play Store listing (deliberately out of scope to avoid legal exposure from EduPage) ·
-classroom timetable views (data supports it — later); teacher mode tracked in Phase 8.
+classroom timetable views (data supports it — later); teacher mode completed in Phase 8.
 e-klase grades: tracked as **Phase 6**, a fast-follow after v1 ships — not dropped, but not v1.
 
 ## Definition of done (v1)
 
-Pick class → correct today/week view, online and offline, in LV/EN/RU/UA · substitutions applied
-with visible diffs · local notification / Web Push on favorite-class changes · home-screen "next lesson"
-widget (Android) & PWA Add-to-Home-Screen (iOS) · APK releases published on GitHub and downloadable via
+Pick class or teacher persona → correct today/week view, online and offline, in LV/EN/RU/UA · substitutions applied
+with visible diffs and cover duty highlights · local notification / Web Push on favorite-class & teacher changes ·
+home-screen "next lesson" widget (Android) & PWA Add-to-Home-Screen (iOS) · APK releases published on GitHub and downloadable via
 `stundio.pages.dev/apk` · in-app update notification functioning on device · used by ≥5 schoolmates for a week.
