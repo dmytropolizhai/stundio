@@ -9,12 +9,7 @@ type TeacherRowProps = {
   onSelect: (teacher: TeacherOption) => void;
 };
 
-export const TeacherRow = ({
-  teacher,
-  index,
-  isSelected,
-  onSelect,
-}: TeacherRowProps) => {
+export const TeacherRow = ({ teacher, index, isSelected, onSelect }: TeacherRowProps) => {
   const t = useT();
   const displayName = teacher.short || teacher.name;
   const isFormTeacher = teacher.formClassIds.length > 0;
@@ -32,9 +27,7 @@ export const TeacherRow = ({
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="font-text text-body font-bold truncate">{displayName}</span>
           {teacher.name && teacher.short && teacher.name !== teacher.short && (
-            <span className="truncate font-text text-caption text-muted">
-              {teacher.name}
-            </span>
+            <span className="truncate font-text text-caption text-muted">{teacher.name}</span>
           )}
         </div>
 
@@ -44,9 +37,7 @@ export const TeacherRow = ({
               {t("teacher.formClass")}
             </Badge>
           )}
-          {isSelected && (
-            <Icon name="check" size={18} className="text-brand-strong" />
-          )}
+          {isSelected && <Icon name="check" size={18} className="text-brand-strong" />}
         </div>
       </button>
     </li>

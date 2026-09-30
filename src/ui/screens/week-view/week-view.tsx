@@ -58,8 +58,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
 
-  const hasIdentity =
-    persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
+  const hasIdentity = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   // `resolvedDay` is a stable store function; these are the inputs that change its output.
   const resolvedDay = useAppStore((s) => s.resolvedDay);
@@ -71,7 +70,16 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   const days = useMemo(
     () => dates.map((d) => resolvedDay(d)),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the store data drives the result
-    [dates, resolvedDay, timetables, substitutions, selectedClassId, persona, selectedTeacherId, teacherView],
+    [
+      dates,
+      resolvedDay,
+      timetables,
+      substitutions,
+      selectedClassId,
+      persona,
+      selectedTeacherId,
+      teacherView,
+    ],
   );
 
   const periods = useMemo(() => weekPeriods(days), [days]);

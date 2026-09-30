@@ -22,8 +22,7 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
   const title = lesson?.subject?.name ?? lesson?.subject?.short ?? "";
 
   const teacherLesson = lesson as Partial<TeacherResolvedLesson> | null;
-  const isTeacherMode =
-    teacherLesson?.classes !== undefined && teacherLesson.classes.length > 0;
+  const isTeacherMode = teacherLesson?.classes !== undefined && teacherLesson.classes.length > 0;
   const classNames = isTeacherMode
     ? teacherLesson.classes?.map((c) => c.short || c.name).join(", ")
     : null;

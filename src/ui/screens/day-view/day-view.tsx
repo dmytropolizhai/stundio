@@ -54,8 +54,7 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
 
-  const hasIdentity =
-    persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
+  const hasIdentity = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   const day = useAppStore((s) => s.resolvedDay(date));
 

@@ -27,7 +27,7 @@ describe("Teacher Day and Week Views", () => {
     wrap(harness, <ClassBadge onClick={onClick} />);
 
     const badge = screen.getByTestId("class-badge");
-    expect(badge.textContent).toContain(teacher.short);
+    expect(badge.textContent).toBe("I. Abrama");
 
     fireEvent.click(badge);
     expect(onClick).toHaveBeenCalledTimes(1);

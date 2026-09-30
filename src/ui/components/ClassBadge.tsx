@@ -36,7 +36,6 @@ export const ClassBadge = ({ onClick }: { onClick: () => void }) => {
     );
   }
 
-
   return (
     <Chip
       icon="graduation-cap"

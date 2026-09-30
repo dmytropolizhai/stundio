@@ -71,10 +71,7 @@ export const teacherSubstitutionsChanged = (
 /**
  * Checks whether a DaySubstitutions has any cover duty assigned to this teacher.
  */
-export const teacherHasCoverDuty = (
-  day: DaySubstitutions | null,
-  key: string | null,
-): boolean => {
+export const teacherHasCoverDuty = (day: DaySubstitutions | null, key: string | null): boolean => {
   if (day === null || key === null || key === "") return false;
   return day.items.some((item) => {
     if (!item.teacher || teacherKey(item.teacher) !== key) return false;

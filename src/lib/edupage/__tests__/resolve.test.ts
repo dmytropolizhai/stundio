@@ -95,7 +95,6 @@ describe("resolveDay — A1-2, which has real changes that day", () => {
     expect(swapped?.original?.teachers?.map((t) => t.short)).not.toEqual(["Geislers Edgars"]);
   });
 
-
   it("adds the moved-in lesson as its own row", () => {
     const added = day.lessons.filter((l) => l.status === "added");
     expect(added.length).toBeGreaterThan(0);

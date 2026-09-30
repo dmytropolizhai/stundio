@@ -32,9 +32,7 @@ export const TeacherPicker = ({ onPicked }: TeacherPickerProps) => {
     }
 
     return teachers.filter(
-      (t) =>
-        t.short.toLowerCase().includes(needle) ||
-        t.name.toLowerCase().includes(needle),
+      (t) => t.short.toLowerCase().includes(needle) || t.name.toLowerCase().includes(needle),
     );
   }, [teachers, query]);
 
@@ -53,11 +51,7 @@ export const TeacherPicker = ({ onPicked }: TeacherPickerProps) => {
       <TeacherSearch value={query} onChange={setQuery} />
 
       <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-gutter pb-26">
-        <TeacherList
-          teachers={matches}
-          selected={selected}
-          onSelect={pick}
-        />
+        <TeacherList teachers={matches} selected={selected} onSelect={pick} />
       </div>
     </div>
   );

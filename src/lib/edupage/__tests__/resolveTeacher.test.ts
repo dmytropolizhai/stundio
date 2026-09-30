@@ -6,7 +6,13 @@ import {
   parseDaySubstitutions,
   resolveTeacherDay,
 } from "../index.ts";
-import { FIXTURES, FIXTURE_DATE, FIXTURE_TT_NUM, readFixture, readJsonFixture } from "./fixtures.ts";
+import {
+  FIXTURES,
+  FIXTURE_DATE,
+  FIXTURE_TT_NUM,
+  readFixture,
+  readJsonFixture,
+} from "./fixtures.ts";
 import type { RawTables } from "../normalize.ts";
 
 describe("resolveTeacherDay", () => {
@@ -116,7 +122,6 @@ describe("resolveTeacherDay", () => {
     expect(match).toBeDefined();
     expect(match?.classes?.length).toBeGreaterThanOrEqual(2);
   });
-
 
   it("flags cover duty on teacher who was assigned to cover another class", () => {
     const geislers = teacherByName("Geislers Edgars");

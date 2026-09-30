@@ -485,7 +485,9 @@ export const resolveDayAcross = (
       subject:
         s.subject === null ? null : (subjectsByLabel.get(s.subject) ?? synthSubject(s.subject)),
       teachers:
-        s.teacher === null ? [] : [lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)],
+        s.teacher === null
+          ? []
+          : [lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)],
       rooms: s.room === null ? [] : [roomsByLabel.get(s.room) ?? synthRoom(s.room)],
       group: s.group,
       status: "added",
@@ -852,7 +854,9 @@ export const resolveTeacherDayAcross = (
       if (s.teacherFrom && teacherKey(s.teacherFrom) === myKey) {
         // Teacher is being covered by another teacher!
         original.teachers = [teacher];
-        const covering = s.teacher ? (lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)) : null;
+        const covering = s.teacher
+          ? (lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher))
+          : null;
         if (covering) coverFor = covering;
         status = "substituted";
       }
@@ -943,6 +947,8 @@ export const resolveTeacherDayAcross = (
     notes: relevantNotes,
     allNotes: rawNotes,
     stale:
-      options.stale ?? leadSource?.stale ?? (primary === undefined ? false : !coversDate(primary, date)),
+      options.stale ??
+      leadSource?.stale ??
+      (primary === undefined ? false : !coversDate(primary, date)),
   };
 };

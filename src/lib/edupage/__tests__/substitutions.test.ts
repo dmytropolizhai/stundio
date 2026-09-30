@@ -213,11 +213,7 @@ describe("parseAbsentTeachers", () => {
       '<div style="text-align:center"><span>Skolotāji, kuri nepiedalās: Jānis Bērziņš , Anna Kalniņa ; Pēteris Ozols </span></div>',
       "text/html",
     );
-    expect(parseAbsentTeachers(doc)).toEqual([
-      "Jānis Bērziņš",
-      "Anna Kalniņa",
-      "Pēteris Ozols",
-    ]);
+    expect(parseAbsentTeachers(doc)).toEqual(["Jānis Bērziņš", "Anna Kalniņa", "Pēteris Ozols"]);
   });
 
   it("returns empty array when banner is missing or empty", () => {

@@ -20,8 +20,8 @@ const TEACHER_TABS: { id: Tab; icon: IconName }[] = [
   { id: "day", icon: "calendar-days" },
   { id: "week", icon: "layout-grid" },
   { id: "changes", icon: "repeat" },
-  { id: "settings", icon: "user-round" }
-]
+  { id: "settings", icon: "user-round" },
+];
 /**
  * The floating nav pill. It sits 20px above the bottom edge with a 16px side inset, on top
  * of the scrolling content rather than in the layout flow — which is why every screen pads its

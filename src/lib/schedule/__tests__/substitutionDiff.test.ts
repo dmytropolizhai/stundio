@@ -111,7 +111,11 @@ describe("teacherSubstitutionsChanged", () => {
   it("is false for identical day fetched again later", () => {
     const d = day({ items: [item({ teacher: "Gene Ķere" })] });
     expect(
-      teacherSubstitutionsChanged(d, day({ items: [item({ teacher: "Ķere Gene" })], fetchedAt: "2026-09-09T18:00:00Z" }), TEACHER_KEY),
+      teacherSubstitutionsChanged(
+        d,
+        day({ items: [item({ teacher: "Ķere Gene" })], fetchedAt: "2026-09-09T18:00:00Z" }),
+        TEACHER_KEY,
+      ),
     ).toBe(false);
   });
 
@@ -213,4 +217,3 @@ describe("teacherHasCoverDuty", () => {
     expect(teacherHasCoverDuty(day(), null)).toBe(false);
   });
 });
-

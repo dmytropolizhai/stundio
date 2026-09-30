@@ -7,7 +7,13 @@ import {
   resolveDay,
   teacherKey,
 } from "../index.ts";
-import { FIXTURES, FIXTURE_DATE, FIXTURE_TT_NUM, readFixture, readJsonFixture } from "./fixtures.ts";
+import {
+  FIXTURES,
+  FIXTURE_DATE,
+  FIXTURE_TT_NUM,
+  readFixture,
+  readJsonFixture,
+} from "./fixtures.ts";
 import type { RawTables } from "../normalize.ts";
 
 describe("teacherKey", () => {
@@ -84,7 +90,6 @@ describe("Teacher Name Matching against Fixtures (Finding 2)", () => {
     expect(p2?.teachers[0]?.short).toBe("Geislers Edgars");
     expect(p2?.teachers[0]?.id).not.toMatch(/^subst:/);
   });
-
 
   it("has zero key collisions among teachers who actually teach", () => {
     const teachingTeacherIds = new Set<string>();

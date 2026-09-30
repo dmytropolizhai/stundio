@@ -145,8 +145,7 @@ const Shell = () => {
   const persona = useAppStore((s) => s.settings.persona);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
-  const isOnboarded =
-    persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
+  const isOnboarded = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   const trackEvent = useAppStore((s) => s.trackEvent);
   const pendingNavigation = useAppStore((s) => s.pendingNavigation);
