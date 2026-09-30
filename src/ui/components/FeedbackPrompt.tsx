@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "@/store";
 import { Button, Card, IconButton } from "@/ds";
-import { useSelectedClass } from "../hooks/useClasses.ts";
 import { useT } from "@/ui/i18n";
 import { FeedbackSheet } from "./FeedbackSheet.tsx";
 
@@ -13,7 +12,6 @@ import { FeedbackSheet } from "./FeedbackSheet.tsx";
  */
 export const FeedbackPrompt = () => {
   const t = useT();
-  const selectedClass = useSelectedClass();
   const appOpenCount = useAppStore((s) => s.settings.appOpenCount);
   const dismissed = useAppStore((s) => s.settings.feedbackPromptDismissed);
   const setFeedbackPromptDismissed = useAppStore((s) => s.setFeedbackPromptDismissed);
@@ -53,7 +51,6 @@ export const FeedbackPrompt = () => {
       <FeedbackSheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
-        className={selectedClass?.short}
         onSubmitted={() => {
           void setFeedbackPromptDismissed(true);
         }}

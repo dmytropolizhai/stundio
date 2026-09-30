@@ -1,10 +1,8 @@
 import { BottomSheet, SegmentedTabs, Button, Icon } from "@/ds";
 import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
-import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
-import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
 import { PERSONAS, isIdentified, matchPersona, type Persona } from "@/lib/persona";
-import { PERSONA_PROFILES, useIdentity } from "@/ui/persona";
+import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
 
 type IdentitySheetProps = {
   open: boolean;
@@ -24,8 +22,7 @@ export const IdentitySheet = ({
   const { persona } = identity;
   const profile = PERSONA_PROFILES[persona];
   const setPersona = useAppStore((s) => s.setPersona);
-  const selectedClass = useSelectedClass();
-  const selectedTeacher = useSelectedTeacher();
+  const identityLabel = useIdentityLabel();
 
   const handlePersonaChange = (newPersona: Persona) => {
     void setPersona(newPersona);
@@ -55,10 +52,7 @@ export const IdentitySheet = ({
           <div className="rounded-xl border border-hairline bg-card p-4">
             <span className="font-text text-caption text-muted">{t(profile.subjectLabel)}</span>
             <p className="mt-1 font-text text-body font-bold text-strong">
-              {matchPersona(identity, {
-                student: () => selectedClass?.short,
-                teacher: () => selectedTeacher?.short || selectedTeacher?.name,
-              }) || t(profile.noneSelected)}
+              {identityLabel ?? t(profile.noneSelected)}
             </p>
           </div>
           <Button

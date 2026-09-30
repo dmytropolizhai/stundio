@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { listTeachers } from "@/lib/edupage";
 import { StoreContext } from "@/store";
 import { FeedbackSheet } from "../components/FeedbackSheet.tsx";
 import { FeedbackPrompt } from "../components/FeedbackPrompt.tsx";
@@ -31,7 +32,12 @@ describe("FeedbackSheet", () => {
 
     wrap(
       harness,
-      <FeedbackSheet open={true} onClose={onClose} className="10.a" onSubmitted={onSubmitted} />,
+      <FeedbackSheet
+        open={true}
+        onClose={onClose}
+        identity={{ persona: "student", label: "10.a" }}
+        onSubmitted={onSubmitted}
+      />,
     );
 
     expect(screen.getByText("Ieteikt funkciju")).toBeDefined();
@@ -54,6 +60,36 @@ describe("FeedbackSheet", () => {
     const closeBtn = screen.getByRole("button", { name: "Aizvērt" });
     fireEvent.click(closeBtn);
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("reports the active teacher, not a leftover class, when no identity is passed", async () => {
+    const harness = await bootHarness();
+    const teacher = listTeachers(Object.values(harness.store.getState().timetables)).find(
+      (t) => t.short !== "",
+    );
+    expect(teacher).toBeDefined();
+    await act(async () => {
+      await harness.store.getState().setPersona("teacher");
+      await harness.store.getState().setTeacher(teacher?.id ?? null);
+    });
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => ({ success: true }) });
+    vi.stubGlobal("fetch", fetchMock);
+
+    wrap(harness, <FeedbackSheet open={true} type="bug" onClose={() => {}} />);
+    fireEvent.change(screen.getByPlaceholderText("Apraksti, kas nogāja greizi un ko tu gaidīji…"), {
+      target: { value: "Cover lesson missing" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Nosūtīt ziņojumu" }));
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(options.body as string) as Record<string, unknown>;
+    expect(body.role).toBe("teacher");
+    expect(body.teacher).toBe(teacher?.short);
+    // The harness pre-picks class A1-2 — it must not leak into a teacher's report.
+    expect(body).not.toHaveProperty("class");
   });
 
   it("displays error message when network request fails", async () => {
@@ -88,7 +124,7 @@ describe("FeedbackSheet", () => {
         open={true}
         type="bug"
         onClose={() => {}}
-        className="11.c"
+        identity={{ persona: "student", label: "11.c" }}
         onSubmitted={onSubmitted}
       />,
     );
@@ -198,7 +234,7 @@ describe("FeedbackSheet", () => {
       <FeedbackSheet
         open={true}
         type="bug"
-        className="12.a"
+        identity={{ persona: "student", label: "12.a" }}
         onClose={() => {}}
         onSubmitted={onSubmitted}
       />,

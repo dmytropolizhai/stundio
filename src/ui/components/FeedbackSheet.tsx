@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { BottomSheet, Button, Card, Icon, TextField } from "@/ds";
 import { useT } from "@/ui/i18n";
-import { submitFeedback, type FeedbackType } from "@/ui/feedback.ts";
+import { useFeedbackIdentity } from "@/ui/persona";
+import { submitFeedback, type FeedbackIdentity, type FeedbackType } from "@/ui/feedback.ts";
 
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024; // 5 MB (Web3Forms limit)
 
@@ -15,7 +16,8 @@ export type FeedbackSheetProps = {
   open: boolean;
   onClose: () => void;
   type?: FeedbackType | undefined;
-  className?: string | undefined;
+  /** Whose timetable the report is about — defaults to the active role (`useFeedbackIdentity`). */
+  identity?: FeedbackIdentity | undefined;
   onSubmitted?: (() => void) | undefined;
   title?: string | undefined;
   messageLabel?: string | undefined;
@@ -28,7 +30,7 @@ export const FeedbackSheet = ({
   open,
   onClose,
   type = "suggestion",
-  className,
+  identity,
   onSubmitted,
   title,
   messageLabel,
@@ -37,6 +39,7 @@ export const FeedbackSheet = ({
   metadata,
 }: FeedbackSheetProps) => {
   const t = useT();
+  const currentIdentity = useFeedbackIdentity();
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [attachment, setAttachment] = useState<File | null>(null);
@@ -140,7 +143,7 @@ export const FeedbackSheet = ({
         type,
         message: message.trim(),
         email: email.trim() || undefined,
-        className,
+        identity: identity ?? currentIdentity,
         metadata,
         attachment: attachment ?? undefined,
       });

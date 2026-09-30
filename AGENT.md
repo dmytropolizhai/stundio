@@ -65,7 +65,8 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   branch through it too.
 - **`src/ui/persona/`** — the UI side of the same split: `PERSONA_PROFILES` is the per-role
   strategy table (tabs, picker, icon, copy keys, feature flags), and `usePersona()` /
-  `useIdentity()` / `useIsFormTeacher()` are what screens and hooks read.
+  `useIdentity()` / `useIsFormTeacher()` / `useIdentityLabel()` are what screens and hooks read.
+  Feedback reports carry the same context (`useFeedbackIdentity` → `role` + `class`/`teacher`).
 - **`src/lib/version/`**, **`src/lib/analytics/`** — GitHub release update checks; anonymous
   Plausible pings (opt-out, no cookies or persistent id).
 - **`src/db/`** — the `AppCache` port (`types.ts`) with an `idb` implementation and a memory

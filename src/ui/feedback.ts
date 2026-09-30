@@ -2,7 +2,34 @@
  * Feedback service for Stundio.
  * Allows anonymous user suggestions via Web3Forms (no GitHub account required).
  * Also retains GitHub issue links for direct repository issue filing.
+ *
+ * Every report carries whose timetable the sender was looking at — a class for a student, a
+ * teacher for a teacher — since that is what a maintainer needs to reproduce it.
  */
+import type { Persona } from "@/lib/persona";
+
+/** The active role and its display label; `label` is `undefined` while nothing is picked. */
+export type FeedbackIdentity = { persona: Persona; label: string | undefined };
+
+/** Per role: the payload field and the issue-body prefix. `Record` keeps it exhaustive. */
+const IDENTITY_FIELD: Record<Persona, { field: string; line: string }> = {
+  student: { field: "class", line: "Class" },
+  teacher: { field: "teacher", line: "Teacher" },
+};
+
+const NONE = "none selected";
+const STUDENT_UNPICKED: FeedbackIdentity = { persona: "student", label: undefined };
+
+/** "Class: 12.a" / "Teacher: Alksne Santa" — the context line of a report. */
+const identityLine = ({ persona, label }: FeedbackIdentity): string =>
+  `${IDENTITY_FIELD[persona].line}: ${label ?? NONE}`;
+
+/** The same context as payload fields: `role`, plus `class` or `teacher`. */
+const identityFields = ({ persona, label }: FeedbackIdentity): Record<string, string> => ({
+  role: persona,
+  [IDENTITY_FIELD[persona].field]: label ?? NONE,
+});
+
 export const REPO_URL = "https://github.com/dmytropolizhai/stundio";
 const REPORT_ISSUE_BASE = `${REPO_URL}/issues/new`;
 
@@ -11,27 +38,27 @@ export const WEB3FORMS_ACCESS_KEY =
   "73758571-e790-4910-aab1-a13b7a438e32";
 
 /** Prefills a GitHub issue with the details a bug report needs but a user won't think to add. */
-export const reportIssueUrl = (className: string | undefined): string => {
+export const reportIssueUrl = (identity: FeedbackIdentity = STUDENT_UNPICKED): string => {
   const body = [
     "**What happened:**",
     "",
     "",
     "---",
     `App version: ${__APP_VERSION__}`,
-    `Class: ${className ?? "none selected"}`,
+    identityLine(identity),
   ].join("\n");
   return `${REPORT_ISSUE_BASE}?${new URLSearchParams({ labels: "bug", body }).toString()}`;
 };
 
 /** Same shape as `reportIssueUrl`, filed under "enhancement" instead of "bug". */
-export const suggestFeatureUrl = (className: string | undefined): string => {
+export const suggestFeatureUrl = (identity: FeedbackIdentity = STUDENT_UNPICKED): string => {
   const body = [
     "**What should Stundio add or change:**",
     "",
     "",
     "---",
     `App version: ${__APP_VERSION__}`,
-    `Class: ${className ?? "none selected"}`,
+    identityLine(identity),
   ].join("\n");
   return `${REPORT_ISSUE_BASE}?${new URLSearchParams({ labels: "enhancement", body }).toString()}`;
 };
@@ -42,7 +69,7 @@ export type SubmitFeedbackParams = {
   type?: FeedbackType | undefined;
   message: string;
   email?: string | undefined;
-  className?: string | undefined;
+  identity?: FeedbackIdentity | undefined;
   subject?: string | undefined;
   metadata?: Record<string, unknown> | undefined;
   attachment?: File | Blob | undefined;
@@ -69,7 +96,7 @@ export async function submitFeedback({
   type = "suggestion",
   message,
   email,
-  className,
+  identity = STUDENT_UNPICKED,
   subject,
   metadata,
   attachment,
@@ -92,7 +119,7 @@ export async function submitFeedback({
     feedback_type: type,
     message: trimmed,
     app_version: __APP_VERSION__,
-    class: className ?? "none selected",
+    ...identityFields(identity),
   };
 
   if (email && email.trim()) {
