@@ -182,7 +182,7 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
         <div className="mt-8 flex justify-center pb-8">
           <Button variant="outline" icon="external-link" asChild>
             <a
-              href="https://www.rvt.lv/izglitiba/nodarbibu-izmainas/"
+              href="https://pikcrvt.edupage.org/timetable/"
               target="_blank"
               rel="noreferrer"
             >
