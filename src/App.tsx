@@ -290,7 +290,7 @@ const Shell = () => {
               setPicking("teacher");
             }}
             onShowWhatsNew={whatsNew.show}
-            onShowIphoneAnnouncement={teacherAnnouncement.show}
+            onShowTeacherAnnouncement={teacherAnnouncement.show}
             onShowIphoneInstall={iphoneInstall.show}
           />
         )}
