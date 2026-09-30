@@ -100,6 +100,7 @@ export const ru: Dict = {
   "changes.count": "{n} изменений",
   "changes.badge": "{n} изменений",
   "changes.notesFromSchool": "Объявления техникума",
+  "changes.rvtWebsite": "Сайт RVT",
 
   "week.previousWeek": "Предыдущая неделя",
   "week.nextWeek": "Следующая неделя",
