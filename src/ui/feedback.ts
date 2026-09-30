@@ -3,32 +3,37 @@
  * Allows anonymous user suggestions via Web3Forms (no GitHub account required).
  * Also retains GitHub issue links for direct repository issue filing.
  *
- * Every report carries whose timetable the sender was looking at — a class for a student, a
- * teacher for a teacher — since that is what a maintainer needs to reproduce it.
+ * Every report carries the sender's role, and a student's also their class — what a maintainer
+ * needs to reproduce it. A teacher is never named (see `REPORTED`).
  */
 import type { Persona } from "@/lib/persona";
 
 /** The active role and its display label; `label` is `undefined` while nothing is picked. */
 export type FeedbackIdentity = { persona: Persona; label: string | undefined };
 
-/** Per role: the payload field and the issue-body prefix. `Record` keeps it exhaustive. */
-const IDENTITY_FIELD: Record<Persona, { field: string; line: string }> = {
-  student: { field: "class", line: "Class" },
-  teacher: { field: "teacher", line: "Teacher" },
-};
-
 const NONE = "none selected";
 const STUDENT_UNPICKED: FeedbackIdentity = { persona: "student", label: undefined };
 
-/** "Class: 12.a" / "Teacher: Alksne Santa" — the context line of a report. */
-const identityLine = ({ persona, label }: FeedbackIdentity): string =>
-  `${IDENTITY_FIELD[persona].line}: ${label ?? NONE}`;
+/**
+ * What a report may say about its sender, per role. A class is a group, so a student's
+ * report names it — that is what a maintainer needs to reproduce a timetable bug. A teacher
+ * is one person, so a teacher's report carries only the role: naming them would make an
+ * anonymous form identify its sender ("No PII", AGENT.md). `Record` keeps it exhaustive.
+ */
+const REPORTED: Record<Persona, (label: string | undefined) => Record<string, string>> = {
+  student: (label) => ({ role: "student", class: label ?? NONE }),
+  teacher: () => ({ role: "teacher" }),
+};
 
-/** The same context as payload fields: `role`, plus `class` or `teacher`. */
-const identityFields = ({ persona, label }: FeedbackIdentity): Record<string, string> => ({
-  role: persona,
-  [IDENTITY_FIELD[persona].field]: label ?? NONE,
-});
+/** "Class: 12.a" / "Role: teacher" — the context line of a GitHub issue body. */
+const identityLine = ({ persona, label }: FeedbackIdentity): string => {
+  const fields = REPORTED[persona](label);
+  return fields.class === undefined ? `Role: ${persona}` : `Class: ${fields.class}`;
+};
+
+/** The same context as payload fields: `role`, plus `class` for a student. */
+const identityFields = ({ persona, label }: FeedbackIdentity): Record<string, string> =>
+  REPORTED[persona](label);
 
 export const REPO_URL = "https://github.com/dmytropolizhai/stundio";
 const REPORT_ISSUE_BASE = `${REPO_URL}/issues/new`;

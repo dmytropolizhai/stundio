@@ -27,16 +27,14 @@ describe("feedback identity", () => {
     vi.restoreAllMocks();
   });
 
-  it("files a teacher's issue under their name, not a class", () => {
+  it("files a teacher's issue by role only — no name, no class", () => {
     const url = suggestFeatureUrl({ persona: "teacher", label: "Alksne Santa" });
-    expect(url).toContain("Teacher%3A+Alksne+Santa");
+    expect(url).toContain("Role%3A+teacher");
+    expect(url).not.toContain("Alksne");
     expect(url).not.toContain("Class%3A");
-    expect(reportIssueUrl({ persona: "teacher", label: undefined })).toContain(
-      "Teacher%3A+none+selected",
-    );
   });
 
-  it("sends a teacher's report with a teacher field and no class", async () => {
+  it("sends a teacher's report with the role only", async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => ({ success: true }) });
     vi.stubGlobal("fetch", fetchMock);
 
@@ -48,8 +46,9 @@ describe("feedback identity", () => {
     const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
     const body = JSON.parse(options.body as string) as Record<string, unknown>;
     expect(body.role).toBe("teacher");
-    expect(body.teacher).toBe("Alksne Santa");
+    expect(body).not.toHaveProperty("teacher");
     expect(body).not.toHaveProperty("class");
+    expect(options.body).not.toContain("Alksne");
   });
 
   it("defaults to an unpicked student", async () => {

@@ -62,7 +62,7 @@ describe("FeedbackSheet", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("reports the active teacher, not a leftover class, when no identity is passed", async () => {
+  it("reports a teacher by role only, never a leftover class, when no identity is passed", async () => {
     const harness = await bootHarness();
     const teacher = listTeachers(Object.values(harness.store.getState().timetables)).find(
       (t) => t.short !== "",
@@ -87,9 +87,10 @@ describe("FeedbackSheet", () => {
     const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
     const body = JSON.parse(options.body as string) as Record<string, unknown>;
     expect(body.role).toBe("teacher");
-    expect(body.teacher).toBe(teacher?.short);
-    // The harness pre-picks class A1-2 — it must not leak into a teacher's report.
+    // Neither the teacher's name nor the class the harness pre-picked (A1-2) goes out.
+    expect(body).not.toHaveProperty("teacher");
     expect(body).not.toHaveProperty("class");
+    expect(options.body).not.toContain(teacher?.short ?? "?");
   });
 
   it("displays error message when network request fails", async () => {

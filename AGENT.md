@@ -66,7 +66,10 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **`src/ui/persona/`** — the UI side of the same split: `PERSONA_PROFILES` is the per-role
   strategy table (tabs, picker, icon, copy keys, feature flags), and `usePersona()` /
   `useIdentity()` / `useIsFormTeacher()` / `useIdentityLabel()` are what screens and hooks read.
-  Feedback reports carry the same context (`useFeedbackIdentity` → `role` + `class`/`teacher`).
+  Feedback reports carry the role, plus the class for a student — never a teacher's name
+  (`REPORTED` in `ui/feedback.ts`). Web Push files a device under `store.identityLabel()`: a
+  class short, or for a teacher only the SHA-256 of `teacherKey(name)` — `functions/api-push`
+  regroups the same substitution page by teacher and hashes the names it reads to match.
 - **`src/lib/version/`**, **`src/lib/analytics/`** — GitHub release update checks; anonymous
   Plausible pings (opt-out, no cookies or persistent id).
 - **`src/db/`** — the `AppCache` port (`types.ts`) with an `idb` implementation and a memory
