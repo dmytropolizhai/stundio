@@ -28,6 +28,7 @@ import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
 import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
 import { useCustomization, useTheme } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
+import { PERSONA_PROFILES, usePersona } from "@/ui/persona";
 import { nativeApp } from "@/lib/app";
 import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
 /**
@@ -99,7 +100,9 @@ const Onboarding = () => {
         <OnboardingPersona
           onSelectPersona={(persona) => {
             void setPersona(persona);
-            setStep(persona === "teacher" ? "teacherPicker" : "classPicker");
+            setStep(
+              PERSONA_PROFILES[persona].picker === "teacher" ? "teacherPicker" : "classPicker",
+            );
           }}
         />
       </div>
@@ -142,10 +145,7 @@ const Shell = () => {
   useTheme();
   useCustomization();
 
-  const persona = useAppStore((s) => s.settings.persona);
-  const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
-  const isOnboarded = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
+  const { identified: isOnboarded, profile } = usePersona();
 
   const trackEvent = useAppStore((s) => s.trackEvent);
   const pendingNavigation = useAppStore((s) => s.pendingNavigation);
@@ -250,7 +250,7 @@ const Shell = () => {
             date={scheduleNav.date}
             onDateChange={scheduleNav.setDate}
             onPickClass={() => {
-              setPicking(persona === "teacher" ? "teacher" : "class");
+              setPicking(profile.picker);
             }}
             onOpenChanges={(nextDate) => {
               scheduleNav.setDate(nextDate);
@@ -267,7 +267,7 @@ const Shell = () => {
               setTab("day");
             }}
             onPickClass={() => {
-              setPicking(persona === "teacher" ? "teacher" : "class");
+              setPicking(profile.picker);
             }}
           />
         )}
@@ -276,7 +276,7 @@ const Shell = () => {
             date={scheduleNav.date}
             onDateChange={scheduleNav.setDate}
             onPickClass={() => {
-              setPicking(persona === "teacher" ? "teacher" : "class");
+              setPicking(profile.picker);
             }}
           />
         )}

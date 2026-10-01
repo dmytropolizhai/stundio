@@ -24,4 +24,5 @@ export {
   refreshWebPushSubscription,
   unsubscribeWebPush,
   reportSubstitutionChangeToServer,
+  type PushTarget,
 } from "./webPush.ts";

@@ -1,27 +1,21 @@
 import { BottomNav, type BottomNavItem, type IconName } from "@/ds";
 import { useT } from "@/ui/i18n";
-import { useAppStore } from "@/store";
+import { usePersona, type Tab } from "@/ui/persona";
 
-export type Tab = "day" | "week" | "changes" | "subjects" | "settings";
+export type { Tab };
 
 /**
  * Icons come from the DS working set. Labels are translated — the DS keeps every nav word one
- * word wide precisely so it survives being rendered in Latvian.
+ * word wide precisely so it survives being rendered in Latvian. Which tabs a role gets is its
+ * profile's call (`ui/persona`), not this component's.
  */
-const STUDENT_TABS: { id: Tab; icon: IconName }[] = [
-  { id: "day", icon: "calendar-days" },
-  { id: "week", icon: "layout-grid" },
-  { id: "changes", icon: "repeat" },
-  { id: "subjects", icon: "graduation-cap" },
-  { id: "settings", icon: "user-round" },
-];
-
-const TEACHER_TABS: { id: Tab; icon: IconName }[] = [
-  { id: "day", icon: "calendar-days" },
-  { id: "week", icon: "layout-grid" },
-  { id: "changes", icon: "repeat" },
-  { id: "settings", icon: "user-round" },
-];
+const TAB_ICONS: Record<Tab, IconName> = {
+  day: "calendar-days",
+  week: "layout-grid",
+  changes: "repeat",
+  subjects: "graduation-cap",
+  settings: "user-round",
+};
 /**
  * The floating nav pill. It sits 20px above the bottom edge with a 16px side inset, on top
  * of the scrolling content rather than in the layout flow — which is why every screen pads its
@@ -29,12 +23,11 @@ const TEACHER_TABS: { id: Tab; icon: IconName }[] = [
  */
 export const TabBar = ({ tab, onChange }: { tab: Tab; onChange: (tab: Tab) => void }) => {
   const t = useT();
-  const persona = useAppStore((s) => s.settings.persona);
-  const tabs = persona === "teacher" ? TEACHER_TABS : STUDENT_TABS;
+  const { profile } = usePersona();
 
-  const items: BottomNavItem<Tab>[] = tabs.map(({ id, icon }) => ({
+  const items: BottomNavItem<Tab>[] = profile.tabs.map((id) => ({
     key: id,
-    icon,
+    icon: TAB_ICONS[id],
     label: t(`nav.${id}`),
   }));
 

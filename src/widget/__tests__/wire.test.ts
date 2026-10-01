@@ -76,6 +76,23 @@ describe("widgetPayloadFor", () => {
     expect(payload.title).toBe("Izvēlies klasi");
   });
 
+  it("renders a teacher's own day under their name, not a leftover class", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    const teacher = Object.values(store.getState().timetables)
+      .flatMap((t) => t.teachers)
+      .find((t) => t.name === "Alksne Santa" || t.short === "Alksne Santa");
+    expect(teacher).toBeDefined();
+
+    await store.getState().setPersona("teacher");
+    expect(widgetPayloadFor(store.getState(), NOW).state).toBe("no-class");
+
+    await store.getState().setTeacher(teacher?.id ?? "");
+    const payload = widgetPayloadFor(store.getState(), NOW);
+    expect(payload.state).not.toBe("no-class");
+    expect(JSON.stringify(payload)).not.toContain("Izvēlies klasi");
+  });
+
   it("renders the picked class's day in the app's language", async () => {
     const store = await readyStore();
     await store.getState().setLang("en");

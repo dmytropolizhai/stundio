@@ -3,11 +3,11 @@ import { useAppStore } from "@/store";
 import { listBuildings, listSubgroups } from "@/lib/edupage";
 import { TopBar } from "@/ds";
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
-import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
 import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
 import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
 import { FeedbackSheet } from "@/ui/components/FeedbackSheet.tsx";
 import { useT } from "@/ui/i18n";
+import { useIdentity, useIdentityLabel } from "@/ui/persona";
 import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
 import { IdentitySection } from "./class-section.tsx";
 import { CustomizationSection } from "./customization-section.tsx";
@@ -51,9 +51,9 @@ export const SettingsView = ({
     type: "suggestion",
   });
 
-  const persona = useAppStore((s) => s.settings.persona);
+  const { persona } = useIdentity();
+  const identityLabel = useIdentityLabel();
   const selectedClass = useSelectedClass();
-  const selectedTeacher = useSelectedTeacher();
   const metas = useAppStore((s) => s.metas);
   const timetables = useAppStore((s) => s.timetables);
 
@@ -71,8 +71,7 @@ export const SettingsView = ({
 
         <IdentitySection
           persona={persona}
-          selectedClass={selectedClass}
-          selectedTeacher={selectedTeacher}
+          label={identityLabel}
           onChangeIdentity={() => setIdentitySheetOpen(true)}
         />
 
@@ -87,10 +86,7 @@ export const SettingsView = ({
 
         <ScheduleSection />
 
-        <NotificationsSection
-          selectedClass={selectedClass}
-          onShowIphoneInstall={onShowIphoneInstall}
-        />
+        <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 
         <DataSection />
 
@@ -133,7 +129,6 @@ export const SettingsView = ({
         onClose={() => {
           setFeedbackState((s) => ({ ...s, open: false }));
         }}
-        className={selectedClass?.short}
       />
     </div>
   );

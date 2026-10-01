@@ -10,15 +10,57 @@ import {
 
 describe("feedback URLs", () => {
   it("builds a bug report URL with class and version", () => {
-    const url = reportIssueUrl("12.a");
+    const url = reportIssueUrl({ persona: "student", label: "12.a" });
     expect(url).toContain("labels=bug");
     expect(url).toContain("Class%3A+12.a");
   });
 
   it("builds a feature suggestion URL with default fallback if no class", () => {
-    const url = suggestFeatureUrl(undefined);
+    const url = suggestFeatureUrl();
     expect(url).toContain("labels=enhancement");
     expect(url).toContain("none+selected");
+  });
+});
+
+describe("feedback identity", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("files a teacher's issue by role only — no name, no class", () => {
+    const url = suggestFeatureUrl({ persona: "teacher", label: "Alksne Santa" });
+    expect(url).toContain("Role%3A+teacher");
+    expect(url).not.toContain("Alksne");
+    expect(url).not.toContain("Class%3A");
+  });
+
+  it("sends a teacher's report with the role only", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => ({ success: true }) });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await submitFeedback({
+      message: "Cover lessons need a badge",
+      identity: { persona: "teacher", label: "Alksne Santa" },
+    });
+
+    const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(options.body as string) as Record<string, unknown>;
+    expect(body.role).toBe("teacher");
+    expect(body).not.toHaveProperty("teacher");
+    expect(body).not.toHaveProperty("class");
+    expect(options.body).not.toContain("Alksne");
+  });
+
+  it("defaults to an unpicked student", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => ({ success: true }) });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await submitFeedback({ message: "Hi" });
+
+    const [, options] = fetchMock.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(options.body as string) as Record<string, unknown>;
+    expect(body.role).toBe("student");
+    expect(body.class).toBe("none selected");
   });
 });
 
@@ -41,7 +83,7 @@ describe("submitFeedback", () => {
     await submitFeedback({
       message: "Add dark mode toggle to widget",
       email: "test@example.com",
-      className: "10.b",
+      identity: { persona: "student", label: "10.b" },
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -75,7 +117,7 @@ describe("submitFeedback", () => {
     await submitBugReport({
       message: "Widget crashes on rotation",
       email: "bug@example.com",
-      className: "12.a",
+      identity: { persona: "student", label: "12.a" },
       metadata: { error_code: "CRASH_123" },
     });
 
@@ -171,7 +213,7 @@ describe("submitFeedback", () => {
     await submitFeedback({
       type: "bug",
       message: "Here is an issue",
-      className: "11.a",
+      identity: { persona: "student", label: "11.a" },
       attachment: file,
     });
 

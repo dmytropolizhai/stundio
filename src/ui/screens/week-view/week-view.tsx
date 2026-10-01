@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
+import { usePersona } from "@/ui/persona";
 import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
@@ -48,17 +49,12 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   } | null>(null);
 
   const ready = useAppStore((s) => s.ready);
-  const persona = useAppStore((s) => s.settings.persona);
-  const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
-  const teacherView = useAppStore((s) => s.settings.teacherView);
+  const { identified: hasIdentity, key: identityKey, profile } = usePersona();
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
-
-  const hasIdentity = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   // `resolvedDay` is a stable store function; these are the inputs that change its output.
   const resolvedDay = useAppStore((s) => s.resolvedDay);
@@ -70,16 +66,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   const days = useMemo(
     () => dates.map((d) => resolvedDay(d)),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the store data drives the result
-    [
-      dates,
-      resolvedDay,
-      timetables,
-      substitutions,
-      selectedClassId,
-      persona,
-      selectedTeacherId,
-      teacherView,
-    ],
+    [dates, resolvedDay, timetables, substitutions, identityKey],
   );
 
   const periods = useMemo(() => weekPeriods(days), [days]);
@@ -190,12 +177,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
     }
 
     if (!hasIdentity) {
-      return (
-        <StateMessage
-          icon={persona === "teacher" ? "briefcase" : "graduation-cap"}
-          title={persona === "teacher" ? t("teacher.none") : t("day.noClass")}
-        />
-      );
+      return <StateMessage icon={profile.icon} title={t(profile.noneSelected)} />;
     }
 
     if (periods.length === 0) {

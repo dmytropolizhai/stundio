@@ -4,8 +4,15 @@
  * Scrapes EduPage substitutions HTML for today/tomorrow, diffs each class
  * section against last-stored hash in PUSH_KV, and dispatches encrypted Web Push
  * notifications to subscribed devices.
+ *
+ * Teachers are served from the same `mode: "classes"` page (MODEL.md §4): every row names its
+ * teacher and, on a cover, the absent one, so the rows are regrouped per teacher instead of
+ * per class section. Only the app's pure string helpers are shared with it — relative
+ * imports, since this bundle has no `@/` alias and no `DOMParser`.
  */
 import { buildPushPayload } from "@block65/webcrypto-web-push";
+import { parseInfo } from "../../src/lib/edupage/substitutions.ts";
+import { teacherKey } from "../../src/lib/edupage/teacher-names.ts";
 import {
   DEFAULT_VAPID_PRIVATE_KEY,
   DEFAULT_VAPID_PUBLIC_KEY,
@@ -77,6 +84,67 @@ export const extractClassSubstitutions = async (
   return result;
 };
 
+export type TeacherSubstitutionSummary = {
+  /** `sha256Hex(teacherKey(name))` — what teacher subscriptions are filed under. */
+  keyHash: string;
+  hash: string;
+  rowCount: number;
+  /** Some row has this teacher standing in for someone else — a cover duty. */
+  hasCover: boolean;
+};
+
+const periodRe = /<div class="period"[^>]*>([\s\S]*?)<\/div>/;
+const infoRe = /<div class="info"[^>]*>([\s\S]*?)<\/div>/;
+
+/**
+ * The same page, regrouped by teacher: a row belongs to both its teacher and, when it names
+ * one, the teacher it replaces — the same scoping the app's `teacherSubstitutionsChanged`
+ * uses, so a device is pushed for exactly what the open app would call a change.
+ */
+export const extractTeacherSubstitutions = async (
+  html: string,
+  date: string,
+): Promise<Map<string, TeacherSubstitutionSummary>> => {
+  const year = Number(date.slice(0, 4)) || new Date().getUTCFullYear();
+  const byKey = new Map<string, { rows: string[]; hasCover: boolean }>();
+
+  for (const sec of html.split(/<div class="section[^>]*>/).slice(1)) {
+    const className =
+      /<div class="header"[^>]*>[\s\S]*?>\s*([A-Za-z0-9/-]+)\s*<\/span>/.exec(sec)?.[1] ?? "";
+    for (const row of sec.matchAll(/<div class="row[^>]*>[\s\S]*?<\/div>\s*<\/div>/g)) {
+      const info = rowText(infoRe.exec(row[0])?.[1] ?? "");
+      if (info === "") continue;
+      const period = rowText(periodRe.exec(row[0])?.[1] ?? "");
+      const parsed = parseInfo(info, year);
+      const to = teacherKey(parsed.teacher);
+      const from = teacherKey(parsed.teacherFrom);
+      const line = `${className}|${period}|${info}`;
+
+      for (const key of new Set([to, from])) {
+        if (key === "") continue;
+        const entry = byKey.get(key) ?? { rows: [], hasCover: false };
+        entry.rows.push(line);
+        if (key === to && ((from !== "" && from !== to) || parsed.kind === "substitution")) {
+          entry.hasCover = true;
+        }
+        byKey.set(key, entry);
+      }
+    }
+  }
+
+  const result = new Map<string, TeacherSubstitutionSummary>();
+  for (const [key, { rows, hasCover }] of byKey) {
+    const keyHash = await sha256Hex(key);
+    result.set(keyHash, {
+      keyHash,
+      hash: await sha256Hex(rows.join("\n")),
+      rowCount: rows.length,
+      hasCover,
+    });
+  }
+  return result;
+};
+
 export const fetchEdupageSubstitutionsHtml = async (
   date: string,
   subdomain = "pikcrvt",
@@ -138,6 +206,46 @@ const formatNotification = (
   }
 };
 
+/** No name in it: the server never learns whose timetable this is, only that it is theirs. */
+const formatTeacherNotification = (
+  date: string,
+  rowCount: number,
+  hasCover: boolean,
+  lang: string,
+): { title: string; body: string } => {
+  switch (lang) {
+    case "en":
+      return hasCover
+        ? { title: "New cover duty", body: `You have been assigned a cover lesson on ${date}.` }
+        : {
+            title: "Your schedule changed",
+            body: `Changes on ${date} (${rowCount} ${rowCount === 1 ? "lesson" : "lessons"}).`,
+          };
+    case "ru":
+      return hasCover
+        ? { title: "Новая замена", body: `Вам назначена замена на ${date}.` }
+        : {
+            title: "Изменения в вашем расписании",
+            body: `Изменения на ${date} (${rowCount} ${rowCount === 1 ? "урок" : "уроков"}).`,
+          };
+    case "ua":
+      return hasCover
+        ? { title: "Нова заміна", body: `Вам призначено заміну на ${date}.` }
+        : {
+            title: "Зміни у вашому розкладі",
+            body: `Зміни на ${date} (${rowCount} ${rowCount === 1 ? "урок" : "уроків"}).`,
+          };
+    case "lv":
+    default:
+      return hasCover
+        ? { title: "Jauna aizvietošana", body: `Tev piešķirta aizvietošanas stunda ${date}.` }
+        : {
+            title: "Izmaiņas tavā sarakstā",
+            body: `Izmaiņas ${date} sarakstā (${rowCount} ${rowCount === 1 ? "stunda" : "stundas"}).`,
+          };
+  }
+};
+
 export const sendWebPush = async (
   sub: { endpoint: string; keys: { p256dh: string; auth: string } },
   payload: { title: string; body: string; date: string; url?: string },
@@ -166,6 +274,8 @@ export const sendWebPush = async (
 export type CheckResult = {
   checkedDates: string[];
   changedClasses: string[];
+  /** How many teachers' days changed — a count, not names or hashes, since this is returned. */
+  changedTeachers: number;
   notifiedDevices: number;
   expiredDevicesRemoved: number;
   errors: string[];
@@ -178,6 +288,7 @@ export const checkAndDispatchSubstitutions = async (
   const result: CheckResult = {
     checkedDates: [],
     changedClasses: [],
+    changedTeachers: 0,
     notifiedDevices: 0,
     expiredDevicesRemoved: 0,
     errors: [],
@@ -192,6 +303,40 @@ export const checkAndDispatchSubstitutions = async (
     subject: env.VAPID_SUBJECT || DEFAULT_VAPID_SUBJECT,
     publicKey: env.VAPID_PUBLIC_KEY || DEFAULT_VAPID_PUBLIC_KEY,
     privateKey: env.VAPID_PRIVATE_KEY || DEFAULT_VAPID_PRIVATE_KEY,
+  };
+
+  const kv = env.PUSH_KV;
+
+  /** Pushes to every device filed under `prefix`, pruning the ones the push service dropped. */
+  const dispatch = async (
+    prefix: string,
+    date: string,
+    message: (lang: string) => { title: string; body: string },
+  ): Promise<void> => {
+    const subsList = await kv.list({ prefix });
+
+    for (const keyItem of subsList.keys) {
+      const rawSub = keyItem.metadata ?? (await kv.get(keyItem.name, "json"));
+      const sub =
+        typeof rawSub === "object" && rawSub !== null ? (rawSub as PushSubscriptionPayload) : null;
+      if (!sub?.endpoint || !sub.keys) continue;
+
+      const { title, body } = message(sub.lang || "lv");
+      const pushOutcome = await sendWebPush(
+        sub,
+        { title, body, date, url: `/?tab=day&date=${date}` },
+        vapid,
+      );
+
+      if (pushOutcome.ok) {
+        result.notifiedDevices += 1;
+      } else if (pushOutcome.expired) {
+        // Clean up dead subscription
+        const endpointId = await sha256Hex(sub.endpoint);
+        await Promise.all([kv.delete(`sub:${endpointId}`), kv.delete(keyItem.name)]);
+        result.expiredDevicesRemoved += 1;
+      }
+    }
   };
 
   const dates = datesToScan && datesToScan.length > 0 ? datesToScan : getTargetDates();
@@ -224,49 +369,32 @@ export const checkAndDispatchSubstitutions = async (
 
         // Only send push if there were previous substitutions or new ones have rows
         if (summary.rowCount > 0) {
-          const prefix = `class:${className}:`;
-          const subsList = await env.PUSH_KV.list({ prefix });
-
-          for (const keyItem of subsList.keys) {
-            const rawSub = keyItem.metadata ?? (await env.PUSH_KV.get(keyItem.name, "json"));
-            const sub =
-              typeof rawSub === "object" && rawSub !== null
-                ? (rawSub as PushSubscriptionPayload)
-                : null;
-            if (!sub?.endpoint || !sub.keys) continue;
-
-            const { title, body } = formatNotification(
-              className,
-              date,
-              summary.rowCount,
-              sub.lang || "lv",
-            );
-
-            const pushOutcome = await sendWebPush(
-              sub,
-              {
-                title,
-                body,
-                date,
-                url: `/?tab=day&date=${date}`,
-              },
-              vapid,
-            );
-
-            if (pushOutcome.ok) {
-              result.notifiedDevices += 1;
-            } else if (pushOutcome.expired) {
-              // Clean up dead subscription
-              const endpointId = await sha256Hex(sub.endpoint);
-              await Promise.all([
-                env.PUSH_KV.delete(`sub:${endpointId}`),
-                env.PUSH_KV.delete(keyItem.name),
-              ]);
-              result.expiredDevicesRemoved += 1;
-            }
-          }
+          await dispatch(`class:${className}:`, date, (lang) =>
+            formatNotification(className, date, summary.rowCount, lang),
+          );
         }
       }
+    }
+
+    /*
+     * Teachers, from the same page. Same first-sighting rule as classes: a teacher's first
+     * appearance on a date is a baseline, not a change. A teacher whose rows all disappear
+     * drops out of the page entirely and — like a class section doing the same — isn't
+     * reported; nothing is left to point the tap at.
+     */
+    const teacherSummaries = await extractTeacherSubstitutions(html, date);
+    for (const summary of teacherSummaries.values()) {
+      const stateKey = `state:pikcrvt:${date}:teacher:${summary.keyHash}`;
+      const previousHash = (await env.PUSH_KV.get(stateKey, "text")) as string | null;
+      if (previousHash === summary.hash) continue;
+
+      await env.PUSH_KV.put(stateKey, summary.hash, { expirationTtl: 86400 * 7 });
+      if (previousHash === null) continue;
+
+      result.changedTeachers += 1;
+      await dispatch(`teacher:${summary.keyHash}:`, date, (lang) =>
+        formatTeacherNotification(date, summary.rowCount, summary.hasCover, lang),
+      );
     }
   }
 

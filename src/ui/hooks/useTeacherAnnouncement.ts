@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppStore } from "@/store";
+import { usePersona } from "@/ui/persona";
 
 export type TeacherAnnouncement = {
   open: boolean;
@@ -9,25 +10,21 @@ export type TeacherAnnouncement = {
 
 export const useTeacherAnnouncement = (): TeacherAnnouncement => {
   const ready = useAppStore((s) => s.ready);
-  const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
+  const { identified, profile } = usePersona();
   const dismissed = useAppStore((s) => s.settings.teacherAnnouncementDismissed);
   const setDismissed = useAppStore((s) => s.setTeacherAnnouncementDismissed);
-  const persona = useAppStore((s) => s.settings.persona);
 
   const [open, setOpen] = useState(false);
   const autoOpenedRef = useRef(false);
 
   useEffect(() => {
     if (!ready || dismissed || autoOpenedRef.current) return;
-    // Auto-open only if onboarded and not already a teacher (if already teacher, they know)
-    const isOnboarded =
-      persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
-    if (!isOnboarded || persona === "teacher") return;
+    // Only once onboarded, and only for a role the announcement is news to.
+    if (!identified || !profile.seesTeacherAnnouncement) return;
 
     autoOpenedRef.current = true;
     setOpen(true);
-  }, [ready, selectedClassId, selectedTeacherId, dismissed, persona]);
+  }, [ready, identified, profile, dismissed]);
 
   const dismiss = useCallback(() => {
     setOpen(false);

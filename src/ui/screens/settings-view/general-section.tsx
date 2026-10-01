@@ -2,6 +2,7 @@ import { SegmentedTabs } from "@/ds";
 import { useAppStore } from "@/store";
 import type { Settings } from "@/db";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
+import { PERSONA_PROFILES } from "@/ui/persona";
 import { Row, Section } from "./settings-section.tsx";
 
 type GeneralSectionProps = {
@@ -43,7 +44,7 @@ export const GeneralSection = ({ buildings, subgroups }: GeneralSectionProps) =>
         </Section>
       )}
 
-      {settings.persona !== "teacher" && subgroups.length > 1 && (
+      {PERSONA_PROFILES[settings.persona].hasSubgroups && subgroups.length > 1 && (
         <Section title={t("settings.subgroup")}>
           <Row>
             <SegmentedTabs

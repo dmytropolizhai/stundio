@@ -6,7 +6,7 @@ import {
   corsHeaders,
   jsonResponse,
   sha256Hex,
-  subscriptionClass,
+  subscriptionIndex,
   type EventContext,
   type PushSubscriptionPayload,
 } from "./types.ts";
@@ -46,9 +46,9 @@ export const onRequest = async (context: EventContext): Promise<Response> => {
   const prev = (await env.PUSH_KV.get(`sub:${id}`, "json")) as PushSubscriptionPayload | null;
 
   const deletions: Promise<void>[] = [env.PUSH_KV.delete(`sub:${id}`)];
-  const previousClass = subscriptionClass(prev);
-  if (previousClass !== null) {
-    deletions.push(env.PUSH_KV.delete(`class:${previousClass}:${id}`));
+  const previousIndex = subscriptionIndex(prev);
+  if (previousIndex !== null) {
+    deletions.push(env.PUSH_KV.delete(`${previousIndex}${id}`));
   }
 
   await Promise.all(deletions);

@@ -7,7 +7,7 @@ import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
 import { DatePicker } from "@/ui/components/DatePicker.tsx";
 import { useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
-import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
+import { useIsFormTeacher } from "@/ui/persona";
 
 type DayTopBarProps = {
   date: ISODate;
@@ -35,11 +35,9 @@ export const DayTopBar = ({
   const t = useT();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  const persona = useAppStore((s) => s.settings.persona);
   const teacherView = useAppStore((s) => s.settings.teacherView);
   const setTeacherView = useAppStore((s) => s.setTeacherView);
-  const selectedTeacher = useSelectedTeacher();
-  const isFormTeacher = persona === "teacher" && (selectedTeacher?.formClassIds.length ?? 0) > 0;
+  const isFormTeacher = useIsFormTeacher();
 
   return (
     <>

@@ -27,6 +27,7 @@ import {
   type TimetableMeta,
 } from "@/lib/edupage";
 import type { AppCache } from "@/db";
+import { matchPersona, resolveIdentity } from "@/lib/persona";
 import { substitutionsChanged, teacherSubstitutionsChanged, weekDates } from "@/lib/schedule";
 import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
@@ -244,16 +245,19 @@ export const createSyncEngine = (deps: SyncDeps) => {
         ? [...new Set([...weekDates(date), ...daysToRefresh(today)])]
         : [...new Set([date, ...daysToRefresh(today)])];
 
-    const scope: RefreshScope =
-      settings.persona === "teacher"
-        ? {
-            persona: "teacher",
-            teacherKey: await selectedTeacherKey(settings.selectedTeacherId, selections),
-          }
-        : {
-            persona: "student",
-            className: await selectedClassName(settings.selectedClassId, selections),
-          };
+    const scope: RefreshScope = await matchPersona<Promise<RefreshScope>>(
+      resolveIdentity(settings),
+      {
+        student: async ({ classId }) => ({
+          persona: "student",
+          className: await selectedClassName(classId, selections),
+        }),
+        teacher: async ({ teacherId }) => ({
+          persona: "teacher",
+          teacherKey: await selectedTeacherKey(teacherId, selections),
+        }),
+      },
+    );
 
     const { done: refreshedDates, changed: changedDates } = await refreshSubstitutions(
       targetDates,

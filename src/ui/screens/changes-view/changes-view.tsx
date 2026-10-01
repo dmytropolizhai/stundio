@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
+import { usePersona } from "@/ui/persona";
 import { addDays } from "@/sync";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button, Card, Icon, SegmentedTabs } from "@/ds";
@@ -33,17 +34,12 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
   const [openLesson, setOpenLesson] = useState<ResolvedLesson | null>(null);
 
   const ready = useAppStore((s) => s.ready);
-  const persona = useAppStore((s) => s.settings.persona);
-  const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
-  const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
-  const selectedClassShort = useAppStore((s) =>
-    s.settings.persona === "teacher" ? null : s.selectedClassShort(),
-  );
+  const { identified: hasIdentity, profile } = usePersona();
+  // `null` for a teacher — the store's `selectedClassShort` resolves the role itself.
+  const selectedClassShort = useAppStore((s) => s.selectedClassShort());
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
   const substitutions = useAppStore((s) => s.substitutions);
-
-  const hasIdentity = persona === "teacher" ? selectedTeacherId !== null : selectedClassId !== null;
 
   const day = useAppStore((s) => s.resolvedDay(date));
   const daySubst = substitutions[date];
@@ -132,8 +128,8 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
     if (!hasIdentity) {
       return (
         <StateMessage
-          icon={persona === "teacher" ? "briefcase" : "graduation-cap"}
-          title={persona === "teacher" ? t("teacher.none") : t("day.noClass")}
+          icon={profile.icon}
+          title={t(profile.noneSelected)}
           action={<Button onClick={onPickClass}>{t("settings.change")}</Button>}
         />
       );
@@ -162,10 +158,7 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
             items={[
               {
                 key: "myClass",
-                label:
-                  persona === "teacher"
-                    ? t("changes.filter.myChanges")
-                    : t("changes.filter.myClass"),
+                label: t(profile.myChangesFilter),
               },
               { key: "all", label: t("changes.filter.all") },
             ]}

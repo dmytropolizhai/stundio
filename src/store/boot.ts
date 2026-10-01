@@ -83,27 +83,28 @@ export const bootApp: Boot = async () => {
 
   /*
    * Keeps the Web Push registration filed under what the *server* can find it by: the class's
-   * display short, which only becomes known once a timetable is cached. Starting from `null`
-   * rather than the current value on purpose — the first tick that can name the class re-files
-   * this device, which is how an installation registered under the old EduPage id (a key the
-   * checker never dispatched to) repairs itself without the user touching anything.
+   * display short or the teacher's name (`identityLabel`), which only become known once a
+   * timetable is cached. Starting from `null` rather than the current value on purpose — the
+   * first tick that can name the pick re-files this device, which is how an installation
+   * registered under the old EduPage id, or under the role it has since left, repairs itself
+   * without the user touching anything.
    */
   let disposeWebPushSync = () => {};
   if (!isNative) {
     let lastRegistration: string | null = null;
 
     const syncWebPush = () => {
-      const { settings, selectedClassShort } = store.getState();
-      const className = selectedClassShort();
-      if (!settings.notifySubstitutionChanges || className === null) {
+      const { settings, identityLabel } = store.getState();
+      const label = identityLabel();
+      if (!settings.notifySubstitutionChanges || label === null) {
         lastRegistration = null;
         return;
       }
-      const registration = `${className}|${settings.lang}`;
+      const registration = `${settings.persona}|${label}|${settings.lang}`;
       if (registration === lastRegistration) return;
       lastRegistration = registration;
       // Never prompts: the OS ask belongs to the Settings toggle the user just turned on.
-      void refreshWebPushSubscription(className, settings.lang);
+      void refreshWebPushSubscription({ persona: settings.persona, label }, settings.lang);
     };
 
     syncWebPush();

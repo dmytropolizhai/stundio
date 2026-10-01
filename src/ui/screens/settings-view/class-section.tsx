@@ -1,31 +1,22 @@
 import { Icon } from "@/ds/components/ui/icon";
+import type { Persona } from "@/lib/persona";
 import { useT } from "@/ui/i18n";
-import type { ClassOption } from "@/ui/hooks/useClasses.ts";
-import type { TeacherOption } from "@/ui/hooks/useTeachers.ts";
+import { PERSONA_PROFILES } from "@/ui/persona";
 import { Section } from "./settings-section.tsx";
 
 type IdentitySectionProps = {
-  persona: "student" | "teacher";
-  selectedClass: ClassOption | null;
-  selectedTeacher: TeacherOption | null;
+  persona: Persona;
+  /** The class / teacher label (`useIdentityLabel`); `undefined` while none is picked. */
+  label: string | undefined;
   onChangeIdentity: () => void;
 };
 
-export const IdentitySection = ({
-  persona,
-  selectedClass,
-  selectedTeacher,
-  onChangeIdentity,
-}: IdentitySectionProps) => {
+export const IdentitySection = ({ persona, label, onChangeIdentity }: IdentitySectionProps) => {
   const t = useT();
 
-  const roleLabel =
-    persona === "teacher" ? t("settings.persona.teacher") : t("settings.persona.student");
-
-  const nameLabel =
-    persona === "teacher"
-      ? selectedTeacher?.short || selectedTeacher?.name || t("teacher.none")
-      : (selectedClass?.short ?? t("day.noClass"));
+  const profile = PERSONA_PROFILES[persona];
+  const roleLabel = t(profile.roleLabel);
+  const nameLabel = label ?? t(profile.noneSelected);
 
   return (
     <Section title={t("settings.identity")}>

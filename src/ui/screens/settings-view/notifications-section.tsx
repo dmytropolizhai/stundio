@@ -7,7 +7,6 @@ import {
 } from "@/notifications/localNotifications";
 import { isWebPushSupported, subscribeWebPush, unsubscribeWebPush } from "@/notifications/webPush";
 import { useAppStore } from "@/store";
-import type { ClassOption } from "@/ui/hooks/useClasses.ts";
 import { useExactAlarmDenied } from "@/ui/hooks/useExactAlarmPermission.ts";
 import { useNotificationPermissionDenied } from "@/ui/hooks/useNotificationPermission.ts";
 import { useT } from "@/ui/i18n";
@@ -15,14 +14,10 @@ import { isIosDevice, isStandalonePwa } from "@/ui/lib/platform.ts";
 import { Row, Section } from "./settings-section.tsx";
 
 type NotificationsSectionProps = {
-  selectedClass: ClassOption | null;
   onShowIphoneInstall?: (() => void) | undefined;
 };
 
-export const NotificationsSection = ({
-  selectedClass,
-  onShowIphoneInstall,
-}: NotificationsSectionProps) => {
+export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSectionProps) => {
   const t = useT();
   const notifyPermissionDenied = useNotificationPermissionDenied();
   const exactAlarmDenied = useExactAlarmDenied();
@@ -30,6 +25,7 @@ export const NotificationsSection = ({
   const setNotifyLessonReminderMinutes = useAppStore((s) => s.setNotifyLessonReminderMinutes);
   const setNotifySubstitutionChanges = useAppStore((s) => s.setNotifySubstitutionChanges);
   const setNotifyAppUpdates = useAppStore((s) => s.setNotifyAppUpdates);
+  const identityLabel = useAppStore((s) => s.identityLabel());
 
   const reminderOptions: { key: string; label: string }[] = [
     { key: "0", label: t("settings.notifyLessonReminderOff") },
@@ -146,11 +142,14 @@ export const NotificationsSection = ({
                 if (isNativePlatform()) {
                   if (checked) void ensureNotificationPermission();
                 } else if (checked) {
-                  // The class's display short, not its id: that is the only name the
-                  // substitution feed publishes, so it is the only one the server can
-                  // file this device under and later find again.
-                  if (selectedClass !== null) {
-                    void subscribeWebPush(selectedClass.short, settings.lang);
+                  // The class's display short or the teacher's name, never an id: those are
+                  // the only names the substitution feed publishes, so the only ones the
+                  // server can file this device under and later find again.
+                  if (identityLabel !== null) {
+                    void subscribeWebPush(
+                      { persona: settings.persona, label: identityLabel },
+                      settings.lang,
+                    );
                   }
                 } else {
                   void unsubscribeWebPush();
