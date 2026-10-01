@@ -235,6 +235,47 @@ describe("CustomizationSheet", () => {
     await openSheet(harness);
     expect(screen.getByText("Izvēlies klasi, lai pielāgotu priekšmetu krāsas.")).toBeDefined();
   });
+
+  it("previews a student's card the way their day list leads: subject first", async () => {
+    await openSheetHarness();
+    expect(screen.getByText("Piemēra priekšmets")).toBeDefined();
+    expect(screen.queryByText("A1-2 · 214")).toBeNull();
+  });
+
+  describe("for a teacher", () => {
+    const teacherHarness = async (): Promise<Harness> => {
+      const student = await bootHarness();
+      const timetable = Object.values(student.store.getState().timetables)[0];
+      const teacher = timetable?.teachers.find((t) =>
+        timetable.lessons.some((l) => l.teacherIds.includes(t.id)),
+      );
+      if (teacher === undefined) throw new Error("fixture has no teaching teacher");
+      const harness = await bootHarness({ persona: "teacher", selectedTeacherId: teacher.id });
+      await openSheet(harness);
+      return harness;
+    };
+
+    it("leads the preview card with the group and room, subject underneath", async () => {
+      await teacherHarness();
+      expect(screen.getByText("A1-2 · 214")).toBeDefined();
+      expect(screen.getByText("Piemēra priekšmets")).toBeDefined();
+    });
+
+    it("talks about the subjects they teach", async () => {
+      await teacherHarness();
+      expect(screen.getByText(/^Tie ir priekšmeti, kurus tu pasniedz\./)).toBeDefined();
+      expect(screen.queryByText(/^Pieskaries krāsai/)).toBeNull();
+    });
+
+    it("asks them to pick themselves, not a class, when no teacher is selected", async () => {
+      const harness = await bootHarness({ persona: "teacher", selectedTeacherId: null });
+      await openSheet(harness);
+      expect(
+        screen.getByText("Izvēlies sevi kā skolotāju, lai pielāgotu savu priekšmetu krāsas."),
+      ).toBeDefined();
+      expect(screen.queryByText("Izvēlies klasi, lai pielāgotu priekšmetu krāsas.")).toBeNull();
+    });
+  });
 });
 
 const openSheetHarness = async (): Promise<Harness> => {

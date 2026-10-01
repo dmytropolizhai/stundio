@@ -340,6 +340,10 @@ export const ru: Dict = {
   "customization.subjectColors.custom": "Свой цвет",
   "customization.subjectColors.lightness": "Яркость",
   "customization.subjectColors.empty": "Выбери класс, чтобы настроить цвета предметов.",
+  "customization.subjectColors.hint.teacher":
+    "Это предметы, которые ты преподаёшь. Нажми на цвет, чтобы назначить его; нажми «Авто», чтобы вернуть цвет по умолчанию.",
+  "customization.subjectColors.empty.teacher":
+    "Выбери себя как преподавателя, чтобы настроить цвета своих предметов.",
   "customization.preview.subject": "Пример предмета",
   "customization.reset": "Сбросить настройки",
 

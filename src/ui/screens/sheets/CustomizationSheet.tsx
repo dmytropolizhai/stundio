@@ -6,6 +6,7 @@ import type { Settings, SubjectColorTone } from "@/db";
 import type { SubjectRef } from "@/lib/edupage";
 import { SUBJECT_TONES, subjectAccent, subjectToneKey } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
+import { usePersona } from "@/ui/persona";
 import { useSubjects } from "../../hooks/useSubjects.ts";
 import { Row, Section } from "../settings-view";
 
@@ -20,6 +21,12 @@ const TONE_BG: Record<SubjectColorTone, string> = {
   mint: "bg-mint",
   lime: "bg-lime",
 };
+
+/**
+ * The teacher preview's heading: a group and a room, as `lessonHeading` builds it. School data is
+ * never translated (AGENT.md), so this sample stays a literal rather than an i18n key.
+ */
+const TEACHER_PREVIEW_HEADING = "A1-2 · 214";
 
 /** The default colour the wheel opens to for a subject that has never had a custom pick. */
 const DEFAULT_WHEEL_COLOR = "#3d7bf5";
@@ -188,6 +195,10 @@ const AppAccentRow = () => {
  * whatever combination someone picks (see the design discussion this screen came out of).
  * Theme, radius, and depth apply globally through `useCustomization`/`useTheme`, so the live
  * preview below is just the real components rendered here — no separate preview plumbing needed.
+ *
+ * The role shapes the sheet through `PERSONA_PROFILES[…].customization`: a teacher's preview card
+ * leads with the group and room like their day list does, and the subject-colour copy talks about
+ * the subjects they teach rather than a class's.
  */
 export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const t = useT();
@@ -200,6 +211,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
   const setSubjectColorCodingEnabled = useAppStore((s) => s.setSubjectColorCodingEnabled);
   const resetCustomization = useAppStore((s) => s.resetCustomization);
   const { subjects } = useSubjects();
+  const { customization } = usePersona().profile;
 
   const themes: { key: Settings["theme"]; label: string }[] = [
     { key: "system", label: t("theme.system") },
@@ -238,7 +250,9 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
           period="3"
           start="10:20"
           end="11:00"
-          subject={t("customization.preview.subject")}
+          {...(customization.previewLeadsWith === "group"
+            ? { subject: TEACHER_PREVIEW_HEADING, subtitle: t("customization.preview.subject") }
+            : { subject: t("customization.preview.subject") })}
           tone="sky"
           filled={settings.lessonCardStyle === "filled"}
         />
@@ -370,14 +384,14 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
           (subjects.length === 0 ? (
             <Row>
               <p className="font-text text-caption text-muted">
-                {t("customization.subjectColors.empty")}
+                {t(customization.subjectColorsEmpty)}
               </p>
             </Row>
           ) : (
             <>
               <Row>
                 <p className="font-text text-caption text-muted">
-                  {t("customization.subjectColors.hint")}
+                  {t(customization.subjectColorsHint)}
                 </p>
               </Row>
               {subjects.map(({ subject }) => (
