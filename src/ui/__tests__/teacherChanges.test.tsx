@@ -73,9 +73,10 @@ describe("Teacher Changes View (T7)", () => {
 
     wrap(harness, <ChangesLessonCard lesson={mockCoverLesson} onOpen={vi.fn()} />);
 
-    expect(screen.getByText("S3-1")).toBeDefined();
+    // Same lead as the day list: group and room first, the subject as the subtitle.
+    expect(screen.getByRole("heading", { name: "S3-1 · 204" })).toBeDefined();
+    expect(screen.getByText("Matemātika")).toBeDefined();
     expect(screen.getByText("Aizvieto: Ozoliņa Laura")).toBeDefined();
-    expect(screen.getByText("204")).toBeDefined();
   });
 
   it("switches between 'Manas izmaiņas' and 'Visa skola' tabs", async () => {

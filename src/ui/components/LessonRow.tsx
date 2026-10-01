@@ -5,6 +5,7 @@ import { STATUS_TREATMENT, isChanged, subjectAccent } from "@/ui/theme";
 import { StatusDot } from "./Badge.tsx";
 import { useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
+import { lessonHeading } from "./lesson-heading.ts";
 
 type LessonRowProps = {
   lesson: ResolvedLesson;
@@ -34,23 +35,8 @@ export const LessonRow = memo(
     const highlightCoverLessons = useAppStore((s) => s.settings.highlightCoverLessons);
 
     const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
-    const isTeacherMode =
-      (teacherLesson.classes !== undefined && teacherLesson.classes.length > 0) ||
-      teacherLesson.role !== undefined ||
-      lesson.isCover === true;
-
-    const classNames = teacherLesson.classes?.map((c) => c.short || c.name).join(" + ");
-    const rooms = lesson.rooms.map((x) => x.short).join(", ");
+    const { isTeacherMode, rooms, title: subject, subtitle } = lessonHeading(lesson);
     const teachers = lesson.teachers.map((x) => x.short).join(", ");
-    const subjectName = lesson.subject?.name ?? lesson.subject?.short ?? "—";
-
-    const subject = isTeacherMode
-      ? classNames && rooms
-        ? `${classNames} · ${rooms}`
-        : classNames || rooms || subjectName
-      : subjectName;
-
-    const subtitle = isTeacherMode ? subjectName : undefined;
 
     const isCover = lesson.isCover === true || teacherLesson.role === "cover";
     const coverBadgeText = teacherLesson.coverFor?.name
