@@ -263,7 +263,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
 
           {body()}
 
-          {ready && hasIdentity && <WeekSettings />}
+          {ready && profile.picker !== "teacher" && <WeekSettings />}
         </div>
       </PullToRefresh>
 
