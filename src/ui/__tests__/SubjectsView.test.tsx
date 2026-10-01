@@ -61,6 +61,30 @@ describe("useSubjects", () => {
     expect(result.current.subjects).toEqual([]);
     expect(result.current.teachers).toEqual([]);
   });
+
+  it("lists a teacher's own subjects, so teachers can colour them too", async () => {
+    const student = await bootHarness();
+    const timetable = Object.values(student.store.getState().timetables)[0];
+    const teacher = timetable?.teachers.find((t) =>
+      timetable.lessons.some((l) => l.teacherIds.includes(t.id)),
+    );
+    expect(teacher).toBeDefined();
+
+    const harness = await bootHarness({
+      persona: "teacher",
+      selectedTeacherId: teacher?.id ?? null,
+    });
+    const { result } = renderHook(() => useSubjects(), { wrapper: wrapper(harness) });
+
+    expect(result.current.subjects.length).toBeGreaterThan(0);
+  });
+
+  it("is empty for a teacher until one is chosen", async () => {
+    const harness = await bootHarness({ persona: "teacher", selectedTeacherId: null });
+    const { result } = renderHook(() => useSubjects(), { wrapper: wrapper(harness) });
+
+    expect(result.current.subjects).toEqual([]);
+  });
 });
 
 describe("SubjectsView", () => {

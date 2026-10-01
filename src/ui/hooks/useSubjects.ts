@@ -9,7 +9,7 @@
  */
 import { useMemo } from "react";
 import { useAppStore } from "@/store";
-import { classWeekLessons } from "@/lib/edupage";
+import { classWeekLessons, teacherKey } from "@/lib/edupage";
 import type { SubjectRef, TeacherRef, Timetable } from "@/lib/edupage";
 
 export type SubjectSummary = {
@@ -41,12 +41,61 @@ export type SubjectCatalogue = {
 
 const EMPTY: SubjectCatalogue = { subjects: [], teachers: [] };
 
+/**
+ * A teacher's own subjects: every subject they teach in the newest published week, busiest first.
+ * Teachers have no class to scope by, so this is what feeds the colour pickers for that role.
+ * The teacher is matched on their name key, since ids only mean something inside one timetable.
+ */
+const subjectsOfTeacher = (
+  timetables: Record<string, Timetable>,
+  teacherId: string,
+): SubjectSummary[] => {
+  const all = Object.values(timetables);
+  const me = all.flatMap((t) => t.teachers).find((t) => t.id === teacherId);
+  if (me === undefined) return [];
+  const myKey = teacherKey(me.short || me.name);
+  const newest = all
+    .map((t) => t.meta.validFrom)
+    .sort()
+    .at(-1);
+  const refs = new Map<string, SubjectRef>();
+  const counts = new Map<string, number>();
+
+  for (const timetable of all.filter((t) => t.meta.validFrom === newest)) {
+    const mine = new Set(
+      timetable.teachers.filter((t) => teacherKey(t.short || t.name) === myKey).map((t) => t.id),
+    );
+    for (const lesson of timetable.lessons) {
+      if (!lesson.teacherIds.some((id) => mine.has(id))) continue;
+      const subject = timetable.subjects.find((s) => s.id === lesson.subjectId);
+      if (subject === undefined) continue;
+      const key = subject.name === "" ? subject.short : subject.name;
+      if (!refs.has(key)) refs.set(key, subject);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+  }
+
+  return [...counts.entries()]
+    .flatMap(([key, count]) => {
+      const subject = refs.get(key);
+      return subject === undefined ? [] : [{ subject, count, teachers: [] }];
+    })
+    .sort((a, b) => b.count - a.count || a.subject.short.localeCompare(b.subject.short, "lv"));
+};
+
 export const useSubjects = (): SubjectCatalogue => {
   const timetables = useAppStore((s) => s.timetables);
   const classId = useAppStore((s) => s.settings.selectedClassId);
   const subgroup = useAppStore((s) => s.settings.subgroup);
+  const persona = useAppStore((s) => s.settings.persona);
+  const teacherId = useAppStore((s) => s.settings.selectedTeacherId);
 
   return useMemo(() => {
+    if (persona === "teacher") {
+      return teacherId === null
+        ? EMPTY
+        : { subjects: subjectsOfTeacher(timetables, teacherId), teachers: [] };
+    }
     if (classId === null) return EMPTY;
     const week = weekFor(timetables, classId);
     if (week.length === 0) return EMPTY;
@@ -113,5 +162,5 @@ export const useSubjects = (): SubjectCatalogue => {
       .sort((a, b) => a.teacher.short.localeCompare(b.teacher.short, "lv"));
 
     return { subjects, teachers };
-  }, [timetables, classId, subgroup]);
+  }, [timetables, classId, subgroup, persona, teacherId]);
 };
