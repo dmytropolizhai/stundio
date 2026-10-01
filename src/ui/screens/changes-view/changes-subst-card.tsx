@@ -2,6 +2,7 @@ import { Card, Icon } from "@/ds";
 import type { Substitution } from "@/lib/edupage";
 import { StatusBadge } from "@/ui/components/Badge.tsx";
 import { useT } from "@/ui/i18n";
+import { PeriodRuns } from "./period-runs.tsx";
 import { ARROW, substKindToStatus } from "./subst-status.ts";
 
 type ChangesSubstCardProps = {
@@ -16,13 +17,18 @@ type ChangesSubstCardProps = {
 export const ChangesSubstCard = ({ item }: ChangesSubstCardProps) => {
   const t = useT();
 
-  const periodLabel = item.periods.length > 0 ? `${item.periods.join(" – ")}. stunda` : "";
-
   return (
     <Card className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-data text-caption font-bold text-strong">{periodLabel}</span>
-        <StatusBadge status={substKindToStatus(item.kind)} />
+        {/* An empty span holds the badge to the right when no period was parsed. */}
+        {item.periods.length > 0 ? (
+          <PeriodRuns periods={item.periods} label={t("lesson.period")} />
+        ) : (
+          <span />
+        )}
+        <span className="shrink-0">
+          <StatusBadge status={substKindToStatus(item.kind)} />
+        </span>
       </div>
 
       {item.subject !== null && (
