@@ -52,8 +52,11 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(existsSync(swPath)).toBe(true);
     const swCode = readFileSync(swPath, "utf-8");
 
-    // Cache versioning
-    expect(swCode).toContain('const CACHE_NAME = "stundio-shell-v3";');
+    // Cache versioning: one cache per build, named by the id `vite build` injects.
+    expect(swCode).toContain('const BUILD_ID = "dev";');
+    expect(swCode).toContain("const BUILD_ASSETS = [];");
+    expect(swCode).toContain("const CACHE_NAME = `stundio-shell-${BUILD_ID}`;");
+    expect(swCode).toMatch(/cache\.addAll\(\[\.\.\.PRECACHE_URLS, \.\.\.BUILD_ASSETS\]\)/);
 
     // Old cache deletion in activate listener
     expect(swCode).toMatch(/caches\s*\.\s*keys\s*\(\)/);
@@ -66,10 +69,12 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     const precachedUrls = (precacheMatch?.[1] ?? "")
       .split(",")
       .map((s) => s.trim().replace(/^["']|["']$/g, ""))
-      .filter((s) => s.length > 0);
+      .filter((s) => s.length > 0 && !s.startsWith("//"));
 
-    expect(precachedUrls).toContain("/");
-    expect(precachedUrls).toContain("/index.html");
+    expect(precachedUrls).toContain("SHELL_URL");
+    // Cloudflare Pages 308s /index.html to /, and Safari will not render a redirected
+    // response from a service worker — the shell is cached under "/" only.
+    expect(precachedUrls).not.toContain("/index.html");
     expect(precachedUrls).toContain("/manifest.webmanifest");
     expect(precachedUrls).toContain("/mark.svg");
     expect(precachedUrls).toContain("/icons/icon-192.png");
@@ -79,12 +84,18 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(precachedUrls).toContain("/apple-touch-icon.png");
     expect(precachedUrls).toContain("/favicon.ico");
 
+    expect(swCode).toContain('const SHELL_URL = "/";');
+
     for (const url of precachedUrls) {
-      if (url === "/") continue;
+      if (url === "SHELL_URL") continue;
       const relPath = url.replace(/^\//, "");
-      const fullPath = url === "/index.html" ? indexPath : resolve(rootDir, "public", relPath);
+      const fullPath = resolve(rootDir, "public", relPath);
       expect(existsSync(fullPath), `Precached asset does not exist: ${url}`).toBe(true);
     }
+
+    // Navigations fall back to the cached shell after a timeout, not only on a hard failure
+    expect(swCode).toMatch(/const NAVIGATION_TIMEOUT_MS = \d+;/);
+    expect(swCode).toMatch(/caches\.match\(SHELL_URL\)/);
 
     // Bypass API and sw.js
     expect(swCode).toMatch(/url\.pathname\.startsWith\(["']\/api-/);

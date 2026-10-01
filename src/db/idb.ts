@@ -13,6 +13,7 @@ import {
   type Settings,
   type SubjectNote,
 } from "./types.ts";
+import { createMemoryCache } from "./memory.ts";
 import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
 
 export const DB_NAME = "rvt-stunda";
@@ -106,13 +107,18 @@ export const createIdbCache = (
   },
 });
 
-/** Real cache when IndexedDB works, memory when it does not (private mode, old WebView). */
+/**
+ * Real cache when IndexedDB works, memory when it does not (private mode, old WebView).
+ *
+ * The memory fallback is imported statically on purpose: as a lazy `import()` it became its
+ * own chunk, which the service worker had never seen — so offline, the fallback meant to keep
+ * the app usable was itself a network request that failed and took boot down with it.
+ */
 export const createCache = async (): Promise<AppCache> => {
   try {
     const db = await openAppDb();
     return createIdbCache(Promise.resolve(db));
   } catch {
-    const { createMemoryCache } = await import("./memory.ts");
     return createMemoryCache();
   }
 };

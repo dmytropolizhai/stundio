@@ -1,7 +1,9 @@
 /// <reference types="vitest/config" />
 import { fileURLToPath, URL } from "node:url";
-import { readFileSync } from "node:fs";
-import { defineConfig } from "vite";
+import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
@@ -9,8 +11,48 @@ const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), 
   version: string;
 };
 
+/**
+ * Fills `public/sw.js`'s `BUILD_ID` / `BUILD_ASSETS` placeholders in the built `dist/sw.js`
+ * with every file this build emitted, so the worker precaches lazy chunks and fonts too rather
+ * than only what index.html names — an offline launch must never need a file it has not seen.
+ * Source maps are left out (never fetched by users), and so is the `.woff` twin of each font:
+ * every browser with service workers takes the `.woff2`. `BUILD_ID` hashes the list, so a
+ * deploy that changes any asset changes the cache name and the worker reinstalls.
+ */
+const precacheManifest = (): Plugin => {
+  let assets: string[] = [];
+  let outDir = "dist";
+  return {
+    name: "stundio-precache-manifest",
+    apply: "build",
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    generateBundle(_options, bundle) {
+      assets = Object.keys(bundle)
+        .filter((file) => file !== "index.html" && !/\.(map|woff)$/.test(file))
+        .map((file) => `/${file}`)
+        .sort();
+    },
+    // `closeBundle`, not `writeBundle`: the public dir (and with it sw.js) must already be
+    // copied into outDir when this runs.
+    closeBundle() {
+      const swPath = resolve(outDir, "sw.js");
+      const buildId = createHash("sha256").update(assets.join("\n")).digest("hex").slice(0, 12);
+      const source = readFileSync(swPath, "utf-8");
+      const built = source
+        .replace('const BUILD_ID = "dev";', `const BUILD_ID = ${JSON.stringify(buildId)};`)
+        .replace("const BUILD_ASSETS = [];", `const BUILD_ASSETS = ${JSON.stringify(assets)};`);
+      if (built === source || !built.includes(buildId)) {
+        throw new Error("sw.js placeholders not found — the precache manifest was not injected");
+      }
+      writeFileSync(swPath, built);
+    },
+  };
+};
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), precacheManifest()],
   // shadcn convention: "@/…" is the src root. Mirrored in tsconfig.app.json paths.
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   // Read once at build/test time so `src/` never imports package.json directly.

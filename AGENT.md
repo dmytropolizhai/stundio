@@ -83,6 +83,14 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   tokens are generated copies from the Claude Design project — regenerate rather than hand-edit;
   `dark.css` and `fonts.css` are documented deliberate deviations.
 - **`src/ui/components/lesson-heading.ts`** — what a lesson card leads with (student: subject; teacher: group · room, subject as subtitle). The day list (`LessonRow`) and the changes list (`ChangesLessonCard`) both build on it and on the DS `LessonCard`, so a lesson looks the same in both.
+- **`public/sw.js`** — the web build's service worker (never registered on Android). It
+  precaches every file `vite build` emitted: the `precacheManifest` plugin in `vite.config.ts`
+  fills its `BUILD_ID` / `BUILD_ASSETS` placeholders in `dist/sw.js`, so each deploy gets a new
+  cache and an offline launch never needs a file the worker has not seen. Navigations are
+  network-first with a 3 s cap, then the shell cached under `/` (never `/index.html` —
+  Cloudflare Pages 308s it, and Safari rejects redirected responses from a worker). Keep boot
+  free of lazy `import()`s, and keep `App`'s `errorFallback`: a boot that rejects must uncover
+  an error, not leave the splash rippling forever.
 - **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: five tabs plus modals,
   with the five primary tabs bundled together to guarantee instant and reliable offline navigation.
 

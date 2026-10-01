@@ -4,13 +4,35 @@
  * Provides offline app shell caching (HTML/JS/CSS/assets) so the app opens
  * reliably without network connectivity. Does NOT cache /api-edupage calls,
  * which are handled by Stundio's dedicated IndexedDB sync cache.
+ *
+ * `BUILD_ID` and `BUILD_ASSETS` are placeholders: `vite build` rewrites them in
+ * dist/sw.js (the `precacheManifest` plugin in vite.config.ts) with every file the
+ * bundle emitted. Precaching only what index.html names was not enough — lazy
+ * chunks (Capacitor's web plugin shims, fonts, onboarding art) were then cached
+ * only if they happened to load while online, so an offline launch could need a
+ * file the worker had never seen. A new build also means a new cache name, so the
+ * worker reinstalls and precaches the new assets on every deploy.
  */
 
-const CACHE_NAME = "stundio-shell-v3";
+const BUILD_ID = "dev";
+const BUILD_ASSETS = [];
 
+const CACHE_NAME = `stundio-shell-${BUILD_ID}`;
+
+/** The SPA's one document. Every navigation is answered with it. */
+const SHELL_URL = "/";
+
+/**
+ * How long a navigation waits on the network before the cached shell answers.
+ * "Connected but no internet" (captive portals, a dead mobile link) never fails
+ * fast — without a cap the app would sit on a blank page instead of opening offline.
+ */
+const NAVIGATION_TIMEOUT_MS = 3000;
+
+// Not "/index.html": Cloudflare Pages answers it with a 308 to "/", and Safari refuses to
+// render a redirected response handed to it by a service worker.
 const PRECACHE_URLS = [
-  "/",
-  "/index.html",
+  SHELL_URL,
   "/manifest.webmanifest",
   "/favicon.png",
   "/favicon.ico",
@@ -30,23 +52,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then(async (cache) => {
-        await cache.addAll(PRECACHE_URLS);
-        // Opportunistically precache current build assets referenced in index.html
-        try {
-          const indexResponse = await fetch("/index.html");
-          if (indexResponse.ok) {
-            const html = await indexResponse.text();
-            const assetMatches = html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g);
-            const assetsToCache = Array.from(new Set(Array.from(assetMatches, (m) => m[1])));
-            if (assetsToCache.length > 0) {
-              await cache.addAll(assetsToCache);
-            }
-          }
-        } catch {
-          // Offline or network error during opportunistic precache
-        }
-      })
+      .then((cache) => cache.addAll([...PRECACHE_URLS, ...BUILD_ASSETS]))
       .then(() => self.skipWaiting()),
   );
 });
@@ -76,25 +82,11 @@ self.addEventListener("fetch", (event) => {
   // Never cache service worker script updates
   if (url.pathname === "/sw.js") return;
 
-  // For navigation requests (HTML pages): Network-First, fall back to cached index.html
+  // Navigations: network-first with a timeout, falling back to the cached shell. Stored
+  // under SHELL_URL whatever the query (`/?tab=day&date=…` from a notification), so the
+  // fallback is always the latest shell this device saw rather than a per-URL copy.
   if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.status === 200) {
-            const copy = response.clone();
-            void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          }
-          return response;
-        })
-        .catch(async () => {
-          const cached = await caches.match(request);
-          if (cached) return cached;
-          const fallback = await caches.match("/index.html");
-          if (fallback) return fallback;
-          return new Response("Offline", { status: 503, statusText: "Offline" });
-        }),
-    );
+    event.respondWith(navigate(event));
     return;
   }
 
@@ -120,6 +112,31 @@ self.addEventListener("fetch", (event) => {
     }),
   );
 });
+
+const navigate = (event) => {
+  const network = fetch(event.request).then((response) => {
+    if (response.status === 200 && !response.redirected) {
+      const copy = response.clone();
+      event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(SHELL_URL, copy)));
+    }
+    return response;
+  });
+  // Keep the network copy landing in the cache even when the timeout answers first.
+  event.waitUntil(network.catch(() => undefined));
+
+  const timeout = new Promise((resolve) => setTimeout(resolve, NAVIGATION_TIMEOUT_MS));
+  const cachedShell = () => caches.match(SHELL_URL);
+
+  return Promise.race([network, timeout.then(() => null)])
+    .catch(() => null)
+    .then(async (response) => {
+      if (response) return response;
+      const cached = await cachedShell();
+      if (cached) return cached;
+      // No shell cached yet (very first visit): keep waiting on the network after all.
+      return network.catch(() => new Response("Offline", { status: 503, statusText: "Offline" }));
+    });
+};
 
 /* ------------------------------------------------------------------ *
  * Web Push Notifications
