@@ -19,8 +19,11 @@ export type SliderProps = {
  * A stepped range track. Not in the published Studio DS — no slider ships there — so this is
  * built from pieces the DS already has rather than invented whole: `SegmentedTabs`'s sunken pill
  * track becomes the groove, and the thumb is a `bg-card` circle with the same hairline ring
- * `TextField`/`Chip` use to hold an edge on a plain white surface (the switch's own thumb shadow
- * reads only because its track is never white; this thumb has to work on one).
+ * `TextField`/`Chip` use, drawn at 2px in `--border-strong` so it holds an edge in both themes:
+ * on the dark theme `bg-card` sits one step above the sunken groove and a 1px hairline vanished
+ * into it (the switch's own thumb shadow reads only because its track is never white; this thumb
+ * has to work on one). The ticks use the same alias rather than a base `--ink-*` step, which
+ * would stay light-theme grey under `.dark`.
  *
  * Ticks, not a filled range bar: colouring the "traveled" portion would reach for `--brand` or an
  * accent, and this system reserves colour for the subject index and the one electric moment
@@ -57,7 +60,7 @@ export const Slider = ({
             className="pointer-events-none absolute inset-0 flex items-center justify-between px-[3px]"
           >
             {Array.from({ length: stops }, (_, i) => (
-              <span key={i} className="size-1 rounded-pill bg-ink-300" />
+              <span key={i} className="size-1 rounded-pill bg-strong-border" />
             ))}
           </div>
         )}
@@ -66,7 +69,7 @@ export const Slider = ({
         aria-label={label}
         {...(valueText === undefined ? {} : { "aria-valuetext": valueText })}
         className={cn(
-          "block size-6 shrink-0 cursor-pointer rounded-pill bg-card shadow-hairline",
+          "block size-6 shrink-0 cursor-pointer rounded-pill bg-card shadow-card inset-ring-2 inset-ring-strong-border",
           "transition-transform duration-(--dur-fast) ease-(--ease-standard)",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-ring)",
         )}
