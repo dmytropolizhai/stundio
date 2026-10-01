@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { LessonCard } from "@/ds/components/ui/lesson-card.tsx";
 import { BottomSheet, Button, ColorWheel, SegmentedTabs, Switch, cn, Slider } from "@/ds";
 import { useAppStore } from "@/store";
@@ -6,6 +6,7 @@ import type { Settings, SubjectColorTone } from "@/db";
 import type { SubjectRef } from "@/lib/edupage";
 import { SUBJECT_TONES, subjectAccent, subjectToneKey } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
+import { usePersona } from "@/ui/persona";
 import { useSubjects } from "../../hooks/useSubjects.ts";
 import { Row, Section } from "../settings-view";
 
@@ -21,8 +22,84 @@ const TONE_BG: Record<SubjectColorTone, string> = {
   lime: "bg-lime",
 };
 
+/**
+ * The teacher preview's heading: a group and a room, as `lessonHeading` builds it. School data is
+ * never translated (AGENT.md), so this sample stays a literal rather than an i18n key.
+ */
+const TEACHER_PREVIEW_HEADING = "A1-2 · 214";
+
 /** The default colour the wheel opens to for a subject that has never had a custom pick. */
 const DEFAULT_WHEEL_COLOR = "#3d7bf5";
+
+/**
+ * One round colour option. Selection is an outer ring offset from the dot rather than an inset
+ * ring, so it reads on every fill — including the near-black "default" accent dot, where an inset
+ * `ring-strong` would vanish into the fill. The 44px hit area is the button; the dot is 26px.
+ */
+const Swatch = ({
+  label,
+  pressed,
+  onClick,
+  className,
+  style,
+}: {
+  label: string;
+  pressed: boolean;
+  onClick: () => void;
+  className?: string;
+  style?: CSSProperties;
+}) => (
+  <button
+    type="button"
+    aria-label={label}
+    aria-pressed={pressed}
+    onClick={onClick}
+    className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-pill"
+  >
+    <span
+      aria-hidden="true"
+      className={cn(
+        "block size-6.5 rounded-pill transition-shadow duration-(--dur-fast) ease-(--ease-standard)",
+        pressed && "ring-2 ring-strong ring-offset-2 ring-offset-card",
+        className,
+      )}
+      {...(style === undefined ? {} : { style })}
+    />
+  </button>
+);
+
+/**
+ * A row of swatches spread across the card's full width. The negative margin pulls the first and
+ * last 44px hit areas out by the 9px they pad around their 26px dot, so the dots themselves line
+ * up with the row's text edge instead of sitting indented from it.
+ */
+const SwatchRow = ({ children }: { children: ReactNode }) => (
+  <div className="-mx-2.25 flex items-center justify-between">{children}</div>
+);
+
+/** The small text action beside a picker's heading — "Auto" / "Default". */
+const ResetAction = ({
+  disabled,
+  onClick,
+  children,
+}: {
+  disabled: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) => (
+  <button
+    type="button"
+    disabled={disabled}
+    onClick={onClick}
+    className={cn(
+      "-my-3 -mr-2.5 flex h-11 shrink-0 cursor-pointer items-center rounded-pill px-2.5",
+      "font-text text-caption font-bold text-strong underline decoration-dotted underline-offset-4",
+      "disabled:cursor-default disabled:text-muted disabled:no-underline disabled:opacity-60",
+    )}
+  >
+    {children}
+  </button>
+);
 
 /**
  * One subject's accent picker: the six DS tones (their own contrast-checked ink pair), a free
@@ -52,66 +129,46 @@ const SubjectColorRow = ({
   const [wheelOpen, setWheelOpen] = useState(false);
 
   return (
-    <div className="py-1">
-      <p className="mb-1 font-text text-caption font-bold text-strong">{label}</p>
-      <div className="-ml-2.5 flex items-center">
-        {SUBJECT_TONES.map((option) => (
-          <button
-            key={option}
-            type="button"
-            aria-label={option}
-            aria-pressed={!isCustom && accent.tone === option}
-            onClick={() => {
-              setWheelOpen(false);
-              void setOverride(tokenKey, option);
-            }}
-            className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
-          >
-            <span
-              aria-hidden="true"
-              className={cn(
-                "block size-6.5 rounded-full",
-                TONE_BG[option],
-                !isCustom && accent.tone === option && "inset-ring-2 inset-ring-strong",
-              )}
-            />
-          </button>
-        ))}
-        <button
-          type="button"
-          aria-label={t("customization.subjectColors.custom")}
-          aria-pressed={isCustom}
-          onClick={() => {
-            setWheelOpen((open) => !isCustom || !open);
-            if (!isCustom) void setOverride(tokenKey, DEFAULT_WHEEL_COLOR);
-          }}
-          className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
-        >
-          <span
-            aria-hidden="true"
-            className={cn(
-              "block size-6.5 rounded-full",
-              isCustom && "inset-ring-2 inset-ring-strong",
-            )}
-            style={{
-              background: isCustom
-                ? accent.fill
-                : "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
-            }}
-          />
-        </button>
-        <button
-          type="button"
+    <div data-color-row="">
+      <div className="mb-1.5 flex items-center justify-between gap-3">
+        <p className="min-w-0 font-text text-body font-bold text-strong">{label}</p>
+        <ResetAction
           disabled={!isOverridden}
           onClick={() => {
             setWheelOpen(false);
             void setOverride(tokenKey, null);
           }}
-          className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted decoration-dotted disabled:opacity-30 disabled:no-underline"
         >
           {t("customization.subjectColors.reset")}
-        </button>
+        </ResetAction>
       </div>
+      <SwatchRow>
+        {SUBJECT_TONES.map((option) => (
+          <Swatch
+            key={option}
+            label={option}
+            pressed={!isCustom && accent.tone === option}
+            className={TONE_BG[option]}
+            onClick={() => {
+              setWheelOpen(false);
+              void setOverride(tokenKey, option);
+            }}
+          />
+        ))}
+        <Swatch
+          label={t("customization.subjectColors.custom")}
+          pressed={isCustom}
+          style={{
+            background: isCustom
+              ? accent.fill
+              : "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
+          }}
+          onClick={() => {
+            setWheelOpen((open) => !isCustom || !open);
+            if (!isCustom) void setOverride(tokenKey, DEFAULT_WHEEL_COLOR);
+          }}
+        />
+      </SwatchRow>
 
       {wheelOpen && isCustom && (
         <div className="mt-3 mb-1">
@@ -130,10 +187,11 @@ const SubjectColorRow = ({
 };
 
 /**
- * The app-wide accent picker: the same six DS tones as the subject picker, plus a reset to
- * `"default"` — the DS's own ink-based emphasis colour, unchanged from before this setting
- * existed. Lives at `Settings.appAccent`; applied globally by `useCustomization`, never at a
- * call site.
+ * The app-wide accent picker: the same six DS tones as the subject picker, plus `"default"` — the
+ * DS's own ink-based emphasis colour, unchanged from before this setting existed — offered as the
+ * first swatch rather than a disabled text reset, because it is a choice like the others and
+ * should show as selected when it is the one in effect. Lives at `Settings.appAccent`; applied
+ * globally by `useCustomization`, never at a call site.
  */
 const AppAccentRow = () => {
   const t = useT();
@@ -142,43 +200,41 @@ const AppAccentRow = () => {
 
   return (
     <Row>
-      <p className="mb-2.5 font-text text-caption text-muted">{t("customization.accent.hint")}</p>
-      <div className="-ml-2.5 flex items-center">
-        {SUBJECT_TONES.map((option) => (
-          <button
-            key={option}
-            type="button"
-            aria-label={option}
-            aria-pressed={appAccent === option}
+      <div data-color-row="">
+        <p className="mb-2 font-text text-caption text-muted">{t("customization.accent.hint")}</p>
+        <SwatchRow>
+          {/* `bg-strong` is the ink the "default" accent resolves to in either theme. */}
+          <Swatch
+            label={t("customization.accent.reset")}
+            pressed={appAccent === "default"}
+            className="bg-strong"
             onClick={() => {
-              void setAppAccent(option);
+              void setAppAccent("default");
             }}
-            className="flex size-11 shrink-0 cursor-pointer items-center justify-center"
-          >
-            <span
-              aria-hidden="true"
-              className={cn(
-                "block size-6.5 rounded-full",
-                TONE_BG[option],
-                appAccent === option && "inset-ring-2 inset-ring-strong",
-              )}
+          />
+          {SUBJECT_TONES.map((option) => (
+            <Swatch
+              key={option}
+              label={option}
+              pressed={appAccent === option}
+              className={TONE_BG[option]}
+              onClick={() => {
+                void setAppAccent(option);
+              }}
             />
-          </button>
-        ))}
-        <button
-          type="button"
-          disabled={appAccent === "default"}
-          onClick={() => {
-            void setAppAccent("default");
-          }}
-          className="ml-1 flex h-11 shrink-0 items-center px-2.5 font-text text-micro font-bold text-muted decoration-dotted disabled:opacity-30 disabled:no-underline"
-        >
-          {t("customization.accent.reset")}
-        </button>
+          ))}
+        </SwatchRow>
       </div>
     </Row>
   );
 };
+
+/**
+ * Every segmented control in this sheet spans the card, so their tracks line up row to row. The
+ * segments grow from their label width (not an equal `flex-1` split) and never wrap: "Kā sistēmā"
+ * is wider than a third of the track at 390px.
+ */
+const FULL_WIDTH_TABS = "flex w-full [&>button]:grow [&>button]:whitespace-nowrap";
 
 /**
  * "Customization" — the sheet opened from Settings.
@@ -188,6 +244,10 @@ const AppAccentRow = () => {
  * whatever combination someone picks (see the design discussion this screen came out of).
  * Theme, radius, and depth apply globally through `useCustomization`/`useTheme`, so the live
  * preview below is just the real components rendered here — no separate preview plumbing needed.
+ *
+ * The role shapes the sheet through `PERSONA_PROFILES[…].customization`: a teacher's preview card
+ * leads with the group and room like their day list does, and the subject-colour copy talks about
+ * the subjects they teach rather than a class's.
  */
 export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const t = useT();
@@ -200,6 +260,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
   const setSubjectColorCodingEnabled = useAppStore((s) => s.setSubjectColorCodingEnabled);
   const resetCustomization = useAppStore((s) => s.resetCustomization);
   const { subjects } = useSubjects();
+  const { customization } = usePersona().profile;
 
   const themes: { key: Settings["theme"]; label: string }[] = [
     { key: "system", label: t("theme.system") },
@@ -238,7 +299,9 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
           period="3"
           start="10:20"
           end="11:00"
-          subject={t("customization.preview.subject")}
+          {...(customization.previewLeadsWith === "group"
+            ? { subject: TEACHER_PREVIEW_HEADING, subtitle: t("customization.preview.subject") }
+            : { subject: t("customization.preview.subject") })}
           tone="sky"
           filled={settings.lessonCardStyle === "filled"}
         />
@@ -252,6 +315,24 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
             items={themes}
             onChange={(value) => {
               void setTheme(value);
+            }}
+            className={FULL_WIDTH_TABS}
+          />
+        </Row>
+        <Row className="flex items-start justify-between gap-3">
+          <div>
+            <p className="font-text text-body font-bold text-strong">
+              {t("customization.reduceMotion")}
+            </p>
+            <p className="mt-0.5 font-text text-caption text-muted">
+              {t("customization.reduceMotion.hint")}
+            </p>
+          </div>
+          <Switch
+            aria-label={t("customization.reduceMotion")}
+            checked={settings.reduceMotion}
+            onChange={(checked) => {
+              void setReduceMotion(checked);
             }}
           />
         </Row>
@@ -276,18 +357,17 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
             onChange={(value) => {
               void setLessonCardStyle(value);
             }}
+            className={FULL_WIDTH_TABS}
           />
         </Row>
       </Section>
 
       <Section title={t("customization.radius")}>
         <Row>
-          <div className="mb-2.5 flex items-center justify-between">
-            <p className="font-text text-caption text-muted">{t("customization.radius")}</p>
-            <p className="font-text text-caption font-bold text-strong">
-              {radiusLabels[settings.cardRadius]}
-            </p>
-          </div>
+          {/* The section heading already names the setting; the row only states its value. */}
+          <p className="mb-1 font-text text-body font-bold text-strong">
+            {radiusLabels[settings.cardRadius]}
+          </p>
           <Slider
             label={t("customization.radius")}
             valueText={radiusLabels[settings.cardRadius]}
@@ -317,26 +397,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
             onChange={(value) => {
               void setCardElevation(value);
             }}
-          />
-        </Row>
-      </Section>
-
-      <Section title={t("customization.reduceMotion")}>
-        <Row className="flex items-start justify-between gap-3">
-          <div>
-            <p className="font-text text-body font-bold text-strong">
-              {t("customization.reduceMotion")}
-            </p>
-            <p className="mt-0.5 font-text text-caption text-muted">
-              {t("customization.reduceMotion.hint")}
-            </p>
-          </div>
-          <Switch
-            aria-label={t("customization.reduceMotion")}
-            checked={settings.reduceMotion}
-            onChange={(checked) => {
-              void setReduceMotion(checked);
-            }}
+            className={FULL_WIDTH_TABS}
           />
         </Row>
       </Section>
@@ -370,14 +431,14 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
           (subjects.length === 0 ? (
             <Row>
               <p className="font-text text-caption text-muted">
-                {t("customization.subjectColors.empty")}
+                {t(customization.subjectColorsEmpty)}
               </p>
             </Row>
           ) : (
             <>
               <Row>
                 <p className="font-text text-caption text-muted">
-                  {t("customization.subjectColors.hint")}
+                  {t(customization.subjectColorsHint)}
                 </p>
               </Row>
               {subjects.map(({ subject }) => (

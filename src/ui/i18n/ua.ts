@@ -339,6 +339,10 @@ export const ua: Dict = {
   "customization.subjectColors.custom": "Власний колір",
   "customization.subjectColors.lightness": "Яскравість",
   "customization.subjectColors.empty": "Вибери клас, щоб налаштувати кольори предметів.",
+  "customization.subjectColors.hint.teacher":
+    "Це предмети, які ти викладаєш. Торкнися кольору, щоб призначити його; торкнися «Авто», щоб повернути типовий колір.",
+  "customization.subjectColors.empty.teacher":
+    "Вибери себе як викладача, щоб налаштувати кольори своїх предметів.",
   "customization.preview.subject": "Приклад предмета",
   "customization.reset": "Скинути налаштування",
 

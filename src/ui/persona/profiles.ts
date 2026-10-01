@@ -35,6 +35,18 @@ export type PersonaProfile = {
   hasSubgroups: boolean;
   /** The one-time "teachers can use Stundio too" sheet — pointless once you are one. */
   seesTeacherAnnouncement: boolean;
+  /** The Customization sheet's per-role bits: its preview card and the subject-colour copy. */
+  customization: {
+    /**
+     * What the preview card leads with — mirrors `lessonHeading`, so the preview looks like the
+     * role's own day list: a student scans for the subject, a teacher for the group and room.
+     */
+    previewLeadsWith: "subject" | "group";
+    /** Above the per-subject pickers: whose subjects these are. */
+    subjectColorsHint: MessageKey;
+    /** When there is nothing to colour yet because the role's selection is missing. */
+    subjectColorsEmpty: MessageKey;
+  };
 };
 
 export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
@@ -49,6 +61,11 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     changeIdentityLabel: "day.changeClass",
     hasSubgroups: true,
     seesTeacherAnnouncement: true,
+    customization: {
+      previewLeadsWith: "subject",
+      subjectColorsHint: "customization.subjectColors.hint",
+      subjectColorsEmpty: "customization.subjectColors.empty",
+    },
   },
   teacher: {
     tabs: ["day", "week", "changes", "settings"],
@@ -61,5 +78,10 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     changeIdentityLabel: "onboarding.teacher.title",
     hasSubgroups: false,
     seesTeacherAnnouncement: false,
+    customization: {
+      previewLeadsWith: "group",
+      subjectColorsHint: "customization.subjectColors.hint.teacher",
+      subjectColorsEmpty: "customization.subjectColors.empty.teacher",
+    },
   },
 };

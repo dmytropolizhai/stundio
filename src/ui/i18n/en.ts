@@ -339,6 +339,10 @@ export const en: Dict = {
   "customization.subjectColors.custom": "Custom color",
   "customization.subjectColors.lightness": "Lightness",
   "customization.subjectColors.empty": "Pick a class to customize its subject colours.",
+  "customization.subjectColors.hint.teacher":
+    "These are the subjects you teach. Tap a colour to reassign it; tap Auto to go back to the default.",
+  "customization.subjectColors.empty.teacher":
+    "Pick yourself as a teacher to customize the colours of your subjects.",
   "customization.preview.subject": "Sample subject",
   "customization.reset": "Reset to defaults",
 

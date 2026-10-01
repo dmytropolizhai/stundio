@@ -199,6 +199,9 @@ Still unverified on a physical device (no JDK/Android SDK here).
         single neutral tone across lesson rows, WeekView cells, and rails).
   - [x] Settings UI: "Appearance" section in `CustomizationSheet` with subject swatches, tone
         picker, custom color wheel, and a "reset to defaults" action.
+  - [x] **Per-role sheet:** `PERSONA_PROFILES[…].customization` shapes it — a teacher's preview
+        card leads with group · room (subject underneath), like their day list, and the
+        subject-colour hint / empty state speak about the subjects they teach, not a class.
 - [x] App icon, adaptive icon, splash, status-bar styling, edge-to-edge (`SystemBarsPlugin` native Android integration).
 - [x] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline detection & banner.
 - [x] `@capacitor/local-notifications`: after a foreground/resume sync, if today's (or

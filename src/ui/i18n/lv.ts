@@ -346,6 +346,10 @@ export const lv = {
   "customization.subjectColors.custom": "Pielāgota krāsa",
   "customization.subjectColors.lightness": "Gaišums",
   "customization.subjectColors.empty": "Izvēlies klasi, lai pielāgotu priekšmetu krāsas.",
+  "customization.subjectColors.hint.teacher":
+    'Tie ir priekšmeti, kurus tu pasniedz. Pieskaries krāsai, lai to mainītu; pieskaries "Auto", lai atgrieztos pie noklusējuma.',
+  "customization.subjectColors.empty.teacher":
+    "Izvēlies sevi kā skolotāju, lai pielāgotu savu priekšmetu krāsas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",
 

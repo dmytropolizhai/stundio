@@ -81,7 +81,7 @@ describe("CustomizationSheet", () => {
     const row = within(
       screen
         .getByText("Krāsa izceltiem elementiem — šodienas datumam, izvēlētajām opcijām.")
-        .closest("div") as HTMLElement,
+        .closest("[data-color-row]") as HTMLElement,
     );
     const swatch = row.getByRole("button", { name: "lilac" });
 
@@ -90,10 +90,15 @@ describe("CustomizationSheet", () => {
     });
     expect(harness.store.getState().settings.appAccent).toBe("lilac");
 
+    expect(swatch.getAttribute("aria-pressed")).toBe("true");
+
+    const fallback = row.getByRole("button", { name: "Noklusējuma" });
     await clickAndSettle(() => {
-      fireEvent.click(row.getByText("Noklusējuma"));
+      fireEvent.click(fallback);
     });
     expect(harness.store.getState().settings.appAccent).toBe("default");
+    // "Default" is a choice like the tones, so it shows as the selected one.
+    expect(fallback.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("hides the per-subject list while colour-coding is off, without dropping the overrides", async () => {
@@ -106,9 +111,12 @@ describe("CustomizationSheet", () => {
 
     await clickAndSettle(() => {
       fireEvent.click(
-        within(screen.getByText(label).closest("div") as HTMLElement).getByRole("button", {
-          name: "lime",
-        }),
+        within(screen.getByText(label).closest("[data-color-row]") as HTMLElement).getByRole(
+          "button",
+          {
+            name: "lime",
+          },
+        ),
       );
     });
     expect(harness.store.getState().settings.subjectColorOverrides[key]).toBe("lime");
@@ -137,7 +145,7 @@ describe("CustomizationSheet", () => {
 
     const label = first.subject.name || first.subject.short;
     const key = subjectToneKey(first.subject);
-    const row = within(screen.getByText(label).closest("div") as HTMLElement);
+    const row = within(screen.getByText(label).closest("[data-color-row]") as HTMLElement);
 
     // Pick whichever tone isn't already active, so the click is guaranteed to change something.
     const currentlyPressed = row
@@ -178,7 +186,7 @@ describe("CustomizationSheet", () => {
         within(
           screen
             .getByText("Krāsa izceltiem elementiem — šodienas datumam, izvēlētajām opcijām.")
-            .closest("div") as HTMLElement,
+            .closest("[data-color-row]") as HTMLElement,
         ).getByRole("button", { name: "pink" }),
       );
     });
@@ -214,7 +222,7 @@ describe("CustomizationSheet", () => {
 
     const label = first.subject.name || first.subject.short;
     const key = subjectToneKey(first.subject);
-    const row = within(screen.getByText(label).closest("div") as HTMLElement);
+    const row = within(screen.getByText(label).closest("[data-color-row]") as HTMLElement);
 
     await clickAndSettle(() => {
       fireEvent.click(row.getByRole("button", { name: "Pielāgota krāsa" }));
@@ -234,6 +242,47 @@ describe("CustomizationSheet", () => {
     const harness = await bootHarness({ selectedClassId: null });
     await openSheet(harness);
     expect(screen.getByText("Izvēlies klasi, lai pielāgotu priekšmetu krāsas.")).toBeDefined();
+  });
+
+  it("previews a student's card the way their day list leads: subject first", async () => {
+    await openSheetHarness();
+    expect(screen.getByText("Piemēra priekšmets")).toBeDefined();
+    expect(screen.queryByText("A1-2 · 214")).toBeNull();
+  });
+
+  describe("for a teacher", () => {
+    const teacherHarness = async (): Promise<Harness> => {
+      const student = await bootHarness();
+      const timetable = Object.values(student.store.getState().timetables)[0];
+      const teacher = timetable?.teachers.find((t) =>
+        timetable.lessons.some((l) => l.teacherIds.includes(t.id)),
+      );
+      if (teacher === undefined) throw new Error("fixture has no teaching teacher");
+      const harness = await bootHarness({ persona: "teacher", selectedTeacherId: teacher.id });
+      await openSheet(harness);
+      return harness;
+    };
+
+    it("leads the preview card with the group and room, subject underneath", async () => {
+      await teacherHarness();
+      expect(screen.getByText("A1-2 · 214")).toBeDefined();
+      expect(screen.getByText("Piemēra priekšmets")).toBeDefined();
+    });
+
+    it("talks about the subjects they teach", async () => {
+      await teacherHarness();
+      expect(screen.getByText(/^Tie ir priekšmeti, kurus tu pasniedz\./)).toBeDefined();
+      expect(screen.queryByText(/^Pieskaries krāsai/)).toBeNull();
+    });
+
+    it("asks them to pick themselves, not a class, when no teacher is selected", async () => {
+      const harness = await bootHarness({ persona: "teacher", selectedTeacherId: null });
+      await openSheet(harness);
+      expect(
+        screen.getByText("Izvēlies sevi kā skolotāju, lai pielāgotu savu priekšmetu krāsas."),
+      ).toBeDefined();
+      expect(screen.queryByText("Izvēlies klasi, lai pielāgotu priekšmetu krāsas.")).toBeNull();
+    });
   });
 });
 

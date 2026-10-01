@@ -644,6 +644,11 @@ the left edge, and one 40px cell per lesson at the 12px radius.
 Interactive SVG color picker component (`ColorWheel`) used in `CustomizationSheet`:
 - **Wheel:** 220px circular SVG with radial hue and saturation gradients, controlled by touch or mouse drag.
 - **Value Slider:** Horizontal brightness track beneath the wheel.
+- **Swatches:** every colour option (subject tones, the custom-wheel dot, the app accent) is a
+  26px dot in a 44px hit area, spread across the row so the dots line up with the row's text
+  edge. Selection is a 2px `ring-strong` *offset* from the dot, never an inset ring, so it reads
+  on any fill — including the near-black "default" accent dot. A reset ("Auto") sits beside the
+  row's heading, never at the end of the swatch row, where it overflowed a 390px phone.
 - **Contrast Pair:** Dynamically updates `--subject-accent` and computes `--subject-ink` via `readableInk()`
   so contrast is guaranteed before the tone is applied to cards, rows, and grid cells.
 
