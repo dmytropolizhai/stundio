@@ -82,6 +82,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **`src/ds/`** — the Studio design system: tokens (`ds/tokens/*.css`) plus primitives. Its
   tokens are generated copies from the Claude Design project — regenerate rather than hand-edit;
   `dark.css` and `fonts.css` are documented deliberate deviations.
+- **`src/ui/components/lesson-heading.ts`** — what a lesson card leads with (student: subject; teacher: group · room, subject as subtitle). The day list (`LessonRow`) and the changes list (`ChangesLessonCard`) both build on it and on the DS `LessonCard`, so a lesson looks the same in both.
 - **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: five tabs plus modals,
   with the five primary tabs bundled together to guarantee instant and reliable offline navigation.
 
