@@ -5,7 +5,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { AppStoreProvider, useAppStore } from "@/store";
-import { TopBar } from "@/ds";
+import { Button, TopBar } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
 import { TeacherPicker } from "./ui/screens/teacher-picker";
@@ -26,8 +26,9 @@ import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
 import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
+import { StateMessage } from "./ui/components/StateMessage.tsx";
 import { useCustomization, useTheme } from "@/ui/theme";
-import { useT } from "@/ui/i18n";
+import { translate, useT } from "@/ui/i18n";
 import { PERSONA_PROFILES, usePersona } from "@/ui/persona";
 import { nativeApp } from "@/lib/app";
 import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
@@ -42,6 +43,37 @@ const BootSignal = ({ onReady }: { onReady: () => void }) => {
   }, [onReady]);
   return null;
 };
+
+/**
+ * What shows when boot rejects (the cache cannot be opened, a chunk failed to load offline).
+ * Without it the provider renders nothing and the splash — waiting on `BootSignal` — would
+ * ripple forever, which is exactly how a failed offline launch used to look. It signals ready
+ * too, so the splash leaves and uncovers the error. Latvian, like `ErrorBoundary`'s default:
+ * the language setting lives in the store that just failed to load.
+ */
+const BootFailed = ({ onReady }: { onReady: () => void }) => (
+  <>
+    <BootSignal onReady={onReady} />
+    <div className="flex h-full flex-1 items-center justify-center p-4">
+      <StateMessage
+        icon="triangle-alert"
+        title={translate("lv", "error.title")}
+        hint={translate("lv", "error.hint")}
+        action={
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            {translate("lv", "error.retry")}
+          </Button>
+        }
+      />
+    </div>
+  </>
+);
 
 /**
  * First run: no class chosen yet, so onboarding *is* the app until one is picked.
@@ -329,7 +361,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <AppStoreProvider>
+      <AppStoreProvider errorFallback={() => <BootFailed onReady={markReady} />}>
         <BootSignal onReady={markReady} />
         <Shell />
       </AppStoreProvider>
