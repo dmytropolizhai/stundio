@@ -37,6 +37,15 @@ export const InAppUpdatePrompt = memo(function InAppUpdatePrompt() {
           {t("day.updatePrompt.body", { version: update.latestVersion })}
         </p>
 
+        {installState.phase === "handoff" ? (
+          <p className="mt-2 font-text text-caption text-muted">{t("day.updatePrompt.handoff")}</p>
+        ) : null}
+        {installState.phase === "error" ? (
+          <p className="mt-2 font-text text-caption text-danger">
+            {t("settings.updateError", { message: installState.message })}
+          </p>
+        ) : null}
+
         {isDownloading ? (
           <div className="mt-3 flex items-center gap-2">
             <div className="h-2 flex-1 overflow-hidden rounded-pill bg-hairline">

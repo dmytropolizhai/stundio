@@ -103,6 +103,8 @@ export const ru: Dict = {
   "day.updatePrompt.body": "Доступна новая версия Stundio ({version}).",
   "day.updatePrompt.action": "Обновить",
   "day.updatePrompt.dismiss": "Позже",
+  "day.updatePrompt.handoff":
+    "Загрузка завершена. Подтвердите установку в окне Android или нажмите «Обновить», чтобы повторить.",
   "day.changesBadge": "{n} изменений",
 
   "changes.title": "Замены",

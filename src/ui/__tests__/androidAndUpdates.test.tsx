@@ -177,6 +177,41 @@ describe("Android download banner & in-app update prompt", () => {
       );
       expect(screen.getByText("42%")).toBeDefined();
     });
+
+    it.each([
+      [{ phase: "handoff" as const }, /Android/],
+      [{ phase: "error" as const, message: "boom" }, /boom/],
+    ])(
+      "explains the outcome instead of silently re-offering the update (%o)",
+      async (state, text) => {
+        const harness = await bootHarness();
+        vi.spyOn(updateCheckHook, "useUpdateCheck").mockReturnValue({
+          result: {
+            hasUpdate: true,
+            currentVersion: "v1.1.11",
+            latestVersion: "v1.2.0",
+            url: "https://github.com/dmytropolizhai/stundio/releases/tag/v1.2.0",
+            apkUrl: "https://example.com/stundio.apk",
+          },
+          checking: false,
+          checked: true,
+          recheck: vi.fn(),
+        });
+
+        vi.spyOn(updateInstallHook, "useUpdateInstall").mockReturnValue({
+          ...state,
+          install: vi.fn(),
+          canInstallInApp: true,
+        });
+
+        render(
+          <StoreContext.Provider value={harness.store}>
+            <InAppUpdatePrompt />
+          </StoreContext.Provider>,
+        );
+        expect(screen.getByText(text)).toBeDefined();
+      },
+    );
   });
 
   describe("useUpdateCheck hook", () => {
