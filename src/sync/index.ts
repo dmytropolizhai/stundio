@@ -3,6 +3,7 @@ export {
   schoolYearOf,
   todayInRiga,
   LIST_MAX_AGE_MS,
+  LIST_UNCOVERED_MAX_AGE_MS,
   SUBSTITUTION_RETENTION_DAYS,
   type SyncDeps,
   type SyncEngine,

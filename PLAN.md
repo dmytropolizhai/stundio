@@ -130,7 +130,7 @@ and per-class days exactly.
       `substitutions` (by ISO date), `settings` (selectedClassId, building, favorites, theme, lang).
 - [x] `sync/`: stale-while-revalidate orchestration:
   - on app open + pull-to-refresh + `@capacitor/app` `resume`.
-  - timetable list: refetch if `lastSync > 12h`.
+  - timetable list: refetch if `lastSync > 12h`, or after 10 min when the cached list does not yet cover the viewed day or the next school day (RVT publishes next week at an unpredictable time).
   - regular timetable: fetch only when the selected week's `ttNum` isn't cached.
   - substitutions: **always** refetch today + next school day (this is the only intraday-volatile data).
   - expose `SyncStatus = 'idle' | 'syncing' | 'offline' | 'error'` + `lastSyncAt`.

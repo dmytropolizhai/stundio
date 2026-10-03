@@ -6,7 +6,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createFakeServer, type FakeServer } from "./fakeServer.ts";
 import { createMemoryCache, DEFAULT_SETTINGS } from "@/db";
-import { createSyncEngine, schoolYearOf, todayInRiga, LIST_MAX_AGE_MS } from "@/sync";
+import {
+  createSyncEngine,
+  schoolYearOf,
+  todayInRiga,
+  LIST_MAX_AGE_MS,
+  LIST_UNCOVERED_MAX_AGE_MS,
+} from "@/sync";
 import type { AppCache } from "@/db";
 
 const DATE = "2026-09-09";
@@ -189,6 +195,30 @@ describe("the 12-hour rule on the timetable list", () => {
 
     await engineAt(`${DATE}T08:05:00Z`).sync({ date: DATE, force: true });
     expect(server.calls.list).toBe(1);
+  });
+});
+
+describe("a list that does not cover the upcoming week", () => {
+  // The fixture list ends with the 14.09–18.09 week, so on Saturday the coming Monday is unpublished.
+  const SATURDAY = "2026-09-19";
+
+  it("refetches past the short throttle instead of waiting 12h", async () => {
+    await engineAt(`${SATURDAY}T08:00:00Z`).sync({ date: SATURDAY });
+    server.reset();
+
+    const later = new Date(
+      new Date(`${SATURDAY}T08:00:00Z`).getTime() + LIST_UNCOVERED_MAX_AGE_MS + 1000,
+    );
+    await createSyncEngine({ http: server.http, cache, now: () => later }).sync({ date: SATURDAY });
+    expect(server.calls.list).toBe(1);
+  });
+
+  it("still honours the throttle, so a missing week is not hammered", async () => {
+    await engineAt(`${SATURDAY}T08:00:00Z`).sync({ date: SATURDAY });
+    server.reset();
+
+    await engineAt(`${SATURDAY}T08:05:00Z`).sync({ date: SATURDAY });
+    expect(server.calls.list).toBe(0);
   });
 });
 
