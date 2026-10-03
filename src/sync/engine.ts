@@ -6,7 +6,8 @@
  * whole policy is testable without a network or a browser.
  *
  * Refresh policy, per MODEL.md §6:
- *   timetable list  → refetch when older than 12h
+ *   timetable list  → refetch when older than 12h, or (past a short throttle) when it does not
+ *                     yet cover the day being viewed or the next school day
  *   regular week    → fetch only when that tt_num is not cached (it never changes in place)
  *   substitutions   → ALWAYS refetch today + next school day
  */
@@ -69,6 +70,12 @@ export type SyncRequest = {
 };
 
 export const LIST_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+/**
+ * How soon a list that lacks the upcoming week may be refetched. RVT publishes next week's
+ * timetables whenever it gets to them (often Friday evening or the weekend), so a list cached
+ * before that would otherwise hide the new week for up to `LIST_MAX_AGE_MS`.
+ */
+export const LIST_UNCOVERED_MAX_AGE_MS = 10 * 60 * 1000;
 export const SUBSTITUTION_RETENTION_DAYS = 14;
 
 /** Today in Europe/Riga — the school's timezone is the only one that matters (CLAUDE.md). */
@@ -99,11 +106,22 @@ export const createSyncEngine = (deps: SyncDeps) => {
 
   const syncTimetableList = async (
     force: boolean,
+    date: ISODate,
     errors: SyncFailure[],
   ): Promise<TimetableMeta[]> => {
     const cached = await cache.getTimetableList();
     const age = cached === null ? Infinity : now().getTime() - new Date(cached.fetchedAt).getTime();
-    const fresh = !force && cached !== null && age < LIST_MAX_AGE_MS;
+    const covered =
+      cached !== null &&
+      [date, nextSchoolDay(date)].every((d) => {
+        const picks = selectTimetables(
+          cached.entries.map((e) => toTimetableMeta(e, cached.fetchedAt)),
+          d,
+        );
+        return picks.length > 0 && picks.every((p) => !p.stale);
+      });
+    const fresh =
+      !force && cached !== null && age < (covered ? LIST_MAX_AGE_MS : LIST_UNCOVERED_MAX_AGE_MS);
 
     if (fresh && cached !== null) {
       return cached.entries.map((e) => toTimetableMeta(e, cached.fetchedAt));
@@ -211,7 +229,7 @@ export const createSyncEngine = (deps: SyncDeps) => {
     const today = todayInRiga(now());
     const date = request.date ?? today;
 
-    const metas = await syncTimetableList(request.force ?? false, errors);
+    const metas = await syncTimetableList(request.force ?? false, date, errors);
     const settings = await cache.getSettings();
     const building = request.building ?? settings.building ?? undefined;
 
