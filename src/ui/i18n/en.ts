@@ -102,6 +102,8 @@ export const en: Dict = {
   "day.updatePrompt.body": "A newer version of Stundio is available ({version}).",
   "day.updatePrompt.action": "Update",
   "day.updatePrompt.dismiss": "Later",
+  "day.updatePrompt.handoff":
+    "Download finished. Confirm the installation in the Android window, or tap Update to try again.",
   "day.changesBadge": "{n} changes",
 
   "changes.title": "Changes",

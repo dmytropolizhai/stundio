@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, IconButton, SegmentedTabs, TopBar } from "@/ds";
-import { addDays } from "@/sync";
+import { stepSchoolDay } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
 import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
@@ -51,7 +51,7 @@ export const DayTopBar = ({
               size="sm"
               onClick={() => {
                 onNavigate(-1);
-                onDateChange(addDays(date, -1));
+                onDateChange(stepSchoolDay(date, -1));
               }}
             />
 
@@ -70,7 +70,7 @@ export const DayTopBar = ({
               size="sm"
               onClick={() => {
                 onNavigate(1);
-                onDateChange(addDays(date, 1));
+                onDateChange(stepSchoolDay(date, 1));
               }}
             />
           </div>

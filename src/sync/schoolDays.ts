@@ -34,6 +34,13 @@ export const nextSchoolDay = (date: ISODate): ISODate => {
   return next;
 };
 
+/** One school day forward (`1`) or back (`-1`) from `date`, hopping over Saturday and Sunday. */
+export const stepSchoolDay = (date: ISODate, direction: 1 | -1): ISODate => {
+  let next = addDays(date, direction);
+  for (let guard = 0; guard < 7 && isWeekend(next); guard += 1) next = addDays(next, direction);
+  return next;
+};
+
 /**
  * The days worth fetching substitutions for: today (or Monday, on a weekend) and the next
  * school day. These are the only intraday-volatile data (MODEL.md §6).

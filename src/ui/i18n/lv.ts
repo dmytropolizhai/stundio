@@ -109,6 +109,8 @@ export const lv = {
   "day.updatePrompt.body": "Pieejama jaunāka Stundio versija ({version}).",
   "day.updatePrompt.action": "Atjaunināt",
   "day.updatePrompt.dismiss": "Vēlāk",
+  "day.updatePrompt.handoff":
+    "Lejupielāde pabeigta. Apstiprini instalēšanu Android logā vai nospied “Atjaunināt”, lai mēģinātu vēlreiz.",
   "day.changesBadge": "{n} izmaiņas",
 
   "changes.title": "Izmaiņas",
