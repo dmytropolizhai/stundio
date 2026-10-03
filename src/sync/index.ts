@@ -11,7 +11,7 @@ export {
   type SyncRequest,
   type SyncStatus,
 } from "./engine.ts";
-export { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
+export { addDays, daysToRefresh, isWeekend, nextSchoolDay, stepSchoolDay } from "./schoolDays.ts";
 export {
   watchAppResume,
   RESUME_THROTTLE_MS,

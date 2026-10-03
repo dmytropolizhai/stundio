@@ -10,7 +10,7 @@
  */
 import { useCallback, useMemo, useState } from "react";
 import { todayInRiga } from "@/sync";
-import { addDays } from "@/sync/schoolDays.ts";
+import { addDays, stepSchoolDay } from "@/sync/schoolDays.ts";
 import { weekDates } from "@/lib/schedule";
 import type { ISODate } from "@/lib/edupage";
 import { useNow } from "@/ui/hooks/useNow.ts";
@@ -55,11 +55,11 @@ export const useScheduleNavigation = (
   const isThisWeek = useMemo(() => dates.includes(today), [dates, today]);
 
   const nextDay = useCallback(() => {
-    onDateChange(addDays(date, 1));
+    onDateChange(stepSchoolDay(date, 1));
   }, [date, onDateChange]);
 
   const prevDay = useCallback(() => {
-    onDateChange(addDays(date, -1));
+    onDateChange(stepSchoolDay(date, -1));
   }, [date, onDateChange]);
 
   const nextWeek = useCallback(() => {

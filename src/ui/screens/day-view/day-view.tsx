@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
-import { addDays } from "@/sync";
+import { stepSchoolDay } from "@/sync";
 import { dayProgress } from "@/lib/schedule";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button } from "@/ds";
@@ -111,14 +111,14 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
     if (started && dx <= -SWIPE_THRESHOLD_PX) {
       enterDir.current = 1;
       x.set(0);
-      onDateChange(addDays(date, 1));
+      onDateChange(stepSchoolDay(date, 1));
       return;
     }
 
     if (started && dx >= SWIPE_THRESHOLD_PX) {
       enterDir.current = -1;
       x.set(0);
-      onDateChange(addDays(date, -1));
+      onDateChange(stepSchoolDay(date, -1));
       return;
     }
 
@@ -212,10 +212,10 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
           onKeyDown={(e) => {
             if (e.key === "ArrowRight") {
               enterDir.current = 1;
-              onDateChange(addDays(date, 1));
+              onDateChange(stepSchoolDay(date, 1));
             } else if (e.key === "ArrowLeft") {
               enterDir.current = -1;
-              onDateChange(addDays(date, -1));
+              onDateChange(stepSchoolDay(date, -1));
             }
           }}
         >

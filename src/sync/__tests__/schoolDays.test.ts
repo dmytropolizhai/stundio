@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "../schoolDays.ts";
+import { addDays, daysToRefresh, isWeekend, nextSchoolDay, stepSchoolDay } from "../schoolDays.ts";
 
 describe("addDays", () => {
   it("moves forward and backward across month boundaries", () => {
@@ -47,5 +47,22 @@ describe("daysToRefresh", () => {
 
   it("skips the weekend entirely when opened on Saturday", () => {
     expect(daysToRefresh("2026-09-12")).toEqual(["2026-09-14", "2026-09-15"]);
+  });
+});
+
+describe("stepSchoolDay", () => {
+  it("steps one weekday at a time inside the week", () => {
+    expect(stepSchoolDay("2026-09-09", 1)).toBe("2026-09-10");
+    expect(stepSchoolDay("2026-09-09", -1)).toBe("2026-09-08");
+  });
+
+  it("hops the weekend in both directions", () => {
+    expect(stepSchoolDay("2026-09-11", 1)).toBe("2026-09-14"); // Fri → Mon
+    expect(stepSchoolDay("2026-09-14", -1)).toBe("2026-09-11"); // Mon → Fri
+  });
+
+  it("leaves a weekend day for the nearest school day", () => {
+    expect(stepSchoolDay("2026-09-12", 1)).toBe("2026-09-14"); // Sat → Mon
+    expect(stepSchoolDay("2026-09-13", -1)).toBe("2026-09-11"); // Sun → Fri
   });
 });
