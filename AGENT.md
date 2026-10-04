@@ -128,6 +128,14 @@ These are enforced by lint, tests, or CI — breaking one breaks the build:
   stops leaking into teacher mode.
 - **No PII, anywhere.** No accounts, no backend, no user identifiers in analytics.
 
+## Releasing
+
+Tag a release only from a commit where `package.json` `version` and `android/app/build.gradle`
+(`versionName` + a `versionCode` higher than the last release) already agree — the tag builds
+the APK. `v1.3-elna` was tagged one commit before the gradle bump, so its APK was still
+versionCode 2 / 1.2.0 and Android "updated" 1.2 to itself. `releaseVersion.test.ts` checks the
+name/`package.json` match; the `versionCode` increase is on you.
+
 ## Style
 
 - TypeScript is maximally strict: `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`,
