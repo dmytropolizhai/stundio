@@ -294,19 +294,6 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
         </Button>
       }
     >
-      <div className="mb-5">
-        <LessonCard
-          period="3"
-          start="10:20"
-          end="11:00"
-          {...(customization.previewLeadsWith === "group"
-            ? { subject: TEACHER_PREVIEW_HEADING, subtitle: t("customization.preview.subject") }
-            : { subject: t("customization.preview.subject") })}
-          tone="sky"
-          filled={settings.lessonCardStyle === "filled"}
-        />
-      </div>
-
       <Section title={t("customization.theme")}>
         <Row>
           <SegmentedTabs
@@ -347,6 +334,18 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
           <p className="mb-2.5 font-text text-caption text-muted">
             {t("customization.lessonStyle.hint")}
           </p>
+          <div className="mb-5">
+            <LessonCard
+              period="3"
+              start="10:20"
+              end="11:00"
+              {...(customization.previewLeadsWith === "group"
+                ? { subject: TEACHER_PREVIEW_HEADING, subtitle: t("customization.preview.subject") }
+                : { subject: t("customization.preview.subject") })}
+              tone="sky"
+              filled={settings.lessonCardStyle === "filled"}
+            />
+          </div>
           <SegmentedTabs
             label={t("customization.lessonStyle")}
             value={settings.lessonCardStyle}
