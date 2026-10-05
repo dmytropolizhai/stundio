@@ -28,7 +28,7 @@ const cell = (label: string, extra: Partial<ShareCell> = {}): ShareCell => ({
 });
 
 const data = (overrides: Partial<ShareImageData> = {}): ShareImageData => ({
-  className: "A1-2",
+  title: "A1-2",
   period: "07.09.–11.09.",
   classTeacher: { label: "Klases audzinātājs", name: "Pleča Sintija" },
   columns: [

@@ -141,9 +141,9 @@ export const ru: Dict = {
   "share.week": "Поделиться неделей",
   "share.working": "Создаём изображение…",
   "share.error": "Не удалось создать изображение",
-  "share.title": "Расписание {class}",
+  "share.title": "Расписание {name}",
   "share.message":
-    "{class} расписание {period} \nХотите сделать использование EduPage удобнее? Загляните на: https://bit.ly/stundio",
+    "{name} расписание {period} \nХотите сделать использование EduPage удобнее? Загляните на: https://bit.ly/stundio",
   "share.image.classTeacher": "Классный руководитель",
   "share.image.appLabel": "Удобный EduPage на телефоне",
   "share.language.title": "На каком языке поделиться?",

@@ -52,6 +52,9 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   reference encoder's golden matrices), then the hand-off to the OS share sheet. Domain- and
   design-system-free: colours arrive as resolved CSS colour strings and strings arrive
   translated, from `ui/share/`. Only `native.ts` touches Capacitor.
+- **`src/ui/share/subject.ts`** — whose week a card names, resolved through `matchPersona`: a
+  student's class (+ form teacher), a teacher's own name, or the form class in the form-class
+  view. Never read `settings.selectedClassId` for a share — it outlives a switch to teacher mode.
 - **`src/lib/widget/`** — the payload the Android home-screen tile renders: `payload.ts` turns
   a `ResolvedDay` + `lib/schedule`'s `glanceLesson` into already-rendered strings, so the native
   side does no schedule maths at all. Only `native.ts` touches Capacitor. The store wiring

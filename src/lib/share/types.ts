@@ -81,8 +81,8 @@ export type ShareLink = {
 };
 
 export type ShareImageData = {
-  /** The class the card is for — the biggest thing on it. */
-  className: string;
+  /** Whose week the card is — the biggest thing on it. */
+  title: string;
   /** "07.09.–11.09." — the week the card covers. */
   period: string;
   /** Form teacher, label included so this layer never composes a sentence. */

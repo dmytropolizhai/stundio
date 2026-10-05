@@ -140,9 +140,9 @@ export const ua: Dict = {
   "share.week": "Поділитися тижнем",
   "share.working": "Створюємо зображення…",
   "share.error": "Не вдалося створити зображення",
-  "share.title": "Розклад {class}",
+  "share.title": "Розклад {name}",
   "share.message":
-    "{class} розклад {period} \nХочете зробити користування EduPage зручнішим? Завітайте на: https://bit.ly/stundio",
+    "{name} розклад {period} \nХочете зробити користування EduPage зручнішим? Завітайте на: https://bit.ly/stundio",
   "share.image.classTeacher": "Класний керівник",
   "share.image.appLabel": "Зручніший EduPage на телефоні",
   "share.language.title": "Якою мовою поділитися?",

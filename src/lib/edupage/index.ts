@@ -32,6 +32,7 @@ export {
 export {
   MAIN_BUILDING,
   findClassTeacher,
+  findTeacherFormClassId,
   isMainBuilding,
   listBuildings,
   selectTimetable,

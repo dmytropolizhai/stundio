@@ -140,9 +140,9 @@ export const en: Dict = {
   "share.week": "Share this week",
   "share.working": "Making the image…",
   "share.error": "Could not create the image",
-  "share.title": "{class} timetable",
+  "share.title": "{name} timetable",
   "share.message":
-    "{class} timetable {period} \nWant to have better experience with EduPage, check out: https://bit.ly/stundio",
+    "{name} timetable {period} \nWant to have better experience with EduPage, check out: https://bit.ly/stundio",
   "share.image.classTeacher": "Form teacher",
   "share.image.appLabel": "Better EduPage experience on phone",
   "share.language.title": "Which language should the share be in?",

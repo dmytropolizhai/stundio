@@ -147,9 +147,9 @@ export const lv = {
   "share.week": "Dalīties ar nedēļu",
   "share.working": "Sagatavo attēlu…",
   "share.error": "Neizdevās sagatavot attēlu",
-  "share.title": "{class} stundu saraksts",
+  "share.title": "{name} stundu saraksts",
   "share.message":
-    "{class} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://bit.ly/stundio",
+    "{name} stundu saraksts {period} \nVēlies ērtāk lietot EduPage? Ieskaties: https://bit.ly/stundio",
   "share.image.classTeacher": "Klases audzinātājs",
   "share.image.appLabel": "Labāka EduPage pieredze tālrunī",
   "share.language.title": "Kādā valodā kopīgot?",

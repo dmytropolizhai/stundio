@@ -288,7 +288,7 @@ export const layoutShareImage = (data: ShareImageData, palette: SharePalette): S
       op: "text",
       x: CONTENT_X,
       y: classY,
-      text: clip(data.className, 12),
+      text: clip(data.title, 12),
       font: HERO,
       color: palette.strong,
       align: "left",

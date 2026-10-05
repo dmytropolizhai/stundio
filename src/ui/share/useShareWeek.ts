@@ -7,11 +7,14 @@
  */
 import { useCallback, useMemo, useState } from "react";
 import { useAppStore } from "@/store";
-import { findClassTeacher, type ISODate } from "@/lib/edupage";
+import type { ISODate } from "@/lib/edupage";
+import { identityKey as identityKeyOf } from "@/lib/persona";
 import { weekDates } from "@/lib/schedule";
 import { dataUrlToBase64, renderShareImage, shareImage } from "@/lib/share";
 import { translate, useLang } from "@/ui/i18n";
+import { useIdentity } from "@/ui/persona";
 import { shareTheme } from "./palette.ts";
+import { resolveShareSubject } from "./subject.ts";
 import { buildWeekImageData, weekShareFileName, weekShareText } from "./weekImage.ts";
 
 export type ShareWeekStatus = "idle" | "working" | "error";
@@ -32,7 +35,8 @@ export const useShareWeek = (
   const [status, setStatus] = useState<ShareWeekStatus>("idle");
   const [promptOpen, setPromptOpen] = useState(false);
 
-  const classId = useAppStore((s) => s.settings.selectedClassId);
+  const identity = useIdentity();
+  const identityKey = useMemo(() => identityKeyOf(identity), [identity]);
   const timetables = useAppStore((s) => s.timetables);
   const resolvedDay = useAppStore((s) => s.resolvedDay);
   const substitutions = useAppStore((s) => s.substitutions);
@@ -57,20 +61,16 @@ export const useShareWeek = (
   const days = useMemo(
     () => dates.map((d) => resolvedDay(d)),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the store data drives the result
-    [dates, resolvedDay, timetables, substitutions, classId],
+    [dates, resolvedDay, timetables, substitutions, identityKey],
   );
 
-  const selected = useMemo(() => {
-    if (classId === null) return null;
-    for (const timetable of Object.values(timetables)) {
-      const found = timetable.classes.find((c) => c.id === classId);
-      if (found !== undefined) return found;
-    }
-    return null;
-  }, [timetables, classId]);
+  const subject = useMemo(
+    () => resolveShareSubject(identity, Object.values(timetables)),
+    [identity, timetables],
+  );
 
   const run = useCallback(async (): Promise<void> => {
-    if (selected === null) return;
+    if (subject === null) return;
     setStatus("working");
 
     try {
@@ -84,8 +84,8 @@ export const useShareWeek = (
       const data = buildWeekImageData({
         dates,
         days,
-        className: selected.short,
-        classTeacher: findClassTeacher(Object.values(timetables), selected.id)?.short ?? null,
+        title: subject.label,
+        classTeacher: subject.classTeacher,
         theme,
         subjectColorOverrides,
         subjectColorCodingEnabled,
@@ -97,9 +97,9 @@ export const useShareWeek = (
 
       await shareImage({
         base64: dataUrlToBase64(dataUrl),
-        fileName: weekShareFileName(selected.short, dates[0]),
-        title: shareT("share.title", { class: selected.short }),
-        text: weekShareText(selected.short, data.period, shareT),
+        fileName: weekShareFileName(subject.label, dates[0]),
+        title: shareT("share.title", { name: subject.label }),
+        text: weekShareText(subject.label, data.period, shareT),
       });
 
       trackEvent("share_week");
@@ -111,11 +111,10 @@ export const useShareWeek = (
     dates,
     days,
     effectiveLang,
-    selected,
+    subject,
     shareT,
     subjectColorOverrides,
     subjectColorCodingEnabled,
-    timetables,
     trackEvent,
   ]);
 
@@ -136,7 +135,7 @@ export const useShareWeek = (
   return {
     share,
     status,
-    disabled: selected === null || status === "working",
+    disabled: subject === null || status === "working",
     languagePrompt: { open: promptOpen, onDone: dismissLanguagePrompt },
   };
 };
