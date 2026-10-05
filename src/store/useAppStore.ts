@@ -9,6 +9,7 @@
 // through React context, which is exactly what `createStore` + `useStore` is for.
 import { createStore } from "zustand/vanilla";
 import {
+  findTeacherFormClassId,
   resolveDayAcross,
   resolveTeacherDayAcross,
   selectTimetables,
@@ -159,18 +160,6 @@ const createResolveMemo = () => {
       memo.clear();
     },
   };
-};
-
-const getTeacherFormClassId = (state: AppState, teacherId: string): string | null => {
-  for (const timetable of Object.values(state.timetables)) {
-    const teacher = timetable.teachers.find((t) => t.id === teacherId);
-    if (teacher?.classIds && teacher.classIds.length > 0) {
-      return teacher.classIds[0] ?? null;
-    }
-    const cls = timetable.classes.find((c) => c.teacherId === teacherId);
-    if (cls) return cls.id;
-  }
-  return null;
 };
 
 export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: StoreDeps) => {
@@ -415,7 +404,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
             const { teacherId, view } = identity;
             if (teacherId === null) return null;
             if (view === "own") return get().resolvedTeacherDay(date, teacherId);
-            const formClassId = getTeacherFormClassId(state, teacherId);
+            const formClassId = findTeacherFormClassId(Object.values(state.timetables), teacherId);
             return formClassId === null
               ? get().resolvedTeacherDay(date, teacherId)
               : get().resolvedDay(date, formClassId);

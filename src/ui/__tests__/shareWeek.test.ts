@@ -24,7 +24,7 @@ const buildFor = async (short: string, options: { subjectColorCodingEnabled?: bo
   return buildWeekImageData({
     dates,
     days: dates.map((d) => state.resolvedDay(d, classId)),
-    className: short,
+    title: short,
     classTeacher: findClassTeacher(Object.values(state.timetables), classId)?.short ?? null,
     theme: shareTheme(),
     lang: "lv",
@@ -37,7 +37,7 @@ describe("buildWeekImageData", () => {
   it("puts the class, its week and its form teacher on the card", async () => {
     const data = await buildFor("A1-2");
 
-    expect(data.className).toBe("A1-2");
+    expect(data.title).toBe("A1-2");
     expect(data.period).toMatch(/07\.09/);
     expect(data.classTeacher?.label).toBe("Klases audzinātājs");
     expect(data.classTeacher?.name).not.toBe("");
@@ -114,7 +114,7 @@ describe("buildWeekImageData", () => {
     const data = buildWeekImageData({
       dates: ["2026-09-07", "2026-09-08"],
       days: [null, annexDay],
-      className: "A1-2",
+      title: "A1-2",
       classTeacher: null,
       theme: shareTheme(),
       lang: "lv",
@@ -163,7 +163,7 @@ describe("buildWeekImageData", () => {
     const data = buildWeekImageData({
       dates: [],
       days: [],
-      className: "A1-2",
+      title: "A1-2",
       classTeacher: null,
       theme: shareTheme(),
       lang: "lv",
@@ -204,7 +204,7 @@ describe("buildWeekImageData", () => {
     const data = buildWeekImageData({
       dates: ["2026-09-07"],
       days: [multiPeriodDay],
-      className: "EA2",
+      title: "EA2",
       classTeacher: null,
       theme: shareTheme(),
       lang: "lv",

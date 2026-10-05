@@ -26,7 +26,7 @@ const palette: SharePalette = {
 };
 
 const data: ShareImageData = {
-  className: "A1-2",
+  title: "A1-2",
   period: "07.09.–11.09.",
   classTeacher: null,
   columns: [{ weekday: "Pr", date: "7.09." }],

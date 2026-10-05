@@ -109,3 +109,22 @@ export const findClassTeacher = (
 
   return null;
 };
+
+/**
+ * The class a teacher is form teacher of, or `null` — what the "form class" view of a teacher
+ * shows. Prefers the teacher's own `classIds`, then falls back to a class that names them as its
+ * `teacherId`; shared by the store (which resolves the day) and the share card (which names it),
+ * so the two cannot disagree about which class that is.
+ */
+export const findTeacherFormClassId = (
+  timetables: Iterable<Timetable>,
+  teacherId: string,
+): string | null => {
+  for (const timetable of timetables) {
+    const teacher = timetable.teachers.find((t) => t.id === teacherId);
+    if (teacher?.classIds && teacher.classIds.length > 0) return teacher.classIds[0] ?? null;
+    const cls = timetable.classes.find((c) => c.teacherId === teacherId);
+    if (cls) return cls.id;
+  }
+  return null;
+};

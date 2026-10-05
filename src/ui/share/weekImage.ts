@@ -53,7 +53,8 @@ export type WeekImageInput = {
   dates: ISODate[];
   /** One entry per date, `null` where nothing is cached — same shape the week view renders. */
   days: (ResolvedDay | null)[];
-  className: string;
+  /** Whose week this is — a class for a student, the teacher's name for a teacher. */
+  title: string;
   /** Form teacher's name, or `null` when the school publishes none for this class. */
   classTeacher: string | null;
   theme: ShareTheme;
@@ -163,7 +164,7 @@ const buildingNotes = (
 export const buildWeekImageData = ({
   dates,
   days,
-  className,
+  title,
   classTeacher,
   theme,
   lang,
@@ -197,7 +198,7 @@ export const buildWeekImageData = ({
   }));
 
   return {
-    className,
+    title,
     period: first === undefined || last === undefined ? "" : formatWeekRange(first, last, lang),
     classTeacher:
       classTeacher === null ? null : { label: t("share.image.classTeacher"), name: classTeacher },
@@ -214,11 +215,11 @@ export const buildWeekImageData = ({
 };
 
 /** The message the image travels with — the school week in words, plus where to get the app. */
-export const weekShareText = (className: string, period: string, t: Translate): string =>
-  `${t("share.message", { class: className, period })}\n`;
+export const weekShareText = (name: string, period: string, t: Translate): string =>
+  `${t("share.message", { name, period })}\n`;
 
 /** `stundio-A1-2-2026-09-07.png` — a name that still means something in a downloads folder. */
-export const weekShareFileName = (className: string, monday: ISODate | undefined): string => {
-  const slug = className.replace(/[^\p{L}\p{N}-]+/gu, "-").toLowerCase();
+export const weekShareFileName = (name: string, monday: ISODate | undefined): string => {
+  const slug = name.replace(/[^\p{L}\p{N}-]+/gu, "-").toLowerCase();
   return `stundio-${slug}-${monday ?? "week"}.png`;
 };

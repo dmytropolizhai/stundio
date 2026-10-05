@@ -212,7 +212,9 @@ Still unverified on a physical device (no JDK/Android SDK here).
 - [x] **Share the week as an image**: exports class week card with form teacher, period rows,
       times, subject accents, and building notes. Includes a subject-name key and on-device QR code
       generator (`lib/share/qr.ts`). Handed directly to Android's share sheet via custom `ImageShare`
-      plugin, with Web Share API / download fallback.
+      plugin, with Web Share API / download fallback. The card's title, file name and message come
+      from the role (`ui/share/subject.ts`), so a teacher's week is titled with their name, not a
+      leftover student class.
 - [x] **Subgroups support**: `SubgroupPicker` allowing students in classes with split divisions
       (e.g., 1. grupa / 2. grupa) to select and filter their schedule.
 - [x] **In-app feedback**: `FeedbackSheet` and `FeedbackPrompt` providing in-app submission for bug reports
