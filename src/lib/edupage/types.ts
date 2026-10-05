@@ -141,7 +141,12 @@ export type DaySubstitutions = {
  * ------------------------------------------------------------------ */
 
 export type ResolvedStatus =
-  "normal" | "cancelled" | "moved" | "substituted" | "room_change" | "added";
+  | "normal"
+  | "cancelled"
+  | "moved"
+  | "substituted"
+  | "room_change"
+  | "added";
 
 export type ResolvedLesson = {
   period: string;

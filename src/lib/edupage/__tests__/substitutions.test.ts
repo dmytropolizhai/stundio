@@ -95,6 +95,19 @@ describe("parseInfo", () => {
     expect(parseInfo(raw, 2026).raw).toBe(raw);
   });
 
+  it("keeps a moved-in lesson that also swaps teacher and room as moved_in", () => {
+    const raw =
+      "(Programmatūras koda rakstīšana) \u2794 Dabas zinības - Moved from period: 5, " +
+      "Aizvietošana: (Vadims Malickis) \u2794 Irina Vdoviča, " +
+      "Kabineta nomaiņa: (131a D(24)TV) \u2794 412 (30)P";
+    const r = parseInfo(raw, 2026);
+    expect(r.kind).toBe("moved_in");
+    expect(r.movedFromPeriod).toBe(5);
+    expect(r.subject).toBe("Dabas zinības");
+    expect(r.teacher).toBe("Irina Vdoviča");
+    expect(r.room).toBe("412 (30)P");
+  });
+
   it("extracts a leading group label", () => {
     const r = parseInfo("2: Vācu valoda - Atcelts", 2026);
     expect(r.group).toBe("2");

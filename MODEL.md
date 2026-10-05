@@ -176,6 +176,8 @@ div[data-date]
 | leading `n: ` on subject | — | `group = n` |
 | `(SubjA) ➔ SubjB - …` | — | `subjectFrom = SubjA`, `subject = SubjB` |
 
+² `Moved from …`/`Added` stay `moved_in`/`added` even when `Aizvietošana:` / `Kabineta nomaiņa:` ride along (new teacher/room fill the appended lesson); only otherwise does `Aizvietošana` mean `substitution`.
+
 ¹ only when no other change is present; otherwise it rides along on a `substitution`.
 
 Arrow glyph is `➔` (U+2794).
