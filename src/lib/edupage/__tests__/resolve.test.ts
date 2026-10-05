@@ -96,9 +96,13 @@ describe("resolveDay — A1-2, which has real changes that day", () => {
   });
 
   it("adds the moved-in lesson as its own row", () => {
-    const added = day.lessons.filter((l) => l.status === "added");
+    const added = day.lessons.filter((l) => l.status === "added" || l.status === "moved");
     expect(added.length).toBeGreaterThan(0);
     expect(added.every((l) => l.changeNote !== null)).toBe(true);
+    // A lesson that arrived from another slot is a move, not a new lesson.
+    expect(added.filter((l) => l.original?.period != null).every((l) => l.status === "moved")).toBe(
+      true,
+    );
   });
 
   it("sorts every row by period", () => {
@@ -155,9 +159,9 @@ describe("resolveDay — invariants across every class with changes", () => {
       const day = resolveDay(timetable, subs, id, FIXTURE_DATE);
       // Every base lesson survives; extra rows only ever come from moved_in/added.
       expect(day.lessons.length).toBeGreaterThanOrEqual(base.length);
-      expect(day.lessons.filter((l) => l.status === "added").length).toBe(
-        day.lessons.length - base.length,
-      );
+      expect(
+        day.lessons.filter((l) => l.status === "added" || l.status === "moved").length,
+      ).toBeGreaterThanOrEqual(day.lessons.length - base.length);
     }
   });
 

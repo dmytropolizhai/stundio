@@ -490,7 +490,8 @@ export const resolveDayAcross = (
           : [lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)],
       rooms: s.room === null ? [] : [roomsByLabel.get(s.room) ?? synthRoom(s.room)],
       group: s.group,
-      status: "added",
+      // A lesson moved here from another slot/day is a move, not a brand-new lesson.
+      status: s.kind === "moved_in" ? "moved" : "added",
       changeNote: s.raw,
       original: s.movedFromPeriod !== null ? { period: String(s.movedFromPeriod) } : null,
       ...(lead === undefined ? {} : { building: lead.meta.building }),
@@ -912,7 +913,7 @@ export const resolveTeacherDayAcross = (
       rooms: rm,
       classes: [cls],
       group: s.group,
-      status: s.kind === "substitution" ? "substituted" : "added",
+      status: s.kind === "substitution" ? "substituted" : s.kind === "moved_in" ? "moved" : "added",
       role: "cover",
       coverFor: absentColleague,
       isCover: true,
