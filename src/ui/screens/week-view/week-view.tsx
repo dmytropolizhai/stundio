@@ -149,7 +149,9 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           const displayName = classNames ? `${subjectName} (${classNames})` : subjectName;
 
           cells[d] = {
-            short: subjectCode(lesson.subject),
+            // A teacher scans the week for "which group", so the cell leads with the group and
+            // the subject stays in `name` (tooltip / aria label); students keep the subject code.
+            short: classNames ? classNames : subjectCode(lesson.subject),
             name: displayName,
             tone: accent.tone,
             cancelled: lesson.status === "cancelled",
