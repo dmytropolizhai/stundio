@@ -164,6 +164,13 @@ describe("Teacher Day and Week Views", () => {
 
     // WeekView renders week overview ("Pārskats") and grid
     expect(screen.getByText("Pārskats")).toBeDefined();
+
+    // Grid cells lead with the teacher's group, not the subject code
+    const resolved = harness.store.getState().resolvedTeacherDay(FIXTURE_DATE)!;
+    const lesson = resolved.lessons[0]!;
+    const group = lesson.classes.map((c) => c.short || c.name).join(" + ");
+    const cell = screen.getAllByRole("button").find((b) => b.textContent === group);
+    expect(cell).toBeDefined();
   });
 
   it("LessonSheet displays class name and cover info in teacher mode", async () => {

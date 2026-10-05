@@ -43,7 +43,7 @@ That’s why the app is **local-first**. Your timetable is stored on your device
 * **Class picker** — Save your favourite classes and switch between them whenever you need to. Your selection is stored on the device.
 * **Teacher Mode ("Choose Your Side")** — A dedicated persona for educators:
   * Select your name from the staff directory with zero login and zero extra network requests.
-  * Day and week views show classes taught, room, and building per period, grouping merged classes on a single card.
+  * Day and week views show classes taught, room, and building per period, grouping merged classes on a single card. In the week grid, a teacher's cells are labelled with the group rather than the subject code.
   * Substitution cover duties (*aizvietošanas stundas*) are prominently surfaced and badged.
   * Absent staff banner in Changes view highlights absent colleagues (*Skolotāji, kuri šodien nepiedalās*).
   * Dual-role support for form teachers (*klases audzinātājs*): easily toggle between your own teaching day and your form class's schedule.
