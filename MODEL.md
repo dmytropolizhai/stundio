@@ -176,6 +176,8 @@ div[data-date]
 | leading `n: ` on subject | — | `group = n` |
 | `(SubjA) ➔ SubjB - …` | — | `subjectFrom = SubjA`, `subject = SubjB` |
 
+² `Moved from …`/`Added` stay `moved_in`/`added` even when `Aizvietošana:` / `Kabineta nomaiņa:` ride along (new teacher/room fill the appended lesson); only otherwise does `Aizvietošana` mean `substitution`.
+
 ¹ only when no other change is present; otherwise it rides along on a `substitution`.
 
 Arrow glyph is `➔` (U+2794).
@@ -195,7 +197,7 @@ Arrow glyph is `➔` (U+2794).
 1. Take `Timetable.lessons` where `classIds ∋ classId` and `day == weekday(date)` and `weekMask` matches.
 2. Index `DaySubstitutions.items` by `(className, group, period)`.
 3. For each base lesson: apply `cancelled` / `substitution` / `room_change` / `moved_out`.
-4. Append `moved_in` and `added` items as new `ResolvedLesson`s.
+4. Append `moved_in` and `added` items as new `ResolvedLesson`s (`moved_in` → status `moved`, `added` → `added`).
 5. Keep `cancelled` lessons visible with `status: "cancelled"` (don't drop — users want to see it).
 6. `changeNote` ← `Substitution.raw`; keep `original` teachers/rooms/period for a diff UI.
 

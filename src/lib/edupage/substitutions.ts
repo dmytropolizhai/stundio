@@ -134,7 +134,9 @@ export const parseInfo = (info: string, year: number): ParsedInfo => {
     const { from, to } = oldNew(subst[1]);
     out.teacherFrom = from;
     out.teacher = to;
-    kind = "substitution";
+    // A lesson moved/added into this slot that also changes teacher is still a NEW lesson:
+    // downgrading it to "substitution" makes resolve look for a base lesson that isn't there.
+    if (kind !== "moved_in" && kind !== "added") kind = "substitution";
   }
 
   const absentTeacher = /^\s*\(([^)]+)\)\s*(?:,|$)/.exec(rest);
