@@ -6,9 +6,11 @@ There’s no login, no account, and no complicated setup. Pick your class and yo
 
 It runs as an Android app and as an installable web app (PWA) at **[stundio.pages.dev](https://stundio.pages.dev)**, which is also how iPhone and desktop users get it.
 
+**Already in use:** more than 200 people use Stundio, including teachers. So far the web app has had about 1.1k unique visitors and 2k total visits, and Android users outnumber iOS users.
+
 The name comes from **“stunda”**, the Latvian word for “lesson”.
 
-Stundio is made specifically for students at the school. The idea is simple: you should be able to check your timetable in a few seconds, even when the Wi-Fi or mobile signal inside the building is terrible.
+Stundio is made specifically for the school's students, and teachers have picked it up too. The idea is simple: you should be able to check your timetable in a few seconds, even when the Wi-Fi or mobile signal inside the building is terrible.
 
 That’s why the app is **local-first**. Your timetable is stored on your device and updated in the background, so the app remains useful even when you’re offline.
 
@@ -24,7 +26,7 @@ That’s why the app is **local-first**. Your timetable is stored on your device
 
 ## What it does
 
-* **Day view** — See today’s lessons in one place. The current lesson is highlighted with a live progress bar, free periods appear as gaps, and cancelled lessons stay visible but are crossed out.
+* **Day view** — See today’s lessons in one place. The current lesson is highlighted with a live progress bar, free periods appear as gaps, and cancelled lessons stay visible but are crossed out. Stepping between days (arrows, swipes, arrow keys) skips Saturday and Sunday, so Friday goes straight to Monday.
 * **Week view** — A Monday-to-Friday overview for quickly comparing your schedule across the week, with structural spanning for double periods and direct day navigation.
 * **Substitutions** — EduPage publishes things like room changes, teacher changes, and cancellations as Latvian HTML. Stundio parses that information and attaches it directly to the affected lesson instead of creating a separate changes feed.
 * **Home-screen widgets (Android)** — Three native home-screen widgets keeping your schedule a glance away:
@@ -48,7 +50,7 @@ That’s why the app is **local-first**. Your timetable is stored on your device
   * Absent staff banner in Changes view highlights absent colleagues (*Skolotāji, kuri šodien nepiedalās*).
   * Dual-role support for form teachers (*klases audzinātājs*): easily toggle between your own teaching day and your form class's schedule.
   * Tailored schedule change and cover duty notifications.
-* **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh, or return to the app. Offline detection warns when network is unavailable without blocking access to cached schedules.
+* **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh, or return to the app. Offline detection warns when network is unavailable without blocking access to cached schedules. The installed web app opens offline too, falling back to its cached shell instead of hanging on the splash screen.
 * **Four languages** — The app interface is available in Latvian, English, Russian, and Ukrainian. Substitution notes from the school are kept exactly as published and clearly marked as school-provided text.
 
 ## What it is not
@@ -91,7 +93,7 @@ Stundio isn't on the Play Store, and won't be. APKs are published through [GitHu
 
 Once installed, the app checks GitHub for newer releases itself and offers to install them, so you only have to do this manually the first time.
 
-Keep in mind that this is still an early alpha. There may be rough edges.
+Keep in mind that the app is still young. There may be rough edges.
 
 ### Option B — Build it yourself
 
@@ -133,7 +135,7 @@ You can then copy the APK to your phone and install it. Android may ask you to a
 
 ## Installing on iOS
 
-There's no native iOS app, and there are no plans for one — for a non-commercial school project with roughly 100–250 potential users, an Apple Developer account and a separate native build don't make sense. iOS is served by the PWA instead, so you don't need the App Store, Xcode, or a developer account:
+There's no native iOS app, and there are no plans for one — for a non-commercial school project, an Apple Developer account and a separate native build don't make sense. iOS is served by the PWA instead, so you don't need the App Store, Xcode, or a developer account:
 
 1. Open **[stundio.pages.dev](https://stundio.pages.dev)** in **Safari** on your iPhone or iPad.
 2. Tap the **Share** button.
