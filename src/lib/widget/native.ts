@@ -16,6 +16,10 @@ import type { WidgetPayload } from "./types.ts";
 export type StundioWidgetPlugin = {
   /** Stores `payload` (a JSON string) and immediately re-renders every placed widget. */
   publish(options: { payload: string }): Promise<void>;
+  /** Whether this launch came from the widget's refresh button (an invisible host window). */
+  isSyncRequest(): Promise<{ requested: boolean }>;
+  /** Closes that invisible window. A no-op in the normal app. */
+  finishSync(): Promise<void>;
 };
 
 const StundioWidget = registerPlugin<StundioWidgetPlugin>("StundioWidget");
@@ -27,4 +31,22 @@ const StundioWidget = registerPlugin<StundioWidgetPlugin>("StundioWidget");
 export const nativeWidget = (): ((payload: WidgetPayload) => Promise<void>) | null =>
   Capacitor.getPlatform() === "android"
     ? (payload) => StundioWidget.publish({ payload: JSON.stringify(payload) })
+    : null;
+
+export type WidgetSyncBridge = {
+  isRequested: () => Promise<boolean>;
+  finish: () => Promise<void>;
+};
+
+/**
+ * The widget refresh button's side of the bridge: the tap boots the app in an invisible
+ * window, and JS has to know that (to close it again once the fresh payload is published).
+ * Android only, like `nativeWidget`.
+ */
+export const nativeWidgetSync = (): WidgetSyncBridge | null =>
+  Capacitor.getPlatform() === "android"
+    ? {
+        isRequested: async () => (await StundioWidget.isSyncRequest()).requested,
+        finish: () => StundioWidget.finishSync(),
+      }
     : null;

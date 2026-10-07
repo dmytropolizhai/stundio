@@ -11,6 +11,7 @@ import android.widget.RemoteViews;
 import androidx.core.content.ContextCompat;
 import com.dmytropolizhai.stundio.MainActivity;
 import com.dmytropolizhai.stundio.R;
+import com.dmytropolizhai.stundio.WidgetSyncActivity;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,6 +96,7 @@ public class NextLessonWidget extends AppWidgetProvider {
         views.setInt(R.id.widget_accent, "setColorFilter", accent);
 
         views.setOnClickPendingIntent(R.id.widget_root, openApp(context));
+        views.setOnClickPendingIntent(R.id.widget_refresh, syncNow(context));
         return views;
     }
 
@@ -132,6 +134,22 @@ public class NextLessonWidget extends AppWidgetProvider {
         return PendingIntent.getActivity(
             context,
             0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+    }
+
+    /**
+     * The refresh button: boots {@link WidgetSyncActivity}, an invisible host that runs the
+     * app's own sync and publishes the result, so the tile can show the latest change without
+     * the app ever coming to the foreground.
+     */
+    private static PendingIntent syncNow(Context context) {
+        Intent intent = new Intent(context, WidgetSyncActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        return PendingIntent.getActivity(
+            context,
+            1,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );

@@ -20,6 +20,15 @@
             </intent-filter>
         </activity>
 
+        <!-- Invisible host for the widget refresh button: runs the app's own sync, then closes. -->
+        <activity
+            android:name=".WidgetSyncActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity=""
+            android:theme="@style/AppTheme.WidgetSync" />
+
         <!-- The 2x1 "next lesson" home-screen tile. Renders only what JS last published. -->
         <receiver
             android:name=".widget.NextLessonWidget"

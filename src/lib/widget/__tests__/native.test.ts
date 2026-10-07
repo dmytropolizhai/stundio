@@ -6,14 +6,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { WIDGET_PAYLOAD_VERSION, type WidgetPayload } from "../types.ts";
 
-const state = vi.hoisted(() => ({ platform: "web", publish: vi.fn() }));
+const state = vi.hoisted(() => ({
+  platform: "web",
+  publish: vi.fn(),
+  isSyncRequest: vi.fn(),
+  finishSync: vi.fn(),
+}));
 
 vi.mock("@capacitor/core", () => ({
   Capacitor: { getPlatform: () => state.platform },
-  registerPlugin: () => ({ publish: state.publish }),
+  registerPlugin: () => ({
+    publish: state.publish,
+    isSyncRequest: state.isSyncRequest,
+    finishSync: state.finishSync,
+  }),
 }));
 
-const { nativeWidget } = await import("../native.ts");
+const { nativeWidget, nativeWidgetSync } = await import("../native.ts");
 
 const PAYLOAD: WidgetPayload = {
   version: WIDGET_PAYLOAD_VERSION,
@@ -47,5 +56,23 @@ describe("nativeWidget", () => {
 
   it("is absent everywhere else — a browser has no widget host", () => {
     expect(nativeWidget()).toBeNull();
+  });
+});
+
+describe("nativeWidgetSync", () => {
+  it("reads whether the widget's refresh button booted this app, and can close it", async () => {
+    state.platform = "android";
+    state.isSyncRequest.mockResolvedValue({ requested: true });
+    state.finishSync.mockResolvedValue(undefined);
+
+    const bridge = nativeWidgetSync();
+
+    expect(await bridge?.isRequested()).toBe(true);
+    await bridge?.finish();
+    expect(state.finishSync).toHaveBeenCalledOnce();
+  });
+
+  it("is absent off Android", () => {
+    expect(nativeWidgetSync()).toBeNull();
   });
 });

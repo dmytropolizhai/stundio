@@ -19,7 +19,7 @@ import {
   wireNotificationTaps,
 } from "@/notifications";
 import { createAnalyticsClient, defaultHttp as analyticsHttp } from "@/lib/analytics";
-import { wireWidget } from "@/widget";
+import { runWidgetSync, wireWidget } from "@/widget";
 
 /** The Plausible site the app reports to (a fake domain — there is no web page behind it). */
 const ANALYTICS_DOMAIN = "stundio.lv";
@@ -76,7 +76,9 @@ export const bootApp: Boot = async () => {
     return promise;
   };
 
-  void refreshAndNotify();
+  const firstRefresh = refreshAndNotify();
+  // A tap on the widget's refresh button boots this app in an invisible window just for this.
+  if (isNative) void runWidgetSync(store, firstRefresh).catch(() => {});
   if (isNative) {
     void checkForAppUpdateNotification(store);
   }

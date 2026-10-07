@@ -1,5 +1,10 @@
 export { buildWidgetPayload, type WidgetPayloadInput } from "./payload.ts";
-export { nativeWidget, type StundioWidgetPlugin } from "./native.ts";
+export {
+  nativeWidget,
+  nativeWidgetSync,
+  type StundioWidgetPlugin,
+  type WidgetSyncBridge,
+} from "./native.ts";
 export {
   WIDGET_PAYLOAD_VERSION,
   type WidgetPayload,
