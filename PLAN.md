@@ -1,12 +1,13 @@
 # EduPage timetable app — action plan
 
 Status: Phases 0–4, the Parallel Widget Track, Phase 7 (Web/iOS PWA on Cloudflare Pages),
-and Phase 8 (Teacher Mode) are complete (scaffold, tooling, Capacitor, scraper + parser,
-offline cache + sync, UI, customization & themes, Android packaging, edge-to-edge, local notifications,
-WorkManager background refresh, native 2×1, countdown & 4×2 home-screen widgets, Cloudflare Pages
-edge proxy + PWA + Web Push, Teacher Mode persona & split-screen onboarding).
-Next: Phase 5 (Release & Distribution final polish via GitHub Releases and Cloudflare download site)
-and Phase 6 (e-klase grades integration exploration).
+Phase 8 (Teacher Mode), and Phase 5 (Release & Distribution) are substantially complete
+(scaffold, tooling, Capacitor, scraper + parser, offline cache + sync, UI, customization & themes,
+Android packaging, edge-to-edge, local notifications, WorkManager background refresh, native 2×1,
+countdown & 4×2 home-screen widgets, Cloudflare Pages edge proxy + PWA + Web Push, Teacher Mode
+persona & split-screen onboarding, GitHub Releases with APK distribution and in-app self-updater).
+Over 200 students and teachers actively using the app. Next: Phase 5 final polish (non-commercial
+disclaimer), then Phase 6 (e-klase grades integration exploration).
 Research artefacts: `MODEL.md`, `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1 & Cloudflare PWA.
 
@@ -230,7 +231,7 @@ color customization and subgroups, delivers local notifications, and supports ba
 
 ---
 
-## Phase 5 — Release & distribution  (size: S–M — in progress)
+## Phase 5 — Release & distribution  (size: S–M — substantially complete)
 
 **Distribution model:** No Google Play Store publication. EduPage / aSc legal risk (C&D / court exposure)
 makes centralized app store distribution dangerous for an unofficial school timetable parser.
@@ -249,7 +250,9 @@ Distribution is handled directly via:
 - [ ] Explicit non-commercial educational disclaimer & privacy statement published in app footer / web.
 - [x] Google Play Store submission deliberately avoided (eliminates legal/court liability from EduPage).
 
-**Exit:** users install APKs via `stundio.pages.dev/apk` or GitHub Releases; installed apps auto-detect and install updates; ≥5 schoolmates using it for a week without a blocking bug.
+**Exit:** ✅ substantially met. Users install APKs via `stundio.pages.dev/apk` or GitHub Releases;
+installed apps auto-detect and install updates; 200+ students and teachers using it daily.
+Remaining: explicit non-commercial educational disclaimer & privacy statement in app footer / web.
 
 ---
 

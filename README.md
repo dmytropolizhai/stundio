@@ -65,7 +65,7 @@ Stundio isn't trying to be a replacement for EduPage.
 
 ## Project status
 
-Phases 0 through 4, the widget track, Phase 7, and Phase 8 are complete:
+Phases 0 through 4, the widget track, Phase 7, Phase 8, and Phase 5 are substantially complete:
 - Core scraper, parser, offline caching, and synchronization.
 - Full UI (Day, Week, Subjects, Class Picker, Settings, Lesson Sheet, Subgroups).
 - Customization: custom color wheel, subject color overrides, and theme controls.
@@ -73,8 +73,9 @@ Phases 0 through 4, the widget track, Phase 7, and Phase 8 are complete:
 - Native Android home-screen widgets (Next Lesson 2×1, Countdown, and All-Day 4×2 list).
 - Web and iOS as a PWA on Cloudflare Pages, with an edge proxy for EduPage requests and Web Push for schedule changes.
 - Phase 8: Teacher Mode with staff directory, cover duty badging, dual role support, absent staff banner, and targeted notifications.
+- Phase 5: Release and distribution via GitHub Releases with in-app self-updater. Over 200 students and teachers actively using the app.
 
-Phase 5 (release and distribution) is in progress. There will be no Google Play release: for an unofficial timetable parser, app-store distribution carries legal risk the project doesn't want, so APKs ship through GitHub Releases and the app updates itself from there.
+Phase 5 (release and distribution) is substantially complete. There will be no Google Play release: for an unofficial timetable parser, app-store distribution carries legal risk the project doesn't want, so APKs ship through GitHub Releases and the app updates itself from there.
 
 Phase 6 (an e-klase grades integration) is still undecided.
 
