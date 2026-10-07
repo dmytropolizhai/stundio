@@ -185,6 +185,7 @@ export const ua: Dict = {
   "sync.refresh": "Оновити",
   "sync.pull": "Потягніть, щоб оновити",
   "sync.release": "Відпустіть, щоб оновити",
+  "sync.toast": "Оновлено",
 
   "time.inMinutes": "через {n} хв",
   "time.minutesLeft": "залишилося {n} хв",

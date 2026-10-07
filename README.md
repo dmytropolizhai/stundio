@@ -50,7 +50,7 @@ That’s why the app is **local-first**. Your timetable is stored on your device
   * Absent staff banner in Changes view highlights absent colleagues (*Skolotāji, kuri šodien nepiedalās*).
   * Dual-role support for form teachers (*klases audzinātājs*): easily toggle between your own teaching day and your form class's schedule.
   * Tailored schedule change and cover duty notifications.
-* **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh, or return to the app. Offline detection warns when network is unavailable without blocking access to cached schedules. The installed web app opens offline too, falling back to its cached shell instead of hanging on the splash screen.
+* **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh (a brief "Updated" toast confirms a successful manual refresh), or return to the app. Offline detection warns when network is unavailable without blocking access to cached schedules. The installed web app opens offline too, falling back to its cached shell instead of hanging on the splash screen.
 * **Four languages** — The app interface is available in Latvian, English, Russian, and Ukrainian. Substitution notes from the school are kept exactly as published and clearly marked as school-provided text.
 
 ## What it is not

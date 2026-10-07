@@ -192,6 +192,7 @@ export const lv = {
   "sync.refresh": "Atjaunināt",
   "sync.pull": "Velc, lai atjauninātu",
   "sync.release": "Atlaid, lai atjauninātu",
+  "sync.toast": "Atjaunināts",
 
   "time.inMinutes": "pēc {n} min",
   "time.minutesLeft": "atlikušas {n} min",

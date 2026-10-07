@@ -185,6 +185,7 @@ export const en: Dict = {
   "sync.refresh": "Refresh",
   "sync.pull": "Pull to refresh",
   "sync.release": "Release to refresh",
+  "sync.toast": "Up to date",
 
   "time.inMinutes": "in {n} min",
   "time.minutesLeft": "{n} min left",

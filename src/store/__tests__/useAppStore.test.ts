@@ -362,6 +362,20 @@ describe("analytics", () => {
   });
 });
 
+describe("manualRefreshCount", () => {
+  it("counts only forced refreshes that land cleanly", async () => {
+    const store = makeStore();
+    await store.getState().hydrate();
+
+    await store.getState().refresh({ date: DATE });
+    expect(store.getState().manualRefreshCount).toBe(0);
+
+    await store.getState().refresh({ date: DATE, force: true });
+    await store.getState().refresh({ date: DATE, force: true });
+    expect(store.getState().manualRefreshCount).toBe(2);
+  });
+});
+
 describe("selectedClassShort", () => {
   it("is null before a class is picked", async () => {
     const store = makeStore();

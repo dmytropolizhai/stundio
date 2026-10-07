@@ -684,9 +684,19 @@ refresh in brand when syncing, wifi-off in offline grey, triangle-alert in dange
 an optional tabular "12 min ago" detail. Every data screen carries one. Saying where the data came
 from and how old it is is a content rule of this system, not decoration.
 
+### Refresh Toast
+
+An app-level (`ui/components/RefreshToast.tsx`, not a DS primitive) card pill with a success check
+and "Updated", floating 12px above the bottom nav. It appears for ~2.2s only after a *manual*
+refresh (pull-to-refresh, the top-bar button, Settings) that finished without errors; routine
+refreshes (open, resume, reconnect) and failures stay silent, since the freshness pill already
+turns red on failure. Non-modal, `pointer-events-none`, announced as a polite `role="status"`, and
+never stacked — a second refresh restarts the timer. It is the single sanctioned deviation from the
+"no Toast" rule below, and must not grow into a general notification system.
+
 ### Bottom Sheet & Feedback Sheet
 
-The only modal surface in the system — the DS ships no Dialog, Toast, or Tooltip, and none should be added.
+The only modal surface in the system — the DS ships no Dialog or Tooltip, and none should be added.
 36px top corners, white, `shadow-raised`, entering with a 24px rise on the spring easing over 240ms;
 the scrim is navy at 56% over an 8px blur, fading in over 160ms. Bottom padding reserves the safe-area
 inset.
@@ -754,7 +764,8 @@ for anything animating outside the tokens.
 - **Don't** put a shadow under a tinted card, or a navy-tinted shadow anywhere in dark mode.
 - **Don't** give anything a square corner, or a radius below 8px.
 - **Don't** draw a border where an inset ring will do, and don't add borders to cards at all.
-- **Don't** add a second modal surface — no Dialog, no Toast, no Tooltip. The bottom sheet is it.
+- **Don't** add a second modal surface — no Dialog, no Tooltip. The bottom sheet is it. The one
+  non-modal exception is the "updated" confirmation (see Refresh Toast).
 - **Don't** make the top bar sticky; the bottom nav is the only fixed element.
 - **Don't** let anything bounce except the bottom sheet's entrance, the nav's active pill, and the
   switch thumb.

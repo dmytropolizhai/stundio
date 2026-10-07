@@ -48,6 +48,11 @@ export type AppState = {
   syncStatus: SyncStatus;
   lastSyncAt: ISODateTime | null;
   lastError: string | null;
+  /**
+   * Bumps once per *forced* refresh that landed cleanly. A counter rather than a flag so two
+   * pulls in a row each announce themselves; the UI watches it for the "updated" confirmation.
+   */
+  manualRefreshCount: number;
   pendingNavigation: NotificationNavigationTarget | null;
 
   hydrate: () => Promise<void>;
@@ -211,6 +216,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       syncStatus: "idle",
       lastSyncAt: null,
       lastError: null,
+      manualRefreshCount: 0,
       pendingNavigation: null,
 
       hydrate: readCache,
@@ -230,6 +236,11 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           // Keep the previous timestamp on a failed sync: "updated 2h ago" beats "never".
           lastSyncAt: outcome.lastSyncAt ?? get().lastSyncAt,
           lastError: outcome.errors[0] ?? null,
+          // Routine refreshes (open, resume, reconnect) stay silent; only a user's own pull,
+          // tap or settings button earns a confirmation, and only when it actually succeeded.
+          ...(options.force === true && outcome.status === "idle"
+            ? { manualRefreshCount: get().manualRefreshCount + 1 }
+            : {}),
         });
         return outcome;
       },
