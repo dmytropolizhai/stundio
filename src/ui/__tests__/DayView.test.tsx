@@ -132,6 +132,65 @@ describe("DayView", () => {
     expect(screen.queryByTestId("now-marker")).toBeNull();
   });
 
+  describe("glance", () => {
+    it("lifts the lesson in progress above the list, which stays below it", async () => {
+      const harness = await bootHarness();
+      renderDay(harness);
+
+      const glance = screen.getByTestId("day-glance");
+      expect(glance.textContent).toContain("Tagad");
+      expect(screen.getByTestId("glance-countdown").textContent).toMatch(/^Atlikušas \d/);
+
+      // The full day is still listed underneath, in document order after the glance.
+      const rows = screen
+        .getAllByRole("listitem")
+        .filter((li) => li.querySelector('[role="button"]'));
+      expect(rows.length).toBeGreaterThan(1);
+      expect(glance.compareDocumentPosition(rows[0]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    });
+
+    it("outlines the day on any date, but only calls a 'now' lesson on today", async () => {
+      const harness = await bootHarness();
+      renderDay(harness, "2026-09-10");
+
+      expect(screen.getByTestId("day-summary").textContent).toMatch(/\d\d:\d\d – \d\d:\d\d/);
+      expect(screen.queryByTestId("day-glance")).toBeNull();
+    });
+
+    it("opens the lesson sheet when the glance card is tapped", async () => {
+      const harness = await bootHarness();
+      renderDay(harness);
+
+      fireEvent.click(screen.getByTestId("day-glance"));
+      expect(await screen.findByRole("dialog")).toBeDefined();
+    });
+
+    it("counts down to the first lesson before school starts", async () => {
+      vi.setSystemTime(new Date("2026-09-09T04:00:00Z")); // 07:00 Riga
+      const harness = await bootHarness();
+      renderDay(harness);
+
+      const glance = screen.getByTestId("day-glance");
+      expect(glance.textContent).toContain("Tālāk");
+      expect(screen.getByTestId("glance-countdown").textContent).toMatch(/^Pēc /);
+    });
+
+    it("swaps to the next school day once lessons are over, and opens it on tap", async () => {
+      vi.setSystemTime(new Date("2026-09-09T17:00:00Z")); // 20:00 Riga
+      const harness = await bootHarness();
+      const { onDateChange } = renderDay(harness);
+
+      expect(screen.queryByTestId("day-glance")).toBeNull();
+      const card = screen.getByTestId("day-tomorrow");
+      expect(card.textContent).toMatch(/Sākas \d\d:\d\d/);
+
+      fireEvent.click(card);
+      expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
+    });
+  });
+
   it("opens a calendar anchored under the header and jumps to the picked date", async () => {
     const harness = await bootHarness();
     const { onDateChange } = renderDay(harness);

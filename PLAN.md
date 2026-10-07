@@ -231,7 +231,17 @@ color customization and subgroups, delivers local notifications, and supports ba
 
 ---
 
-## Phase 5 — Release & distribution  (size: S–M — substantially complete)
+## Day-screen glance  (size: S — complete)
+
+The day view opens with more than the list: a glance card (lesson in progress with minutes left,
+or the next one with a countdown, plus a warning when the next lesson is in another building), a
+one-line outline (start–end, lesson count, free periods) and, once today's lessons are over, a
+card with the next school day's start and change count. The full lesson list stays underneath.
+Logic: `src/lib/schedule/glance.ts`; UI: `src/ui/screens/day-view/day-{glance,summary,tomorrow}.tsx`.
+Deferred ideas: absent teachers for my lessons (`absentTeachers` is parsed but unused), per-lesson
+personal notes.
+
+## Phase 5 — Release & distribution  (size: S–M — in progress)
 
 **Distribution model:** No Google Play Store publication. EduPage / aSc legal risk (C&D / court exposure)
 makes centralized app store distribution dangerous for an unofficial school timetable parser.

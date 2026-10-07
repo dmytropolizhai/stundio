@@ -3,7 +3,7 @@ import { animate, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
 import { stepSchoolDay } from "@/sync";
-import { dayProgress } from "@/lib/schedule";
+import { dayGlance, dayProgress, daySummary, tomorrowPreview } from "@/lib/schedule";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button } from "@/ds";
 import { buildingNotice } from "@/ui/theme";
@@ -16,13 +16,19 @@ import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { useNow } from "@/ui/hooks/useNow.ts";
 import { useT } from "@/ui/i18n";
 import { DayTopBar } from "./day-top-bar.tsx";
-import { DayStatus } from "./day-status.tsx";
+import { DayStaleNotice, DayStatus } from "./day-status.tsx";
+import { DayGlance } from "./day-glance.tsx";
+import { glanceWalk } from "./glance-walk.ts";
+import { DaySummary } from "./day-summary.tsx";
+import { DayTomorrow } from "./day-tomorrow.tsx";
 import { DayLessonList } from "./day-lesson-list.tsx";
 import { DaySchoolNotes } from "./day-school-notes.tsx";
 import { DaySettings } from "./day-settings.tsx";
 import { LessonSheet } from "@/ui/screens/lesson-sheet";
 
 const SWIPE_THRESHOLD_PX = 56;
+/** Touches starting this close to a screen edge belong to the OS back gesture, not to paging. */
+const EDGE_GUARD_PX = 24;
 
 type DayViewProps = {
   date: ISODate;
@@ -38,6 +44,7 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
   const [open, setOpen] = useState<ResolvedLesson | null>(null);
   const [prevDate, setPrevDate] = useState(date);
   const [showAllNotes, setShowAllNotes] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
   if (prevDate !== date) {
     setPrevDate(date);
@@ -56,6 +63,11 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
   const day = useAppStore((s) => s.resolvedDay(date));
 
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
+  const summary = useMemo(() => daySummary(day), [day]);
+  const glance = useMemo(() => dayGlance(day, now), [day, now]);
+  const nextDate = stepSchoolDay(date, 1);
+  const nextDay = useAppStore((s) => s.resolvedDay(nextDate));
+  const tomorrow = useMemo(() => tomorrowPreview(nextDay), [nextDay]);
   const changedLessonsCount = useMemo(
     () => day?.lessons.filter((l) => l.status !== "normal").length ?? 0,
     [day],
@@ -64,29 +76,36 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
   const isToday = date === now.date;
 
   const reduceMotion = useReducedMotion() ?? false;
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const touchStart = useRef<{ x: number; y: number; axis: "x" | "y" | null } | null>(null);
   const enterDir = useRef<1 | -1>(1);
   const x = useMotionValue(0);
+  const opacity = useMotionValue(1);
 
   useEffect(() => {
+    /* Reduced motion keeps the day change legible as a brief cross-fade instead of a slide. */
     x.set(reduceMotion ? 0 : enterDir.current * 16);
+    opacity.set(reduceMotion ? 0.35 : 1);
 
-    const controls = animate(x, 0, {
-      duration: reduceMotion ? 0.001 : 0.24,
-      ease: [0.2, 0.8, 0.2, 1],
-    });
+    const controls = [
+      animate(x, 0, { duration: reduceMotion ? 0.001 : 0.24, ease: [0.2, 0.8, 0.2, 1] }),
+      animate(opacity, 1, { duration: reduceMotion ? 0.18 : 0.001, ease: [0.2, 0.8, 0.2, 1] }),
+    ];
 
-    return () => controls.stop();
-  }, [date, reduceMotion, x]);
+    return () => {
+      controls.forEach((c) => {
+        c.stop();
+      });
+    };
+  }, [date, reduceMotion, x, opacity]);
 
   const onSwipeStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
     if (touch === undefined) return;
 
-    touchStart.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-    };
+    const nearEdge =
+      touch.clientX < EDGE_GUARD_PX || touch.clientX > window.innerWidth - EDGE_GUARD_PX;
+
+    touchStart.current = nearEdge ? null : { x: touch.clientX, y: touch.clientY, axis: null };
   };
 
   const onSwipeMove = (e: React.TouchEvent) => {
@@ -97,16 +116,23 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
 
-    if (Math.abs(dy) > Math.abs(dx)) return;
+    /* The first meaningful movement decides the gesture; a vertical scroll never turns into a swipe. */
+    if (start.axis === null && Math.max(Math.abs(dx), Math.abs(dy)) > 8) {
+      start.axis = Math.abs(dy) > Math.abs(dx) ? "y" : "x";
+      if (start.axis === "x") setDragging(true);
+    }
+
+    if (start.axis !== "x") return;
 
     x.set(dx);
   };
 
   const onSwipeEnd = () => {
-    const started = touchStart.current !== null;
+    const started = touchStart.current?.axis === "x";
     touchStart.current = null;
+    setDragging(false);
 
-    const dx = x.get();
+    const dx = started ? x.get() : 0;
 
     if (started && dx <= -SWIPE_THRESHOLD_PX) {
       enterDir.current = 1;
@@ -153,13 +179,35 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
 
     return (
       <>
+        <DayStaleNotice stale={day.stale} />
+
+        {day !== null && glance !== null && glance.kind !== "finished" && (
+          <DayGlance day={day} glance={glance} onOpenLesson={setOpen} />
+        )}
+
+        {glance?.kind === "finished" && tomorrow !== null && (
+          <DayTomorrow
+            date={nextDate}
+            preview={tomorrow}
+            onOpen={() => {
+              enterDir.current = 1;
+              onDateChange(nextDate);
+            }}
+          />
+        )}
+
         <DayStatus
           syncStatus={syncStatus}
-          stale={day.stale}
-          buildings={buildings}
+          buildings={
+            glance !== null && glance.kind !== "finished" && glanceWalk(glance) !== null
+              ? null
+              : buildings
+          }
           isToday={isToday}
           finished={progress.finished}
         />
+
+        {summary !== null && <DaySummary summary={summary} />}
 
         <DayLessonList
           day={day}
@@ -171,6 +219,8 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
           colorCodingEnabled={colorCodingEnabled}
           filled={filled}
           x={x}
+          opacity={opacity}
+          dragging={dragging}
           onOpenLesson={setOpen}
         />
 
@@ -200,7 +250,7 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
         }}
       >
         <div
-          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe"
+          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus-ring)"
           role="group"
           tabIndex={0}
           aria-label={t("day.pageHint")}
@@ -210,6 +260,8 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
           onTouchEnd={onSwipeEnd}
           onTouchCancel={onSwipeEnd}
           onKeyDown={(e) => {
+            /* Arrow keys inside a child control (date picker, tabs, inputs) belong to that control. */
+            if (e.target !== e.currentTarget) return;
             if (e.key === "ArrowRight") {
               enterDir.current = 1;
               onDateChange(stepSchoolDay(date, 1));

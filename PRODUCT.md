@@ -60,7 +60,7 @@ change that trades the widget away for convenience is not an acceptable trade wi
 
 ## Capabilities and Constraints
 
-Shipped: class picker with favourites, day view, week view, changes view, subjects view, lesson detail sheet,
+Shipped: class picker with favourites, day view (a glance card for the lesson on now / next with its countdown and any walk between buildings, a one-line day outline, and tomorrow's start once today is over — the full lesson list stays below), week view, changes view, subjects view, lesson detail sheet,
 settings; LV/EN/RU chrome; dark mode; offline cache; sync with staleness reporting.
 
 Durable constraints (also enforced in CLAUDE.md):

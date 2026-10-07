@@ -16,7 +16,7 @@ type LessonRowProps = {
   subjectColorOverrides: Record<string, string>;
   colorCodingEnabled: boolean;
   filled: boolean;
-  onOpen?: () => void;
+  onOpen?: (lesson: ResolvedLesson) => void;
 };
 
 export const LessonRow = memo(
@@ -93,7 +93,13 @@ export const LessonRow = memo(
             !live && isChanged(lesson.status) ? <StatusDot status={lesson.status} /> : undefined
           }
           className={isCover && highlightCoverLessons ? "ring-2 ring-warning" : undefined}
-          {...(onOpen === undefined ? {} : { onClick: onOpen })}
+          {...(onOpen === undefined
+            ? {}
+            : {
+                onClick: () => {
+                  onOpen(lesson);
+                },
+              })}
           data-testid={`lesson-${lesson.period}`}
         />
 

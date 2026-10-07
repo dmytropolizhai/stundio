@@ -1,15 +1,25 @@
 import { Card, Icon } from "@/ds";
 import { useT } from "@/ui/i18n";
 
+/** A stale timetable changes how far to trust the glance, so it stays above it. */
+export const DayStaleNotice = ({ stale }: { stale: boolean }) => {
+  const t = useT();
+
+  return stale ? (
+    <Card tone="amber" radius="lg" className="mt-3 font-text text-caption">
+      {t("day.stale")}
+    </Card>
+  ) : null;
+};
+
 type DayStatusProps = {
   syncStatus: string;
-  stale: boolean;
   buildings: string[] | null;
   isToday: boolean;
   finished: boolean;
 };
 
-export const DayStatus = ({ syncStatus, stale, buildings, isToday, finished }: DayStatusProps) => {
+export const DayStatus = ({ syncStatus, buildings, isToday, finished }: DayStatusProps) => {
   const t = useT();
 
   return (
@@ -24,12 +34,6 @@ export const DayStatus = ({ syncStatus, stale, buildings, isToday, finished }: D
         >
           <Icon name="wifi-off" size={16} className="shrink-0 text-offline" />
           {t("day.offline")}
-        </Card>
-      )}
-
-      {stale && (
-        <Card tone="amber" radius="lg" className="mt-3 font-text text-caption">
-          {t("day.stale")}
         </Card>
       )}
 

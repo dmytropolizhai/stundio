@@ -1,14 +1,12 @@
 import { Fragment, useMemo, type ReactNode } from "react";
 import { motion, type MotionValue } from "framer-motion";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import { minutesOf } from "@/lib/schedule";
+import { FREE_PERIOD_MIN_MINUTES, minutesOf } from "@/lib/schedule";
 import { lessonBuilding } from "@/ui/theme";
 import { LessonRow } from "@/ui/components/LessonRow.tsx";
 import { useT } from "@/ui/i18n";
 import { DayGap } from "./day-gap.tsx";
 import { DayNowMarker } from "./day-now-marker.tsx";
-
-const GAP_MIN_MINUTES = 20;
 
 type DayLessonListProps = {
   day: ResolvedDay;
@@ -20,6 +18,8 @@ type DayLessonListProps = {
   colorCodingEnabled: boolean;
   filled: boolean;
   x: MotionValue<number>;
+  opacity: MotionValue<number>;
+  dragging: boolean;
   onOpenLesson: (lesson: ResolvedLesson) => void;
 };
 
@@ -33,6 +33,8 @@ export const DayLessonList = ({
   colorCodingEnabled,
   filled,
   x,
+  opacity,
+  dragging,
   onOpenLesson,
 }: DayLessonListProps) => {
   const t = useT();
@@ -46,7 +48,11 @@ export const DayLessonList = ({
     day.lessons.forEach((lesson, index) => {
       const start = minutesOf(lesson.start);
 
-      if (previousEnd !== null && start !== null && start - previousEnd >= GAP_MIN_MINUTES) {
+      if (
+        previousEnd !== null &&
+        start !== null &&
+        start - previousEnd >= FREE_PERIOD_MIN_MINUTES
+      ) {
         items.push({
           key: `gap-${String(index)}`,
           node: <DayGap minutes={start - previousEnd} label={t("day.free")} />,
@@ -77,9 +83,7 @@ export const DayLessonList = ({
             filled={filled}
             {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
             {...(building === undefined ? {} : { building })}
-            onOpen={() => {
-              onOpenLesson(lesson);
-            }}
+            onOpen={onOpenLesson}
           />
         ),
       });
@@ -111,7 +115,8 @@ export const DayLessonList = ({
       className="mt-3 flex flex-col gap-3"
       style={{
         x,
-        willChange: "transform",
+        opacity,
+        willChange: dragging ? "transform" : "auto",
       }}
     >
       {rows.map((row) => (
