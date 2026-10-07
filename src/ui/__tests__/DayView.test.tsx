@@ -113,10 +113,17 @@ describe("DayView", () => {
     expect(within(dialog).getByText("No skolas")).toBeDefined();
   });
 
-  it("marks where the clock is on today's list", async () => {
+  it("marks where the clock is when no lesson is going", async () => {
+    vi.setSystemTime(new Date("2026-09-09T04:00:00Z")); // 07:00 Riga, before the first lesson
     const harness = await bootHarness();
     renderDay(harness);
     expect(screen.queryByTestId("now-marker")).not.toBeNull();
+  });
+
+  it("shows no now-marker while a lesson is going", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+    expect(screen.queryByTestId("now-marker")).toBeNull();
   });
 
   it("shows no now-marker on a day that is not today", async () => {

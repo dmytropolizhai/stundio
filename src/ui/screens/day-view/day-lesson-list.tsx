@@ -40,7 +40,7 @@ export const DayLessonList = ({
   const rows = useMemo(() => {
     const items: { key: string; node: ReactNode }[] = [];
 
-    let markerDrawn = date !== now.date;
+    let markerDrawn = date !== now.date || progress.current !== null;
     let previousEnd: number | null = null;
 
     day.lessons.forEach((lesson, index) => {
