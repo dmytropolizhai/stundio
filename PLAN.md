@@ -479,6 +479,7 @@ Capacitor has no App Widget API — native Kotlin and Java AppWidgetProviders we
   - **All-Day (4×2)**: `AllDayWidget` with scrollable list via `AllDayRemoteViewsFactory` of today's schedule.
 - [x] Data bridge: `StundioWidgetPlugin` Capacitor plugin bridge + `src/lib/widget/` (`WidgetPayload`, `native.ts`, `wire.ts`) —
       JS computes rendered widget payloads and pushes to native SharedPreferences; widget views read locally without network calls.
+- [x] Refresh button on the 2×1 tile: tap → invisible `WidgetSyncActivity` runs the normal JS sync → publishes → closes, so the latest change shows without opening the app.
 - [x] Update cadence: on app sync + `WidgetScheduler` (exact alarms at period start/end boundaries) + `WidgetRefreshWorker` (WorkManager periodic refresh).
 - [x] Sizes & kinds: 2×1 (next lesson), countdown tile, and 4×2 (all-day list).
 
