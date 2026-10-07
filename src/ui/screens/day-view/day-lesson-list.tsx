@@ -1,14 +1,12 @@
 import { Fragment, useMemo, type ReactNode } from "react";
 import { motion, type MotionValue } from "framer-motion";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import { minutesOf } from "@/lib/schedule";
+import { FREE_PERIOD_MIN_MINUTES, minutesOf } from "@/lib/schedule";
 import { lessonBuilding } from "@/ui/theme";
 import { LessonRow } from "@/ui/components/LessonRow.tsx";
 import { useT } from "@/ui/i18n";
 import { DayGap } from "./day-gap.tsx";
 import { DayNowMarker } from "./day-now-marker.tsx";
-
-const GAP_MIN_MINUTES = 20;
 
 type DayLessonListProps = {
   day: ResolvedDay;
@@ -46,7 +44,11 @@ export const DayLessonList = ({
     day.lessons.forEach((lesson, index) => {
       const start = minutesOf(lesson.start);
 
-      if (previousEnd !== null && start !== null && start - previousEnd >= GAP_MIN_MINUTES) {
+      if (
+        previousEnd !== null &&
+        start !== null &&
+        start - previousEnd >= FREE_PERIOD_MIN_MINUTES
+      ) {
         items.push({
           key: `gap-${String(index)}`,
           node: <DayGap minutes={start - previousEnd} label={t("day.free")} />,

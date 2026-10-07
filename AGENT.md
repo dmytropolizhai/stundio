@@ -45,7 +45,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **`src/lib/edupage/`** — everything EduPage-specific: transport, parsing, and the merge of a
   timetable + a day's substitutions into a `ResolvedDay`. Pure and React-free apart from
   `http.ts`. `types.ts` is the single source of truth for the domain types.
-- **`src/lib/schedule/`** — pure "what's on now / next", week maths, reminder times, substitution
+- **`src/lib/schedule/`** — pure "what's on now / next" (`glance.ts` builds on it: the day screen's glance card, day outline and tomorrow preview, incl. the building-hop rule), week maths, reminder times, substitution
   diffing. React-free **on purpose**: this is the logic the planned Android widget shares.
 - **`src/lib/share/`** — the shareable week card: a pure layout → display list → canvas painter,
   a self-contained QR encoder (`qr.ts`, byte mode / level M / versions 1–6, checked against a

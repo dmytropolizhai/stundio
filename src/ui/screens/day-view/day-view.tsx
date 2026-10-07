@@ -3,7 +3,7 @@ import { animate, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
 import { stepSchoolDay } from "@/sync";
-import { dayProgress } from "@/lib/schedule";
+import { dayGlance, dayProgress, daySummary, tomorrowPreview } from "@/lib/schedule";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button } from "@/ds";
 import { buildingNotice } from "@/ui/theme";
@@ -17,6 +17,9 @@ import { useNow } from "@/ui/hooks/useNow.ts";
 import { useT } from "@/ui/i18n";
 import { DayTopBar } from "./day-top-bar.tsx";
 import { DayStatus } from "./day-status.tsx";
+import { DayGlance } from "./day-glance.tsx";
+import { DaySummary } from "./day-summary.tsx";
+import { DayTomorrow } from "./day-tomorrow.tsx";
 import { DayLessonList } from "./day-lesson-list.tsx";
 import { DaySchoolNotes } from "./day-school-notes.tsx";
 import { DaySettings } from "./day-settings.tsx";
@@ -56,6 +59,11 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
   const day = useAppStore((s) => s.resolvedDay(date));
 
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
+  const summary = useMemo(() => daySummary(day), [day]);
+  const glance = useMemo(() => dayGlance(day, now), [day, now]);
+  const nextDate = stepSchoolDay(date, 1);
+  const nextDay = useAppStore((s) => s.resolvedDay(nextDate));
+  const tomorrow = useMemo(() => tomorrowPreview(nextDay), [nextDay]);
   const changedLessonsCount = useMemo(
     () => day?.lessons.filter((l) => l.status !== "normal").length ?? 0,
     [day],
@@ -160,6 +168,23 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
           isToday={isToday}
           finished={progress.finished}
         />
+
+        {day !== null && glance !== null && glance.kind !== "finished" && (
+          <DayGlance day={day} glance={glance} onOpenLesson={setOpen} />
+        )}
+
+        {glance?.kind === "finished" && tomorrow !== null && (
+          <DayTomorrow
+            date={nextDate}
+            preview={tomorrow}
+            onOpen={() => {
+              enterDir.current = 1;
+              onDateChange(nextDate);
+            }}
+          />
+        )}
+
+        {summary !== null && <DaySummary summary={summary} />}
 
         <DayLessonList
           day={day}

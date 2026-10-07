@@ -9,6 +9,15 @@ export {
   type LessonWindow,
   type RigaClock,
 } from "./nextLesson.ts";
+export {
+  dayGlance,
+  daySummary,
+  tomorrowPreview,
+  FREE_PERIOD_MIN_MINUTES,
+  type DayGlance,
+  type DaySummary,
+  type TomorrowPreview,
+} from "./glance.ts";
 export { startOfWeek, weekDates, weekPeriods, type WeekPeriod } from "./week.ts";
 export { lessonReminders, type LessonReminder } from "./reminders.ts";
 export {
