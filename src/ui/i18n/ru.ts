@@ -97,6 +97,8 @@ export const ru: Dict = {
   "day.glance.walkFrom": "Переход из {from} в {building}",
   "day.summary.lessons": "Уроков: {count}",
   "day.summary.free": "Окна: {duration}",
+  "day.summary.lessonsTooltip": "Всего уроков в этот день",
+  "day.summary.freeTooltip": "Общее свободное время между уроками",
   "day.tomorrow.eyebrow": "Следующий учебный день · {weekday}",
   "day.tomorrow.starts": "Начало в {time}",
   "day.tomorrow.changes": "Изменений: {count}",

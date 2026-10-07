@@ -39,6 +39,12 @@ export {
   PopoverContent,
   type PopoverContentProps,
 } from "./components/ui/popover.tsx";
+export {
+  TooltipRoot,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "./components/ui/tooltip.tsx";
 export { EmptyState, type EmptyStateProps } from "./components/ui/empty-state.tsx";
 export { Skeleton, type SkeletonProps } from "./components/ui/skeleton.tsx";
 export { Calendar, type CalendarProps } from "./components/ui/calendar.tsx";

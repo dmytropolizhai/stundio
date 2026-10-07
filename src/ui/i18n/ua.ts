@@ -96,6 +96,8 @@ export const ua: Dict = {
   "day.glance.walkFrom": "Перехід із {from} до {building}",
   "day.summary.lessons": "Уроків: {count}",
   "day.summary.free": "Вікна: {duration}",
+  "day.summary.lessonsTooltip": "Усього уроків цього дня",
+  "day.summary.freeTooltip": "Загальний вільний час між уроками",
   "day.tomorrow.eyebrow": "Наступний навчальний день · {weekday}",
   "day.tomorrow.starts": "Початок о {time}",
   "day.tomorrow.changes": "Змін: {count}",

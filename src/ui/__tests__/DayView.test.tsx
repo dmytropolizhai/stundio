@@ -6,6 +6,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { StoreContext } from "@/store";
+import { TooltipProvider } from "@/ds";
 import { DayView } from "../screens/day-view";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
@@ -15,9 +16,11 @@ const DURING_FIRST_LESSON = new Date("2026-09-09T05:50:00Z");
 const renderDay = (harness: Harness, date = FIXTURE_DATE) => {
   const onDateChange = vi.fn();
   const result = render(
-    <StoreContext.Provider value={harness.store}>
-      <DayView date={date} onDateChange={onDateChange} onPickClass={vi.fn()} />
-    </StoreContext.Provider>,
+    <TooltipProvider>
+      <StoreContext.Provider value={harness.store}>
+        <DayView date={date} onDateChange={onDateChange} onPickClass={vi.fn()} />
+      </StoreContext.Provider>
+    </TooltipProvider>,
   );
   return { ...result, onDateChange };
 };
@@ -371,9 +374,11 @@ describe("DayView", () => {
     expect(screen.getByText(/Paziņojumi · No skolas/i)).toBeDefined();
 
     rerender(
-      <StoreContext.Provider value={harness.store}>
-        <DayView date="2026-09-10" onDateChange={vi.fn()} onPickClass={vi.fn()} />
-      </StoreContext.Provider>,
+      <TooltipProvider>
+        <StoreContext.Provider value={harness.store}>
+          <DayView date="2026-09-10" onDateChange={vi.fn()} onPickClass={vi.fn()} />
+        </StoreContext.Provider>
+      </TooltipProvider>,
     );
 
     expect(screen.queryByText(/Paziņojumi · No skolas/i)).toBeNull();
@@ -399,14 +404,16 @@ describe("DayView", () => {
     const harness = await bootHarness();
     const onOpenChanges = vi.fn();
     render(
-      <StoreContext.Provider value={harness.store}>
-        <DayView
-          date={FIXTURE_DATE}
-          onDateChange={vi.fn()}
-          onPickClass={vi.fn()}
-          onOpenChanges={onOpenChanges}
-        />
-      </StoreContext.Provider>,
+      <TooltipProvider>
+        <StoreContext.Provider value={harness.store}>
+          <DayView
+            date={FIXTURE_DATE}
+            onDateChange={vi.fn()}
+            onPickClass={vi.fn()}
+            onOpenChanges={onOpenChanges}
+          />
+        </StoreContext.Provider>
+      </TooltipProvider>,
     );
 
     const badge = screen.getByTestId("day-changes-badge");
