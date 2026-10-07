@@ -25,6 +25,7 @@ import { useTeacherAnnouncement } from "./ui/hooks/useTeacherAnnouncement.ts";
 import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
+import { RefreshToast } from "./ui/components/RefreshToast.tsx";
 import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
 import { StateMessage } from "./ui/components/StateMessage.tsx";
 import { useCustomization, useTheme } from "@/ui/theme";
@@ -269,7 +270,7 @@ const Shell = () => {
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="relative flex h-full flex-col overflow-hidden">
       <ErrorBoundary
         key={tab}
         title={t("error.title")}
@@ -328,6 +329,7 @@ const Shell = () => {
         )}
       </ErrorBoundary>
       <TabBar tab={tab} onChange={setTab} />
+      <RefreshToast />
       {/*
         Outside the tab switch: the sheet auto-opens on the launch after an update, whichever
         tab happens to be showing, and must survive a tab change while it is open.

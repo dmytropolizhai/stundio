@@ -186,6 +186,7 @@ export const ru: Dict = {
   "sync.refresh": "Обновить",
   "sync.pull": "Потяни, чтобы обновить",
   "sync.release": "Отпусти, чтобы обновить",
+  "sync.toast": "Обновлено",
 
   "time.inMinutes": "через {n} мин",
   "time.minutesLeft": "осталось {n} мин",
