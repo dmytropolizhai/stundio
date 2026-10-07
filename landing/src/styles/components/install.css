@@ -1,0 +1,76 @@
+/*
+ * InstallTabs. No JS: three stacked panels, each with its own heading. With JS on a phone the
+ * script reveals the tablist (a DS segmented control) and folds the panels; from 960px the
+ * panels sit in three columns and the script steps aside.
+ */
+.l-install {
+  display: grid;
+  gap: var(--l-gap-block);
+}
+
+.l-install__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--l-radius-control);
+  background: var(--l-sunken);
+}
+
+.l-install__tab {
+  min-height: var(--l-tap);
+  border: 0;
+  border-radius: var(--l-radius-control);
+  background: none;
+  color: var(--l-text-muted);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: var(--transition-press), var(--transition-color);
+}
+
+.l-install__tab[aria-selected="true"] {
+  background: var(--l-surface);
+  color: var(--l-text-strong);
+  box-shadow: var(--l-shadow-card);
+}
+
+.l-install__tab:active {
+  transform: scale(var(--press-scale));
+}
+
+@media (hover: hover) {
+  .l-install__tab:hover {
+    color: var(--l-text-strong);
+  }
+}
+
+.l-install__panel {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+/* Stacked panels get a rail-like separation; folded ones do not need it. */
+.l-install__panel + .l-install__panel {
+  padding-top: var(--l-gap-block);
+}
+
+.l-install__panel[role="tabpanel"] + .l-install__panel {
+  padding-top: 0;
+}
+
+.l-install__panel > h3 {
+  font-size: var(--l-size-h3);
+}
+
+@media (min-width: 960px) {
+  .l-install {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+
+  .l-install__panel + .l-install__panel {
+    padding-top: 0;
+  }
+}

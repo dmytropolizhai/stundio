@@ -1,0 +1,90 @@
+/*
+ * Button. Pills only; never blue (the DS has no blue buttons). `lg` is the 54px CTA, `md` the
+ * 44px secondary — nothing interactive on the page is smaller than 44px in its hit area. Press
+ * is a scale, hover exists only where a pointer can hover.
+ */
+.l-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 0;
+  background: none;
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition-press), var(--transition-color);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.l-btn:active {
+  transform: scale(var(--press-scale));
+}
+
+.l-btn--lg {
+  min-height: 54px;
+  padding: 0 26px;
+  border-radius: var(--l-radius-control);
+  font-size: 16px;
+}
+
+.l-btn--md {
+  min-height: var(--l-tap);
+  padding: 0 var(--space-5);
+  border-radius: var(--l-radius-control);
+  font-size: 15px;
+}
+
+.l-btn--block {
+  width: 100%;
+}
+
+.l-btn--primary {
+  background: var(--l-btn-bg);
+  color: var(--l-btn-fg);
+  box-shadow: var(--l-shadow-card);
+}
+
+.l-btn--secondary {
+  color: var(--l-text-strong);
+  box-shadow: inset 0 0 0 2px var(--l-btn-ring);
+}
+
+.l-btn--ghost {
+  color: var(--l-text-strong);
+}
+
+.l-btn--onField {
+  background: var(--l-field-btn-bg);
+  color: var(--l-field-btn-fg);
+}
+
+.l-btn--link {
+  min-height: var(--l-tap);
+  color: var(--l-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: var(--fw-semibold);
+  white-space: normal;
+  text-align: start;
+}
+
+.l-btn--link .l-icon {
+  display: none;
+}
+
+@media (hover: hover) {
+  .l-btn--primary:hover {
+    background: var(--l-btn-bg-hover);
+  }
+
+  .l-btn--secondary:hover,
+  .l-btn--ghost:hover {
+    background: var(--l-btn-tint);
+  }
+
+  .l-btn--link:hover {
+    color: var(--l-link-hover);
+  }
+}

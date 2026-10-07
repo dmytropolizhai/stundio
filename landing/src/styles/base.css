@@ -1,0 +1,184 @@
+/*
+ * Reset, document defaults, typography rules, focus, and the reduced-motion backstop.
+ * Hover styling lives under `@media (hover: hover)` everywhere — a phone has no hover state.
+ */
+
+/* Metric-adjusted stand-in so the swap to Manrope does not move the hero (03a section 7). */
+@font-face {
+  font-family: "Manrope Fallback";
+  src: local("Arial"), local("Roboto"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 104%;
+  ascent-override: 102%;
+  descent-override: 29%;
+  line-gap-override: 0%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: var(--space-4);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--l-bg);
+  color: var(--l-text);
+  font: var(--type-body);
+  font-size: var(--l-size-body);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2 {
+  color: var(--l-text-strong);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  hyphens: manual;
+}
+
+h3 {
+  color: var(--l-text-strong);
+  font: var(--type-title);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+  hyphens: manual;
+}
+
+:focus-visible {
+  outline: 2px solid var(--l-focus);
+  outline-offset: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Visually hidden, still read by assistive tech (never `display: none`). */
+.l-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.l-skip {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 10;
+  transform: translateY(-200%);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--l-tap);
+  padding: 0 var(--space-5);
+  border-radius: var(--l-radius-control);
+  background: var(--l-btn-bg);
+  color: var(--l-btn-fg);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+}
+
+.l-skip:focus-visible {
+  transform: none;
+}
+
+.l-eyebrow {
+  font: var(--type-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--l-text-muted);
+}
+
+.l-time {
+  font: var(--type-data);
+  letter-spacing: var(--track-time);
+  font-variant-numeric: tabular-nums;
+  color: var(--l-text-strong);
+}
+
+.l-icon {
+  flex: none;
+}
+
+.l-url {
+  font-weight: var(--fw-bold);
+  color: var(--l-text-strong);
+  overflow-wrap: anywhere;
+}
+
+.l-note {
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--l-text-muted);
+}
+
+.l-textlink {
+  color: var(--l-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .l-textlink:hover {
+    color: var(--l-link-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

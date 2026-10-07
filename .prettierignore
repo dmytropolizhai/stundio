@@ -1,4 +1,5 @@
 dist
+landing/dist
 android
 coverage
 .venv

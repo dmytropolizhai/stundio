@@ -1,0 +1,100 @@
+/*
+ * Header: brand left, four language links right. Not sticky — the page's one fixed thing is
+ * the install bar. Each language link is a 44x44 hit area (min-width 44, 36px pill plus 4px above and below); the current one
+ * is the white pill of the DS segmented control.
+ */
+.l-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--l-header-h);
+}
+
+.l-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: var(--l-tap);
+  min-height: var(--l-tap);
+  color: var(--l-text-strong);
+  text-decoration: none;
+}
+
+.l-brand__mark {
+  width: 20px;
+  height: 20px;
+}
+
+.l-brand__name {
+  font-size: 20px;
+  font-weight: var(--fw-black);
+  letter-spacing: var(--track-hero);
+}
+
+.l-lang ul {
+  display: flex;
+  padding: var(--space-1);
+  border-radius: var(--l-radius-control);
+  background: var(--l-sunken);
+}
+
+.l-lang a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--l-tap);
+  min-height: 36px;
+  padding: 0 var(--space-2);
+  border-radius: var(--l-radius-control);
+  color: var(--l-text-muted);
+  font-size: var(--l-size-caption);
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+}
+
+/* Grow the hit area to 44px without growing the drawn pill. */
+.l-lang a::after {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+}
+
+.l-lang a[aria-current="page"] {
+  background: var(--l-surface);
+  color: var(--l-text-strong);
+  box-shadow: var(--l-shadow-card);
+}
+
+@media (hover: hover) {
+  .l-lang a:hover {
+    color: var(--l-text-strong);
+  }
+}
+
+/* Footer variant: the full names, each its own pill, wrapping if it must. */
+.l-lang--full ul {
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.l-lang--full a {
+  min-height: var(--l-tap);
+  padding: 0 var(--space-4);
+  font-size: 15px;
+}
+
+.l-lang--full a::after {
+  inset: 0;
+}
+
+/* Below 360px there is no room for the wordmark beside the switcher (03b 3.2). */
+@media (max-width: 359px) {
+  .l-brand__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}

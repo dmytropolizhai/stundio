@@ -1,0 +1,53 @@
+/*
+ * Page frame: one text column on phones (<= 420px of content, centred above that), a wider
+ * container from 960px. Sections are separated by --l-gap-section; inside them only the DS's
+ * 12 / 16 / 24 steps are used.
+ */
+.l-header,
+.l-main,
+.l-footer {
+  width: 100%;
+  max-width: calc(var(--l-col) + 2 * var(--l-gutter));
+  margin-inline: auto;
+  padding-inline: var(--l-gutter);
+}
+
+.l-main {
+  display: grid;
+  gap: var(--l-gap-section);
+  padding-block: var(--space-4) var(--l-gap-section);
+}
+
+.l-main--empty {
+  min-height: 60vh;
+}
+
+.l-notfound {
+  display: grid;
+  gap: var(--l-gap-block);
+  align-content: start;
+  padding-block: var(--space-10);
+}
+
+/* The bar needs room under the last section, reserved always so the layout never shifts. */
+.js .l-main {
+  padding-bottom: calc(var(--l-gap-section) + var(--l-sticky-reserve));
+}
+
+@media (min-width: 600px) {
+  .l-pair {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 960px) {
+  .l-header,
+  .l-main,
+  .l-footer {
+    max-width: calc(var(--l-container) + 2 * var(--l-gutter));
+  }
+
+  .js .l-main {
+    padding-bottom: var(--l-gap-section);
+  }
+}

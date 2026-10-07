@@ -1,0 +1,336 @@
+/*
+ * QuestionSection and the blocks that fill it: facts, callouts, steps, pills, cards, widget
+ * list, screenshot frame, QR card. Every section opens like a lesson card — a 4px pill rail,
+ * then the heading — so the page reads as a timetable without drawing one.
+ */
+.l-q {
+  display: grid;
+  gap: var(--l-gap-text);
+  scroll-margin-top: var(--space-4);
+}
+
+.l-q__head {
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.l-q__rail {
+  border-radius: var(--l-radius-control);
+  background: var(--l-rail);
+}
+
+.l-q__heading {
+  font-size: var(--l-size-h2);
+  font-weight: var(--l-weight-h2);
+  line-height: var(--l-lh-h2);
+  letter-spacing: var(--track-display);
+}
+
+.l-q__lead {
+  font: var(--type-body-lg);
+  font-size: var(--l-size-lead);
+  max-width: var(--l-measure);
+}
+
+.l-q__proof {
+  display: grid;
+  gap: var(--l-gap-block);
+  margin-top: calc(var(--l-gap-block) - var(--l-gap-text));
+}
+
+.l-q__exit {
+  display: flex;
+}
+
+.l-q--panel {
+  padding: var(--space-5);
+  border-radius: var(--l-radius-shot);
+  background: var(--l-sunken);
+}
+
+/* ——— facts / features ——— */
+.l-facts {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-facts li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.l-facts .l-icon {
+  margin-top: 2px;
+  color: var(--l-text-strong);
+}
+
+.l-facts--compact {
+  gap: var(--space-2);
+}
+
+/* ——— callout ——— */
+.l-callout {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--l-radius-callout);
+  background: var(--l-surface);
+  box-shadow: var(--l-ring-hairline);
+}
+
+.l-callout .l-icon {
+  margin-top: 1px;
+  color: var(--l-text-strong);
+}
+
+.l-callout--quiet {
+  grid-template-columns: 1fr;
+  background: var(--l-sunken);
+  box-shadow: none;
+  font-size: var(--l-size-caption);
+}
+
+.l-q--panel .l-callout--quiet {
+  background: var(--l-surface);
+}
+
+/* ——— steps ——— */
+.l-steps {
+  display: grid;
+  gap: var(--space-3);
+  counter-reset: step;
+}
+
+.l-steps__item {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  counter-increment: step;
+  font-weight: var(--fw-semibold);
+  color: var(--l-text);
+}
+
+.l-steps__item::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--l-radius-control);
+  background: var(--l-sunken);
+  color: var(--l-text-strong);
+  font-size: 15px;
+  font-weight: var(--fw-bold);
+}
+
+.l-steps__item > span {
+  padding-top: 4px;
+}
+
+.l-steps--compact .l-steps__item {
+  grid-template-columns: 24px minmax(0, 1fr);
+  font-size: var(--l-size-caption);
+}
+
+.l-steps--compact .l-steps__item::before {
+  width: 24px;
+  height: 24px;
+  font-size: var(--l-size-caption);
+}
+
+.l-steps--compact .l-steps__item > span {
+  padding-top: 2px;
+}
+
+/* ——— pill ——— */
+.l-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 30px;
+  padding: 6px var(--space-3);
+  border-radius: var(--l-radius-control);
+  background: var(--l-surface);
+  box-shadow: var(--l-ring-hairline);
+  font-size: var(--l-size-caption);
+  font-weight: var(--fw-semibold);
+  line-height: 1.2;
+  color: var(--l-text);
+}
+
+.l-pill .l-icon {
+  color: var(--l-text-muted);
+}
+
+/* ——— cards ——— */
+.l-pair {
+  display: grid;
+  gap: var(--l-gap-card);
+}
+
+.l-card {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  padding: var(--space-5);
+  border-radius: var(--l-radius-card);
+  background: var(--l-surface);
+  box-shadow: var(--l-shadow-card);
+}
+
+.l-card .l-icon {
+  color: var(--l-text-strong);
+}
+
+/* ——— widgets ——— */
+.l-widgets {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-widgets__title {
+  font-size: 18px;
+}
+
+.l-widgets__list {
+  display: grid;
+  gap: var(--l-gap-card);
+}
+
+.l-widgets__item {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-4);
+  border-radius: var(--l-radius-callout);
+  background: var(--l-surface);
+  box-shadow: var(--l-shadow-card);
+}
+
+.l-widgets__item dt {
+  font-weight: var(--fw-bold);
+  color: var(--l-text-strong);
+}
+
+.l-widgets__item dd {
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--l-text-muted);
+}
+
+/* ——— screenshot ——— */
+.l-shot {
+  display: grid;
+  justify-items: center;
+}
+
+.l-shot picture {
+  display: block;
+  width: min(100%, 241px);
+  overflow: hidden;
+  border-radius: var(--l-radius-shot);
+  background: var(--l-sunken);
+  box-shadow: var(--l-shadow-raised);
+}
+
+.l-shot img {
+  width: 100%;
+  height: auto;
+}
+
+.l-shot__hole {
+  display: grid;
+  place-items: center;
+  width: min(100%, 241px);
+  border-radius: var(--l-radius-shot);
+  background: var(--l-sunken);
+  color: var(--l-text-muted);
+}
+
+.l-shot__caption {
+  margin-top: var(--space-2);
+  font-size: var(--l-size-caption);
+  color: var(--l-text-muted);
+}
+
+/* ——— QR ——— */
+.l-qr {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  width: max-content;
+  max-width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--l-radius-card);
+  background: var(--white);
+  box-shadow: var(--l-shadow-card);
+}
+
+.l-qr img {
+  width: 160px;
+  height: 160px;
+}
+
+.l-qr__addr {
+  max-width: 160px;
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--ink-700);
+}
+
+/* A phone cannot scan its own screen; display:none also keeps the lazy image from loading. */
+[data-desktop-only] {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  [data-desktop-only] {
+    display: block;
+  }
+
+  /* Wide screens: heading and lead on the left, the proof beside them. */
+  .l-q {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: var(--space-16);
+    align-content: start;
+    align-items: start;
+  }
+
+  .l-q__head,
+  .l-q__lead,
+  .l-q__exit {
+    grid-column: 1;
+  }
+
+  .l-q__proof {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    margin-top: 0;
+  }
+
+  /* The three install paths need the full width, side by side. */
+  #install {
+    grid-template-columns: 1fr;
+  }
+
+  #install .l-q__proof {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .l-q--panel {
+    padding: var(--space-10);
+  }
+
+  .l-pair {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .l-shot {
+    justify-items: start;
+  }
+}

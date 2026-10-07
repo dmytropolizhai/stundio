@@ -1,0 +1,62 @@
+/*
+ * The install bar — the page's only fixed element. Phones only, and only once JS has revealed
+ * it (`hidden` in the HTML). Hidden state is off-screen, transparent and `inert`; it animates
+ * with transform and opacity alone. One of three labels shows, by platform.
+ */
+.l-sticky {
+  position: fixed;
+  inset-inline: var(--space-4);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  z-index: 5;
+  filter: drop-shadow(var(--l-shadow-sticky));
+  opacity: 0;
+  transform: translateY(calc(100% + var(--space-4)));
+  visibility: hidden;
+  transition:
+    opacity var(--l-dur-reveal) var(--l-ease),
+    transform var(--l-dur-reveal) var(--l-ease),
+    visibility 0s linear var(--l-dur-reveal);
+}
+
+.l-sticky[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.l-sticky [data-set] {
+  display: none;
+}
+
+.l-sticky [data-set="neutral"] {
+  display: block;
+}
+
+[data-platform="android"] .l-sticky [data-set="neutral"],
+[data-platform="ios"] .l-sticky [data-set="neutral"] {
+  display: none;
+}
+
+[data-platform="android"] .l-sticky [data-set="android"],
+[data-platform="ios"] .l-sticky [data-set="ios"] {
+  display: block;
+}
+
+html {
+  scroll-padding-bottom: 0;
+}
+
+.js {
+  scroll-padding-bottom: var(--l-sticky-reserve);
+}
+
+@media (min-width: 960px) {
+  .l-sticky {
+    display: none;
+  }
+
+  .js {
+    scroll-padding-bottom: 0;
+  }
+}

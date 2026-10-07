@@ -1,0 +1,53 @@
+/*
+ * Footer: a sunken band with the privacy text, both disclaimers in full, source links, the four
+ * language names and the last way into the app. Rounded top like every large surface here.
+ */
+.l-footer {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding-block: var(--space-10) calc(var(--space-10) + env(safe-area-inset-bottom));
+  border-radius: var(--l-radius-shot) var(--l-radius-shot) 0 0;
+  background: var(--l-sunken);
+  color: var(--l-text-muted);
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+}
+
+/* The band spans the viewport; the content keeps the column. */
+body > .l-footer {
+  max-width: none;
+  padding-inline: max(var(--l-gutter), calc((100% - var(--l-col)) / 2));
+}
+
+.l-footer #privacy {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-footer__h {
+  font-size: var(--l-size-h3);
+  font-weight: var(--fw-bold);
+}
+
+.l-footer .l-textlink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--l-tap);
+}
+
+.l-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-5);
+}
+
+.l-footer .l-lang ul {
+  background: var(--l-bg);
+}
+
+@media (min-width: 960px) {
+  body > .l-footer {
+    padding-inline: max(var(--l-gutter), calc((100% - var(--l-container)) / 2));
+  }
+}

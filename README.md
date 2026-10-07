@@ -157,6 +157,8 @@ npm run typecheck       # Run TypeScript checks
 npm run lint            # Run ESLint
 npm run format          # Format with Prettier
 npm run build           # Build the production app
+npm run dev:landing     # Dev server for the landing page (landing/, see landing/README.md)
+npm run build:landing   # Build the landing page into landing/dist
 ```
 
 CI runs, in that order, lint, a formatting check (`npm run format:check`), typecheck, tests with coverage, and the build. Running the same locally is enough to know a change will pass.

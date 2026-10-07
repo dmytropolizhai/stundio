@@ -1,0 +1,199 @@
+/*
+ * Hero: the whole first screen. H1 is the LCP element and plain text. Below 960px the grid puts
+ * the CTA above the scene (03b 3.5: the button must be on the first screen); from 960px the scene
+ * moves to the right column. DeviceCta shows exactly one of its four sets.
+ */
+.l-hero {
+  display: grid;
+  grid-template-areas:
+    "text"
+    "cta"
+    "scene"
+    "qr";
+  gap: var(--l-gap-block);
+}
+
+.l-hero__text {
+  grid-area: text;
+  display: grid;
+  gap: var(--l-gap-text);
+}
+
+/* Narrow screens: the primary button sits above the scene (03b 3.5). DOM order stays text, scene,
+   cta, so a screen reader still hears the illustration before the button; only the paint order
+   differs. */
+.l-hero__scene {
+  grid-area: scene;
+}
+
+.l-hero__title {
+  font-size: var(--l-size-hero);
+  font-weight: var(--fw-black);
+  line-height: var(--l-lh-hero);
+  letter-spacing: var(--l-track-hero);
+}
+
+.l-hero__lead {
+  font: var(--type-body-lg);
+  font-size: var(--l-size-lead);
+  color: var(--l-text);
+}
+
+.l-hero__source {
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--l-text-muted);
+}
+
+.l-hero__cta {
+  grid-area: cta;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-hero__qr {
+  grid-area: qr;
+  display: none;
+}
+
+/* ——— DeviceCta ——— */
+.l-cta__set {
+  display: none;
+  gap: var(--space-3);
+}
+
+.l-cta__set[data-set="neutral"] {
+  display: grid;
+}
+
+[data-platform] .l-cta__set[data-set="neutral"] {
+  display: none;
+}
+
+[data-platform="android"] .l-cta__set[data-set="android"],
+[data-platform="ios"] .l-cta__set[data-set="ios"],
+[data-platform="desktop"] .l-cta__set[data-set="desktop"] {
+  display: grid;
+}
+
+.l-cta__micro {
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--l-text);
+}
+
+/* Mentions the QR code, which exists only where the QR card is shown (>= 960px, below). */
+.l-cta__qrhint {
+  display: none;
+}
+
+.l-cta__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-5);
+}
+
+.l-cta__inapp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-2);
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--l-text-muted);
+}
+
+.l-cta__trust {
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--l-text-muted);
+}
+
+.l-after {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--l-radius-callout);
+  background: var(--l-surface);
+  box-shadow: var(--l-ring-hairline);
+  animation: l-reveal var(--l-dur-reveal) var(--l-ease) both;
+}
+
+.l-after__title {
+  font-weight: var(--fw-bold);
+  color: var(--l-text-strong);
+}
+
+.l-after__fail {
+  font-size: var(--l-size-caption);
+  color: var(--l-text-muted);
+}
+
+@keyframes l-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--l-shift));
+  }
+}
+
+/* Two buttons side by side once the column is wide enough for both labels. */
+@media (min-width: 400px) {
+  .l-cta__set[data-set="neutral"] {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .l-cta__set[data-set="neutral"] > :not(.l-btn--primary):not(.l-btn--onField) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* A short viewport (in-app browsers with toolbars): the scene folds to its "now" row. The
+   "illustration" caption stays — an example must never read as live data (01c). */
+@media (max-height: 619px) {
+  .l-scene__row--next {
+    display: none;
+  }
+}
+
+@media (min-width: 960px) {
+  .l-cta__qrhint {
+    display: inline;
+  }
+
+  .l-hero {
+    grid-template-columns: 1fr 380px;
+    grid-template-areas:
+      "text scene"
+      "cta  scene"
+      "cta  qr";
+    column-gap: var(--space-16);
+    align-items: start;
+    padding-block: var(--space-10);
+  }
+
+  .l-hero__text {
+    grid-area: text;
+  }
+
+  .l-hero__scene {
+    grid-area: scene;
+  }
+
+  .l-hero__cta {
+    grid-area: cta;
+    max-width: 420px;
+  }
+
+  .l-hero__qr {
+    grid-area: qr;
+    display: block;
+  }
+
+  .l-hero__lead {
+    max-width: var(--l-measure);
+  }
+
+  .l-cta__set[data-set="neutral"] {
+    grid-template-columns: 1fr;
+  }
+}

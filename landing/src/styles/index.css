@@ -1,0 +1,26 @@
+/*
+ * Landing stylesheet entry. Order matters: the app's own design-system tokens first (imported
+ * from the files, never copied), the dark overrides lifted from dark.css, then the landing layer
+ * (`--l-*`), then base, layout and components. Component CSS reads only `--l-*`.
+ * `fonts.css` from the DS is deliberately NOT imported — it pulls every weight and the licensed
+ * Moho face; the page declares its own per-language subsets (build/fonts.ts).
+ */
+@import "../../../src/ds/tokens/colors.css";
+@import "../../../src/ds/tokens/spacing.css";
+@import "../../../src/ds/tokens/surfaces.css";
+@import "../../../src/ds/tokens/typography.css";
+@import "../../../src/ds/tokens/motion.css";
+@import "./ds-dark.css";
+@import "./tokens.css";
+@import "./base.css";
+@import "./layout.css";
+@import "./components/button.css";
+@import "./components/header.css";
+@import "./components/hero.css";
+@import "./components/scene.css";
+@import "./components/sections.css";
+@import "./components/install.css";
+@import "./components/faq.css";
+@import "./components/final.css";
+@import "./components/footer.css";
+@import "./components/sticky.css";

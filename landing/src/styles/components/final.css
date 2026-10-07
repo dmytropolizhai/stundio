@@ -1,0 +1,63 @@
+/*
+ * FinalCta: the page's single blue field. Everything on it is white; the buttons are white
+ * pills (never blue), focus rings are white. The APK warning comes first, above the buttons.
+ */
+.l-final {
+  display: grid;
+  gap: var(--l-gap-block);
+  margin-inline: calc(var(--space-2) - var(--l-gutter));
+  padding: var(--space-8) var(--l-gutter);
+  border-radius: var(--l-radius-shot);
+  background: var(--l-field);
+  color: var(--l-on-field);
+}
+
+.l-final :focus-visible {
+  outline-color: var(--l-on-field);
+}
+
+.l-final__title {
+  color: var(--l-on-field);
+  font-size: var(--l-size-h2);
+  font-weight: var(--l-weight-h2);
+  line-height: var(--l-lh-h2);
+  letter-spacing: var(--track-display);
+}
+
+.l-final__warn,
+.l-final .l-cta__micro {
+  font-size: var(--l-size-body);
+  line-height: 1.45;
+  color: var(--l-on-field);
+}
+
+.l-final .l-btn--link {
+  color: var(--l-on-field);
+}
+
+.l-final .l-pill {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--border-on-brand);
+  color: var(--l-on-field);
+}
+
+.l-final .l-pill .l-icon {
+  color: var(--l-on-field);
+}
+
+/* The warning is only about the APK: hide it where the visitor will not see an APK button. */
+[data-platform="ios"] .l-final__warn,
+[data-platform="desktop"] .l-final__warn {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  .l-final {
+    margin-inline: 0;
+    padding: var(--space-16);
+  }
+
+  .l-final .l-cta {
+    max-width: 420px;
+  }
+}

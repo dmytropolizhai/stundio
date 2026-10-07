@@ -1,0 +1,114 @@
+/*
+ * The landing layer: every `--l-*` token (03b section 2). They point at the design system's
+ * semantic aliases wherever one exists, so the dark theme (the app's dark.css, re-scoped to
+ * `prefers-color-scheme` in ds-dark.css) flows through without a second copy. A raw hex appears
+ * nowhere on this page outside the DS token files.
+ */
+:root {
+  color-scheme: light dark;
+
+  --font-display:
+    "Manrope", "Manrope Fallback", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-text: var(--font-display);
+  --font-data: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* colour */
+  --l-bg: var(--bg-app);
+  --l-surface: var(--surface-card);
+  --l-sunken: var(--surface-sunken);
+  --l-text: var(--text-body);
+  --l-text-strong: var(--text-strong);
+  --l-text-muted: var(--text-muted);
+  --l-link: var(--text-link);
+  --l-link-hover: var(--text-link-hover);
+  --l-focus: var(--focus-ring);
+  --l-now: var(--blue-500);
+  --l-rail: var(--border-strong);
+  --l-progress-track: var(--surface-sunken);
+  --l-progress-fill: var(--brand);
+  --l-btn-bg: var(--brand);
+  --l-btn-fg: var(--text-on-brand);
+  --l-btn-bg-hover: var(--ink-700);
+  --l-btn-ring: var(--text-strong);
+  --l-btn-tint: var(--surface-sunken);
+  --l-field: var(--bg-hero);
+  --l-on-field: var(--white);
+  --l-field-btn-bg: var(--white);
+  --l-field-btn-fg: var(--ink-900);
+  --l-cancel-bg: var(--status-danger);
+  --l-cancel-fg: var(--white);
+  --l-accent-a: var(--accent-sky);
+  --l-accent-a-ink: var(--accent-sky-ink);
+  --l-accent-b: var(--accent-mint);
+  --l-accent-b-ink: var(--accent-mint-ink);
+  --l-accent-c: var(--accent-lilac);
+  --l-accent-c-ink: var(--accent-lilac-ink);
+
+  /* type */
+  --l-size-hero: clamp(40px, 11vw, var(--size-hero));
+  --l-lh-hero: var(--lh-hero);
+  --l-track-hero: var(--track-hero);
+  --l-size-h2: var(--size-display-2);
+  --l-weight-h2: var(--fw-bold);
+  --l-lh-h2: var(--lh-display-2);
+  --l-size-h3: var(--size-title);
+  --l-size-lead: var(--size-body-lg);
+  --l-size-body: var(--size-body);
+  --l-size-caption: var(--size-caption);
+  --l-measure: 60ch;
+
+  /* space */
+  --l-gutter: var(--gutter-screen);
+  --l-gap-section: var(--space-16);
+  --l-gap-block: var(--space-6);
+  --l-gap-text: var(--space-3);
+  --l-gap-card: var(--gap-card);
+  --l-header-h: var(--topbar-height);
+  --l-tap: var(--tap-min);
+  --l-col: var(--screen-max);
+  --l-container: 1120px;
+  --l-sticky-reserve: calc(54px + 2 * var(--space-4) + env(safe-area-inset-bottom));
+
+  /* radius */
+  --l-radius-control: var(--radius-pill);
+  --l-radius-card: var(--radius-xl);
+  --l-radius-callout: var(--radius-lg);
+  --l-radius-shot: var(--radius-2xl);
+  --l-radius-cell: var(--radius-sm);
+
+  /* elevation */
+  --l-shadow-card: var(--shadow-card);
+  --l-shadow-raised: var(--shadow-raised);
+  --l-shadow-sticky: var(--shadow-nav);
+  --l-ring-hairline: var(--shadow-inset-hairline);
+
+  /* motion */
+  --l-dur-press: var(--dur-instant);
+  --l-dur-ui: var(--dur-fast);
+  --l-dur-reveal: var(--dur-base);
+  --l-dur-progress: calc(var(--dur-slow) * 2);
+  --l-ease: var(--ease-standard);
+  --l-ease-out: var(--ease-out);
+  --l-shift: var(--space-2);
+}
+
+@media (min-width: 960px) {
+  :root {
+    --l-size-hero: clamp(64px, 6.25vw, 80px);
+    --l-size-h2: var(--size-display-1);
+    --l-weight-h2: var(--fw-black);
+    --l-lh-h2: var(--lh-display-1);
+    --l-size-lead: 19px;
+    --l-size-body: 16px;
+    --l-gap-section: calc(var(--space-16) + var(--space-8));
+  }
+}
+
+/* Dark: only what the DS aliases do not already settle (03b section 2.4 explains each). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --l-now: var(--blue-300);
+    --l-btn-bg-hover: var(--ink-200);
+    --l-cancel-fg: var(--ink-900);
+  }
+}

@@ -1,0 +1,281 @@
+/*
+ * The two HTML illustrations. Anatomy comes from the Android widget (4px rail, 11px label,
+ * 17px subject, 12-13px meta, countdown right) and the app's lesson row. Only `transform` and
+ * `opacity` ever animate. The "now" row wears the single electric ring on the first screen.
+ */
+.l-scene {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-scene__card {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--l-radius-card);
+  background: var(--l-surface);
+  box-shadow: var(--l-shadow-card);
+}
+
+.l-scene__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr) auto;
+  gap: 0 10px;
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--l-bg);
+}
+
+.l-scene__row--now {
+  padding-bottom: var(--space-6);
+  box-shadow: inset 0 0 0 2px var(--l-now);
+}
+
+.l-scene__rail {
+  align-self: stretch;
+  border-radius: var(--l-radius-control);
+  background: var(--rail);
+}
+
+.l-scene__body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.l-scene__subject {
+  overflow: hidden;
+  font-size: 17px;
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  color: var(--l-text-strong);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.l-scene__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--l-size-caption);
+  color: var(--l-text-muted);
+}
+
+.l-scene__time {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.l-scene__left {
+  font-size: var(--l-size-caption);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--l-text-strong);
+}
+
+.l-progress {
+  position: absolute;
+  inset-inline: var(--space-4);
+  bottom: var(--space-2);
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--l-radius-control);
+  background: var(--l-progress-track);
+}
+
+/* In the card the track must read against the row, not vanish into it (03b F6). */
+.l-scene__row--now .l-progress {
+  background: var(--l-sunken);
+  box-shadow: inset 0 0 0 1px var(--l-rail);
+}
+
+.l-progress__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--l-progress-fill);
+  transform: scaleX(var(--p));
+  transform-origin: left;
+}
+
+/* Grows once on load — in plain CSS, so it needs no JS. Without animation it is simply full. */
+@media (prefers-reduced-motion: no-preference) {
+  .l-progress__fill {
+    animation: l-grow var(--l-dur-progress) var(--l-ease-out) both;
+  }
+}
+
+@keyframes l-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.l-scene__caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  font-size: var(--l-size-caption);
+  line-height: var(--lh-caption);
+  color: var(--l-text-muted);
+}
+
+/* ——— Cancelled lesson, in place ——— */
+.l-changes {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.l-changes__list {
+  display: grid;
+  gap: var(--l-gap-card);
+}
+
+.l-lesson {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4px 52px 40px minmax(0, 1fr);
+  gap: 0 var(--space-3);
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--l-radius-card);
+  background: var(--l-surface);
+  box-shadow: var(--l-shadow-card);
+}
+
+.l-lesson__rail {
+  align-self: stretch;
+  border-radius: var(--l-radius-control);
+  background: var(--rail);
+}
+
+.l-lesson__times {
+  display: grid;
+  gap: 2px;
+}
+
+.l-lesson__start {
+  font-weight: 700;
+}
+
+.l-lesson__end {
+  font-size: 12px;
+  color: var(--l-text-muted);
+}
+
+.l-lesson__n {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--l-radius-control);
+  background: var(--rail);
+  color: var(--ink);
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.l-lesson__body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.l-lesson__subject {
+  font-size: 20px;
+  font-weight: var(--fw-bold);
+  line-height: 1.15;
+  color: var(--l-text-strong);
+  overflow-wrap: anywhere;
+}
+
+.l-lesson__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--l-size-caption);
+  color: var(--l-text-muted);
+}
+
+.l-lesson__badge {
+  position: absolute;
+  inset-block-start: calc(var(--space-3) * -1);
+  inset-inline-end: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 var(--space-3);
+  border-radius: var(--l-radius-control);
+  background: var(--l-cancel-bg);
+  color: var(--l-cancel-fg);
+  font: var(--type-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+/*
+ * Cancelled: start time and subject dim only to 80% and are struck through (at 55% the time fell
+ * to 4.3:1 on the light card and the muted end time to 3.0:1 on the dark one). The end time and
+ * the place/room line keep full contrast (the room also gets a strike) — the strike and the badge
+ * carry the state, not the dimming (03b F5).
+ * The strike is a pseudo-element so the story script can draw it left to right.
+ */
+.l-strike,
+.l-strike-meta {
+  position: relative;
+}
+
+.l-lesson--cancelled .l-strike {
+  opacity: 0.8;
+}
+
+.l-lesson--cancelled .l-strike::after,
+.l-lesson--cancelled .l-strike-meta::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.l-lesson--cancelled .l-lesson__meta .l-icon {
+  opacity: 0.8;
+}
+
+/* Armed by changes-anim.ts only when the scene starts off screen; otherwise this never applies. */
+[data-anim="armed"] .l-lesson--cancelled .l-strike::after,
+[data-anim="armed"] .l-lesson--cancelled .l-strike-meta::after {
+  transform: scaleX(0);
+}
+
+[data-anim="armed"] .l-lesson--cancelled .l-strike {
+  opacity: 1;
+}
+
+[data-anim="armed"] .l-lesson__badge {
+  opacity: 0;
+  transform: translateY(var(--l-shift));
+}
+
+[data-anim="run"] .l-lesson--cancelled .l-strike {
+  transition: opacity var(--l-dur-reveal) var(--l-ease);
+}
+
+[data-anim="run"] .l-lesson--cancelled .l-strike::after,
+[data-anim="run"] .l-lesson--cancelled .l-strike-meta::after {
+  transition: transform var(--l-dur-reveal) var(--l-ease) var(--dur-fast);
+}
+
+[data-anim="run"] .l-lesson__badge {
+  transition:
+    opacity var(--l-dur-reveal) var(--l-ease),
+    transform var(--l-dur-reveal) var(--l-ease);
+}
