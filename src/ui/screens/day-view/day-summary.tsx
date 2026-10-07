@@ -23,22 +23,25 @@ export const DaySummary = ({ summary }: DaySummaryProps) => {
 
   return (
     <ul
-      className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 font-data text-body font-medium tabular-nums text-strong"
+      className="mt-3 flex flex-wrap items-center justify-between font-data text-body font-medium tabular-nums text-strong"
       data-testid="day-summary"
     >
       <Fact icon="clock" label={`${summary.start} – ${summary.end}`}>
         {`${summary.start} – ${summary.end}`}
       </Fact>
-
-      <Fact icon="graduation-cap" label={t("day.summary.lessons", { count: summary.lessonCount })}>
-        {String(summary.lessonCount)}
-      </Fact>
-
-      {summary.freeMinutes > 0 && (
-        <Fact icon="coffee" label={t("day.summary.free", { duration: free })}>
-          {free}
+      <div className="flex flex-row gap-4">
+        <Fact
+          icon="graduation-cap"
+          label={t("day.summary.lessons", { count: summary.lessonCount })}
+        >
+          {String(summary.lessonCount)}
         </Fact>
-      )}
+        {summary.freeMinutes > 0 && (
+          <Fact icon="coffee" label={t("day.summary.free", { duration: free })}>
+            {free}
+          </Fact>
+        )}
+      </div>
     </ul>
   );
 };
