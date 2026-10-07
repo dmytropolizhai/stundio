@@ -203,6 +203,7 @@ Still unverified on a physical device (no JDK/Android SDK here).
         card leads with group · room (subject underneath), like their day list, and the
         subject-colour hint / empty state speak about the subjects they teach, not a class.
 - [x] App icon, adaptive icon, splash, status-bar styling, edge-to-edge (`SystemBarsPlugin` native Android integration).
+- [x] Day view prev/next, swipes and arrow keys skip Saturday/Sunday (`schoolDays.ts`); the date picker and week view can still open a weekend date.
 - [x] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline detection & banner.
 - [x] `@capacitor/local-notifications`: after a foreground/resume sync, if today's (or
       tomorrow's) substitutions changed vs the cached snapshot → fire a local notification.
