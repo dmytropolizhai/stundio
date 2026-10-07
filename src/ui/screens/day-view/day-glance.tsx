@@ -9,6 +9,7 @@ import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { Card, Icon } from "@/ds";
 import { lessonBuilding } from "@/ui/theme";
 import { formatDuration, useT } from "@/ui/i18n";
+import { glanceWalk } from "./glance-walk.ts";
 import { lessonHeading } from "@/ui/components/lesson-heading.ts";
 
 type DayGlanceProps = {
@@ -29,13 +30,7 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
     ? t("day.glance.left", { duration: formatDuration(glance.minutesLeft) })
     : t("day.glance.in", { duration: formatDuration(glance.minutesUntil) });
 
-  const walkTo = live
-    ? glance.followingHop && glance.following !== null
-      ? { to: glance.following, from: null }
-      : null
-    : glance.hop
-      ? { to: lesson, from: glance.from }
-      : null;
+  const walkTo = glanceWalk(glance);
   const walkBuilding = walkTo === null ? undefined : lessonBuilding(day, walkTo.to);
 
   return (
@@ -44,12 +39,18 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
       radius="xl"
       className="mt-3"
       data-testid="day-glance"
+      aria-label={t("day.glance.open", { title, countdown })}
       onClick={() => {
         onOpenLesson(lesson);
       }}
     >
       <div className="flex items-baseline justify-between gap-3">
-        <span className="u-eyebrow">{eyebrow}</span>
+        <span
+          className={live ? "u-eyebrow opacity-80" : "u-eyebrow"}
+          style={live ? { color: "inherit" } : undefined}
+        >
+          {eyebrow}
+        </span>
         <span
           className="font-data text-caption font-bold tabular-nums"
           data-testid="glance-countdown"
@@ -58,7 +59,8 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
         </span>
       </div>
 
-      <h2 className="mt-1 font-display text-display-2 tracking-display">{title}</h2>
+      {/* The global h2 colour is text-strong, which is near-black on the brand card. */}
+      <h2 className="mt-1 font-display text-display-2 tracking-display text-current">{title}</h2>
       {subtitle !== undefined && <p className="font-text text-caption opacity-80">{subtitle}</p>}
 
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-text text-body font-bold">

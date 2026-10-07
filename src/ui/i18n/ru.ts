@@ -100,6 +100,8 @@ export const ru: Dict = {
   "day.tomorrow.eyebrow": "Следующий учебный день · {weekday}",
   "day.tomorrow.starts": "Начало в {time}",
   "day.tomorrow.changes": "Изменений: {count}",
+  "day.tomorrow.open": "Открыть {weekday}: начало в {time}",
+  "day.glance.open": "Открыть {title}, {countdown}",
   "day.feedbackPrompt.title": "Есть идея?",
   "day.feedbackPrompt.body": "Расскажи, что добавить или исправить в Stundio.",
   "day.feedbackPrompt.action": "Предложить",

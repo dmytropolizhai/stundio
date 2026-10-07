@@ -1,6 +1,6 @@
 import type { ISODate } from "@/lib/edupage";
 import type { TomorrowPreview } from "@/lib/schedule";
-import { Card } from "@/ds";
+import { Badge, Card } from "@/ds";
 import { formatWeekdayLong, useLang, useT } from "@/ui/i18n";
 import { lessonHeading } from "@/ui/components/lesson-heading.ts";
 
@@ -17,7 +17,17 @@ export const DayTomorrow = ({ date, preview, onOpen }: DayTomorrowProps) => {
   const { title, rooms, isTeacherMode } = lessonHeading(preview.first);
 
   return (
-    <Card tone="surface" radius="xl" className="mt-3" data-testid="day-tomorrow" onClick={onOpen}>
+    <Card
+      tone="surface"
+      radius="xl"
+      className="mt-3"
+      data-testid="day-tomorrow"
+      aria-label={t("day.tomorrow.open", {
+        weekday: formatWeekdayLong(date, lang),
+        time: preview.start,
+      })}
+      onClick={onOpen}
+    >
       <span className="u-eyebrow">
         {t("day.tomorrow.eyebrow", { weekday: formatWeekdayLong(date, lang) })}
       </span>
@@ -29,9 +39,9 @@ export const DayTomorrow = ({ date, preview, onOpen }: DayTomorrowProps) => {
         {!isTeacherMode && rooms !== "" ? ` · ${rooms}` : ""}
       </p>
       {preview.changedCount > 0 && (
-        <p className="mt-2 font-text text-caption font-bold text-warning">
+        <Badge tone="warning" uppercase={false} className="mt-2">
           {t("day.tomorrow.changes", { count: preview.changedCount })}
-        </p>
+        </Badge>
       )}
     </Card>
   );

@@ -106,6 +106,8 @@ export const lv = {
   "day.tomorrow.eyebrow": "Nākamā mācību diena · {weekday}",
   "day.tomorrow.starts": "Sākas {time}",
   "day.tomorrow.changes": "Izmaiņas: {count}",
+  "day.tomorrow.open": "Atvērt {weekday}: sākas plkst. {time}",
+  "day.glance.open": "Atvērt {title}, {countdown}",
   "day.feedbackPrompt.title": "Ir ideja?",
   "day.feedbackPrompt.body": "Pastāsti, ko Stundio vajadzētu pievienot vai labot.",
   "day.feedbackPrompt.action": "Ieteikt",

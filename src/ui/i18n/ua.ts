@@ -99,6 +99,8 @@ export const ua: Dict = {
   "day.tomorrow.eyebrow": "Наступний навчальний день · {weekday}",
   "day.tomorrow.starts": "Початок о {time}",
   "day.tomorrow.changes": "Змін: {count}",
+  "day.tomorrow.open": "Відкрити {weekday}: початок о {time}",
+  "day.glance.open": "Відкрити {title}, {countdown}",
   "day.feedbackPrompt.title": "Є ідея?",
   "day.feedbackPrompt.body": "Розкажи, що додати чи виправити в Stundio.",
   "day.feedbackPrompt.action": "Запропонувати",

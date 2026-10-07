@@ -18,6 +18,8 @@ type DayLessonListProps = {
   colorCodingEnabled: boolean;
   filled: boolean;
   x: MotionValue<number>;
+  opacity: MotionValue<number>;
+  dragging: boolean;
   onOpenLesson: (lesson: ResolvedLesson) => void;
 };
 
@@ -31,6 +33,8 @@ export const DayLessonList = ({
   colorCodingEnabled,
   filled,
   x,
+  opacity,
+  dragging,
   onOpenLesson,
 }: DayLessonListProps) => {
   const t = useT();
@@ -79,9 +83,7 @@ export const DayLessonList = ({
             filled={filled}
             {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
             {...(building === undefined ? {} : { building })}
-            onOpen={() => {
-              onOpenLesson(lesson);
-            }}
+            onOpen={onOpenLesson}
           />
         ),
       });
@@ -113,7 +115,8 @@ export const DayLessonList = ({
       className="mt-3 flex flex-col gap-3"
       style={{
         x,
-        willChange: "transform",
+        opacity,
+        willChange: dragging ? "transform" : "auto",
       }}
     >
       {rows.map((row) => (
