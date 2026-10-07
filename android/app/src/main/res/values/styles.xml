@@ -20,6 +20,15 @@
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
     </style>
 
+    <!-- WidgetSyncActivity: a window nobody should see. -->
+    <style name="AppTheme.WidgetSync" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <!--
       MainActivity's launch theme (AndroidManifest.xml). Uses centered splash_screen layer
       to prevent bitmap stretching on non-standard device aspect ratios.

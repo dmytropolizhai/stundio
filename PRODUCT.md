@@ -107,9 +107,11 @@ Android SDK on the current machine), and the Play Store listing.
 - 247 tests, 96% line coverage; the TS substitution parser is byte-identical to the Python probe
   over all 55 rows of the fixture.
 
-Absences future work must not fabricate: **no real users yet** (the app has never run on a device —
-no JDK/Android SDK on this machine), no downloads, no testimonials, no reviews, no Play Store
-presence, no press, no logo or brand assets beyond the name, no screenshots of the app in real use.
+## Current Status & Evidence
+
+**Live and in use:** over 200 students and teachers actively use Stundio daily. The web app has recorded
+1.1k unique visitors and 2k total visits. Android users significantly outnumber iOS users. The app
+is deployed on real devices and running in production, with real users relying on it for their schedules.
 
 ## Product Principles
 

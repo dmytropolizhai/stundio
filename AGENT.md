@@ -59,7 +59,9 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   a `ResolvedDay` + `lib/schedule`'s `glanceLesson` into already-rendered strings, so the native
   side does no schedule maths at all. Only `native.ts` touches Capacitor. The store wiring
   (`src/widget/`) publishes it after every sync; `NextLessonWidget.refresh(context)` is the
-  native re-render seam.
+  native re-render seam. The 2×1 tile's refresh button boots `WidgetSyncActivity` — an invisible
+  `BridgeActivity` — and `src/widget/sync.ts` runs the app's own sync in it, publishes, then closes it
+  (native work can't reach EduPage; the JS engine is the only fetcher).
 - **`src/lib/persona/`** — role resolution. Student and teacher are separate at the root (a
   class + subgroup vs. a teacher + view), so the flat `Settings` fields are resolved once into a
   discriminated `Identity` (`resolveIdentity`) and branched on with the exhaustive

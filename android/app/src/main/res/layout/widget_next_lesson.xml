@@ -71,4 +71,15 @@
         android:maxLines="1"
         android:textColor="@color/widget_text_muted"
         android:textSize="12sp" />
+
+    <ImageButton
+        android:id="@+id/widget_refresh"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="4dp"
+        android:background="@null"
+        android:contentDescription="@string/widget_refresh"
+        android:padding="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_widget_refresh" />
 </LinearLayout>

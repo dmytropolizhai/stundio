@@ -2,6 +2,7 @@ package com.dmytropolizhai.stundio;
 
 import com.dmytropolizhai.stundio.widget.WidgetPayload;
 import com.dmytropolizhai.stundio.widget.WidgetRefresher;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -33,5 +34,22 @@ public class StundioWidgetPlugin extends Plugin {
         } catch (Exception e) {
             call.reject("Could not publish the widget payload: " + e.getMessage(), e);
         }
+    }
+
+    /** True when this bridge was booted by the widget's refresh button, not by the launcher. */
+    @PluginMethod
+    public void isSyncRequest(PluginCall call) {
+        JSObject result = new JSObject();
+        result.put("requested", getActivity() instanceof WidgetSyncActivity);
+        call.resolve(result);
+    }
+
+    /** Closes the invisible refresh window; a no-op in the real app. */
+    @PluginMethod
+    public void finishSync(PluginCall call) {
+        if (getActivity() instanceof WidgetSyncActivity) {
+            getActivity().finish();
+        }
+        call.resolve();
     }
 }

@@ -26,6 +26,8 @@
     <string name="widget_updated_hours">%d h</string>
     <string name="widget_updated_days">%d d</string>
 
+    <string name="widget_refresh">Atjaunināt</string>
+
     <string name="countdown_widget_name">Laiks līdz beigām</string>
     <string name="countdown_widget_description">Liels atskaites laiks līdz stundas beigām vai sākumam.</string>
 
