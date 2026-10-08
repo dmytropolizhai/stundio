@@ -13,6 +13,7 @@ import { createSyncEngine, watchAppResume, watchConnectivity } from "@/sync";
 import {
   checkForAppUpdateNotification,
   notifyOnChanges,
+  notifyOnNewTimetable,
   refreshWebPushSubscription,
   reportSubstitutionChangeToServer,
   wireNotifications,
@@ -65,6 +66,7 @@ export const bootApp: Boot = async () => {
       const outcome = await store.getState().refresh();
       if (isNative) {
         notifyOnChanges(store, outcome, hadPreviousSync);
+        notifyOnNewTimetable(store, outcome, hadPreviousSync);
       } else if (hadPreviousSync && outcome.changedDates.length > 0) {
         void reportSubstitutionChangeToServer(outcome.changedDates);
       }

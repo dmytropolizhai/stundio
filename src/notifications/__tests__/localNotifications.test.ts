@@ -36,6 +36,7 @@ const {
   hasExactAlarmPermission,
   hasNotificationPermission,
   notifyAppUpdate,
+  notifyNewTimetable,
   notifySubstitutionsChanged,
   onNotificationTap,
   rescheduleLessonReminders,
@@ -177,6 +178,21 @@ describe("one-shot notifications", () => {
           body: "body",
           channelId: "schedule",
           extra: { kind: "substitutionsChanged", date: "2026-09-09" },
+        },
+      ],
+    });
+  });
+
+  it("notifyNewTimetable schedules a single fixed-id notification", async () => {
+    await notifyNewTimetable("title", "body", "2026-09-14");
+    expect(schedule).toHaveBeenCalledWith({
+      notifications: [
+        {
+          id: 3,
+          title: "title",
+          body: "body",
+          channelId: "schedule",
+          extra: { kind: "newTimetable", date: "2026-09-14" },
         },
       ],
     });

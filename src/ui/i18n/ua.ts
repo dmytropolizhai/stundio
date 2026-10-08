@@ -247,6 +247,8 @@ export const ua: Dict = {
   "settings.notifySubstitutionChanges": "Зміни в розкладі",
   "settings.notifySubstitutionChangesHint":
     "Сповіщати, коли змінюються уроки на сьогодні або завтра.",
+  "settings.notifyNewTimetable": "Новий розклад",
+  "settings.notifyNewTimetableHint": "Сповіщати, коли школа публікує розклад на новий тиждень.",
   "settings.notifyAppUpdates": "Оновлення застосунку",
   "settings.notifyAppUpdatesHint": "Сповіщати про вихід нової версії застосунку.",
   "settings.notifyExactAlarmDenied":
@@ -264,6 +266,8 @@ export const ua: Dict = {
   "notification.changed.body": "У розкладі на сьогодні є зміни.",
   "notification.cover.title": "Нова заміна",
   "notification.cover.body": "Вам призначено заміну",
+  "notification.newTimetable.title": "Новий розклад",
+  "notification.newTimetable.body": "Опубліковано новий розклад з {date}.",
   "notification.update.title": "Доступне оновлення",
   "notification.update.body": "Stundio {version} готовий до завантаження.",
   "widget.now": "Зараз",

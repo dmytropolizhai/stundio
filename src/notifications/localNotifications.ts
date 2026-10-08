@@ -5,6 +5,7 @@
  * Three kinds of notification, three id ranges so cancelling one kind never touches another:
  *   - lesson reminders: one per (date, period), replaced wholesale on every reschedule
  *   - substitution changes: a single fixed id, re-fired (never queued) per changed date
+ *   - new timetable: a single fixed id, re-fired (never queued) when another week is published
  *   - app updates: a single fixed id, one-shot per version (caller dedupes via Settings)
  */
 import { registerPlugin } from "@capacitor/core";
@@ -21,6 +22,7 @@ import { translate, type Lang } from "@/ui/i18n";
 export type NotificationExtra =
   | { kind: "lesson"; date: ISODate }
   | { kind: "substitutionsChanged"; date: ISODate }
+  | { kind: "newTimetable"; date: ISODate }
   | { kind: "appUpdate" };
 
 /**
@@ -32,6 +34,7 @@ const AppSettings = registerPlugin<AppSettingsPlugin>("AppSettings");
 
 const CHANGE_ID = 1;
 const UPDATE_ID = 2;
+const NEW_TIMETABLE_ID = 3;
 /** Lesson reminder ids are hashed into this band so they never collide with the two above. */
 const LESSON_ID_BAND = 1000;
 
@@ -181,6 +184,25 @@ export const notifySubstitutionsChanged = async (
         body,
         channelId: "schedule",
         extra: { kind: "substitutionsChanged", date } satisfies NotificationExtra,
+      },
+    ],
+  });
+};
+
+export const notifyNewTimetable = async (
+  title: string,
+  body: string,
+  date: ISODate,
+): Promise<void> => {
+  await ensureChannel();
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        id: NEW_TIMETABLE_ID,
+        title,
+        body,
+        channelId: "schedule",
+        extra: { kind: "newTimetable", date } satisfies NotificationExtra,
       },
     ],
   });

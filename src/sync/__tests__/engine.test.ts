@@ -354,3 +354,48 @@ describe("sync with scope: 'week'", () => {
     ]);
   });
 });
+
+describe("a newly published timetable", () => {
+  /** Rewinds the cached list as if the school had not yet posted `ttNum`, then re-syncs. */
+  const syncAfterPublishing = async (ttNum: string, building?: "Galvenā ēka" | "TIC") => {
+    const engine = engineAt(`${DATE}T08:00:00Z`);
+    await engine.sync({ date: DATE });
+    const list = await cache.getTimetableList();
+    if (list === null) throw new Error("list not cached");
+    await cache.putTimetableList({
+      ...list,
+      entries: list.entries.filter((e) => e.tt_num !== ttNum),
+    });
+    return engine.sync({ date: DATE, force: true, ...(building ? { building } : {}) });
+  };
+
+  it("is silent on the very first sync — there is nothing to compare against", async () => {
+    const outcome = await engineAt(`${DATE}T08:00:00Z`).sync({ date: DATE });
+    expect(outcome.newTimetableFrom).toBeNull();
+  });
+
+  it("reports the validFrom of a tt_num the cached list lacked", async () => {
+    const outcome = await syncAfterPublishing("1175");
+    const published = (await cache.getTimetableList())?.entries.find((e) => e.tt_num === "1175");
+    expect(published).toBeDefined();
+    expect(outcome.newTimetableFrom).toBe(published?.datefrom);
+  });
+
+  it("reports nothing when the refetched list is unchanged", async () => {
+    const engine = engineAt(`${DATE}T08:00:00Z`);
+    await engine.sync({ date: DATE });
+    expect((await engine.sync({ date: DATE, force: true })).newTimetableFrom).toBeNull();
+  });
+
+  it("ignores a week published for a building the user has pinned away from", async () => {
+    const outcome = await syncAfterPublishing("1175", "TIC");
+    expect(outcome.newTimetableFrom).toBeNull();
+  });
+
+  it("reports nothing when the refetch fails", async () => {
+    const engine = engineAt(`${DATE}T08:00:00Z`);
+    await engine.sync({ date: DATE });
+    server.offline = true;
+    expect((await engine.sync({ date: DATE, force: true })).newTimetableFrom).toBeNull();
+  });
+});

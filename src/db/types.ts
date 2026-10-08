@@ -79,6 +79,8 @@ export type Settings = {
   notifyLessonReminderMinutes: number;
   /** Notify when today's or tomorrow's substitutions change after the initial load. */
   notifySubstitutionChanges: boolean;
+  /** Notify when the school publishes a new week's timetable (a tt_num the device hasn't seen). */
+  notifyNewTimetable: boolean;
   /** Notify once a new GitHub release is available. */
   notifyAppUpdates: boolean;
   /** Latest release tag already notified about — prevents repeat pings for the same version. */
@@ -141,6 +143,7 @@ export const DEFAULT_SETTINGS: Settings = {
   subjectColorOverrides: {},
   notifyLessonReminderMinutes: 10,
   notifySubstitutionChanges: true,
+  notifyNewTimetable: true,
   notifyAppUpdates: true,
   lastNotifiedUpdateVersion: null,
   lastSeenChangelogVersion: null,

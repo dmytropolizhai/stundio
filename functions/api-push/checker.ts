@@ -281,6 +281,57 @@ export type CheckResult = {
   errors: string[];
 };
 
+export type Vapid = { subject: string; publicKey: string; privateKey: string };
+
+/**
+ * Pushes to every device filed under `prefix`, pruning the ones the push service dropped.
+ * Pages through the index: a school-wide announcement lists every subscriber, which can pass
+ * KV's single-page limit.
+ */
+export const dispatchToSubscribers = async (
+  kv: NonNullable<PushEnv["PUSH_KV"]>,
+  vapid: Vapid,
+  counters: Pick<CheckResult, "notifiedDevices" | "expiredDevicesRemoved">,
+  prefix: string,
+  date: string,
+  message: (lang: string) => { title: string; body: string },
+): Promise<void> => {
+  let cursor: string | undefined;
+  do {
+    const page = await kv.list({ prefix, ...(cursor === undefined ? {} : { cursor }) });
+    cursor = page.list_complete ? undefined : page.cursor;
+
+    for (const keyItem of page.keys) {
+      const rawSub = keyItem.metadata ?? (await kv.get(keyItem.name, "json"));
+      const sub =
+        typeof rawSub === "object" && rawSub !== null ? (rawSub as PushSubscriptionPayload) : null;
+      if (!sub?.endpoint || !sub.keys) continue;
+
+      const { title, body } = message(sub.lang || "lv");
+      const pushOutcome = await sendWebPush(
+        sub,
+        { title, body, date, url: `/?tab=day&date=${date}` },
+        vapid,
+      );
+
+      if (pushOutcome.ok) {
+        counters.notifiedDevices += 1;
+      } else if (pushOutcome.expired) {
+        // Clean up dead subscription
+        const endpointId = await sha256Hex(sub.endpoint);
+        await Promise.all([kv.delete(`sub:${endpointId}`), kv.delete(keyItem.name)]);
+        counters.expiredDevicesRemoved += 1;
+      }
+    }
+  } while (cursor !== undefined);
+};
+
+export const vapidFromEnv = (env: PushEnv): Vapid => ({
+  subject: env.VAPID_SUBJECT || DEFAULT_VAPID_SUBJECT,
+  publicKey: env.VAPID_PUBLIC_KEY || DEFAULT_VAPID_PUBLIC_KEY,
+  privateKey: env.VAPID_PRIVATE_KEY || DEFAULT_VAPID_PRIVATE_KEY,
+});
+
 export const checkAndDispatchSubstitutions = async (
   env: PushEnv,
   datesToScan?: string[],
@@ -299,45 +350,15 @@ export const checkAndDispatchSubstitutions = async (
     return result;
   }
 
-  const vapid = {
-    subject: env.VAPID_SUBJECT || DEFAULT_VAPID_SUBJECT,
-    publicKey: env.VAPID_PUBLIC_KEY || DEFAULT_VAPID_PUBLIC_KEY,
-    privateKey: env.VAPID_PRIVATE_KEY || DEFAULT_VAPID_PRIVATE_KEY,
-  };
+  const vapid = vapidFromEnv(env);
 
   const kv = env.PUSH_KV;
 
-  /** Pushes to every device filed under `prefix`, pruning the ones the push service dropped. */
-  const dispatch = async (
+  const dispatch = (
     prefix: string,
     date: string,
     message: (lang: string) => { title: string; body: string },
-  ): Promise<void> => {
-    const subsList = await kv.list({ prefix });
-
-    for (const keyItem of subsList.keys) {
-      const rawSub = keyItem.metadata ?? (await kv.get(keyItem.name, "json"));
-      const sub =
-        typeof rawSub === "object" && rawSub !== null ? (rawSub as PushSubscriptionPayload) : null;
-      if (!sub?.endpoint || !sub.keys) continue;
-
-      const { title, body } = message(sub.lang || "lv");
-      const pushOutcome = await sendWebPush(
-        sub,
-        { title, body, date, url: `/?tab=day&date=${date}` },
-        vapid,
-      );
-
-      if (pushOutcome.ok) {
-        result.notifiedDevices += 1;
-      } else if (pushOutcome.expired) {
-        // Clean up dead subscription
-        const endpointId = await sha256Hex(sub.endpoint);
-        await Promise.all([kv.delete(`sub:${endpointId}`), kv.delete(keyItem.name)]);
-        result.expiredDevicesRemoved += 1;
-      }
-    }
-  };
+  ): Promise<void> => dispatchToSubscribers(kv, vapid, result, prefix, date, message);
 
   const dates = datesToScan && datesToScan.length > 0 ? datesToScan : getTargetDates();
   result.checkedDates = dates;
