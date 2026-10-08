@@ -24,6 +24,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
   const settings = useAppStore((s) => s.settings);
   const setNotifyLessonReminderMinutes = useAppStore((s) => s.setNotifyLessonReminderMinutes);
   const setNotifySubstitutionChanges = useAppStore((s) => s.setNotifySubstitutionChanges);
+  const setNotifyNewTimetable = useAppStore((s) => s.setNotifyNewTimetable);
   const setNotifyAppUpdates = useAppStore((s) => s.setNotifyAppUpdates);
   const identityLabel = useAppStore((s) => s.identityLabel());
 
@@ -158,6 +159,26 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
               }}
             />
           </Row>
+          {isNativePlatform() && (
+            <Row className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-text text-body font-bold text-strong">
+                  {t("settings.notifyNewTimetable")}
+                </p>
+                <p className="mt-0.5 font-text text-caption text-muted">
+                  {t("settings.notifyNewTimetableHint")}
+                </p>
+              </div>
+              <Switch
+                aria-label={t("settings.notifyNewTimetable")}
+                checked={settings.notifyNewTimetable}
+                onChange={(checked) => {
+                  if (checked) void ensureNotificationPermission();
+                  void setNotifyNewTimetable(checked);
+                }}
+              />
+            </Row>
+          )}
           {isNativePlatform() && (
             <Row className="flex items-start justify-between gap-3">
               <div>

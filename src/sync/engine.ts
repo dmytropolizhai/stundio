@@ -46,6 +46,12 @@ export type SyncOutcome = {
    * at a different year — is not a change to this user's timetable and never lands here.
    */
   changedDates: ISODate[];
+  /**
+   * `validFrom` of the earliest timetable the list gained since the last cached one — i.e. a
+   * freshly published week. `null` on the very first fetch (nothing to compare against), when
+   * the list is unchanged, or when only buildings the user has pinned away from were added.
+   */
+  newTimetableFrom: ISODate | null;
   prunedDays: number;
   /** Human-readable reasons, in order. Empty on a clean run. */
   errors: string[];
@@ -108,7 +114,8 @@ export const createSyncEngine = (deps: SyncDeps) => {
     force: boolean,
     date: ISODate,
     errors: SyncFailure[],
-  ): Promise<TimetableMeta[]> => {
+    building: Building | undefined,
+  ): Promise<{ metas: TimetableMeta[]; newTimetableFrom: ISODate | null }> => {
     const cached = await cache.getTimetableList();
     const age = cached === null ? Infinity : now().getTime() - new Date(cached.fetchedAt).getTime();
     const covered =
@@ -124,7 +131,10 @@ export const createSyncEngine = (deps: SyncDeps) => {
       !force && cached !== null && age < (covered ? LIST_MAX_AGE_MS : LIST_UNCOVERED_MAX_AGE_MS);
 
     if (fresh && cached !== null) {
-      return cached.entries.map((e) => toTimetableMeta(e, cached.fetchedAt));
+      return {
+        metas: cached.entries.map((e) => toTimetableMeta(e, cached.fetchedAt)),
+        newTimetableFrom: null,
+      };
     }
 
     try {
@@ -135,11 +145,22 @@ export const createSyncEngine = (deps: SyncDeps) => {
         subdomain,
       );
       await cache.putTimetableList({ entries, defaultNum, fetchedAt });
-      return entries.map((e) => toTimetableMeta(e, fetchedAt));
+      const metas = entries.map((e) => toTimetableMeta(e, fetchedAt));
+      // A tt_num is never reused (MODEL.md §6), so one the cached list lacks is a published week.
+      const known = new Set(cached?.entries.map((e) => e.tt_num));
+      const added = metas
+        .filter((m) => !known.has(m.ttNum) && (building === undefined || m.building === building))
+        .map((m) => m.validFrom)
+        .sort();
+      return { metas, newTimetableFrom: cached === null ? null : (added[0] ?? null) };
     } catch (err) {
       errors.push(failure("timetable list", err));
       // Serve the stale list rather than nothing — this is the offline path.
-      return cached === null ? [] : cached.entries.map((e) => toTimetableMeta(e, cached.fetchedAt));
+      return {
+        metas:
+          cached === null ? [] : cached.entries.map((e) => toTimetableMeta(e, cached.fetchedAt)),
+        newTimetableFrom: null,
+      };
     }
   };
 
@@ -229,9 +250,14 @@ export const createSyncEngine = (deps: SyncDeps) => {
     const today = todayInRiga(now());
     const date = request.date ?? today;
 
-    const metas = await syncTimetableList(request.force ?? false, date, errors);
     const settings = await cache.getSettings();
     const building = request.building ?? settings.building ?? undefined;
+    const { metas, newTimetableFrom } = await syncTimetableList(
+      request.force ?? false,
+      date,
+      errors,
+      building ?? undefined,
+    );
 
     /*
      * Every building's week, not just one: in automatic mode the class's lessons sit in
@@ -294,6 +320,7 @@ export const createSyncEngine = (deps: SyncDeps) => {
       fetchedTtNum,
       refreshedDates,
       changedDates,
+      newTimetableFrom,
       prunedDays,
       errors: errors.map((e) => e.message),
     };

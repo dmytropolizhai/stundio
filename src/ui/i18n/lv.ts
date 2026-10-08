@@ -247,6 +247,8 @@ export const lv = {
   "settings.notifyLessonReminderOff": "Izslēgts",
   "settings.notifySubstitutionChanges": "Izmaiņas sarakstā",
   "settings.notifySubstitutionChangesHint": "Paziņo, ja mainās šodienas vai rītdienas stundas.",
+  "settings.notifyNewTimetable": "Jauns stundu saraksts",
+  "settings.notifyNewTimetableHint": "Paziņo, kad skola izliek jaunās nedēļas stundu sarakstu.",
   "settings.notifyAppUpdates": "Jauninājumi",
   "settings.notifyAppUpdatesHint": "Paziņo, kad iznāk jauna lietotnes versija.",
   "settings.notifyExactAlarmDenied":
@@ -264,6 +266,8 @@ export const lv = {
   "notification.changed.body": "Šodienas sarakstā ir izmaiņas.",
   "notification.cover.title": "Jauna aizvietošana",
   "notification.cover.body": "Tev piešķirta aizvietošanas stunda",
+  "notification.newTimetable.title": "Jauns stundu saraksts",
+  "notification.newTimetable.body": "Izlikts jauns stundu saraksts no {date}.",
   "notification.update.title": "Pieejams jauninājums",
   "notification.update.body": "Stundio {version} ir pieejama lejupielādei.",
   "widget.now": "Tagad",

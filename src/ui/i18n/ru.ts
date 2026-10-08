@@ -242,6 +242,9 @@ export const ru: Dict = {
   "settings.notifySubstitutionChanges": "Изменения в расписании",
   "settings.notifySubstitutionChangesHint":
     "Уведомлять об изменениях в расписании на сегодня или завтра.",
+  "settings.notifyNewTimetable": "Новое расписание",
+  "settings.notifyNewTimetableHint":
+    "Уведомлять, когда школа публикует расписание на новую неделю.",
   "settings.notifyAppUpdates": "Обновления приложения",
   "settings.notifyAppUpdatesHint": "Уведомлять о выходе новой версии приложения.",
   "settings.notifyExactAlarmDenied":
@@ -259,6 +262,8 @@ export const ru: Dict = {
   "notification.changed.body": "В сегодняшнем расписании есть изменения.",
   "notification.cover.title": "Новая замена",
   "notification.cover.body": "Вам назначена замена",
+  "notification.newTimetable.title": "Новое расписание",
+  "notification.newTimetable.body": "Опубликовано новое расписание с {date}.",
   "notification.update.title": "Доступно обновление",
   "notification.update.body": "Stundio {version} готово к загрузке.",
   "widget.now": "Сейчас",

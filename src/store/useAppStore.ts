@@ -103,6 +103,7 @@ export type AppState = {
   resetAllData: () => Promise<void>;
   setNotifyLessonReminderMinutes: (minutes: number) => Promise<void>;
   setNotifySubstitutionChanges: (enabled: boolean) => Promise<void>;
+  setNotifyNewTimetable: (enabled: boolean) => Promise<void>;
   setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
   /** Not user-facing — the update-notification wiring marks a version as already announced. */
   setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
@@ -301,6 +302,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         persist({ notifyLessonReminderMinutes }),
       setNotifySubstitutionChanges: (notifySubstitutionChanges) =>
         persist({ notifySubstitutionChanges }),
+      setNotifyNewTimetable: (notifyNewTimetable) => persist({ notifyNewTimetable }),
       setNotifyAppUpdates: (notifyAppUpdates) => persist({ notifyAppUpdates }),
       setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
         persist({ lastNotifiedUpdateVersion }),

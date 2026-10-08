@@ -210,6 +210,13 @@ Still unverified on a physical device (no JDK/Android SDK here).
       Diffs the raw `DaySubstitutions` in `sync/engine.ts` rather than the resolved view;
       gated on the device having synced before. Includes configurable "n minutes before next lesson"
       reminders (`src/lib/schedule/reminders.ts` + `src/notifications/`) and one-shot update notifications.
+- [x] **New-timetable notification** (teacher suggestion: form teachers must enter lessons in
+      e-klase and kept polling for the new week): `sync/engine.ts` reports `newTimetableFrom` when a
+      refetched timetable list holds a `tt_num` the cached list lacked (respecting a pinned building;
+      never on the first sync); `notifyOnNewTimetable` fires a one-shot local notification behind its
+      own `notifyNewTimetable` setting. Android only — the web build's Web Push cron
+      (`functions/api-push/`) still reports substitutions only; a server-side timetable-list check
+      is the follow-up.
 - [x] **Share the week as an image**: exports class week card with form teacher, period rows,
       times, subject accents, and building notes. Includes a subject-name key and on-device QR code
       generator (`lib/share/qr.ts`). Handed directly to Android's share sheet via custom `ImageShare`

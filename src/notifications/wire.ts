@@ -12,6 +12,7 @@ import type { SyncOutcome } from "@/sync";
 import {
   hasNotificationPermission,
   notifyAppUpdate,
+  notifyNewTimetable,
   notifySubstitutionsChanged,
   onNotificationTap,
   rescheduleLessonReminders,
@@ -114,6 +115,27 @@ export const notifyOnChanges = (
 };
 
 /**
+ * A newly published week, on its own switch: form teachers wait for it to enter the week's
+ * lessons in e-klase, and it says nothing about the user's own lessons changing. Same
+ * first-sync gate as `notifyOnChanges` (the engine already reports nothing without a prior
+ * list; `hadPreviousSync` guards the other half of that).
+ */
+export const notifyOnNewTimetable = (
+  store: Store,
+  outcome: SyncOutcome,
+  hadPreviousSync: boolean,
+): void => {
+  const { settings } = store.getState();
+  if (!hadPreviousSync || !settings.notifyNewTimetable || outcome.newTimetableFrom === null) return;
+  const [y, m, d] = outcome.newTimetableFrom.split("-");
+  void notifyNewTimetable(
+    translate(settings.lang, "notification.newTimetable.title"),
+    translate(settings.lang, "notification.newTimetable.body", { date: `${d}.${m}.${y}` }),
+    outcome.newTimetableFrom,
+  );
+};
+
+/**
  * Registers the tap listener once and keeps it registered for the life of the app — unlike
  * `wireNotifications`, there's nothing to resubscribe on store changes.
  */
@@ -126,6 +148,9 @@ export const wireNotificationTaps = (store: Store): { dispose: () => void } => {
         break;
       case "substitutionsChanged":
         setPendingNavigation({ tab: "changes", date: extra.date });
+        break;
+      case "newTimetable":
+        setPendingNavigation({ tab: "home", date: extra.date });
         break;
       case "appUpdate":
         setPendingNavigation({ tab: "settings" });

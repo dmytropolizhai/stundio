@@ -7,6 +7,7 @@ import { rigaClock } from "@/lib/schedule";
 
 const rescheduleLessonReminders = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const notifySubstitutionsChanged = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+const notifyNewTimetable = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const notifyAppUpdate = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const hasNotificationPermission = vi.hoisted(() => vi.fn().mockResolvedValue(true));
 const tapHandlers = vi.hoisted(() => [] as ((extra: unknown) => void)[]);
@@ -21,6 +22,7 @@ vi.mock("../localNotifications.ts", () => ({
   rescheduleLessonReminders,
   notifySubstitutionsChanged,
   notifyAppUpdate,
+  notifyNewTimetable,
   hasNotificationPermission,
   onNotificationTap,
 }));
@@ -28,8 +30,13 @@ vi.mock("../localNotifications.ts", () => ({
 const checkForUpdate = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/version", () => ({ checkForUpdate }));
 
-const { wireNotifications, wireNotificationTaps, notifyOnChanges, checkForAppUpdateNotification } =
-  await import("../wire.ts");
+const {
+  wireNotifications,
+  wireNotificationTaps,
+  notifyOnChanges,
+  notifyOnNewTimetable,
+  checkForAppUpdateNotification,
+} = await import("../wire.ts");
 
 const DATE = "2026-09-09";
 
@@ -55,6 +62,7 @@ beforeEach(() => {
   rescheduleLessonReminders.mockClear();
   notifySubstitutionsChanged.mockClear();
   notifyAppUpdate.mockClear();
+  notifyNewTimetable.mockClear();
   hasNotificationPermission.mockClear();
   onNotificationTap.mockClear();
   tapHandlers.length = 0;
@@ -184,6 +192,37 @@ describe("notifyOnChanges", () => {
   });
 });
 
+describe("notifyOnNewTimetable", () => {
+  it("announces a newly published week and names its first day", () => {
+    const store = makeStore();
+    notifyOnNewTimetable(store, { newTimetableFrom: "2026-09-14" } as never, true);
+    expect(notifyNewTimetable).toHaveBeenCalledWith(
+      "Jauns stundu saraksts",
+      "Izlikts jauns stundu saraksts no 14.09.2026.",
+      "2026-09-14",
+    );
+  });
+
+  it("stays quiet when nothing new was published", () => {
+    const store = makeStore();
+    notifyOnNewTimetable(store, { newTimetableFrom: null } as never, true);
+    expect(notifyNewTimetable).not.toHaveBeenCalled();
+  });
+
+  it("stays quiet on a device's first ever sync", () => {
+    const store = makeStore();
+    notifyOnNewTimetable(store, { newTimetableFrom: "2026-09-14" } as never, false);
+    expect(notifyNewTimetable).not.toHaveBeenCalled();
+  });
+
+  it("respects the notifyNewTimetable setting", async () => {
+    const store = makeStore();
+    await store.getState().setNotifyNewTimetable(false);
+    notifyOnNewTimetable(store, { newTimetableFrom: "2026-09-14" } as never, true);
+    expect(notifyNewTimetable).not.toHaveBeenCalled();
+  });
+});
+
 describe("checkForAppUpdateNotification", () => {
   it("notifies once for a new release and remembers the version", async () => {
     const store = makeStore();
@@ -224,6 +263,13 @@ describe("checkForAppUpdateNotification", () => {
 });
 
 describe("wireNotificationTaps", () => {
+  it("routes a new-timetable tap to the home tab on the week's first day", () => {
+    const store = makeStore();
+    wireNotificationTaps(store);
+    tapHandlers[0]?.({ kind: "newTimetable", date: "2026-09-14" });
+    expect(store.getState().pendingNavigation).toEqual({ tab: "home", date: "2026-09-14" });
+  });
+
   it("routes a lesson-reminder tap to the day tab on the lesson's date", () => {
     const store = makeStore();
     wireNotificationTaps(store);

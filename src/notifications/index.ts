@@ -5,6 +5,7 @@ export {
   hasNotificationPermission,
   isNotificationPermissionDenied,
   notifyAppUpdate,
+  notifyNewTimetable,
   notifySubstitutionsChanged,
   openNotificationSettings,
   rescheduleLessonReminders,
@@ -13,6 +14,7 @@ export {
   wireNotifications,
   wireNotificationTaps,
   notifyOnChanges,
+  notifyOnNewTimetable,
   checkForAppUpdateNotification,
 } from "./wire.ts";
 export {

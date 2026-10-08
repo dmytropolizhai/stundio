@@ -240,6 +240,8 @@ export const en: Dict = {
   "settings.notifyLessonReminderOff": "Off",
   "settings.notifySubstitutionChanges": "Schedule changes",
   "settings.notifySubstitutionChangesHint": "Notify when today's or tomorrow's lessons change.",
+  "settings.notifyNewTimetable": "New timetable",
+  "settings.notifyNewTimetableHint": "Notify when the school publishes a new week's timetable.",
   "settings.notifyAppUpdates": "App updates",
   "settings.notifyAppUpdatesHint": "Notify when a new app version is released.",
   "settings.notifyExactAlarmDenied":
@@ -257,6 +259,8 @@ export const en: Dict = {
   "notification.changed.body": "Today's schedule has changes.",
   "notification.cover.title": "New cover duty",
   "notification.cover.body": "You have been assigned a cover lesson",
+  "notification.newTimetable.title": "New timetable",
+  "notification.newTimetable.body": "A new timetable from {date} has been published.",
   "notification.update.title": "Update available",
   "notification.update.body": "Stundio {version} is ready to download.",
   "widget.now": "Now",
