@@ -84,6 +84,9 @@ export const en: Dict = {
   "day.buildingOther": "Different building: {building}",
   "day.buildingMixed": "Several buildings: {buildings}",
   "home.schedule": "Schedule for the day",
+  "home.notifyBlocked": "Notifications are off — you won't get lesson reminders or change alerts.",
+  "home.notifyBlockedWeb":
+    "Notifications are blocked in the browser — allow them in the site settings to get alerts.",
   "day.notes": "Announcements",
   "day.allNotes": "All school announcements ({count})",
   "day.onlyMyGroup": "Only for my group",

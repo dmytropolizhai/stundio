@@ -96,7 +96,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   Cloudflare Pages 308s it, and Safari rejects redirected responses from a worker). Keep boot
   free of lazy `import()`s, and keep `App`'s `errorFallback`: a boot that rejects must uncover
   an error, not leave the splash rippling forever.
-- **`src/ui/screens/home-view/`** — the Home tab (formerly the Day view): the glance banner (now / next, or tomorrow's preview once the day is over), then straight under it the day's schedule; stale/offline notices sit above the banner, building and school notes below the schedule. Its swipe/arrow paging still steps through days. The push contract (`?tab=day`, `NAVIGATE_DAY`) keeps its old wire names; the app maps them to `home`.
+- **`src/ui/screens/home-view/`** — the Home tab (formerly the Day view): the glance banner (now / next, or tomorrow's preview once the day is over), then straight under it the day's schedule; stale/offline notices sit above the banner, a blocked-notifications notice (`NotificationBlockedNotice`: text + "open settings" button on Android, text only in a browser) sits with the app-level prompts, building and school notes below the schedule. Its swipe/arrow paging still steps through days. The push contract (`?tab=day`, `NAVIGATE_DAY`) keeps its old wire names; the app maps them to `home`.
 - **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: five tabs plus modals,
   with the five primary tabs bundled together to guarantee instant and reliable offline navigation.
 

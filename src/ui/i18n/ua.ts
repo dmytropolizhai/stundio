@@ -84,6 +84,10 @@ export const ua: Dict = {
   "day.buildingOther": "Інший корпус: {building}",
   "day.buildingMixed": "Кілька корпусів: {buildings}",
   "home.schedule": "Розклад на день",
+  "home.notifyBlocked":
+    "Сповіщення вимкнені — нагадування й оповіщення про зміни не надходитимуть.",
+  "home.notifyBlockedWeb":
+    "Сповіщення заблоковані в браузері — увімкніть їх у налаштуваннях сайту, щоб отримувати оповіщення.",
   "day.notes": "Оголошення",
   "day.allNotes": "Усі оголошення школи ({count})",
   "day.onlyMyGroup": "Лише для моєї групи",

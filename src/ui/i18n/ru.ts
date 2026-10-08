@@ -85,6 +85,9 @@ export const ru: Dict = {
   "day.buildingOther": "Другой корпус: {building}",
   "day.buildingMixed": "Несколько корпусов: {buildings}",
   "home.schedule": "Расписание на день",
+  "home.notifyBlocked": "Уведомления выключены — напоминания и оповещения об изменениях не придут.",
+  "home.notifyBlockedWeb":
+    "Уведомления заблокированы в браузере — включите их в настройках сайта, чтобы получать оповещения.",
   "day.notes": "Объявления",
   "day.allNotes": "Все объявления школы ({count})",
   "day.onlyMyGroup": "Только для моей группы",
