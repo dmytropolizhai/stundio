@@ -12,7 +12,7 @@ import { TeacherPicker } from "./ui/screens/teacher-picker";
 import { OnboardingLanguage } from "./ui/screens/onboarding-language";
 import { OnboardingIntro } from "./ui/screens/onboarding-intro";
 import { OnboardingPersona } from "./ui/screens/onboarding-persona";
-import { DayView } from "./ui/screens/day-view";
+import { HomeView } from "./ui/screens/home-view";
 import { WeekView } from "./ui/screens/week-view";
 import { ChangesView } from "./ui/screens/changes-view";
 import { SubjectsView } from "./ui/screens/subjects-view";
@@ -183,7 +183,7 @@ const Shell = () => {
   const trackEvent = useAppStore((s) => s.trackEvent);
   const pendingNavigation = useAppStore((s) => s.pendingNavigation);
   const clearPendingNavigation = useAppStore((s) => s.clearPendingNavigation);
-  const [tab, setTab] = useState<Tab>("day");
+  const [tab, setTab] = useState<Tab>("home");
   const whatsNew = useWhatsNew();
   const teacherAnnouncement = useTeacherAnnouncement();
   const iphoneInstall = useIphoneInstallPrompt();
@@ -199,9 +199,9 @@ const Shell = () => {
 
   useBackButton(
     () => {
-      setTab("day");
+      setTab("home");
     },
-    { enabled: picking === null && tab !== "day", priority: 5 },
+    { enabled: picking === null && tab !== "home", priority: 5 },
   );
 
   useEffect(() => {
@@ -212,7 +212,7 @@ const Shell = () => {
   // `wireNotificationTaps` rather than acted on directly, since only the shell owns tab/date.
   useEffect(() => {
     if (pendingNavigation === null) return;
-    if (pendingNavigation.tab === "day" || pendingNavigation.tab === "changes") {
+    if (pendingNavigation.tab === "home" || pendingNavigation.tab === "changes") {
       scheduleNav.setDate(pendingNavigation.date);
     }
     setTab(pendingNavigation.tab);
@@ -276,10 +276,10 @@ const Shell = () => {
         title={t("error.title")}
         hint={t("error.hint")}
         actionLabel={t("error.retry")}
-        onReset={() => setTab("day")}
+        onReset={() => setTab("home")}
       >
-        {tab === "day" && (
-          <DayView
+        {tab === "home" && (
+          <HomeView
             date={scheduleNav.date}
             onDateChange={scheduleNav.setDate}
             onPickClass={() => {
@@ -297,7 +297,7 @@ const Shell = () => {
             onDateChange={scheduleNav.setDate}
             onOpenDay={(next) => {
               scheduleNav.setDate(next);
-              setTab("day");
+              setTab("home");
             }}
             onPickClass={() => {
               setPicking(profile.picker);

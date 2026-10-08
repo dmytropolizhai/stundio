@@ -12,31 +12,39 @@ export const DayStaleNotice = ({ stale }: { stale: boolean }) => {
   ) : null;
 };
 
+/**
+ * Offline qualifies the banner the same way staleness does — the "now" it shows may be out of
+ * date — so it sits above the banner too rather than with the notes under the schedule.
+ */
+export const DayOfflineNotice = ({ syncStatus }: { syncStatus: string }) => {
+  const t = useT();
+
+  return syncStatus === "offline" ? (
+    <Card
+      tone="sunken"
+      radius="lg"
+      elevation="none"
+      className="mt-3 flex items-center gap-2 font-text text-caption text-fg"
+      data-testid="offline-banner"
+    >
+      <Icon name="wifi-off" size={16} className="shrink-0 text-offline" />
+      {t("day.offline")}
+    </Card>
+  ) : null;
+};
+
 type DayStatusProps = {
-  syncStatus: string;
   buildings: string[] | null;
   isToday: boolean;
   finished: boolean;
 };
 
-export const DayStatus = ({ syncStatus, buildings, isToday, finished }: DayStatusProps) => {
+/** Footnotes to the schedule: which building the day runs in, and whether it's already over. */
+export const DayStatus = ({ buildings, isToday, finished }: DayStatusProps) => {
   const t = useT();
 
   return (
     <>
-      {syncStatus === "offline" && (
-        <Card
-          tone="sunken"
-          radius="lg"
-          elevation="none"
-          className="mt-3 flex items-center gap-2 font-text text-caption text-fg"
-          data-testid="offline-banner"
-        >
-          <Icon name="wifi-off" size={16} className="shrink-0 text-offline" />
-          {t("day.offline")}
-        </Card>
-      )}
-
       {buildings !== null && (
         <Card
           tone="sunken"

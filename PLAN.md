@@ -54,7 +54,7 @@ src/
   sync/               orchestration, stale-while-revalidate, "updated Xm ago"
   store/              Zustand: timetable, settings, sync status
   ui/
-    screens/          ClassPicker · DayView · WeekView · LessonSheet · Settings
+    screens/          ClassPicker · HomeView · WeekView · LessonSheet · Settings
     components/  theme/  i18n/
   App.tsx
 android/              Capacitor project
@@ -159,7 +159,7 @@ and that a failed refresh keeps the previous `lastSyncAt` so the UI still reads 
       not hand-written tables. Server text (`raw`) passes through untranslated under "no skolas".
 - [x] **ClassPicker** (onboarding + settings): filtered list of all cached classes, favourites
       pinned on top, building hint per class, choice persisted through the store.
-- [x] **DayView** (home, defaults to today):
+- [x] **HomeView** (formerly DayView; the Home tab, defaults to today — banner, then the day's schedule):
   - vertical lesson list; **current lesson highlighted** with a progress bar, a live "now" marker
     that only appears on today.
   - free periods ≥ 20 min shown as gaps; cancelled struck-through and kept; substitutions badged.
@@ -237,7 +237,7 @@ The day view opens with more than the list: a glance card (lesson in progress wi
 or the next one with a countdown, plus a warning when the next lesson is in another building), a
 one-line outline (start–end, lesson count, free periods) and, once today's lessons are over, a
 card with the next school day's start and change count. The full lesson list stays underneath.
-Logic: `src/lib/schedule/glance.ts`; UI: `src/ui/screens/day-view/day-{glance,summary,tomorrow}.tsx`.
+Logic: `src/lib/schedule/glance.ts`; UI: `src/ui/screens/home-view/day-{glance,summary,tomorrow}.tsx`.
 Deferred ideas: absent teachers for my lessons (`absentTeachers` is parsed but unused), per-lesson
 personal notes.
 

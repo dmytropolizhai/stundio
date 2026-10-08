@@ -122,7 +122,7 @@ export const wireNotificationTaps = (store: Store): { dispose: () => void } => {
     const { setPendingNavigation } = store.getState();
     switch (extra.kind) {
       case "lesson":
-        setPendingNavigation({ tab: "day", date: extra.date });
+        setPendingNavigation({ tab: "home", date: extra.date });
         break;
       case "substitutionsChanged":
         setPendingNavigation({ tab: "changes", date: extra.date });

@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Globe,
   GraduationCap,
+  House,
   Image as ImageIcon,
   Info,
   LayoutGrid,
@@ -89,6 +90,8 @@ const ICONS = {
    *  - sun / monitor: Settings offers light / dark / system, so `moon` needs partners.
    *  - star: favourite classes. The DS bans emoji and unicode-as-icon ("no ✓, ★, → in text —
    *    use the Lucide glyph"), which is exactly what this is.
+   *  - house: the Home tab — the day screen grew into the app's landing page, and a calendar
+   *    glyph read as "pick a date" rather than "start here".
    */
   sun: Sun,
   monitor: Monitor,
@@ -97,6 +100,7 @@ const ICONS = {
   check: Check,
   send: Send,
   image: ImageIcon,
+  house: House,
 } as const;
 
 export type IconName = keyof typeof ICONS;

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { TooltipProvider } from "@/ds";
 import { listTeachers } from "@/lib/edupage";
-import { DayView } from "../screens/day-view";
+import { HomeView } from "../screens/home-view";
 import { WeekView } from "../screens/week-view";
 import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonRow } from "../components/LessonRow.tsx";
@@ -38,19 +38,19 @@ describe("Teacher Day and Week Views", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
-  it("DayView shows empty state when teacher persona is selected but no teacher is picked", async () => {
+  it("HomeView shows empty state when teacher persona is selected but no teacher is picked", async () => {
     const harness = await bootHarness();
     await clickAndSettle(() => {
       void harness.store.getState().setPersona("teacher");
       void harness.store.getState().setTeacher(null);
     });
 
-    wrap(harness, <DayView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
+    wrap(harness, <HomeView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     expect(screen.getByText("Nav atrasts neviens skolotājs")).toBeDefined();
   });
 
-  it("DayView renders teacher schedule with class and room on card off real fixtures", async () => {
+  it("HomeView renders teacher schedule with class and room on card off real fixtures", async () => {
     const harness = await bootHarness();
     const teachers = listTeachers(Object.values(harness.store.getState().timetables));
 
@@ -71,7 +71,7 @@ describe("Teacher Day and Week Views", () => {
       void harness.store.getState().setTeacher(activeTeacher.id);
     });
 
-    wrap(harness, <DayView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
+    wrap(harness, <HomeView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
 
     const resolved = harness.store.getState().resolvedTeacherDay(FIXTURE_DATE)!;
     expect(resolved.lessons.length).toBeGreaterThan(0);

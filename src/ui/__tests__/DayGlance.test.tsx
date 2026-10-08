@@ -7,7 +7,7 @@ import { render, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { dayGlance } from "@/lib/schedule";
-import { DayGlance } from "../screens/day-view/day-glance.tsx";
+import { DayGlance } from "../screens/home-view/day-glance.tsx";
 import { bootHarness } from "./harness.tsx";
 
 const lesson = (period: string, start: string, end: string, building: string): ResolvedLesson => ({

@@ -10,7 +10,7 @@ export const lv = {
   "app.title": "Stundio",
   "general.continue": "Turpināt",
 
-  "nav.day": "Diena",
+  "nav.home": "Sākums",
   "nav.week": "Nedēļa",
   "nav.changes": "Izmaiņas",
   "nav.subjects": "Priekšmeti",
@@ -90,6 +90,7 @@ export const lv = {
   "day.offline": "Nav interneta pieslēguma — rādām saglabāto sarakstu.",
   "day.buildingOther": "Cita ēka: {building}",
   "day.buildingMixed": "Vairākas ēkas: {buildings}",
+  "home.schedule": "Dienas saraksts",
   "day.notes": "Paziņojumi",
   "day.allNotes": "Visi skolas paziņojumi ({count})",
   "day.onlyMyGroup": "Tikai manai grupai",

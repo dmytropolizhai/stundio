@@ -1,5 +1,5 @@
 /**
- * The remaining Phase 3 screens. Same rule as DayView: a real store over the `data/`
+ * The remaining Phase 3 screens. Same rule as HomeView: a real store over the `data/`
  * fixtures, no network, and assertions on behaviour a schoolmate would notice.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
