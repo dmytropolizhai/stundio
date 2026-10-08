@@ -96,6 +96,8 @@ export const en: Dict = {
   "day.glance.walkFrom": "Walk from {from} to {building}",
   "day.summary.lessons": "Lessons: {count}",
   "day.summary.free": "Free: {duration}",
+  "day.summary.lessonsTooltip": "Total number of lessons today",
+  "day.summary.freeTooltip": "Total break time between lessons",
   "day.tomorrow.eyebrow": "Next school day · {weekday}",
   "day.tomorrow.starts": "Starts {time}",
   "day.tomorrow.changes": "Changes: {count}",

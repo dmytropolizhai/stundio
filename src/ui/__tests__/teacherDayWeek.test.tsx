@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { StoreContext } from "@/store";
+import { TooltipProvider } from "@/ds";
 import { listTeachers } from "@/lib/edupage";
 import { DayView } from "../screens/day-view";
 import { WeekView } from "../screens/week-view";
@@ -10,7 +11,11 @@ import { GeneralSection } from "../screens/settings-view/general-section.tsx";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
-  render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
+  render(
+    <TooltipProvider>
+      <StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>
+    </TooltipProvider>,
+  );
 
 describe("Teacher Day and Week Views", () => {
   it("ClassBadge renders briefcase icon and teacher name in teacher persona", async () => {
