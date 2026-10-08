@@ -97,6 +97,8 @@ export const en: Dict = {
   "day.glance.walkFrom": "Walk from {from} to {building}",
   "day.summary.lessons": "Lessons: {count}",
   "day.summary.free": "Free: {duration}",
+  "day.summary.lessonsTooltip": "Total number of lessons today",
+  "day.summary.freeTooltip": "Total break time between lessons",
   "day.tomorrow.eyebrow": "Next school day · {weekday}",
   "day.tomorrow.starts": "Starts {time}",
   "day.tomorrow.changes": "Changes: {count}",
@@ -226,6 +228,9 @@ export const en: Dict = {
   "settings.mergeLessons": "Merge identical lessons",
   "settings.mergeLessonsHint":
     "Shows a subject that repeats back-to-back in the week view as one longer block.",
+  "settings.movedOnTarget": "Show moved lessons on the new day",
+  "settings.movedOnTargetHint":
+    "A lesson moved to another day appears on that day instead of the one it left.",
   "settings.day": "Day view",
   "settings.showTime": "Show time",
   "settings.showTimeHint": "Shows each lesson's start and end time next to its number.",

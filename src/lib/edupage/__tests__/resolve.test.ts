@@ -9,6 +9,7 @@ import { parseDaySubstitutions } from "../substitutions.ts";
 import {
   classWeekLessons,
   listSubgroups,
+  movedAwayTo,
   resolveDay,
   resolveDayAcross,
   weekdayOf,
@@ -621,5 +622,59 @@ describe("resolveDay with absent teacher or unclassified substitution", () => {
     expect(lesson.original?.teachers?.map((t) => t.short)).toEqual(["Malickis V"]);
     expect(lesson.teachers).toEqual([]);
     expect(lesson.changeNote).toBe("Programmatūra - (Malickis V)");
+  });
+});
+
+describe("resolveDay — relocateMoves", () => {
+  const cls = classId("DT3-2");
+  const friday = "2026-09-11";
+  const base = resolveDay(timetable, null, cls, FIXTURE_DATE);
+  const target = base.lessons[0]?.period ?? "1";
+  const moveOut: DaySubstitutions = {
+    ...subs,
+    items: [
+      {
+        date: FIXTURE_DATE,
+        className: "DT3-2",
+        group: null,
+        periods: [Number(target)],
+        isOriginalSlot: true,
+        kind: "moved_out",
+        subject: null,
+        subjectFrom: null,
+        teacher: null,
+        teacherFrom: null,
+        room: null,
+        roomFrom: null,
+        movedFromPeriod: null,
+        movedToPeriod: null,
+        movedFromDate: null,
+        movedToDate: friday,
+        raw: "Moved to Piektdiena 11. 09.",
+      },
+    ],
+  };
+
+  it("keeps the vacated slot on its own day when off", () => {
+    const day = resolveDay(timetable, moveOut, cls, FIXTURE_DATE);
+    expect(day.lessons.some((l) => l.movedTo?.date === friday)).toBe(true);
+  });
+
+  it("drops the vacated slot and shows it on the target day when on", () => {
+    const source = resolveDay(timetable, moveOut, cls, FIXTURE_DATE);
+    const incoming = movedAwayTo(source, friday);
+    expect(incoming.length).toBeGreaterThan(0);
+
+    const origin = resolveDay(timetable, moveOut, cls, FIXTURE_DATE, { relocateMoves: true });
+    expect(origin.lessons.some((l) => l.movedTo !== undefined)).toBe(false);
+    expect(origin.lessons.length).toBe(base.lessons.length - incoming.length);
+
+    const fri = resolveDay(timetable, null, cls, friday, {
+      relocateMoves: true,
+      incomingMoves: incoming,
+    });
+    const arrived = fri.lessons.find((l) => l.status === "moved");
+    expect(arrived?.subject?.name).toBe(incoming[0]?.subject?.name);
+    expect(arrived?.movedTo).toBeUndefined();
   });
 });

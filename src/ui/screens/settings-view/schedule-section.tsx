@@ -7,6 +7,7 @@ export const ScheduleSection = () => {
   const t = useT();
   const settings = useAppStore((s) => s.settings);
   const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
+  const setShowMovedOnTargetDay = useAppStore((s) => s.setShowMovedOnTargetDay);
   const setShowTime = useAppStore((s) => s.setShowTime);
 
   return (
@@ -26,6 +27,23 @@ export const ScheduleSection = () => {
             checked={settings.mergeConsecutiveLessons}
             onChange={(checked) => {
               void setMergeConsecutiveLessons(checked);
+            }}
+          />
+        </Row>
+        <Row className="flex items-start justify-between gap-3">
+          <div>
+            <p className="font-text text-body font-bold text-strong">
+              {t("settings.movedOnTarget")}
+            </p>
+            <p className="mt-0.5 font-text text-caption text-muted">
+              {t("settings.movedOnTargetHint")}
+            </p>
+          </div>
+          <Switch
+            aria-label={t("settings.movedOnTarget")}
+            checked={settings.showMovedOnTargetDay}
+            onChange={(checked) => {
+              void setShowMovedOnTargetDay(checked);
             }}
           />
         </Row>

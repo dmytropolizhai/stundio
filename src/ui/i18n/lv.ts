@@ -104,6 +104,8 @@ export const lv = {
   "day.glance.walkFrom": "Pāreja no {from} uz {building}",
   "day.summary.lessons": "Stundas: {count}",
   "day.summary.free": "Brīvs: {duration}",
+  "day.summary.lessonsTooltip": "Kopējais stundu skaits šodien",
+  "day.summary.freeTooltip": "Kopējais brīvais laiks starp stundām",
   "day.tomorrow.eyebrow": "Nākamā mācību diena · {weekday}",
   "day.tomorrow.starts": "Sākas {time}",
   "day.tomorrow.changes": "Izmaiņas: {count}",
@@ -233,6 +235,9 @@ export const lv = {
   "settings.mergeLessons": "Apvienot vienādas stundas",
   "settings.mergeLessonsHint":
     "Pēc kārtas atkārtotu priekšmetu nedēļas skatā rāda kā vienu garāku bloku.",
+  "settings.movedOnTarget": "Pārceltās stundas rādīt jaunajā dienā",
+  "settings.movedOnTargetHint":
+    "Uz citu dienu pārceltā stunda parādās tajā dienā, nevis tajā, no kuras tā pārcelta.",
   "settings.day": "Dienas skats",
   "settings.showTime": "Rādīt laiku",
   "settings.showTimeHint": "Rāda katras stundas sākuma un beigu laiku pie tās numura.",

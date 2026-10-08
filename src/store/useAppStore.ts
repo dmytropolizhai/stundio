@@ -10,6 +10,7 @@
 import { createStore } from "zustand/vanilla";
 import {
   findTeacherFormClassId,
+  movedAwayTo,
   resolveDayAcross,
   resolveTeacherDayAcross,
   selectTimetables,
@@ -23,6 +24,7 @@ import {
   type ResolvedTeacherDay,
   type Timetable,
 } from "@/lib/edupage";
+import { weekDates } from "@/lib/schedule";
 import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
@@ -82,6 +84,7 @@ export type AppState = {
   setTheme: (theme: Settings["theme"]) => Promise<void>;
   setLang: (lang: Settings["lang"]) => Promise<void>;
   setMergeConsecutiveLessons: (merge: boolean) => Promise<void>;
+  setShowMovedOnTargetDay: (show: boolean) => Promise<void>;
   setShowTime: (showTime: boolean) => Promise<void>;
   setLessonCardStyle: (style: Settings["lessonCardStyle"]) => Promise<void>;
   setCardRadius: (radius: Settings["cardRadius"]) => Promise<void>;
@@ -264,6 +267,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setTheme: (theme) => persist({ theme }),
       setLang: (lang) => persist({ lang }),
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
+      setShowMovedOnTargetDay: (showMovedOnTargetDay) => persist({ showMovedOnTargetDay }),
       setShowTime: (showTime) => persist({ showTime }),
       setLessonCardStyle: (lessonCardStyle) => persist({ lessonCardStyle }),
       setCardRadius: (cardRadius) => persist({ cardRadius }),
@@ -448,11 +452,34 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           teacher: () => null,
         });
         const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
-        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}|${subgroup ?? ""}`;
+        const relocateMoves = state.settings.showMovedOnTargetDay;
+
+        /* Other days of this week whose feed moves a lesson onto `date`. */
+        const sourceDays = relocateMoves
+          ? weekDates(date).filter(
+              (d) =>
+                d !== date &&
+                state.substitutions[d]?.items.some((s) => s.movedToDate === date) === true,
+            )
+          : [];
+        const movesKey = sourceDays
+          .map((d) => `${d}@${state.substitutions[d]?.fetchedAt}`)
+          .join(",");
+        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}|${subgroup ?? ""}|${relocateMoves ? "r" : "-"}|${movesKey}`;
         const hit = memo.get(key);
         if (hit !== undefined) return hit;
 
-        return memo.set(key, resolveDayAcross(sources, subs, id, date, { subgroup }));
+        const incomingMoves = sourceDays.flatMap((d) =>
+          movedAwayTo(
+            resolveDayAcross(sources, state.substitutions[d] ?? null, id, d, { subgroup }),
+            date,
+          ),
+        );
+
+        return memo.set(
+          key,
+          resolveDayAcross(sources, subs, id, date, { subgroup, relocateMoves, incomingMoves }),
+        );
       },
     };
   });

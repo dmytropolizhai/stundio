@@ -5,7 +5,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { AppStoreProvider, useAppStore } from "@/store";
-import { Button, TopBar } from "@/ds";
+import { Button, TopBar, TooltipProvider } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
 import { TeacherPicker } from "./ui/screens/teacher-picker";
@@ -362,17 +362,19 @@ export default function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <AppStoreProvider errorFallback={() => <BootFailed onReady={markReady} />}>
-        <BootSignal onReady={markReady} />
-        <Shell />
-      </AppStoreProvider>
-      {/*
-        Sits *over* the shell rather than in the provider's `fallback` slot: the splash owns its
-        own exit (top out, then fade), and a fallback would be torn out the frame boot lands.
-        It removes itself once the fade is done, so there is no permanent overlay node.
-      */}
-      <SplashScreen ready={ready} />
-    </ErrorBoundary>
+    <TooltipProvider>
+      <ErrorBoundary>
+        <AppStoreProvider errorFallback={() => <BootFailed onReady={markReady} />}>
+          <BootSignal onReady={markReady} />
+          <Shell />
+        </AppStoreProvider>
+        {/*
+          Sits *over* the shell rather than in the provider's `fallback` slot: the splash owns its
+          own exit (top out, then fade), and a fallback would be torn out the frame boot lands.
+          It removes itself once the fade is done, so there is no permanent overlay node.
+        */}
+        <SplashScreen ready={ready} />
+      </ErrorBoundary>
+    </TooltipProvider>
   );
 }
