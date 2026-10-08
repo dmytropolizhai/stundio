@@ -1,3 +1,4 @@
+import { useState, type CSSProperties } from "react";
 import { cn, Icon, type IconName } from "@/ds";
 
 export type BottomNavItem<K extends string = string> = {
@@ -8,9 +9,17 @@ export type BottomNavItem<K extends string = string> = {
 
 export type BottomNavProps<K extends string = string> = {
   items: readonly BottomNavItem<K>[];
+  /** The selected key — or one of a sibling nav's, in which case nothing here is active. */
   value: K;
   onChange: (key: K) => void;
   className?: string;
+  /** Merged over the grid template — e.g. a flex share when several navs sit in one row. */
+  style?: CSSProperties;
+  /**
+   * Icon-only: every slot shrinks to a 52px circle and the pill hugs its icons instead of
+   * stretching. The label still names each button for assistive tech.
+   */
+  compact?: boolean;
   /** Accessible name for the landmark. */
   label?: string;
 };
@@ -25,31 +34,51 @@ export type BottomNavProps<K extends string = string> = {
  * so `translateX` in multiples of the pill's own width always lands exactly on the next tab —
  * no measuring, no ResizeObserver. The slide is one of the few two places the spring easing is
  * allowed (the other is the bottom sheet's entrance).
+ *
+ * Several navs can float side by side, each owning a slice of the app's tabs. When `value` belongs
+ * to a sibling, the active pill fades out *where it was* — so coming back slides it from the tab
+ * you left rather than snapping in from the first slot.
  */
 export const BottomNav = <K extends string>({
   items,
   value,
   onChange,
   className,
+  style,
+  compact = false,
   label,
 }: BottomNavProps<K>) => {
-  const activeIndex = Math.max(
-    0,
-    items.findIndex((item) => item.key === value),
-  );
+  const activeIndex = items.findIndex((item) => item.key === value);
+  // React's "adjust state while rendering" pattern: remember the last slot that was active.
+  const [lastIndex, setLastIndex] = useState(Math.max(0, activeIndex));
+  if (activeIndex !== -1 && activeIndex !== lastIndex) setLastIndex(activeIndex);
+  const pillIndex = activeIndex === -1 ? lastIndex : activeIndex;
 
   return (
     <nav
       aria-label={label}
-      className={cn("relative grid h-nav-height rounded-pill bg-card p-1.5 shadow-nav", className)}
-      style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+      className={cn(
+        "relative grid h-nav-height rounded-pill bg-card p-1.5 shadow-nav",
+        compact && "flex-none",
+        className,
+      )}
+      style={{
+        ...style,
+        gridTemplateColumns: compact
+          ? `repeat(${items.length}, calc(var(--nav-height) - 12px))`
+          : `repeat(${items.length}, minmax(0, 1fr))`,
+      }}
     >
       <span
         aria-hidden
-        className="absolute inset-y-1.5 left-1.5 rounded-pill bg-inverse transition-transform duration-(--dur-base) ease-spring"
+        className={cn(
+          "absolute inset-y-1.5 left-1.5 rounded-pill bg-inverse",
+          "transition-[transform,opacity] duration-(--dur-base) ease-spring",
+          activeIndex === -1 && "opacity-0",
+        )}
         style={{
           width: `calc((100% - 12px) / ${items.length})`,
-          transform: `translateX(calc(${activeIndex} * 100%))`,
+          transform: `translateX(calc(${pillIndex} * 100%))`,
         }}
       />
       {items.map((item) => {
@@ -71,9 +100,11 @@ export const BottomNav = <K extends string>({
             )}
           >
             <Icon name={item.icon} size={23} />
-            <span className={cn("text-micro font-black", !active && "font-normal")}>
-              {item.label}
-            </span>
+            {!compact && (
+              <span className={cn("text-micro font-black", !active && "font-normal")}>
+                {item.label}
+              </span>
+            )}
           </button>
         );
       })}

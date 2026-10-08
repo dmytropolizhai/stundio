@@ -9,6 +9,8 @@ export const ua: Dict = {
   "nav.changes": "Зміни",
   "nav.subjects": "Предмети",
   "nav.settings": "Налаштування",
+  "nav.group.schedule": "Розклад",
+  "nav.group.personal": "Особисте",
 
   "onboarding.title": "Оберіть свій клас",
   "onboarding.subtitle": "Ваш розклад та його зміни — працює і офлайн.",

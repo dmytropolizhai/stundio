@@ -9,6 +9,8 @@ export const en: Dict = {
   "nav.changes": "Changes",
   "nav.subjects": "Subjects",
   "nav.settings": "Settings",
+  "nav.group.schedule": "Schedule",
+  "nav.group.personal": "Personal",
 
   "onboarding.title": "Choose your class",
   "onboarding.subtitle": "Timetable and changes — even offline.",

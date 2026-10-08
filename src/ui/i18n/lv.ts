@@ -15,6 +15,8 @@ export const lv = {
   "nav.changes": "Izmaiņas",
   "nav.subjects": "Priekšmeti",
   "nav.settings": "Iestatījumi",
+  "nav.group.schedule": "Grafiks",
+  "nav.group.personal": "Personīgi",
 
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",

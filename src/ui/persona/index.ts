@@ -1,4 +1,4 @@
-export { PERSONA_PROFILES, type PersonaProfile, type Tab } from "./profiles.ts";
+export { PERSONA_PROFILES, type NavGroups, type PersonaProfile, type Tab } from "./profiles.ts";
 export {
   useFeedbackIdentity,
   useIdentity,

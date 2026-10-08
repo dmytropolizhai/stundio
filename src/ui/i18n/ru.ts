@@ -9,6 +9,8 @@ export const ru: Dict = {
   "nav.changes": "Замены",
   "nav.subjects": "Предметы",
   "nav.settings": "Настройки",
+  "nav.group.schedule": "Расписание",
+  "nav.group.personal": "Личное",
 
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",

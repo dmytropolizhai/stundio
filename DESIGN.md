@@ -473,7 +473,8 @@ phone the bar is pure noise. Safe-area insets are read at the root as
 WebView. There are no desktop breakpoints: this is a phone design that centres, not a responsive
 grid that reflows.
 
-**The One Fixed Thing Rule.** Exactly one element is fixed to the viewport: the bottom nav.
+**The One Fixed Thing Rule.** Exactly one element is fixed to the viewport: the bottom nav (its two
+pills share one fixed row).
 Everything else scrolls, including the header.
 
 ## Elevation & Depth
@@ -601,6 +602,13 @@ rather than hints.
 
 - **Bottom nav:** a floating near-black pill, 64px tall, inset 16px from the screen edges, above the
   safe-area inset. Inactive items are icon-only at 62% white and share the remaining width equally.
+- **Two pills, one row:** the nav is split into two pills that float separately, 12px apart, each
+  on its own nav shadow. The left **schedule** pill holds the three views of the timetable (Home,
+  Week, Changes) — the ones opened many times a day — and stretches, labels and all. The right
+  **personal** pill holds what is about you (Subjects, Settings) and is icon-only: each slot is a
+  52px circle and the pill hugs them (a teacher's, Settings alone, is a single 64px circle). Only
+  one tab in the row is active: the other pill's selection fill fades out where it stood, and
+  slides on from there when you come back.
 - **Active state:** a **fill swap, not an indicator** — the active tab becomes a white pill that
   *grows* to include its text label while the others shrink. This growth is one of the places the
   spring easing is permitted.
