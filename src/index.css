@@ -400,6 +400,22 @@
     overscroll-behavior: none;
   }
 
+  /*
+   * iPhone, installed to the Home Screen (black-translucent status bar): `100%`/`dvh` resolve
+   * to a viewport that stops short of the home-indicator strip, leaving a black band under the
+   * app. Pinning the root to all four screen edges makes it cover the full-bleed window
+   * regardless of what height the engine reports; the bottom nav already pads by the inset.
+   */
+  @media all and (display-mode: standalone) {
+    html,
+    body,
+    #root {
+      position: fixed;
+      inset: 0;
+      height: auto;
+    }
+  }
+
   /* The app runs full-bleed inside the Capacitor WebView. */
   :root {
     --safe-area-inset-top: env(safe-area-inset-top, 0px);
