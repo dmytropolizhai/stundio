@@ -14,9 +14,20 @@ import type { MessageKey } from "@/ui/i18n";
 
 export type Tab = "home" | "week" | "changes" | "subjects" | "settings";
 
+/**
+ * The bottom nav floats as two separate pills: the timetable itself (today, the week, what
+ * changed) and everything about *you* (your subjects, your settings). Splitting them keeps the
+ * three views of the schedule — the ones opened many times a day — in one thumb-sized cluster,
+ * and stops the rarely-visited personal screens from diluting it.
+ */
+export type NavGroups = {
+  schedule: readonly Tab[];
+  personal: readonly Tab[];
+};
+
 export type PersonaProfile = {
-  /** Bottom-nav tabs, in order. Teachers have no personal subject notes. */
-  tabs: readonly Tab[];
+  /** Bottom-nav tabs, per pill, in order. Teachers have no personal subject notes. */
+  nav: NavGroups;
   /** Which picker makes this role's selection. */
   picker: "class" | "teacher";
   /** The role's identity glyph — badge chip, empty states. */
@@ -51,7 +62,7 @@ export type PersonaProfile = {
 
 export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
   student: {
-    tabs: ["home", "week", "changes", "subjects", "settings"],
+    nav: { schedule: ["home", "week", "changes"], personal: ["subjects", "settings"] },
     picker: "class",
     icon: "graduation-cap",
     roleLabel: "settings.persona.student",
@@ -68,7 +79,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     },
   },
   teacher: {
-    tabs: ["home", "week", "changes", "settings"],
+    nav: { schedule: ["home", "week", "changes"], personal: ["settings"] },
     picker: "teacher",
     icon: "briefcase",
     roleLabel: "settings.persona.teacher",

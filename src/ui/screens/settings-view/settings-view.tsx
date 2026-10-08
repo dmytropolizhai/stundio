@@ -13,6 +13,7 @@ import { IdentitySection } from "./class-section.tsx";
 import { CustomizationSection } from "./customization-section.tsx";
 import { GeneralSection } from "./general-section.tsx";
 import { ShareSection } from "./share-section.tsx";
+import { NavigationSection } from "./navigation-section.tsx";
 import { ScheduleSection } from "./schedule-section.tsx";
 import { NotificationsSection } from "./notifications-section.tsx";
 import { DataSection } from "./data-section.tsx";
@@ -85,6 +86,8 @@ export const SettingsView = ({
         />
 
         <ScheduleSection />
+
+        <NavigationSection />
 
         <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 

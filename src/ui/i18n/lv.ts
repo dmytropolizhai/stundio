@@ -15,6 +15,8 @@ export const lv = {
   "nav.changes": "Izmaiņas",
   "nav.subjects": "Priekšmeti",
   "nav.settings": "Iestatījumi",
+  "nav.group.schedule": "Grafiks",
+  "nav.group.personal": "Personīgi",
 
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",
@@ -241,6 +243,9 @@ export const lv = {
   "settings.day": "Dienas skats",
   "settings.showTime": "Rādīt laiku",
   "settings.showTimeHint": "Rāda katras stundas sākuma un beigu laiku pie tās numura.",
+  "settings.navigation": "Izvēlne",
+  "settings.showSubjectsTab": "Cilne “Priekšmeti”",
+  "settings.showSubjectsTabHint": "Rāda priekšmetu cilni apakšējā izvēlnē, blakus iestatījumiem.",
   "settings.notifications": "Paziņojumi",
   "settings.notifyLessonReminder": "Atgādinājums pirms stundas",
   "settings.notifyLessonReminderHint": "Paziņo pirms nākamās stundas sākuma.",

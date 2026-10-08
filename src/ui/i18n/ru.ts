@@ -9,6 +9,8 @@ export const ru: Dict = {
   "nav.changes": "Замены",
   "nav.subjects": "Предметы",
   "nav.settings": "Настройки",
+  "nav.group.schedule": "Расписание",
+  "nav.group.personal": "Личное",
 
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",
@@ -236,6 +238,10 @@ export const ru: Dict = {
   "settings.showTime": "Показать время",
   "settings.showTimeHint": "Показывает время начала и конца каждого урока рядом с его номером.",
   "settings.notifications": "Уведомления",
+  "settings.navigation": "Меню",
+  "settings.showSubjectsTab": "Вкладка «Предметы»",
+  "settings.showSubjectsTabHint":
+    "Показывает вкладку предметов в нижнем меню, рядом с настройками.",
   "settings.notifyLessonReminder": "Напоминание об уроке",
   "settings.notifyLessonReminderHint": "Уведомлять перед началом следующего урока.",
   "settings.notifyLessonReminderOff": "Выкл",

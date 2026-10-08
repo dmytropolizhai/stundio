@@ -9,6 +9,8 @@ export const en: Dict = {
   "nav.changes": "Changes",
   "nav.subjects": "Subjects",
   "nav.settings": "Settings",
+  "nav.group.schedule": "Schedule",
+  "nav.group.personal": "Personal",
 
   "onboarding.title": "Choose your class",
   "onboarding.subtitle": "Timetable and changes — even offline.",
@@ -235,6 +237,9 @@ export const en: Dict = {
   "settings.showTime": "Show time",
   "settings.showTimeHint": "Shows each lesson's start and end time next to its number.",
   "settings.notifications": "Notifications",
+  "settings.navigation": "Menu",
+  "settings.showSubjectsTab": "Subjects tab",
+  "settings.showSubjectsTabHint": "Shows the Subjects tab in the bottom menu, next to Settings.",
   "settings.notifyLessonReminder": "Lesson reminder",
   "settings.notifyLessonReminderHint": "Notify before the next lesson starts.",
   "settings.notifyLessonReminderOff": "Off",

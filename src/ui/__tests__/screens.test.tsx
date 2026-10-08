@@ -573,6 +573,25 @@ describe("SettingsView", () => {
     expect(harness.store.getState().settings.showTime).toBe(true);
   });
 
+  it("persists the subjects-tab switch, offered only to a role with that tab", async () => {
+    const harness = await bootHarness();
+    const { unmount } = wrap(
+      harness,
+      <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />,
+    );
+
+    expect(harness.store.getState().settings.showSubjectsTab).toBe(true);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Cilne “Priekšmeti”" }));
+    });
+    expect(harness.store.getState().settings.showSubjectsTab).toBe(false);
+    unmount();
+
+    const teacher = await bootHarness({ persona: "teacher" });
+    wrap(teacher, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+    expect(screen.queryByRole("switch", { name: "Cilne “Priekšmeti”" })).toBeNull();
+  });
+
   it("offers a building override once more than one building is cached", async () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);

@@ -9,6 +9,8 @@ export const ua: Dict = {
   "nav.changes": "Зміни",
   "nav.subjects": "Предмети",
   "nav.settings": "Налаштування",
+  "nav.group.schedule": "Розклад",
+  "nav.group.personal": "Особисте",
 
   "onboarding.title": "Оберіть свій клас",
   "onboarding.subtitle": "Ваш розклад та його зміни — працює і офлайн.",
@@ -234,6 +236,10 @@ export const ua: Dict = {
   "settings.showTime": "Показувати час",
   "settings.showTimeHint":
     "Відображає час початку та закінчення кожного уроку поруч із його номером.",
+  "settings.navigation": "Меню",
+  "settings.showSubjectsTab": "Вкладка «Предмети»",
+  "settings.showSubjectsTabHint":
+    "Показує вкладку предметів у нижньому меню, поруч із налаштуваннями.",
   "settings.notifications": "Сповіщення",
   "settings.notifyLessonReminder": "Нагадування про урок",
   "settings.notifyLessonReminderHint": "Сповіщати перед початком наступного уроку.",

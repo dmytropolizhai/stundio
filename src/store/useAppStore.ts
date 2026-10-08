@@ -86,6 +86,7 @@ export type AppState = {
   setMergeConsecutiveLessons: (merge: boolean) => Promise<void>;
   setShowMovedOnTargetDay: (show: boolean) => Promise<void>;
   setShowTime: (showTime: boolean) => Promise<void>;
+  setShowSubjectsTab: (showSubjectsTab: boolean) => Promise<void>;
   setLessonCardStyle: (style: Settings["lessonCardStyle"]) => Promise<void>;
   setCardRadius: (radius: Settings["cardRadius"]) => Promise<void>;
   setCardElevation: (elevation: Settings["cardElevation"]) => Promise<void>;
@@ -269,6 +270,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
       setShowMovedOnTargetDay: (showMovedOnTargetDay) => persist({ showMovedOnTargetDay }),
       setShowTime: (showTime) => persist({ showTime }),
+      setShowSubjectsTab: (showSubjectsTab) => persist({ showSubjectsTab }),
       setLessonCardStyle: (lessonCardStyle) => persist({ lessonCardStyle }),
       setCardRadius: (cardRadius) => persist({ cardRadius }),
       setCardElevation: (cardElevation) => persist({ cardElevation }),
