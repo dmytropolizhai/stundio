@@ -21,6 +21,11 @@ import {
   checkAndDispatchSubstitutions,
 } from "../api-push/checker.ts";
 import { sha256Hex, type EventContext, type KVNamespace, type PushEnv } from "../api-push/types.ts";
+import {
+  checkAndDispatchNewTimetable,
+  formatNewTimetable,
+  schoolYearOf,
+} from "../api-push/timetable.ts";
 import { teacherKey } from "../../src/lib/edupage/teacher-names.ts";
 
 /** What the app sends for a teacher: the hash of the normalised name key, never the name. */
@@ -620,6 +625,104 @@ describe("Cloudflare Pages Function: /api-push", () => {
         expect(res.changedClasses).toEqual([]);
         expect(res.notifiedDevices).toBe(0);
       });
+    });
+  });
+
+  describe("new timetable announcements", () => {
+    const subscriber = {
+      endpoint: "https://fcm.googleapis.com/test",
+      keys: {
+        p256dh:
+          "BBb4nnU3LcNCjbU9tSotemIqe6m10tH5mXExCi5CO78DpOljO3e1UX1kXem2goXDcNG3z0dcqZc5K1iaTYtTuYA",
+        auth: Buffer.from("1234567890123456").toString("base64url"),
+      },
+      lang: "lv",
+    };
+    const NOW = new Date("2026-09-11T12:00:00Z");
+
+    /** EduPage's ttviewer answer for `nums`; every push endpoint answers 201 and is recorded. */
+    const routed = (nums: string[], sent: string[] = []) =>
+      vi.fn((input: RequestInfo | URL) => {
+        const url = input instanceof Request ? input.url : String(input);
+        if (url.includes("edupage.org")) {
+          const timetables = nums.map((n, i) => ({
+            tt_num: n,
+            datefrom: `2026-09-${String(7 + i * 7).padStart(2, "0")}`,
+          }));
+          return Promise.resolve(
+            new Response(JSON.stringify({ r: { regular: { timetables } } }), { status: 200 }),
+          );
+        }
+        sent.push(url);
+        return Promise.resolve(new Response(null, { status: 201 }));
+      });
+
+    it("rolls the school year over in August", () => {
+      expect(schoolYearOf(new Date("2026-09-11T12:00:00Z"))).toBe(2026);
+      expect(schoolYearOf(new Date("2027-02-01T12:00:00Z"))).toBe(2026);
+    });
+
+    it("records a baseline on the first run without pushing", async () => {
+      const kv = createMockKv({ "class:1DP1:abc": JSON.stringify(subscriber) });
+      global.fetch = routed(["1", "2"]);
+      const res = await checkAndDispatchNewTimetable({ PUSH_KV: kv }, NOW);
+      expect(res.newTimetableFrom).toBeNull();
+      expect(res.notifiedDevices).toBe(0);
+    });
+
+    it("pushes to class and teacher subscribers when a tt_num appears", async () => {
+      const kv = createMockKv({
+        "class:1DP1:abc": JSON.stringify(subscriber),
+        "teacher:deadbeef:def": JSON.stringify({ ...subscriber, endpoint: "https://t.example/x" }),
+      });
+      global.fetch = routed(["1", "2"]);
+      await checkAndDispatchNewTimetable({ PUSH_KV: kv }, NOW);
+
+      const sent: string[] = [];
+      global.fetch = routed(["1", "2", "3"], sent);
+      const res = await checkAndDispatchNewTimetable({ PUSH_KV: kv }, NOW);
+
+      expect(res.newTimetableFrom).toBe("2026-09-21");
+      expect(res.notifiedDevices).toBe(2);
+      expect(sent).toHaveLength(2);
+    });
+
+    it("announces a given timetable only once", async () => {
+      const kv = createMockKv({ "class:1DP1:abc": JSON.stringify(subscriber) });
+      global.fetch = routed(["1"]);
+      await checkAndDispatchNewTimetable({ PUSH_KV: kv }, NOW);
+      global.fetch = routed(["1", "2"]);
+      await checkAndDispatchNewTimetable({ PUSH_KV: kv }, NOW);
+      const again = await checkAndDispatchNewTimetable({ PUSH_KV: kv }, NOW);
+      expect(again.newTimetableFrom).toBeNull();
+      expect(again.notifiedDevices).toBe(0);
+    });
+
+    it("stays quiet and keeps its state when EduPage fails", async () => {
+      const kv = createMockKv();
+      global.fetch = vi.fn().mockResolvedValue(new Response("nope", { status: 500 }));
+      const res = await checkAndDispatchNewTimetable({ PUSH_KV: kv }, NOW);
+      expect(res.newTimetableFrom).toBeNull();
+      expect(vi.mocked(kv.put)).not.toHaveBeenCalled();
+    });
+
+    it("reports a missing PUSH_KV", async () => {
+      expect((await checkAndDispatchNewTimetable({}, NOW)).errors).toEqual([
+        "PUSH_KV binding is missing",
+      ]);
+    });
+
+    it("localises the message and formats the date", () => {
+      expect(formatNewTimetable("2026-09-14", "lv")).toEqual({
+        title: "Jauns stundu saraksts",
+        body: "Izlikts jauns stundu saraksts no 14.09.2026.",
+      });
+      expect(formatNewTimetable("2026-09-14", "en").body).toBe(
+        "A new timetable from 14.09.2026 has been published.",
+      );
+      expect(formatNewTimetable("2026-09-14", "ru").title).toBe("Новое расписание");
+      expect(formatNewTimetable("2026-09-14", "ua").title).toBe("Новий розклад");
+      expect(formatNewTimetable("2026-09-14", "xx").title).toBe("Jauns stundu saraksts");
     });
   });
 });

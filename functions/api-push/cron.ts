@@ -3,6 +3,7 @@
  * Scheduled cron endpoint for checking substitutions and dispatching push notifications.
  */
 import { checkAndDispatchSubstitutions } from "./checker.ts";
+import { checkAndDispatchNewTimetable } from "./timetable.ts";
 import { corsHeaders, jsonResponse, type EventContext } from "./types.ts";
 
 export const onRequestOptions = (): Response => {
@@ -30,5 +31,13 @@ export const onRequest = async (context: EventContext): Promise<Response> => {
   }
 
   const result = await checkAndDispatchSubstitutions(env);
-  return jsonResponse({ ok: true, ...result });
+  const timetable = await checkAndDispatchNewTimetable(env);
+  return jsonResponse({
+    ok: true,
+    ...result,
+    newTimetableFrom: timetable.newTimetableFrom,
+    notifiedDevices: result.notifiedDevices + timetable.notifiedDevices,
+    expiredDevicesRemoved: result.expiredDevicesRemoved + timetable.expiredDevicesRemoved,
+    errors: [...result.errors, ...timetable.errors],
+  });
 };

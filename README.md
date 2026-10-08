@@ -39,7 +39,7 @@ That’s why the app is **local-first**. Your timetable is stored on your device
   * Toggle monochrome mode if you prefer a clean, neutral look.
   * Light, dark (with dedicated high-contrast black/white styling), or system theme.
 * **Subgroup switcher** — Classes with split groups (e.g., 1. grupa / 2. grupa) can filter the timetable to show only their assigned group's lessons.
-* **New timetable alert** (Android) — Get told the moment the school publishes next week's timetable, so form teachers needn't keep checking before entering lessons in e-klase. Has its own Settings switch.
+* **New timetable alert** — Get told the moment the school publishes next week's timetable, so form teachers needn't keep checking before entering lessons in e-klase. On Android it has its own Settings switch; on the web it comes with schedule-change notifications.
 * **Change notifications** — Get told when your day changes. Android delivers these locally from the app's own background refresh; the web app uses Web Push, so an installed PWA is notified even while it's closed.
 * **In-app feedback** — Report bugs or submit feature suggestions directly inside the app without third-party forms.
 * **Share your week as an image** — Turn the week view into a picture: your class, your form teacher, every lesson with its start and end time, and a note about which days are at another building. Under the grid, every subject code is spelled out in full, and it ends with a QR code so whoever you send it to can scan it and get the app. The image is drawn on your own device and passed straight to Android's share sheet, so it works offline and nothing is uploaded anywhere.
