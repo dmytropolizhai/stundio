@@ -722,6 +722,11 @@ inset.
   top. `--app-viewport-height` is `100dvh` where the engine has it (`src/index.css`), `100vh`
   otherwise; the 12px keeps a strip of scrim visible under the status bar.
 
+- **Full-bleed root on iPhone.** Installed to the Home Screen (`display-mode: standalone`), iOS
+  resolves `100%`/`dvh` to a viewport that stops short of the home-indicator strip and leaves a black
+  band under the tab bar. `html`, `body` and `#root` are therefore pinned `position: fixed; inset: 0`
+  in standalone mode (`src/index.css`).
+
 - **FeedbackSheet:** Used for in-app suggestions and bug reporting. Houses segmented chip toggles
   ("suggestion" / "issue"), a clean textarea with character counter, and a pill submit button with
   `send` and `check` feedback states.
