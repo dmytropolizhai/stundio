@@ -45,6 +45,7 @@ export {
   coverDuties,
   listSubgroups,
   listTeachers,
+  movedAwayTo,
   resolveDay,
   resolveDayAcross,
   resolveTeacherDay,

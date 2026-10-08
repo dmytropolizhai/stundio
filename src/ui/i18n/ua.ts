@@ -226,6 +226,9 @@ export const ua: Dict = {
   "settings.mergeLessons": "Об'єднувати однакові уроки",
   "settings.mergeLessonsHint":
     "Показує предмет, який іде кілька уроків поспіль у вигляді тижня, як один довгий блок.",
+  "settings.movedOnTarget": "Показувати перенесені уроки в новий день",
+  "settings.movedOnTargetHint":
+    "Урок, перенесений на інший день, показується в цей день, а не в попередній.",
   "settings.day": "Вигляд дня",
   "settings.showTime": "Показувати час",
   "settings.showTimeHint":
