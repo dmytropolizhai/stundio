@@ -42,6 +42,8 @@ export type Settings = {
   lang: "lv" | "en" | "ru" | "ua";
   /** Week view: collapse a run of consecutive identical lessons into one tall block. */
   mergeConsecutiveLessons: boolean;
+  /** Show a lesson moved to another day on the day it moved to, not the day it left. */
+  showMovedOnTargetDay: boolean;
   /** Day view: show each lesson's start/end time alongside its number. */
   showTime: boolean;
   /** Unfilled shows the subject accent only as a rail; filled tints the whole lesson card. */
@@ -125,6 +127,7 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: "system",
   lang: "lv",
   mergeConsecutiveLessons: false,
+  showMovedOnTargetDay: true,
   showTime: false,
   lessonCardStyle: "outline",
   cardRadius: "xl",

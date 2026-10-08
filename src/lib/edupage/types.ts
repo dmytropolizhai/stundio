@@ -155,6 +155,8 @@ export type ResolvedLesson = {
   status: ResolvedStatus;
   changeNote: string | null; // human summary when status !== "normal" (from Substitution.raw)
   original?: { teachers?: TeacherRef[]; rooms?: RoomRef[]; period?: string } | null;
+  /** Set on a vacated slot whose lesson moved to another day ("Moved to Piektdiena 11. 09."). */
+  movedTo?: { date: ISODate; period?: string };
   /**
    * The building whose published timetable this lesson came from. Set on every resolved lesson,
    * and the only reliable per-lesson answer in automatic building mode, where one day can be

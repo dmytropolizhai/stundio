@@ -311,7 +311,18 @@ export type ResolveOptions = {
   stale?: boolean;
   /** The user's pusgrupa within a divided class; `null`/omitted shows every division. */
   subgroup?: string | null;
+  /**
+   * Show a lesson moved to another day on that day instead of the one it was vacated on: the
+   * vacated slot is dropped, and `incomingMoves` (the vacated lessons of other days that now
+   * land on this date, see `movedAwayTo`) are added. Off keeps both days as published.
+   */
+  relocateMoves?: boolean;
+  incomingMoves?: readonly ResolvedLesson[];
 };
+
+/** Lessons of an already-resolved day that were moved to `date` (needs `relocateMoves` off). */
+export const movedAwayTo = (day: ResolvedDay, date: ISODate): ResolvedLesson[] =>
+  day.lessons.filter((l) => l.movedTo?.date === date);
 
 /** One building's published week, as handed to `resolveDayAcross`. */
 export type DaySource = {
@@ -435,6 +446,7 @@ export const resolveDayAcross = (
     let teacherList = entry.lesson.teachers;
     let roomList = entry.lesson.rooms;
     const original: NonNullable<ResolvedLesson["original"]> = {};
+    let movedTo: ResolvedLesson["movedTo"];
 
     for (const s of applied) {
       status = strongerStatus(status, STATUS_FOR_KIND[s.kind] ?? "normal");
@@ -459,10 +471,19 @@ export const resolveDayAcross = (
       if (s.movedToPeriod !== null || s.movedToDate !== null) {
         original.period = entry.lesson.period;
       }
+      if (s.movedToDate !== null && s.movedToDate !== date) {
+        movedTo = {
+          date: s.movedToDate,
+          ...(s.movedToPeriod === null ? {} : { period: String(s.movedToPeriod) }),
+        };
+      }
     }
+
+    if (movedTo !== undefined && options.relocateMoves === true) continue;
 
     out.push({
       ...entry.lesson,
+      ...(movedTo === undefined ? {} : { movedTo }),
       teachers: teacherList,
       rooms: roomList,
       status,
@@ -496,6 +517,29 @@ export const resolveDayAcross = (
       original: s.movedFromPeriod !== null ? { period: String(s.movedFromPeriod) } : null,
       ...(lead === undefined ? {} : { building: lead.meta.building }),
     });
+  }
+
+  // Lessons moved here from another day whose feed may not be fetched (so no `moved_in` row).
+  if (options.relocateMoves === true) {
+    for (const incoming of options.incomingMoves ?? []) {
+      const label = (l: ResolvedLesson): string => l.subject?.name ?? l.subject?.short ?? "";
+      if (
+        out.some(
+          (l) => l.status === "moved" && label(l) === label(incoming) && l.group === incoming.group,
+        )
+      ) {
+        continue;
+      }
+      const { movedTo, ...rest } = incoming;
+      const period = movedTo?.period ?? incoming.period;
+      out.push({
+        ...rest,
+        period,
+        ...(movedTo?.period === undefined ? {} : timeOf(Number(period), incoming.span)),
+        status: "moved",
+        original: { ...incoming.original, period: incoming.period },
+      });
+    }
   }
 
   out.sort((a, b) => periodNum(a.period) - periodNum(b.period));
