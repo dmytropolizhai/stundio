@@ -228,7 +228,7 @@ describe("wireNotificationTaps", () => {
     const store = makeStore();
     wireNotificationTaps(store);
     tapHandlers[0]?.({ kind: "lesson", date: "2026-09-09" });
-    expect(store.getState().pendingNavigation).toEqual({ tab: "day", date: "2026-09-09" });
+    expect(store.getState().pendingNavigation).toEqual({ tab: "home", date: "2026-09-09" });
   });
 
   it("routes a substitutions-changed tap to the changes tab on the changed date", () => {

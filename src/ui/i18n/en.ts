@@ -4,7 +4,7 @@ export const en: Dict = {
   "app.title": "Stundio",
   "general.continue": "Continue",
 
-  "nav.day": "Day",
+  "nav.home": "Home",
   "nav.week": "Week",
   "nav.changes": "Changes",
   "nav.subjects": "Subjects",
@@ -83,6 +83,7 @@ export const en: Dict = {
   "day.offline": "No internet connection — showing the saved timetable.",
   "day.buildingOther": "Different building: {building}",
   "day.buildingMixed": "Several buildings: {buildings}",
+  "home.schedule": "Schedule for the day",
   "day.notes": "Announcements",
   "day.allNotes": "All school announcements ({count})",
   "day.onlyMyGroup": "Only for my group",

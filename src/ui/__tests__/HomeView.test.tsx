@@ -1,12 +1,12 @@
 /**
- * The day screen against the real 2026-09-09 fixtures. What matters here is the promises
+ * The Home screen against the real 2026-09-09 fixtures. What matters here is the promises
  * CLAUDE.md makes to the user: cancelled lessons stay on screen, EduPage's own wording is
  * shown verbatim, and every empty state says something.
  */
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { StoreContext } from "@/store";
-import { DayView } from "../screens/day-view";
+import { HomeView } from "../screens/home-view";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 /** 08:50 Riga on the fixture date: inside the first lesson. */
@@ -16,13 +16,13 @@ const renderDay = (harness: Harness, date = FIXTURE_DATE) => {
   const onDateChange = vi.fn();
   const result = render(
     <StoreContext.Provider value={harness.store}>
-      <DayView date={date} onDateChange={onDateChange} onPickClass={vi.fn()} />
+      <HomeView date={date} onDateChange={onDateChange} onPickClass={vi.fn()} />
     </StoreContext.Provider>,
   );
   return { ...result, onDateChange };
 };
 
-describe("DayView", () => {
+describe("HomeView", () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(DURING_FIRST_LESSON);
@@ -149,6 +149,52 @@ describe("DayView", () => {
       expect(glance.compareDocumentPosition(rows[0]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
         Node.DOCUMENT_POSITION_FOLLOWING,
       );
+    });
+
+    it("puts the day's schedule straight under the banner, with footnotes below it", async () => {
+      const harness = await bootHarness({ building: "TIC" });
+      renderDay(harness, "2026-09-10");
+      // Not today, so the banner gives way and the building notice is not folded into a walk.
+      expect(screen.queryByTestId("day-glance")).toBeNull();
+
+      const schedule = screen.getByTestId("home-schedule");
+      expect(within(schedule).getByRole("heading", { name: "Dienas saraksts" })).toBeDefined();
+      expect(within(schedule).getByTestId("day-summary")).toBeDefined();
+      expect(
+        within(schedule)
+          .getAllByRole("listitem")
+          .filter((li) => li.querySelector('[role="button"]')).length,
+      ).toBeGreaterThan(0);
+
+      expect(
+        schedule.compareDocumentPosition(screen.getByTestId("day-building")) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    it("leaves nothing between the banner and the schedule", async () => {
+      const harness = await bootHarness();
+      renderDay(harness);
+
+      const glance = screen.getByTestId("day-glance");
+      const schedule = screen.getByTestId("home-schedule");
+      expect(glance.parentElement).toBe(schedule.parentElement);
+      expect(glance.nextElementSibling).toBe(schedule);
+    });
+
+    it("keeps the offline notice above the banner, since it qualifies what the banner says", async () => {
+      const harness = await bootHarness();
+      renderDay(harness);
+      act(() => {
+        harness.store.getState().setConnectivity(false);
+      });
+
+      expect(
+        screen
+          .getByTestId("offline-banner")
+          .compareDocumentPosition(screen.getByTestId("day-glance")) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
     it("outlines the day on any date, but only calls a 'now' lesson on today", async () => {
@@ -372,14 +418,14 @@ describe("DayView", () => {
 
     rerender(
       <StoreContext.Provider value={harness.store}>
-        <DayView date="2026-09-10" onDateChange={vi.fn()} onPickClass={vi.fn()} />
+        <HomeView date="2026-09-10" onDateChange={vi.fn()} onPickClass={vi.fn()} />
       </StoreContext.Provider>,
     );
 
     expect(screen.queryByText(/Paziņojumi · No skolas/i)).toBeNull();
   });
 
-  it("allows toggling show-time preference directly from DayView", async () => {
+  it("allows toggling show-time preference directly from HomeView", async () => {
     const harness = await bootHarness();
     renderDay(harness);
 
@@ -400,7 +446,7 @@ describe("DayView", () => {
     const onOpenChanges = vi.fn();
     render(
       <StoreContext.Provider value={harness.store}>
-        <DayView
+        <HomeView
           date={FIXTURE_DATE}
           onDateChange={vi.fn()}
           onPickClass={vi.fn()}

@@ -10,7 +10,7 @@ export type { Tab };
  * profile's call (`ui/persona`), not this component's.
  */
 const TAB_ICONS: Record<Tab, IconName> = {
-  day: "calendar-days",
+  home: "house",
   week: "layout-grid",
   changes: "repeat",
   subjects: "graduation-cap",

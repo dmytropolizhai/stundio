@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { listTeachers } from "@/lib/edupage";
-import { DayTopBar } from "../screens/day-view/day-top-bar.tsx";
+import { DayTopBar } from "../screens/home-view/day-top-bar.tsx";
 import { WeekTopBar } from "../screens/week-view/week-top-bar.tsx";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 

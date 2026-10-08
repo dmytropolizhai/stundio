@@ -75,14 +75,14 @@ describe("TabBar", () => {
   it("shows every tab and reports taps", async () => {
     const harness = await bootHarness();
     const onChange = vi.fn();
-    wrap(harness, <TabBar tab="day" onChange={onChange} />);
+    wrap(harness, <TabBar tab="home" onChange={onChange} />);
 
     /*
      * Every tab is a bare icon — the design system's nav slides an inverse-fill pill beneath the
      * selected one rather than growing a label into view. Each tab's name still reaches assistive
      * tech via `aria-label`, which is what these queries rely on.
      */
-    expect(screen.getByRole("button", { name: "Diena" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Sākums" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Nedēļa" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Izmaiņas" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();

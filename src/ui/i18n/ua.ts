@@ -4,7 +4,7 @@ export const ua: Dict = {
   "app.title": "Stundio",
   "general.continue": "Продовжити",
 
-  "nav.day": "День",
+  "nav.home": "Головна",
   "nav.week": "Тиждень",
   "nav.changes": "Зміни",
   "nav.subjects": "Предмети",
@@ -83,6 +83,7 @@ export const ua: Dict = {
   "day.offline": "Немає підключення до інтернету — показуємо збережений розклад.",
   "day.buildingOther": "Інший корпус: {building}",
   "day.buildingMixed": "Кілька корпусів: {buildings}",
+  "home.schedule": "Розклад на день",
   "day.notes": "Оголошення",
   "day.allNotes": "Усі оголошення школи ({count})",
   "day.onlyMyGroup": "Лише для моєї групи",

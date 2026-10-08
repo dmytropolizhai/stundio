@@ -1,3 +1,10 @@
+/**
+ * The Home tab — the app's landing screen. Top to bottom: the date header, app-level prompts,
+ * then the banner that answers "what's on now / next" (or tomorrow's preview once the day is
+ * done), and straight under it the day's schedule. Notices that qualify the banner (stale,
+ * offline) sit above it; footnotes about the day (building, "lessons are over", school notes)
+ * sit below the schedule so nothing pushes the lesson list away from the banner.
+ */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
@@ -16,7 +23,7 @@ import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { useNow } from "@/ui/hooks/useNow.ts";
 import { useT } from "@/ui/i18n";
 import { DayTopBar } from "./day-top-bar.tsx";
-import { DayStaleNotice, DayStatus } from "./day-status.tsx";
+import { DayOfflineNotice, DayStaleNotice, DayStatus } from "./day-status.tsx";
 import { DayGlance } from "./day-glance.tsx";
 import { glanceWalk } from "./glance-walk.ts";
 import { DaySummary } from "./day-summary.tsx";
@@ -30,14 +37,14 @@ const SWIPE_THRESHOLD_PX = 56;
 /** Touches starting this close to a screen edge belong to the OS back gesture, not to paging. */
 const EDGE_GUARD_PX = 24;
 
-type DayViewProps = {
+type HomeViewProps = {
   date: ISODate;
   onDateChange: (date: ISODate) => void;
   onPickClass: () => void;
   onOpenChanges?: ((date: ISODate) => void) | undefined;
 };
 
-export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayViewProps) => {
+export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: HomeViewProps) => {
   const t = useT();
   const now = useNow();
 
@@ -180,8 +187,9 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
     return (
       <>
         <DayStaleNotice stale={day.stale} />
+        <DayOfflineNotice syncStatus={syncStatus} />
 
-        {day !== null && glance !== null && glance.kind !== "finished" && (
+        {glance !== null && glance.kind !== "finished" && (
           <DayGlance day={day} glance={glance} onOpenLesson={setOpen} />
         )}
 
@@ -196,8 +204,30 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
           />
         )}
 
+        <section aria-labelledby="home-schedule" className="mt-7" data-testid="home-schedule">
+          <h2 id="home-schedule" className="u-eyebrow">
+            {t("home.schedule")}
+          </h2>
+
+          {summary !== null && <DaySummary summary={summary} />}
+
+          <DayLessonList
+            day={day}
+            date={date}
+            now={now}
+            progress={progress}
+            showTime={showTime}
+            subjectColorOverrides={subjectColorOverrides}
+            colorCodingEnabled={colorCodingEnabled}
+            filled={filled}
+            x={x}
+            opacity={opacity}
+            dragging={dragging}
+            onOpenLesson={setOpen}
+          />
+        </section>
+
         <DayStatus
-          syncStatus={syncStatus}
           buildings={
             glance !== null && glance.kind !== "finished" && glanceWalk(glance) !== null
               ? null
@@ -205,23 +235,6 @@ export const DayView = ({ date, onDateChange, onPickClass, onOpenChanges }: DayV
           }
           isToday={isToday}
           finished={progress.finished}
-        />
-
-        {summary !== null && <DaySummary summary={summary} />}
-
-        <DayLessonList
-          day={day}
-          date={date}
-          now={now}
-          progress={progress}
-          showTime={showTime}
-          subjectColorOverrides={subjectColorOverrides}
-          colorCodingEnabled={colorCodingEnabled}
-          filled={filled}
-          x={x}
-          opacity={opacity}
-          dragging={dragging}
-          onOpenLesson={setOpen}
         />
 
         <DaySchoolNotes

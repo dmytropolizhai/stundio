@@ -12,7 +12,7 @@ import type { IconName } from "@/ds";
 import type { Persona } from "@/lib/persona";
 import type { MessageKey } from "@/ui/i18n";
 
-export type Tab = "day" | "week" | "changes" | "subjects" | "settings";
+export type Tab = "home" | "week" | "changes" | "subjects" | "settings";
 
 export type PersonaProfile = {
   /** Bottom-nav tabs, in order. Teachers have no personal subject notes. */
@@ -51,7 +51,7 @@ export type PersonaProfile = {
 
 export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
   student: {
-    tabs: ["day", "week", "changes", "subjects", "settings"],
+    tabs: ["home", "week", "changes", "subjects", "settings"],
     picker: "class",
     icon: "graduation-cap",
     roleLabel: "settings.persona.student",
@@ -68,7 +68,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     },
   },
   teacher: {
-    tabs: ["day", "week", "changes", "settings"],
+    tabs: ["home", "week", "changes", "settings"],
     picker: "teacher",
     icon: "briefcase",
     roleLabel: "settings.persona.teacher",

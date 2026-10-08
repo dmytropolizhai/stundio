@@ -45,7 +45,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **`src/lib/edupage/`** — everything EduPage-specific: transport, parsing, and the merge of a
   timetable + a day's substitutions into a `ResolvedDay`. Pure and React-free apart from
   `http.ts`. `types.ts` is the single source of truth for the domain types.
-- **`src/lib/schedule/`** — pure "what's on now / next" (`glance.ts` builds on it: the day screen's glance card, day outline and tomorrow preview, incl. the building-hop rule), week maths, reminder times, substitution
+- **`src/lib/schedule/`** — pure "what's on now / next" (`glance.ts` builds on it: the Home screen's glance banner, day outline and tomorrow preview, incl. the building-hop rule), week maths, reminder times, substitution
   diffing. React-free **on purpose**: this is the logic the planned Android widget shares.
 - **`src/lib/share/`** — the shareable week card: a pure layout → display list → canvas painter,
   a self-contained QR encoder (`qr.ts`, byte mode / level M / versions 1–6, checked against a
@@ -96,6 +96,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   Cloudflare Pages 308s it, and Safari rejects redirected responses from a worker). Keep boot
   free of lazy `import()`s, and keep `App`'s `errorFallback`: a boot that rejects must uncover
   an error, not leave the splash rippling forever.
+- **`src/ui/screens/home-view/`** — the Home tab (formerly the Day view): the glance banner (now / next, or tomorrow's preview once the day is over), then straight under it the day's schedule; stale/offline notices sit above the banner, building and school notes below the schedule. Its swipe/arrow paging still steps through days. The push contract (`?tab=day`, `NAVIGATE_DAY`) keeps its old wire names; the app maps them to `home`.
 - **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: five tabs plus modals,
   with the five primary tabs bundled together to guarantee instant and reliable offline navigation.
 

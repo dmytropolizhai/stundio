@@ -118,7 +118,7 @@ export const bootApp: Boot = async () => {
     const onSwMessage = (event: MessageEvent<unknown>) => {
       const data = event.data as { type?: unknown; date?: unknown } | null | undefined;
       if (data?.type === "NAVIGATE_DAY" && typeof data.date === "string") {
-        store.getState().setPendingNavigation({ tab: "day", date: data.date });
+        store.getState().setPendingNavigation({ tab: "home", date: data.date });
       }
     };
 
