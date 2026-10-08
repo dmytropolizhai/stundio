@@ -18,6 +18,7 @@ import { PullToRefresh } from "@/ui/components/PullToRefresh.tsx";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { FeedbackPrompt } from "@/ui/components/FeedbackPrompt.tsx";
 import { AndroidDownloadBanner } from "@/ui/components/AndroidDownloadBanner.tsx";
+import { NotificationBlockedNotice } from "@/ui/components/NotificationBlockedNotice.tsx";
 import { InAppUpdatePrompt } from "@/ui/components/InAppUpdatePrompt.tsx";
 import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { useNow } from "@/ui/hooks/useNow.ts";
@@ -307,6 +308,7 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
           <InAppUpdatePrompt />
           <AndroidDownloadBanner />
           <FeedbackPrompt />
+          <NotificationBlockedNotice />
 
           {body()}
 

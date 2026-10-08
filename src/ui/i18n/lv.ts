@@ -93,6 +93,9 @@ export const lv = {
   "day.buildingOther": "Cita ēka: {building}",
   "day.buildingMixed": "Vairākas ēkas: {buildings}",
   "home.schedule": "Dienas saraksts",
+  "home.notifyBlocked": "Paziņojumi ir izslēgti — atgādinājumi un izmaiņu brīdinājumi nenāks.",
+  "home.notifyBlockedWeb":
+    "Paziņojumi ir bloķēti pārlūkprogrammā — ieslēdz tos vietnes iestatījumos, lai saņemtu brīdinājumus.",
   "day.notes": "Paziņojumi",
   "day.allNotes": "Visi skolas paziņojumi ({count})",
   "day.onlyMyGroup": "Tikai manai grupai",
