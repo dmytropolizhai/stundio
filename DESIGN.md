@@ -609,6 +609,10 @@ rather than hints.
   52px circle and the pill hugs them (a teacher's, Settings alone, is a single 64px circle). Only
   one tab in the row is active: the other pill's selection fill fades out where it stood, and
   slides on from there when you come back.
+- **Optional Subjects tab:** a student can switch the Subjects tab off in Settings → Menu. Its slot
+  collapses to a zero-width column instead of unmounting, so switching it back on animates the
+  column open (`--dur-base`, standard easing) and the right-anchored personal pill visibly grows
+  out from the right edge while the icon fades and scales in. Settings stays, it is the way back.
 - **Active state:** a **fill swap, not an indicator** — the active tab becomes a white pill that
   *grows* to include its text label while the others shrink. This growth is one of the places the
   spring easing is permitted.

@@ -128,6 +128,24 @@ describe("TabBar", () => {
     expect(screen.queryByRole("button", { name: "Priekšmeti" })).toBeNull();
   });
 
+  it("collapses the Subjects slot while it is switched off, and grows it back", async () => {
+    const harness = await bootHarness({ showSubjectsTab: false });
+    wrap(harness, <TabBar tab="settings" onChange={vi.fn()} />);
+    const personal = screen.getByRole("navigation", { name: "Personīgi" });
+
+    // Still in the DOM — a zero-width column, so switching it on can animate — but out of reach.
+    expect(screen.queryByRole("button", { name: "Priekšmeti" })).toBeNull();
+    expect(personal.style.gridTemplateColumns).toBe("0px calc(var(--nav-height) - 12px)");
+
+    await act(async () => {
+      await harness.store.getState().setShowSubjectsTab(true);
+    });
+    expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();
+    expect(personal.style.gridTemplateColumns).toBe(
+      "calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px)",
+    );
+  });
+
   it("hides one pill's selection while the other pill holds the active tab", async () => {
     const harness = await bootHarness();
     const { rerender } = wrap(harness, <TabBar tab="week" onChange={vi.fn()} />);

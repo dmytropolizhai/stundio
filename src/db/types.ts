@@ -46,6 +46,8 @@ export type Settings = {
   showMovedOnTargetDay: boolean;
   /** Day view: show each lesson's start/end time alongside its number. */
   showTime: boolean;
+  /** Whether the Subjects tab sits in the bottom nav's personal pill. Student-only. */
+  showSubjectsTab: boolean;
   /** Unfilled shows the subject accent only as a rail; filled tints the whole lesson card. */
   lessonCardStyle: "outline" | "filled";
   /** Corner radius for cards — one of the Card component's own four radius steps. */
@@ -129,6 +131,7 @@ export const DEFAULT_SETTINGS: Settings = {
   mergeConsecutiveLessons: false,
   showMovedOnTargetDay: true,
   showTime: false,
+  showSubjectsTab: true,
   lessonCardStyle: "outline",
   cardRadius: "xl",
   cardElevation: "soft",
