@@ -189,6 +189,17 @@ describe("WeekGrid merge", () => {
     expect(screen.getAllByTestId("week-cell")).toHaveLength(2);
   });
 
+  it("rings only the live lesson and marks it as current", () => {
+    const live: WeekGridPeriod<string>[] = [
+      { period: 1, start: "08:30", end: "09:15", cells: { mon: { ...lvl, live: true }, tue: mat } },
+    ];
+    render(<WeekGrid days={days} periods={live} />);
+    const [now, other] = screen.getAllByTestId("week-cell");
+    expect(now?.className).toContain("inset-ring-brand");
+    expect(now?.getAttribute("aria-current")).toBe("time");
+    expect(other?.className).not.toContain("inset-ring-brand");
+  });
+
   it("renders the last period's end time as a closing label below the grid", () => {
     render(<WeekGrid days={days} periods={periods} />);
     expect(screen.getByText("10:55")).toBeDefined();

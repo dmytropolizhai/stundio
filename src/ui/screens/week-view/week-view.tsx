@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
-import { weekDates, weekPeriods } from "@/lib/schedule";
+import { dayProgress, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
@@ -126,6 +126,12 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
     return map;
   }, [days, dates]);
 
+  /* The lesson in progress, if today is in this week — the grid rings it like the day view. */
+  const liveLesson = useMemo(() => {
+    const i = dates.indexOf(now.date);
+    return i === -1 ? null : dayProgress(days[i] ?? null, now).current;
+  }, [dates, days, now]);
+
   const rows = useMemo<WeekGridPeriod<ISODate>[]>(
     () =>
       periods.map(({ period, start, end }) => {
@@ -155,6 +161,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
             name: displayName,
             tone: accent.tone,
             cancelled: lesson.status === "cancelled",
+            ...(lesson === liveLesson ? { live: true } : {}),
             span: lesson.span,
             ...(building === undefined ? {} : { building }),
             ...(accent.tone === "custom"
@@ -170,7 +177,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           cells,
         };
       }),
-    [periods, days, dates, subjectColorOverrides, colorCodingEnabled],
+    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson],
   );
 
   const firstDay = dates[0];
