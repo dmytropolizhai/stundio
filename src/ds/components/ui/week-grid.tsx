@@ -67,6 +67,24 @@ export type WeekGridProps<K extends string = string> = {
   mergeConsecutive?: boolean;
 };
 
+/**
+ * Grid-column ranges (`from` inclusive, `to` exclusive, 1-based, column 1 being the time gutter)
+ * that a break divider may draw in: the gutter plus every day column not covered by a lesson
+ * spanning across the break. Adjacent free columns join into one run so the rule is unbroken.
+ */
+const freeRuns = (covered: readonly boolean[]): { from: number; to: number }[] => {
+  const runs: { from: number; to: number }[] = [];
+  let from = 1;
+  covered.forEach((isCovered, i) => {
+    const col = i + 2;
+    if (!isCovered) return;
+    if (col > from) runs.push({ from, to: col });
+    from = col + 1;
+  });
+  if (from <= covered.length + 1) runs.push({ from, to: covered.length + 2 });
+  return runs;
+};
+
 /** `custom` has no entry — a user-picked hex is applied as an inline style instead. */
 const TONE_BG: Record<Exclude<LessonTone, "custom">, string> = {
   amber: "bg-amber",
@@ -174,6 +192,7 @@ export const WeekGrid = <K extends string>({
   }, 0);
   const trackOf = (i: number): number => i + 2 + (breaksBefore[i] ?? 0);
   const lastTrack = trackOf(periods.length - 1) + 1;
+  const placements = days.map((day) => placementsFor(day, periods, mergeConsecutive));
 
   return (
     <div
@@ -181,24 +200,42 @@ export const WeekGrid = <K extends string>({
       style={{ gridTemplateColumns: `46px repeat(${String(days.length)}, minmax(0,1fr))` }}
     >
       <span />
-      {periods.map((period, rowIndex) =>
-        period.breakBefore === undefined ? null : (
+      {periods.map((period, rowIndex) => {
+        if (period.breakBefore === undefined) return null;
+        const runs = freeRuns(
+          placements.map((col) =>
+            col.some((pl, i) => typeof pl === "object" && i < rowIndex && i + pl.span > rowIndex),
+          ),
+        );
+        // The label goes in the widest free stretch; other stretches just carry the rule.
+        const widest = runs.reduce((best, r) => (r.to - r.from > best.to - best.from ? r : best));
+        return runs.map((run) => (
           <div
-            key={`b-${period.period}`}
-            data-testid="week-break"
-            role="separator"
-            aria-label={period.breakBefore}
-            className="flex items-center gap-2 pt-1"
-            style={{ gridColumn: "1 / -1", gridRow: trackOf(rowIndex) - 1 }}
+            key={`b-${period.period}-${String(run.from)}`}
+            {...(run === widest
+              ? { "data-testid": "week-break", role: "separator", "aria-label": period.breakBefore }
+              : { "aria-hidden": true })}
+            className="flex min-w-0 items-center gap-2 pt-1"
+            style={{
+              gridColumn: `${String(run.from)} / ${String(run.to)}`,
+              gridRow: trackOf(rowIndex) - 1,
+            }}
           >
-            <span aria-hidden="true" className="h-px flex-1 bg-strong-border" />
-            <span className="font-text text-micro font-bold tracking-label text-muted uppercase tabular-nums">
-              {period.breakBefore}
-            </span>
-            <span aria-hidden="true" className="h-px flex-1 bg-strong-border" />
+            <span aria-hidden="true" className="h-px min-w-2 flex-1 bg-strong-border" />
+            {run === widest && (
+              <>
+                <span
+                  aria-hidden="true"
+                  className="min-w-0 truncate font-text text-micro font-bold tracking-label text-muted uppercase tabular-nums"
+                >
+                  {period.breakBefore}
+                </span>
+                <span aria-hidden="true" className="h-px min-w-2 flex-1 bg-strong-border" />
+              </>
+            )}
           </div>
-        ),
-      )}
+        ));
+      })}
       {days.map((day) => {
         // `min-w-0` lets the heading actually honour the column's `minmax(0,1fr)` track;
         // without it a grid item's implicit min-width is its content's, so a long weekday
@@ -265,7 +302,7 @@ export const WeekGrid = <K extends string>({
       )}
 
       {days.map((day, colIndex) =>
-        placementsFor(day, periods, mergeConsecutive).map((placement, rowIndex) => {
+        (placements[colIndex] ?? []).map((placement, rowIndex) => {
           const gridColumn = colIndex + 2;
           const gridRow = trackOf(rowIndex);
           if (placement === "covered") return null;

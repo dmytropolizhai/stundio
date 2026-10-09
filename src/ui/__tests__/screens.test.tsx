@@ -234,6 +234,17 @@ describe("WeekGrid merge", () => {
     render(<WeekGrid days={days} periods={crossing} />);
     expect(screen.getByTestId("week-cell").style.gridRow).toBe("2 / span 3");
   });
+
+  it("keeps the break divider out of the column a spanning lesson crosses it in", () => {
+    const three = [...days, { key: "wed", weekday: "Trešd." }];
+    const crossing: WeekGridPeriod<string>[] = [
+      { period: 1, start: "08:30", end: "09:15", cells: { mon: { ...lvl, span: 2 } } },
+      { period: 2, start: "09:40", end: "10:25", cells: {}, breakBefore: "Break" },
+    ];
+    render(<WeekGrid days={three} periods={crossing} />);
+    // Mon is grid column 2, so the labelled rule runs over Tue–Wed (columns 3–5) only.
+    expect(screen.getByTestId("week-break").style.gridColumn).toBe("3 / 5");
+  });
 });
 
 describe("WeekView", () => {
