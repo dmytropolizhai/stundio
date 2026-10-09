@@ -10,6 +10,8 @@ export type WeekGridCell = {
   /** Required alongside `tone: "custom"` — the fill/ink pair a fixed tone gets for free. */
   accentColor?: { fill: string; ink: string };
   cancelled?: boolean;
+  /** The lesson in progress right now — drawn with the brand ring, as on the day view. */
+  live?: boolean;
   /**
    * The lesson's building, set only when it is not the school's main building. Draws a hairline
    * outline on the cell — the fill still carries the subject colour, this only says "elsewhere" —
@@ -78,6 +80,7 @@ const sameCell = (a: WeekGridCell, b: WeekGridCell): boolean =>
   (a.tone ?? "sky") === (b.tone ?? "sky") &&
   (a.tone !== "custom" || a.accentColor?.fill === b.accentColor?.fill) &&
   (a.cancelled ?? false) === (b.cancelled ?? false) &&
+  (a.live ?? false) === (b.live ?? false) &&
   (a.building ?? "") === (b.building ?? "");
 
 /**
@@ -249,6 +252,7 @@ export const WeekGrid = <K extends string>({
             key={`${day.key}-${rowIndex}`}
             type="button"
             data-testid="week-cell"
+            {...(cell.live === true ? { "aria-current": "time" as const } : {})}
             aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
             // Free on desktop (hover), inert on the touch device this app actually ships on —
             // tapping already opens the full lesson sheet with the name.
@@ -272,7 +276,9 @@ export const WeekGrid = <K extends string>({
               "font-text text-caption font-bold",
               cell.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[cell.tone ?? "sky"]),
               cell.cancelled === true && "opacity-40 line-through",
-              cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
+              cell.live === true
+                ? "inset-ring-2 inset-ring-brand"
+                : cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
               onSelect === undefined ? "cursor-default" : "cursor-pointer",
             )}
           >
