@@ -31,7 +31,6 @@ import { DaySummary } from "./day-summary.tsx";
 import { DayTomorrow } from "./day-tomorrow.tsx";
 import { DayLessonList } from "./day-lesson-list.tsx";
 import { DaySchoolNotes } from "./day-school-notes.tsx";
-import { DaySettings } from "./day-settings.tsx";
 import { LessonSheet } from "@/ui/screens/lesson-sheet";
 
 const SWIPE_THRESHOLD_PX = 56;
@@ -311,8 +310,6 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
           <NotificationBlockedNotice />
 
           {body()}
-
-          {ready && hasIdentity && <DaySettings />}
         </div>
       </PullToRefresh>
 

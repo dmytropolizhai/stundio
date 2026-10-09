@@ -8,6 +8,7 @@ import { DatePicker } from "@/ui/components/DatePicker.tsx";
 import { useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
 import { useIsFormTeacher } from "@/ui/persona";
+import { ViewOptionsMenu } from "@/ui/components/ViewOptionsMenu.tsx";
 
 type DayTopBarProps = {
   date: ISODate;
@@ -38,6 +39,8 @@ export const DayTopBar = ({
   const teacherView = useAppStore((s) => s.settings.teacherView);
   const setTeacherView = useAppStore((s) => s.setTeacherView);
   const isFormTeacher = useIsFormTeacher();
+  const showTime = useAppStore((s) => s.settings.showTime);
+  const setShowTime = useAppStore((s) => s.setShowTime);
 
   return (
     <>
@@ -79,6 +82,19 @@ export const DayTopBar = ({
           <>
             <ClassBadge onClick={onPickClass} />
             <SyncBadge onRetry={onRefresh} />
+            <ViewOptionsMenu
+              options={[
+                {
+                  key: "showTime",
+                  icon: "clock",
+                  label: t("settings.showTime"),
+                  checked: showTime,
+                  onChange: (checked) => {
+                    void setShowTime(checked);
+                  },
+                },
+              ]}
+            />
           </>
         }
       />

@@ -17,7 +17,6 @@ import { formatWeekdayShort, useLang, useT } from "@/ui/i18n";
 import { WeekTopBar } from "./week-top-bar.tsx";
 import { WeekBuildings } from "./week-buildings.tsx";
 import { WeekOverview } from "./week-overview.tsx";
-import { WeekSettings } from "./week-settings.tsx";
 
 const periodNum = (p: string): number => {
   const n = Number(p);
@@ -292,8 +291,6 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           />
 
           {body()}
-
-          {ready && hasIdentity && <WeekSettings />}
         </div>
       </PullToRefresh>
 
