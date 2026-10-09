@@ -218,6 +218,7 @@ describe("WeekGrid merge", () => {
     ];
     render(<WeekGrid days={days} periods={withBreak} />);
     const divider = screen.getByTestId("week-break");
+    expect(divider.getAttribute("aria-label")).toBe("Long break · 25 min");
     expect(divider.textContent).toBe("Long break · 25 min");
     expect(divider.style.gridRow).toBe("3");
     const [first, second] = screen.getAllByTestId("week-cell");

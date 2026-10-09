@@ -186,11 +186,13 @@ export const WeekGrid = <K extends string>({
           <div
             key={`b-${period.period}`}
             data-testid="week-break"
-            className="flex items-center gap-2"
+            role="separator"
+            aria-label={period.breakBefore}
+            className="flex items-center gap-2 pt-1"
             style={{ gridColumn: "1 / -1", gridRow: trackOf(rowIndex) - 1 }}
           >
             <span aria-hidden="true" className="h-px flex-1 bg-strong-border" />
-            <span className="font-text text-micro font-bold tracking-label text-muted uppercase">
+            <span className="font-text text-micro font-bold tracking-label text-muted uppercase tabular-nums">
               {period.breakBefore}
             </span>
             <span aria-hidden="true" className="h-px flex-1 bg-strong-border" />
