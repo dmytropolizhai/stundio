@@ -221,6 +221,22 @@ describe("WeekView", () => {
     expect(screen.getAllByTestId("week-cell").length).toBeGreaterThan(0);
   });
 
+  it("says the schedule isn't out yet for a future week with no lessons", async () => {
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <WeekView
+        date="2099-01-05"
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Šai nedēļai vēl nav saraksta")).toBeTruthy();
+    expect(screen.queryByText("Nav saglabātu datu")).toBeNull();
+  });
+
   it("says nothing about buildings when the whole week is in the main one", async () => {
     const harness = await bootHarness();
     wrap(

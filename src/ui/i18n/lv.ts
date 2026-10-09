@@ -88,6 +88,9 @@ export const lv = {
   "day.changeClass": "Mainīt klasi",
   "day.noData": "Nav saglabātu datu",
   "day.noDataHint": "Pievienojies internetam, lai lejupielādētu sarakstu.",
+  "week.noSchedule": "Šai nedēļai vēl nav saraksta",
+  "week.noScheduleHint":
+    "Parasti tas parādās tuvāk datumam. Velc uz leju, lai pārbaudītu atjauninājumus.",
   "day.stale": "Šai nedēļai saraksts vēl nav publicēts — rādām iepriekšējo.",
   "day.offline": "Nav interneta pieslēguma — rādām saglabāto sarakstu.",
   "day.buildingOther": "Cita ēka: {building}",

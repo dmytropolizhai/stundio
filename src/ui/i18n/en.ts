@@ -81,6 +81,8 @@ export const en: Dict = {
   "day.changeClass": "Change class",
   "day.noData": "Nothing cached yet",
   "day.noDataHint": "Go online once to download the timetable.",
+  "week.noSchedule": "No timetable for this week yet",
+  "week.noScheduleHint": "It usually appears closer to the date. Pull down to check for updates.",
   "day.stale": "This week's timetable is not published yet — showing the previous one.",
   "day.offline": "No internet connection — showing the saved timetable.",
   "day.buildingOther": "Different building: {building}",

@@ -173,6 +173,11 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
     [periods, days, dates, subjectColorOverrides, colorCodingEnabled],
   );
 
+  const firstDay = dates[0];
+  const lastDay = dates[dates.length - 1];
+
+  const isFuture = firstDay !== undefined && firstDay > now.date;
+
   const body = () => {
     if (!ready) {
       return <DaySkeleton rows={7} />;
@@ -180,6 +185,21 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
 
     if (!hasIdentity) {
       return <StateMessage icon={profile.icon} title={t(profile.noneSelected)} />;
+    }
+
+    /*
+     * A week that hasn't started and has no timetable of its own isn't "missing data" — the
+     * school just hasn't published it. The resolver falls back to the previous timetable
+     * (`stale`), and showing that as next week's grid is exactly the misleading thing to avoid.
+     */
+    if (isFuture && days.every((d) => d === null || d.stale)) {
+      return (
+        <StateMessage
+          icon="calendar-days"
+          title={t("week.noSchedule")}
+          hint={t("week.noScheduleHint")}
+        />
+      );
     }
 
     if (periods.length === 0) {
@@ -237,9 +257,6 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
       </>
     );
   };
-
-  const firstDay = dates[0];
-  const lastDay = dates[dates.length - 1];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
