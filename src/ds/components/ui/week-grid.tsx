@@ -38,6 +38,11 @@ export type WeekGridPeriod<K extends string = string> = {
   start: string;
   end: string;
   cells: Partial<Record<K, WeekGridCell>>;
+  /**
+   * A long break sits between the previous period and this one. Draws a full-width divider
+   * labelled with this text, so the week reads as "before / after the big break".
+   */
+  breakBefore?: string;
 };
 
 export type WeekGridProps<K extends string = string> = {
@@ -155,137 +160,172 @@ export const WeekGrid = <K extends string>({
   className,
   cellLabel,
   mergeConsecutive = false,
-}: WeekGridProps<K>) => (
-  <div
-    className={cn("grid gap-1.5", className)}
-    style={{ gridTemplateColumns: `46px repeat(${String(days.length)}, minmax(0,1fr))` }}
-  >
-    <span />
-    {days.map((day) => {
-      // `min-w-0` lets the heading actually honour the column's `minmax(0,1fr)` track;
-      // without it a grid item's implicit min-width is its content's, so a long weekday
-      // abbreviation (Latvian "ceturtd." is 8 characters) overflows into the next column
-      // instead of truncating.
-      const heading = cn(
-        "min-w-0 truncate rounded-sm px-0.5 text-center font-text text-micro font-bold tracking-label uppercase",
-        day.today === true ? "text-brand-strong" : "text-muted",
-      );
-      return onSelectDay === undefined ? (
-        <span key={day.key} className={heading}>
-          {day.weekday}
-        </span>
-      ) : (
-        <button
-          key={day.key}
-          type="button"
-          onClick={() => {
-            onSelectDay(day.key);
-          }}
-          className={cn(
-            heading,
-            // A line-height rather than `flex items-center` for the 44px tap target: a flex
-            // container centers the anonymous text box as an unconstrained flex item, which
-            // defeats `truncate`'s ellipsis (Chrome/Firefox clip it silently instead).
-            "min-h-11 cursor-pointer border-0 bg-transparent leading-11 hover:bg-sunken",
-          )}
+}: WeekGridProps<K>) => {
+  /*
+   * A long break gets its own grid track between two periods. `trackOf(i)` is period i's real
+   * grid row once those divider tracks are counted; a lesson spanning across one simply covers
+   * the divider track too.
+   */
+  const breaksBefore: number[] = [];
+  periods.reduce((count, p, i) => {
+    const next = p.breakBefore === undefined ? count : count + 1;
+    breaksBefore[i] = next;
+    return next;
+  }, 0);
+  const trackOf = (i: number): number => i + 2 + (breaksBefore[i] ?? 0);
+  const lastTrack = trackOf(periods.length - 1) + 1;
+
+  return (
+    <div
+      className={cn("grid gap-1.5", className)}
+      style={{ gridTemplateColumns: `46px repeat(${String(days.length)}, minmax(0,1fr))` }}
+    >
+      <span />
+      {periods.map((period, rowIndex) =>
+        period.breakBefore === undefined ? null : (
+          <div
+            key={`b-${period.period}`}
+            data-testid="week-break"
+            className="flex items-center gap-2"
+            style={{ gridColumn: "1 / -1", gridRow: trackOf(rowIndex) - 1 }}
+          >
+            <span aria-hidden="true" className="h-px flex-1 bg-strong-border" />
+            <span className="font-text text-micro font-bold tracking-label text-muted uppercase">
+              {period.breakBefore}
+            </span>
+            <span aria-hidden="true" className="h-px flex-1 bg-strong-border" />
+          </div>
+        ),
+      )}
+      {days.map((day) => {
+        // `min-w-0` lets the heading actually honour the column's `minmax(0,1fr)` track;
+        // without it a grid item's implicit min-width is its content's, so a long weekday
+        // abbreviation (Latvian "ceturtd." is 8 characters) overflows into the next column
+        // instead of truncating.
+        const heading = cn(
+          "min-w-0 truncate rounded-sm px-0.5 text-center font-text text-micro font-bold tracking-label uppercase",
+          day.today === true ? "text-brand-strong" : "text-muted",
+        );
+        return onSelectDay === undefined ? (
+          <span key={day.key} className={heading}>
+            {day.weekday}
+          </span>
+        ) : (
+          <button
+            key={day.key}
+            type="button"
+            onClick={() => {
+              onSelectDay(day.key);
+            }}
+            className={cn(
+              heading,
+              // A line-height rather than `flex items-center` for the 44px tap target: a flex
+              // container centers the anonymous text box as an unconstrained flex item, which
+              // defeats `truncate`'s ellipsis (Chrome/Firefox clip it silently instead).
+              "min-h-11 cursor-pointer border-0 bg-transparent leading-11 hover:bg-sunken",
+            )}
+          >
+            {day.weekday}
+          </button>
+        );
+      })}
+
+      {periods.map((period, rowIndex) => (
+        // `h-10` here (not just on cells) keeps every row at least one lesson-cell tall, even a
+        // row every day's lesson merges away from (see `placementsFor`) — otherwise that row
+        // would collapse to the label text's own height and break the grid's vertical rhythm.
+        //
+        // `items-start` puts the label at the row's top edge rather than centred beside the
+        // lesson cell: it marks the boundary line where this period begins, not a caption for
+        // the cell it happens to sit next to — the same reasoning as the closing end-time label
+        // below, which this now matches instead of contradicting.
+        <span
+          key={`t-${period.period}`}
+          className="u-data flex h-10 items-start text-muted"
+          style={{ gridColumn: 1, gridRow: trackOf(rowIndex) }}
         >
-          {day.weekday}
-        </button>
-      );
-    })}
+          {period.start}
+        </span>
+      ))}
 
-    {periods.map((period, rowIndex) => (
-      // `h-10` here (not just on cells) keeps every row at least one lesson-cell tall, even a
-      // row every day's lesson merges away from (see `placementsFor`) — otherwise that row
-      // would collapse to the label text's own height and break the grid's vertical rhythm.
-      //
-      // `items-start` puts the label at the row's top edge rather than centred beside the
-      // lesson cell: it marks the boundary line where this period begins, not a caption for
-      // the cell it happens to sit next to — the same reasoning as the closing end-time label
-      // below, which this now matches instead of contradicting.
-      <span
-        key={`t-${period.period}`}
-        className="u-data flex h-10 items-start text-muted"
-        style={{ gridColumn: 1, gridRow: rowIndex + 2 }}
-      >
-        {period.start}
-      </span>
-    ))}
-
-    {/*
+      {/*
       Every other row's label is its *start* time — the next row down implies where it ends.
       The last row has no next row, so without this the grid's final lesson (and any block that
       merges into it) reads as if it stops at the last period's start rather than its actual end.
     */}
-    {periods.length > 0 && (
-      <span
-        className="u-data flex h-4 items-start text-muted"
-        style={{ gridColumn: 1, gridRow: periods.length + 2 }}
-      >
-        {periods[periods.length - 1]?.end}
-      </span>
-    )}
+      {periods.length > 0 && (
+        <span
+          className="u-data flex h-4 items-start text-muted"
+          style={{ gridColumn: 1, gridRow: lastTrack }}
+        >
+          {periods[periods.length - 1]?.end}
+        </span>
+      )}
 
-    {days.map((day, colIndex) =>
-      placementsFor(day, periods, mergeConsecutive).map((placement, rowIndex) => {
-        const gridColumn = colIndex + 2;
-        const gridRow = rowIndex + 2;
-        if (placement === "covered") return null;
-        if (placement === undefined) {
-          // `shadow-hairline` gives the block a boundary independent of fill contrast —
-          // `--surface-sunken` sits only a few levels above `--bg-app` in dark mode, so an
-          // unbordered fill nearly disappears into the page there.
+      {days.map((day, colIndex) =>
+        placementsFor(day, periods, mergeConsecutive).map((placement, rowIndex) => {
+          const gridColumn = colIndex + 2;
+          const gridRow = trackOf(rowIndex);
+          if (placement === "covered") return null;
+          if (placement === undefined) {
+            // `shadow-hairline` gives the block a boundary independent of fill contrast —
+            // `--surface-sunken` sits only a few levels above `--bg-app` in dark mode, so an
+            // unbordered fill nearly disappears into the page there.
+            return (
+              <span
+                key={`${day.key}-${rowIndex}`}
+                aria-hidden="true"
+                className="h-10 rounded-sm bg-sunken shadow-hairline"
+                style={{ gridColumn, gridRow }}
+              />
+            );
+          }
+          const { cell, span } = placement;
+          const period = periods[rowIndex];
+          if (period === undefined) return null;
           return (
-            <span
+            <button
               key={`${day.key}-${rowIndex}`}
-              aria-hidden="true"
-              className="h-10 rounded-sm bg-sunken shadow-hairline"
-              style={{ gridColumn, gridRow }}
-            />
+              type="button"
+              data-testid="week-cell"
+              {...(cell.live === true ? { "aria-current": "time" as const } : {})}
+              aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
+              // Free on desktop (hover), inert on the touch device this app actually ships on —
+              // tapping already opens the full lesson sheet with the name.
+              title={
+                cell.building === undefined
+                  ? (cell.name ?? cell.short)
+                  : `${cell.name ?? cell.short} · ${cell.building}`
+              }
+              onClick={() => {
+                onSelect?.(cell, day.key, period.period);
+              }}
+              style={{
+                gridColumn,
+                gridRow:
+                  span === 1
+                    ? gridRow
+                    : `${String(gridRow)} / span ${String(trackOf(rowIndex + span - 1) - gridRow + 1)}`,
+                ...(cell.tone === "custom" && cell.accentColor !== undefined
+                  ? { backgroundColor: cell.accentColor.fill, color: cell.accentColor.ink }
+                  : {}),
+              }}
+              className={cn(
+                "truncate rounded-sm border-0 px-1.5",
+                "font-text text-caption font-bold",
+                cell.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[cell.tone ?? "sky"]),
+                cell.cancelled === true && "opacity-40 line-through",
+                cell.live === true
+                  ? "inset-ring-2 inset-ring-brand"
+                  : cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
+                onSelect === undefined ? "cursor-default" : "cursor-pointer",
+              )}
+            >
+              {cell.short}
+            </button>
           );
-        }
-        const { cell, span } = placement;
-        const period = periods[rowIndex];
-        if (period === undefined) return null;
-        return (
-          <button
-            key={`${day.key}-${rowIndex}`}
-            type="button"
-            data-testid="week-cell"
-            {...(cell.live === true ? { "aria-current": "time" as const } : {})}
-            aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
-            // Free on desktop (hover), inert on the touch device this app actually ships on —
-            // tapping already opens the full lesson sheet with the name.
-            title={
-              cell.building === undefined
-                ? (cell.name ?? cell.short)
-                : `${cell.name ?? cell.short} · ${cell.building}`
-            }
-            onClick={() => {
-              onSelect?.(cell, day.key, period.period);
-            }}
-            style={{
-              gridColumn,
-              gridRow: span === 1 ? gridRow : `${String(gridRow)} / span ${String(span)}`,
-              ...(cell.tone === "custom" && cell.accentColor !== undefined
-                ? { backgroundColor: cell.accentColor.fill, color: cell.accentColor.ink }
-                : {}),
-            }}
-            className={cn(
-              "truncate rounded-sm border-0 px-1.5",
-              "font-text text-caption font-bold",
-              cell.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[cell.tone ?? "sky"]),
-              cell.cancelled === true && "opacity-40 line-through",
-              cell.live === true
-                ? "inset-ring-2 inset-ring-brand"
-                : cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
-              onSelect === undefined ? "cursor-default" : "cursor-pointer",
-            )}
-          >
-            {cell.short}
-          </button>
-        );
-      }),
-    )}
-  </div>
-);
+        }),
+      )}
+    </div>
+  );
+};

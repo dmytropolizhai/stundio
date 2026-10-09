@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
-import { dayProgress, weekDates, weekPeriods } from "@/lib/schedule";
+import { dayProgress, minutesOf, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
@@ -18,6 +18,9 @@ import { WeekTopBar } from "./week-top-bar.tsx";
 import { WeekBuildings } from "./week-buildings.tsx";
 import { WeekOverview } from "./week-overview.tsx";
 import { WeekSettings } from "./week-settings.tsx";
+
+/** A gap between two periods at least this long is the "big" break and gets a divider. */
+const LONG_BREAK_MINUTES = 20;
 
 const periodNum = (p: string): number => {
   const n = Number(p);
@@ -134,7 +137,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
 
   const rows = useMemo<WeekGridPeriod<ISODate>[]>(
     () =>
-      periods.map(({ period, start, end }) => {
+      periods.map(({ period, start, end }, index) => {
         const cells: Partial<Record<ISODate, WeekGridCell>> = {};
 
         days.forEach((day, i) => {
@@ -170,14 +173,21 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           };
         });
 
+        const previousEnd = minutesOf(periods[index - 1]?.end ?? "");
+        const thisStart = minutesOf(start);
+        const gap = previousEnd === null || thisStart === null ? 0 : thisStart - previousEnd;
+
         return {
           period: periodNum(period),
           start,
           end,
           cells,
+          ...(gap >= LONG_BREAK_MINUTES
+            ? { breakBefore: t("week.longBreak", { min: String(gap) }) }
+            : {}),
         };
       }),
-    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson],
+    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson, t],
   );
 
   const firstDay = dates[0];

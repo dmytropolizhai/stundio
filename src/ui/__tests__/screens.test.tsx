@@ -204,6 +204,35 @@ describe("WeekGrid merge", () => {
     render(<WeekGrid days={days} periods={periods} />);
     expect(screen.getByText("10:55")).toBeDefined();
   });
+
+  it("draws a labelled divider track at a long break and shifts later rows below it", () => {
+    const withBreak: WeekGridPeriod<string>[] = [
+      { period: 1, start: "08:30", end: "09:15", cells: { mon: lvl } },
+      {
+        period: 2,
+        start: "09:40",
+        end: "10:25",
+        cells: { mon: mat },
+        breakBefore: "Long break · 25 min",
+      },
+    ];
+    render(<WeekGrid days={days} periods={withBreak} />);
+    const divider = screen.getByTestId("week-break");
+    expect(divider.textContent).toBe("Long break · 25 min");
+    expect(divider.style.gridRow).toBe("3");
+    const [first, second] = screen.getAllByTestId("week-cell");
+    expect(first?.style.gridRow).toBe("2");
+    expect(second?.style.gridRow).toBe("4");
+  });
+
+  it("lets a spanning lesson cover the divider track it crosses", () => {
+    const crossing: WeekGridPeriod<string>[] = [
+      { period: 1, start: "08:30", end: "09:15", cells: { mon: { ...lvl, span: 2 } } },
+      { period: 2, start: "09:40", end: "10:25", cells: {}, breakBefore: "Break" },
+    ];
+    render(<WeekGrid days={days} periods={crossing} />);
+    expect(screen.getByTestId("week-cell").style.gridRow).toBe("2 / span 3");
+  });
 });
 
 describe("WeekView", () => {
