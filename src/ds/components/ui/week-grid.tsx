@@ -185,11 +185,11 @@ export const WeekGrid = <K extends string>({
    * the divider track too.
    */
   const breaksBefore: number[] = [];
-  periods.reduce((count, p, i) => {
-    const next = p.breakBefore === undefined ? count : count + 1;
-    breaksBefore[i] = next;
-    return next;
-  }, 0);
+  let breakCount = 0;
+  for (const [i, p] of periods.entries()) {
+    if (p.breakBefore !== undefined) breakCount += 1;
+    breaksBefore[i] = breakCount;
+  }
   const trackOf = (i: number): number => i + 2 + (breaksBefore[i] ?? 0);
   const lastTrack = trackOf(periods.length - 1) + 1;
   const placements = days.map((day) => placementsFor(day, periods, mergeConsecutive));

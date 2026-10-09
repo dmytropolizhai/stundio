@@ -18,7 +18,14 @@ export {
   type DaySummary,
   type TomorrowPreview,
 } from "./glance.ts";
-export { startOfWeek, weekDates, weekPeriods, type WeekPeriod } from "./week.ts";
+export {
+  LONG_BREAK_MINUTES,
+  longBreaks,
+  startOfWeek,
+  weekDates,
+  weekPeriods,
+  type WeekPeriod,
+} from "./week.ts";
 export { lessonReminders, type LessonReminder } from "./reminders.ts";
 export {
   substitutionsChanged,

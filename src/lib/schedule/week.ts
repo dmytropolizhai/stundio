@@ -4,6 +4,8 @@
  */
 import { weekdayOf, type HHMM, type ISODate, type ResolvedDay, type Weekday } from "@/lib/edupage";
 
+import { minutesOf } from "./nextLesson.ts";
+
 const ORDER: Record<Weekday, number> = { mon: 0, tue: 1, wed: 2, thu: 3, fri: 4, sat: 5, sun: 6 };
 
 const MS_PER_DAY = 86_400_000;
@@ -121,4 +123,33 @@ export const weekPeriods = (days: readonly (ResolvedDay | null)[]): WeekPeriod[]
   return [...rows.values()]
     .map((row) => row.times)
     .sort((a, b) => periodNum(a.period) - periodNum(b.period));
+};
+
+/** A pause between two lessons at least this long is the school's "big" break. */
+export const LONG_BREAK_MINUTES = 20;
+
+/**
+ * The long breaks in a week's period rows, as period key → length in minutes, keyed by the row
+ * the break comes *before*. Only neighbouring period numbers count: a row nobody has a lesson in
+ * leaves a hole in `periods`, and that hole is an empty slot, not a break.
+ */
+export const longBreaks = (
+  periods: readonly WeekPeriod[],
+  minMinutes = LONG_BREAK_MINUTES,
+): Map<string, number> => {
+  const breaks = new Map<string, number>();
+
+  periods.forEach((current, i) => {
+    const previous = periods[i - 1];
+    if (previous === undefined || periodNum(previous.period) + 1 !== periodNum(current.period)) {
+      return;
+    }
+    const from = minutesOf(previous.end);
+    const to = minutesOf(current.start);
+    if (from !== null && to !== null && to - from >= minMinutes) {
+      breaks.set(current.period, to - from);
+    }
+  });
+
+  return breaks;
 };

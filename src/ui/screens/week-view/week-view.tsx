@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
-import { dayProgress, minutesOf, weekDates, weekPeriods } from "@/lib/schedule";
+import { dayProgress, longBreaks, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
@@ -18,9 +18,6 @@ import { WeekTopBar } from "./week-top-bar.tsx";
 import { WeekBuildings } from "./week-buildings.tsx";
 import { WeekOverview } from "./week-overview.tsx";
 import { WeekSettings } from "./week-settings.tsx";
-
-/** A gap between two periods at least this long is the "big" break and gets a divider. */
-const LONG_BREAK_MINUTES = 20;
 
 const periodNum = (p: string): number => {
   const n = Number(p);
@@ -73,6 +70,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   );
 
   const periods = useMemo(() => weekPeriods(days), [days]);
+  const breaks = useMemo(() => longBreaks(periods), [periods]);
   const overview = useWeekOverview(date);
   const shareWeek = useShareWeek(date);
 
@@ -137,7 +135,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
 
   const rows = useMemo<WeekGridPeriod<ISODate>[]>(
     () =>
-      periods.map(({ period, start, end }, index) => {
+      periods.map(({ period, start, end }) => {
         const cells: Partial<Record<ISODate, WeekGridCell>> = {};
 
         days.forEach((day, i) => {
@@ -173,21 +171,17 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           };
         });
 
-        const previousEnd = minutesOf(periods[index - 1]?.end ?? "");
-        const thisStart = minutesOf(start);
-        const gap = previousEnd === null || thisStart === null ? 0 : thisStart - previousEnd;
+        const gap = breaks.get(period);
 
         return {
           period: periodNum(period),
           start,
           end,
           cells,
-          ...(gap >= LONG_BREAK_MINUTES
-            ? { breakBefore: t("week.longBreak", { min: String(gap) }) }
-            : {}),
+          ...(gap !== undefined ? { breakBefore: t("week.longBreak", { min: String(gap) }) } : {}),
         };
       }),
-    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson, t],
+    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson, breaks, t],
   );
 
   const firstDay = dates[0];
