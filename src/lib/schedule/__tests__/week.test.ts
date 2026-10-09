@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { startOfWeek, weekDates, weekPeriods } from "@/lib/schedule";
+import { longBreaks, startOfWeek, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 
 describe("startOfWeek", () => {
@@ -98,5 +98,43 @@ describe("weekPeriods", () => {
 
   it("ignores days with nothing cached", () => {
     expect(weekPeriods([null, null])).toEqual([]);
+  });
+});
+
+describe("longBreaks", () => {
+  const row = (period: string, start: string, end: string) => ({ period, start, end });
+
+  it("marks only the gap of 20+ minutes, keyed by the row after it", () => {
+    const rows = [
+      row("4", "10:55", "11:35"),
+      row("5", "12:05", "12:45"),
+      row("6", "12:50", "13:30"),
+    ];
+    expect([...longBreaks(rows)]).toEqual([["5", 30]]);
+  });
+
+  it("respects the threshold", () => {
+    const rows = [row("1", "08:30", "09:10"), row("2", "09:30", "10:10")];
+    expect(longBreaks(rows).size).toBe(1);
+    expect(longBreaks(rows, 21).size).toBe(0);
+  });
+
+  it("does not call an unused period slot a break", () => {
+    // Nobody has a period-2 lesson, so row 3 follows row 1 — a hole, not a break.
+    const rows = [row("1", "08:30", "09:10"), row("3", "10:10", "10:50")];
+    expect(longBreaks(rows).size).toBe(0);
+  });
+
+  it("ignores rows without times", () => {
+    expect(longBreaks([row("1", "08:30", "09:10"), row("2", "", "")]).size).toBe(0);
+  });
+
+  it("can find several breaks in one day", () => {
+    const rows = [
+      row("1", "08:30", "09:10"),
+      row("2", "09:40", "10:20"),
+      row("3", "11:00", "11:40"),
+    ];
+    expect([...longBreaks(rows).keys()]).toEqual(["2", "3"]);
   });
 });

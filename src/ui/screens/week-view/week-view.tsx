@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
-import { dayProgress, weekDates, weekPeriods } from "@/lib/schedule";
+import { dayProgress, longBreaks, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
@@ -70,6 +70,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   );
 
   const periods = useMemo(() => weekPeriods(days), [days]);
+  const breaks = useMemo(() => longBreaks(periods), [periods]);
   const overview = useWeekOverview(date);
   const shareWeek = useShareWeek(date);
 
@@ -170,14 +171,17 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           };
         });
 
+        const gap = breaks.get(period);
+
         return {
           period: periodNum(period),
           start,
           end,
           cells,
+          ...(gap !== undefined ? { breakBefore: t("week.longBreak", { min: String(gap) }) } : {}),
         };
       }),
-    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson],
+    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson, breaks, t],
   );
 
   const firstDay = dates[0];
