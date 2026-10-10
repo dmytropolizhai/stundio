@@ -8,6 +8,7 @@ import { DatePicker } from "@/ui/components/DatePicker.tsx";
 import { formatWeekRange, useLang, useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
 import { useIsFormTeacher } from "@/ui/persona";
+import { ViewOptionsMenu } from "@/ui/components/ViewOptionsMenu.tsx";
 
 type WeekTopBarProps = {
   date: ISODate;
@@ -37,6 +38,8 @@ export const WeekTopBar = ({
   const teacherView = useAppStore((s) => s.settings.teacherView);
   const setTeacherView = useAppStore((s) => s.setTeacherView);
   const isFormTeacher = useIsFormTeacher();
+  const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
+  const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
 
   return (
     <>
@@ -81,6 +84,19 @@ export const WeekTopBar = ({
           <>
             <ClassBadge onClick={onPickClass} />
             <SyncBadge onRetry={onRefresh} />
+            <ViewOptionsMenu
+              options={[
+                {
+                  key: "mergeLessons",
+                  icon: "layout-grid",
+                  label: t("settings.mergeLessons"),
+                  checked: mergeConsecutive,
+                  onChange: (checked) => {
+                    void setMergeConsecutiveLessons(checked);
+                  },
+                },
+              ]}
+            />
           </>
         }
       />

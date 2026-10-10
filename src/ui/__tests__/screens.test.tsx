@@ -471,7 +471,9 @@ describe("WeekView", () => {
       />,
     );
 
-    expect(screen.getByText("Nedēļas skats")).toBeDefined();
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Skata opcijas" }));
+    });
     const toggle = screen.getByRole("switch", { name: "Apvienot vienādas stundas" });
     expect(toggle).toBeDefined();
     expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(false);

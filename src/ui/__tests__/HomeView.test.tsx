@@ -434,7 +434,9 @@ describe("HomeView", () => {
     const harness = await bootHarness();
     renderDay(harness);
 
-    expect(screen.getByText("Dienas skats")).toBeDefined();
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Skata opcijas" }));
+    });
     const toggle = screen.getByRole("switch", { name: "Rādīt laiku" });
     expect(toggle).toBeDefined();
     expect(harness.store.getState().settings.showTime).toBe(false);

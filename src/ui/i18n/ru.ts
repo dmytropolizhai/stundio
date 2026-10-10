@@ -241,6 +241,7 @@ export const ru: Dict = {
   "settings.movedOnTarget": "Показывать перенесённые уроки в новый день",
   "settings.movedOnTargetHint":
     "Урок, перенесённый на другой день, отображается в этот день, а не в прежний.",
+  "view.options": "Параметры вида",
   "settings.day": "Просмотр дня",
   "settings.showTime": "Показать время",
   "settings.showTimeHint": "Показывает время начала и конца каждого урока рядом с его номером.",

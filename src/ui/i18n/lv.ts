@@ -247,6 +247,7 @@ export const lv = {
   "settings.movedOnTarget": "Pārceltās stundas rādīt jaunajā dienā",
   "settings.movedOnTargetHint":
     "Uz citu dienu pārceltā stunda parādās tajā dienā, nevis tajā, no kuras tā pārcelta.",
+  "view.options": "Skata opcijas",
   "settings.day": "Dienas skats",
   "settings.showTime": "Rādīt laiku",
   "settings.showTimeHint": "Rāda katras stundas sākuma un beigu laiku pie tās numura.",

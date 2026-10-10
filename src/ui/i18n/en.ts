@@ -239,6 +239,7 @@ export const en: Dict = {
   "settings.movedOnTarget": "Show moved lessons on the new day",
   "settings.movedOnTargetHint":
     "A lesson moved to another day appears on that day instead of the one it left.",
+  "view.options": "View options",
   "settings.day": "Day view",
   "settings.showTime": "Show time",
   "settings.showTimeHint": "Shows each lesson's start and end time next to its number.",

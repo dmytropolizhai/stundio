@@ -240,6 +240,7 @@ export const ua: Dict = {
   "settings.movedOnTarget": "Показувати перенесені уроки в новий день",
   "settings.movedOnTargetHint":
     "Урок, перенесений на інший день, показується в цей день, а не в попередній.",
+  "view.options": "Параметри вигляду",
   "settings.day": "Вигляд дня",
   "settings.showTime": "Показувати час",
   "settings.showTimeHint":
