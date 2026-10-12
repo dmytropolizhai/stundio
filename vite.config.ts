@@ -86,6 +86,18 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-edupage/, ""),
       },
+      // Same story for the universities (MODEL-UNIVERSITY.md); production uses the
+      // `functions/api-university` Pages Function instead.
+      "/api-university/rtu": {
+        target: "https://nodarbibas.rtu.lv",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-university\/rtu/, "") || "/",
+      },
+      "/api-university/lu": {
+        target: "https://lekciju-saraksts.lu.lv",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-university\/lu/, "") || "/",
+      },
     },
   },
   test: {
@@ -96,6 +108,7 @@ export default defineConfig({
     coverage: {
       include: [
         "src/lib/edupage/**",
+        "src/lib/university/**",
         "src/lib/schedule/**",
         "src/lib/share/**",
         "src/lib/version/**",

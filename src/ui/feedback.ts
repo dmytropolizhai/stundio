@@ -23,6 +23,8 @@ const STUDENT_UNPICKED: FeedbackIdentity = { persona: "student", label: undefine
 const REPORTED: Record<Persona, (label: string | undefined) => Record<string, string>> = {
   student: (label) => ({ role: "student", class: label ?? NONE }),
   teacher: () => ({ role: "teacher" }),
+  // A study group is a group, like a class — naming it identifies no one.
+  university: (label) => ({ role: "university", class: label ?? NONE }),
 };
 
 /** "Class: 12.a" / "Role: teacher" — the context line of a GitHub issue body. */

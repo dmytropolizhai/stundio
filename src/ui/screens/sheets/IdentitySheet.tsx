@@ -10,6 +10,7 @@ type IdentitySheetProps = {
   onClose: () => void;
   onPickClass: () => void;
   onPickTeacher: () => void;
+  onPickUniversityGroup: () => void;
 };
 
 export const IdentitySheet = ({
@@ -17,6 +18,7 @@ export const IdentitySheet = ({
   onClose,
   onPickClass,
   onPickTeacher,
+  onPickUniversityGroup,
 }: IdentitySheetProps) => {
   const t = useT();
   const identity = useIdentity();
@@ -32,6 +34,7 @@ export const IdentitySheet = ({
   const pickIdentity = matchPersona(identity, {
     student: () => onPickClass,
     teacher: () => onPickTeacher,
+    university: () => onPickUniversityGroup,
   });
 
   const handleConfirm = () => {

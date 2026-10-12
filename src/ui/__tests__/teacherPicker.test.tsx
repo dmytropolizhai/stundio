@@ -103,6 +103,7 @@ describe("IdentitySheet", () => {
         onClose={onClose}
         onPickClass={onPickClass}
         onPickTeacher={onPickTeacher}
+        onPickUniversityGroup={vi.fn()}
       />,
     );
 
@@ -127,6 +128,7 @@ describe("IdentitySheet", () => {
           onClose={onClose}
           onPickClass={onPickClass}
           onPickTeacher={onPickTeacher}
+          onPickUniversityGroup={vi.fn()}
         />
       </StoreContext.Provider>,
     );
@@ -149,6 +151,7 @@ describe("IdentitySheet", () => {
         onClose={onClose}
         onPickClass={onPickClass}
         onPickTeacher={onPickTeacher}
+        onPickUniversityGroup={vi.fn()}
       />,
     );
 

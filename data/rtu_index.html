@@ -1,0 +1,797 @@
+<!DOCTYPE HTML>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="https://www-static.rtu.lv/x/favicons/favicon.ico" type="image/x-icon">
+    <title>Nodarbību grafiki</title>
+	
+	<!-- JQuery -->
+	
+	<script src="/resources/assets/jquery-3.5.1.min.js" type="text/javascript"></script>
+    <script src="/resources/assets/jquery-ui/jquery-ui.js" type="text/javascript"></script>
+    <link href="/resources/assets/jquery-ui/jquery-ui.css" rel = "stylesheet">
+
+    <!-- Bootstrap script and style files -->
+    
+    <link rel="stylesheet" href="/resources/assets/bootstrap/css/bootstrap.min.css">
+    <script src="/resources/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/resources/assets/open-iconic/css/open-iconic-bootstrap.min.css">
+    
+    <!-- Google analytic -->
+    
+    <script async="true" src="https://www.googletagmanager.com/gtag/js?id=G-6DV7HH3ZZ1"></script>
+    <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-6DV7HH3ZZ1'); </script>
+    
+    <!-- Full calendar -->
+    
+    <script src="/resources/assets/fullcalendar/main.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="/resources/assets/fullcalendar/main.css">
+	<script src="/resources/assets/fullcalendar/locales/lv.js" type="text/javascript"></script>
+ 	
+ 	<!-- bootstrap-select -->
+
+	<link rel="stylesheet" href="/resources/assets/bootstrap-select/dist/css/bootstrap-select.min.css">
+	<script src="/resources/assets/bootstrap-select/dist/js/bootstrap-select.min.js" type="text/javascript"></script>
+	<script src="/resources/assets/bootstrap-select/dist/js/i18n/defaults-lv_LV.min.js" type="text/javascript"></script>
+
+	<!-- Custom script and style files -->
+	
+	
+        
+            <script src="/resources/assets/js/app.js?v=1.30"></script>
+            
+        
+    
+        
+            <script src="/resources/assets/js/fullcalendar.js?v=1.30"></script>
+            
+        
+    
+        
+            
+            <link rel="stylesheet" href="/resources/assets/css/app.css?v=1.30">
+        
+    
+	
+</head>
+<body class="d-flex flex-column min-vh-100">
+	<div><div class="header">
+		<div>
+			<div class="page-header header-expand-lg">
+				<div class="container">
+					<div class="row header-row">
+						<div class="col-md-5 text-light">
+							<span>2026. gada 12. oktobris</span>
+						</div>
+						<div class="col-md-4 text-light">
+						</div>
+						<div class="col-md-3 text-light">
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		
+			<!-- Logo -->
+			<div id="page-header-logo" class="jumbotron mb-0"></div>
+			<!-- Logo -->
+
+			<nav class="navbar navbar-expand-lg navbar-dark static-top">
+			    <div class="container">
+			        <a class="navbar-brand"><span>RTU - Nodarbību grafiki</span></a>
+			        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+			                aria-controls="navbarResponsive"
+			                aria-expanded="false" aria-label="Toggle navigation">
+			            <span class="navbar-toggler-icon"></span>
+			        </button>
+			        <div class="collapse navbar-collapse" id="navbarResponsive">
+						<ul class="navbar-nav ml-auto">
+			                
+			            </ul>
+			           	<ul class="navbar-nav ml-auto">
+	                         <li class="nav-item active">
+	                             <a class="nav-link" href="http://nodarbibas.rtu.lv/?lang=lv">LV</a>
+	                         </li>
+	                         <li class="nav-item in-active">
+	                             <a class="nav-link" href="http://nodarbibas.rtu.lv/?lang=en">EN</a>
+	                         </li>
+	                     </ul>
+		            </div>
+	            </div>
+			</nav>
+		</div>
+	</div></div>
+	<div class="container-fluid">
+		<div class="row">
+        <div class="pr-md-0 border-0 col-lg-3 col-md-4">
+		<div class="card scheduler-card">
+			<div class="card-body">
+				<div class="container">
+									
+					<!-- Study Period selection -->
+					<h5 class="card-title body-header">Studiju periods</h5>
+					<div class="row">
+						<select id="semester-id" class="form-select form-control" required="required">
+							<option value="31" selected="selected">2026/2027 Rudens semestris (26/27-R)</option>
+							<option value="30">2025/2026 Vasaras semestris (25/26-V)</option>
+							<option value="29">2025/2026 Pavasara semestris (25/26-P)</option>
+							<option value="28">2025/2026 Rudens semestris (25/26-R)</option>
+							<option value="25">2024/2025 Vasaras semestris (24/25-V)</option>
+							<option value="24">2024/2025 Pavasara semestris (24/25-P)</option>
+						</select>
+						<input type="hidden" id="semester-start-date" value="2026-08-31"></input>
+						<input type="hidden" id="semester-end-date" value="2027-01-24"></input>
+						<input type="hidden" id="language" value="lv"></input>
+					</div>
+					<hr/>
+					
+					<!-- Faculty & Program selection -->
+					<h5 class="card-title body-header">Studiju programmas</h5>
+					<div class="row scheduler-program-department-select">
+						<select	id="program-id" name ="DepartmentProgram" class="form-select form-control selectpicker" data-live-search="true">
+							<option selected value="0">Izvēlne..</option>								
+							<!--  <optgroup th:each="depProg : ${departmentProgramList}" th:label="${depProg.getTitleLV}">-->
+							<optgroup label="Arhitektūras un dizaina institūts (01T00)">
+								<option data-tokens="Arhitektūras un dizaina institūts, 01T00, Arhitektūra, RABA0"
+									value="227">Arhitektūra (RABA0)</option>
+								<option data-tokens="Arhitektūras un dizaina institūts, 01T00, Materiālu tehnoloģija un dizains, RWCH0"
+									value="1136">Materiālu tehnoloģija un dizains (RWCH0)</option>
+								<option data-tokens="Arhitektūras un dizaina institūts, 01T00, Apģērbu un tekstila tehnoloģija, RWCV0"
+									value="1311">Apģērbu un tekstila tehnoloģija (RWCV0)</option>
+								<option data-tokens="Arhitektūras un dizaina institūts, 01T00, Arhitektūra, RAGA0"
+									value="1513">Arhitektūra (RAGA0)</option>
+								<option data-tokens="Arhitektūras un dizaina institūts, 01T00, Dizaina inženierija, RWGTB"
+									value="1575">Dizaina inženierija (RWGTB)</option>
+								<option data-tokens="Arhitektūras un dizaina institūts, 01T00, Arhitektūra, RAGAW"
+									value="1989">Arhitektūra (RAGAW)</option>
+							</optgroup><optgroup label="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte (33000)">
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Datorsistēmas, RDBD0"
+									value="333">Datorsistēmas (RDBD0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Informācijas tehnoloģija, RDBI0"
+									value="340">Informācijas tehnoloģija (RDBI0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Datorsistēmas, RDMD0"
+									value="380">Datorsistēmas (RDMD0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Informācijas tehnoloģija, RDMI0"
+									value="386">Informācijas tehnoloģija (RDMI0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Elektrotehnoloģiju datorvadība, RECO0"
+									value="1138">Elektrotehnoloģiju datorvadība (RECO0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Elektrotehnoloģiju datorvadība, REGO0"
+									value="1139">Elektrotehnoloģiju datorvadība (REGO0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Elektrotehnoloģiju datorvadība, NECO0"
+									value="1168">Elektrotehnoloģiju datorvadība (NECO0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Elektrotehnoloģiju datorvadība, WECO0"
+									value="1203">Elektrotehnoloģiju datorvadība (WECO0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Datorsistēmas, RDGDB"
+									value="1232">Datorsistēmas (RDGDB)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Elektrotehnoloģiju datorvadība, REGOB"
+									value="1271">Elektrotehnoloģiju datorvadība (REGOB)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Finanšu inženierija, RDCM0"
+									value="1351">Finanšu inženierija (RDCM0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Biznesa informātika, RDMB0"
+									value="1383">Biznesa informātika (RDMB0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Intelektuālas robotizētas sistēmas, RDBR0"
+									value="1386">Intelektuālas robotizētas sistēmas (RDBR0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Intelektuālas robotizētas sistēmas, RDMR0"
+									value="1387">Intelektuālas robotizētas sistēmas (RDMR0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Adaptronika, RECA0"
+									value="1482">Adaptronika (RECA0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Adaptronika, NECA0"
+									value="1487">Adaptronika (NECA0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Finanšu inženiermatemātika, RDMN0"
+									value="1519">Finanšu inženiermatemātika (RDMN0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Digitālās humanitārās zinātnes, RHMD0"
+									value="1526">Digitālās humanitārās zinātnes (RHMD0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Digitālās humanitārās zinātnes, RHMDB"
+									value="1527">Digitālās humanitārās zinātnes (RHMDB)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Finanšu pārvaldības informācijas sistēmas, RDCP0"
+									value="1535">Finanšu pārvaldības informācijas sistēmas (RDCP0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Kiberdrošības inženierija, RDMK0"
+									value="1562">Kiberdrošības inženierija (RDMK0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedā elektroenerģētika, REGR0"
+									value="1594">Viedā elektroenerģētika (REGR0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedās elektroniskās sistēmas, RECV0"
+									value="1638">Viedās elektroniskās sistēmas (RECV0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedā elektroenerģētika, RECR0"
+									value="1654">Viedā elektroenerģētika (RECR0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedā elektroenerģētika, NECR0"
+									value="1656">Viedā elektroenerģētika (NECR0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedās elektroniskās sistēmas, REGVP"
+									value="1673">Viedās elektroniskās sistēmas (REGVP)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedās elektroniskās sistēmas, REGVB"
+									value="1675">Viedās elektroniskās sistēmas (REGVB)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Telekomunikāciju tehnoloģijas un datu pārraides inženierija, REBG0"
+									value="1685">Telekomunikāciju tehnoloģijas un datu pārraides inženierija (REBG0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedās datortehnoloģijas, RDBG0"
+									value="1781">Viedās datortehnoloģijas (RDBG0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Telemātika un transporta elektroniskās sistēmas, RECS0"
+									value="1783">Telemātika un transporta elektroniskās sistēmas (RECS0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Telekomunikāciju tehnoloģijas un tīklu pārvaldība, REMH0"
+									value="1785">Telekomunikāciju tehnoloģijas un tīklu pārvaldība (REMH0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Informācijas tehnoloģijas projektu vadība, RDGJ0"
+									value="1788">Informācijas tehnoloģijas projektu vadība (RDGJ0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Informācijas tehnoloģijas projektu vadība, RDGJP"
+									value="1789">Informācijas tehnoloģijas projektu vadība (RDGJP)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Informācijas tehnoloģijas projektu vadība, RDGJB"
+									value="1790">Informācijas tehnoloģijas projektu vadība (RDGJB)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Viedā elektroenerģētika, REGRB"
+									value="1839">Viedā elektroenerģētika (REGRB)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Tehniskā tulkošana un tekstveide, RHCF0"
+									value="1903">Tehniskā tulkošana un tekstveide (RHCF0)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Digitālās humanitārās zinātnes, RHMDW"
+									value="1991">Digitālās humanitārās zinātnes (RHMDW)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Biznesa informātika, RDMBW"
+									value="1995">Biznesa informātika (RDMBW)</option>
+								<option data-tokens="Datorzinātnes, informācijas tehnoloģijas un enerģētikas fakultāte, 33000, Digitālās humanitārās zinātnes, RHMDX"
+									value="1996">Digitālās humanitārās zinātnes (RHMDX)</option>
+							</optgroup><optgroup label="Inženierekonomikas un vadības fakultāte (22000)">
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Uzņēmējdarbība un vadīšana, RIKU0"
+									value="665">Uzņēmējdarbība un vadīšana (RIKU0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Uzņēmējdarbība un vadīšana, RICU0"
+									value="1187">Uzņēmējdarbība un vadīšana (RICU0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Darba aizsardzība, RIGA0"
+									value="1193">Darba aizsardzība (RIGA0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Muitas un nodokļu administrēšana, RICM0"
+									value="1194">Muitas un nodokļu administrēšana (RICM0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Muitas un nodokļu administrēšana, RIGM0"
+									value="1195">Muitas un nodokļu administrēšana (RIGM0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Muitas un nodokļu administrēšana, RIGMB"
+									value="1240">Muitas un nodokļu administrēšana (RIGMB)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Uzņēmējdarbība un vadīšana, NICU0"
+									value="1247">Uzņēmējdarbība un vadīšana (NICU0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Uzņēmējdarbības loģistika, RICL0"
+									value="1256">Uzņēmējdarbības loģistika (RICL0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Ugunsdrošība un civilā aizsardzība, RIID0"
+									value="1284">Ugunsdrošība un civilā aizsardzība (RIID0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Ekonomika, RIBEN"
+									value="1346">Ekonomika (RIBEN)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Uzņēmējdarbība un vadīšana, RICUN"
+									value="1380">Uzņēmējdarbība un vadīšana (RICUN)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Uzņēmējdarbība un vadīšana, RIBUN"
+									value="1381">Uzņēmējdarbība un vadīšana (RIBUN)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Visaptverošā kvalitātes vadība, RICK0"
+									value="1393">Visaptverošā kvalitātes vadība (RICK0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Visaptverošā kvalitātes vadība, RIGK0"
+									value="1394">Visaptverošā kvalitātes vadība (RIGK0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Visaptverošā kvalitātes vadība, RIGKB"
+									value="1399">Visaptverošā kvalitātes vadība (RIGKB)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Drošības inženierija, RICO0"
+									value="1406">Drošības inženierija (RICO0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Visaptverošā kvalitātes vadība, RIGKP"
+									value="1427">Visaptverošā kvalitātes vadība (RIGKP)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Reģionālās attīstības un pilsētekonomikas inženierija, RICH0"
+									value="1430">Reģionālās attīstības un pilsētekonomikas inženierija (RICH0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Muitas un nodokļu administrēšana, RIGMP"
+									value="1506">Muitas un nodokļu administrēšana (RIGMP)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Radošās industrijas, RIBZ0"
+									value="1518">Radošās industrijas (RIBZ0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Līderība un vadība, RIGT0"
+									value="1554">Līderība un vadība (RIGT0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Līderība un vadība, RIGTB"
+									value="1555">Līderība un vadība (RIGTB)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Līderība un vadība, RIGTP"
+									value="1556">Līderība un vadība (RIGTP)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Līderība un vadība, RIGTA"
+									value="1557">Līderība un vadība (RIGTA)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Radošās industrijas un izaugsmes menedžments, RJMZ0"
+									value="1593">Radošās industrijas un izaugsmes menedžments (RJMZ0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Loģistika, RCKG0"
+									value="1740">Loģistika (RCKG0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Loģistika un piegādes ķēdes drošība, RCGH0"
+									value="1742">Loģistika un piegādes ķēdes drošība (RCGH0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Loģistika un piegādes ķēdes drošība, RCGHP"
+									value="1743">Loģistika un piegādes ķēdes drošība (RCGHP)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Loģistika un piegādes ķēdes drošība, RCGHC"
+									value="1744">Loģistika un piegādes ķēdes drošība (RCGHC)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Pilsētu un reģionu teritoriālās attīstības inženierija, RJGU0"
+									value="1909">Pilsētu un reģionu teritoriālās attīstības inženierija (RJGU0)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Pilsētu un reģionu teritoriālās attīstības inženierija, RJGUB"
+									value="1910">Pilsētu un reģionu teritoriālās attīstības inženierija (RJGUB)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Pilsētu un reģionu teritoriālās attīstības inženierija, RJGUP"
+									value="1911">Pilsētu un reģionu teritoriālās attīstības inženierija (RJGUP)</option>
+								<option data-tokens="Inženierekonomikas un vadības fakultāte, 22000, Industriālā inženierija un vadība, RNMZ0"
+									value="1972">Industriālā inženierija un vadība (RNMZ0)</option>
+							</optgroup><optgroup label="Būvniecības un mašīnzinību fakultāte (31000)">
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Inženiertehnika, mehānika un mašīnbūve, RMBM0"
+									value="831">Inženiertehnika, mehānika un mašīnbūve (RMBM0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Ražošanas tehnoloģija, RMMR0"
+									value="970">Ražošanas tehnoloģija (RMMR0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Mehatronika, RMCE0"
+									value="1140">Mehatronika (RMCE0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Medicīnas inženierija un fizika, RMCF0"
+									value="1142">Medicīnas inženierija un fizika (RMCF0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Medicīnas inženierija un fizika, RMGF0"
+									value="1143">Medicīnas inženierija un fizika (RMGF0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvniecība, RBCB0"
+									value="1153">Būvniecība (RBCB0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvniecība, RBGB0"
+									value="1154">Būvniecība (RBGB0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Transportbūves, RBCT0"
+									value="1155">Transportbūves (RBCT0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Transportbūves, RBGT0"
+									value="1156">Transportbūves (RBGT0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvniecība, NBCB0"
+									value="1170">Būvniecība (NBCB0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Transportbūves, NBCT0"
+									value="1172">Transportbūves (NBCT0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Siltumenerģētika un siltumtehnika, RMCG0"
+									value="1210">Siltumenerģētika un siltumtehnika (RMCG0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Aviācijas transports, RMCA0"
+									value="1212">Aviācijas transports (RMCA0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Nekustamā īpašuma pārvaldība, RICN0"
+									value="1257">Nekustamā īpašuma pārvaldība (RICN0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Mašīnu un aparātu būvniecība, RMCN0"
+									value="1287">Mašīnu un aparātu būvniecība (RMCN0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Aviācijas transports, RMCAM"
+									value="1299">Aviācijas transports (RMCAM)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Aviācijas transports, RMCAE"
+									value="1300">Aviācijas transports (RMCAE)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Mašīnu un aparātu būvniecība, NMCN0"
+									value="1304">Mašīnu un aparātu būvniecība (NMCN0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Nekustamā īpašuma pārvaldība, RICNV"
+									value="1310">Nekustamā īpašuma pārvaldība (RICNV)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Siltuma, gāzes un ūdens tehnoloģija, RBCS0"
+									value="1318">Siltuma, gāzes un ūdens tehnoloģija (RBCS0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Siltuma, gāzes un ūdens tehnoloģija, RBGS0"
+									value="1319">Siltuma, gāzes un ūdens tehnoloģija (RBGS0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvuzņēmējdarbības un nekustamā īpašuma vadīšana, RIGW0"
+									value="1323">Būvuzņēmējdarbības un nekustamā īpašuma vadīšana (RIGW0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvuzņēmējdarbības un nekustamā īpašuma vadīšana, RIGWB"
+									value="1324">Būvuzņēmējdarbības un nekustamā īpašuma vadīšana (RIGWB)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Siltuma, gāzes un ūdens tehnoloģija, NBCS0"
+									value="1325">Siltuma, gāzes un ūdens tehnoloģija (NBCS0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Ģeomātika, RBCE0"
+									value="1329">Ģeomātika (RBCE0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Nekustamā īpašuma pārvaldība, RIKN0"
+									value="1373">Nekustamā īpašuma pārvaldība (RIKN0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Industriālais dizains, RMCX0"
+									value="1514">Industriālais dizains (RMCX0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvuzņēmējdarbības un nekustamā īpašuma vadīšana, RIGWD"
+									value="1530">Būvuzņēmējdarbības un nekustamā īpašuma vadīšana (RIGWD)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Nekustamā īpašuma pārvaldība, RICNP"
+									value="1531">Nekustamā īpašuma pārvaldība (RICNP)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Autotransporta inženierija, RMCW0"
+									value="1728">Autotransporta inženierija (RMCW0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Autotransporta inženierija, NMCW0"
+									value="1729">Autotransporta inženierija (NMCW0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Aeronautikas un transporta sistēmu inženierija, RMBS0"
+									value="1732">Aeronautikas un transporta sistēmu inženierija (RMBS0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Autotransporta inženierija, RMGW0"
+									value="1734">Autotransporta inženierija (RMGW0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Autotransporta inženierija, RMGWP"
+									value="1735">Autotransporta inženierija (RMGWP)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Aviācijas transports, RMMA0"
+									value="1736">Aviācijas transports (RMMA0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Aerokosmisko sistēmu inženierija, RMMO0"
+									value="1738">Aerokosmisko sistēmu inženierija (RMMO0)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvniecība, NBKBB"
+									value="1795">Būvniecība (NBKBB)</option>
+								<option data-tokens="Būvniecības un mašīnzinību fakultāte, 31000, Būvniecība, NBKB0"
+									value="1796">Būvniecība (NBKB0)</option>
+							</optgroup><optgroup label="Dabaszinātņu un tehnoloģiju fakultāte (32000)">
+								<option data-tokens="Dabaszinātņu un tehnoloģiju fakultāte, 32000, Vides inženierija, REMI0"
+									value="1561">Vides inženierija (REMI0)</option>
+								<option data-tokens="Dabaszinātņu un tehnoloģiju fakultāte, 32000, Vides inženierija, REBI0"
+									value="1564">Vides inženierija (REBI0)</option>
+								<option data-tokens="Dabaszinātņu un tehnoloģiju fakultāte, 32000, Biotehnoloģija un bioinženierija, RBBC0"
+									value="1591">Biotehnoloģija un bioinženierija (RBBC0)</option>
+								<option data-tokens="Dabaszinātņu un tehnoloģiju fakultāte, 32000, Ķīmija un ķīmijas tehnoloģija, RKMM0"
+									value="1634">Ķīmija un ķīmijas tehnoloģija (RKMM0)</option>
+								<option data-tokens="Dabaszinātņu un tehnoloģiju fakultāte, 32000, Materiālzinātne un nanotehnoloģijas, RWMM0"
+									value="1636">Materiālzinātne un nanotehnoloģijas (RWMM0)</option>
+								<option data-tokens="Dabaszinātņu un tehnoloģiju fakultāte, 32000, Materiālu inženierija, RWBN0"
+									value="1657">Materiālu inženierija (RWBN0)</option>
+								<option data-tokens="Dabaszinātņu un tehnoloģiju fakultāte, 32000, Ķīmija un ķīmijas tehnoloģija, RKBM0"
+									value="1659">Ķīmija un ķīmijas tehnoloģija (RKBM0)</option>
+							</optgroup><optgroup label="Ārzemju studentu departaments (02A00)">
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Uzņēmējdarbība un vadīšana, AIBU0"
+									value="1116">Uzņēmējdarbība un vadīšana (AIBU0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Datorsistēmas, ADBD0"
+									value="1128">Datorsistēmas (ADBD0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Arhitektūra, AABA0"
+									value="1148">Arhitektūra (AABA0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Būvniecība, ABBB0"
+									value="1150">Būvniecība (ABBB0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Datorsistēmas, ADMD0"
+									value="1174">Datorsistēmas (ADMD0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Uzņēmējdarbība un vadīšana, AIMU0"
+									value="1202">Uzņēmējdarbība un vadīšana (AIMU0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Inženiertehnika, mehānika un mašīnbūve, AMBM0"
+									value="1281">Inženiertehnika, mehānika un mašīnbūve (AMBM0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Inženiertehnika,  mehānika un mašīnbūve, AMMM0"
+									value="1282">Inženiertehnika,  mehānika un mašīnbūve (AMMM0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Biznesa informātika, ADMB0"
+									value="1382">Biznesa informātika (ADMB0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Būvuzņēmējdarbības un nekustamā īpašuma vadīšana, AIGW0"
+									value="1432">Būvuzņēmējdarbības un nekustamā īpašuma vadīšana (AIGW0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Loģistikas sistēmu un piegādes ķēdes vadība, ADML0"
+									value="1434">Loģistikas sistēmu un piegādes ķēdes vadība (ADML0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Uzņēmējdarbības finanses, AIMF0"
+									value="1437">Uzņēmējdarbības finanses (AIMF0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Medicīnas inženierija un fizika, AMCF0"
+									value="1440">Medicīnas inženierija un fizika (AMCF0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Būvniecība, ABGB0"
+									value="1478">Būvniecība (ABGB0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Adaptronika, AECA0"
+									value="1486">Adaptronika (AECA0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Vadībzinātne un ekonomika, AIDU0"
+									value="1490">Vadībzinātne un ekonomika (AIDU0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Aviācijas transports, AMCAM"
+									value="1497">Aviācijas transports (AMCAM)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Aviācijas transports, AMCAE"
+									value="1499">Aviācijas transports (AMCAE)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Digitālās humanitārās zinātnes, AHMD0"
+									value="1521">Digitālās humanitārās zinātnes (AHMD0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Digitālās humanitārās zinātnes, AHMDB"
+									value="1522">Digitālās humanitārās zinātnes (AHMDB)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Vides inženierija, AEMI0"
+									value="1560">Vides inženierija (AEMI0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Kiberdrošības inženierija, ADMK0"
+									value="1563">Kiberdrošības inženierija (ADMK0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Vides inženierija, AEBI0"
+									value="1565">Vides inženierija (AEBI0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Viedā elektroenerģētika, AEGR0"
+									value="1595">Viedā elektroenerģētika (AEGR0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Ķīmija un ķīmijas tehnoloģija, AKMM0"
+									value="1635">Ķīmija un ķīmijas tehnoloģija (AKMM0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Materiālzinātne un nanotehnoloģijas, AWMM0"
+									value="1637">Materiālzinātne un nanotehnoloģijas (AWMM0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Viedās elektroniskās sistēmas, AECV0"
+									value="1639">Viedās elektroniskās sistēmas (AECV0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Ķīmija un ķīmijas tehnoloģija, AKBM0"
+									value="1660">Ķīmija un ķīmijas tehnoloģija (AKBM0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Telekomunikāciju tehnoloģijas un datu pārraides inženierija, AEBG0"
+									value="1686">Telekomunikāciju tehnoloģijas un datu pārraides inženierija (AEBG0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Datorsistēmas, ADBDW"
+									value="1694">Datorsistēmas (ADBDW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Datorsistēmas, ADMDW"
+									value="1695">Datorsistēmas (ADMDW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Biznesa informātika, ADMBW"
+									value="1703">Biznesa informātika (ADMBW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Telekomunikāciju tehnoloģijas un datu pārraides inženierija, AEBGW"
+									value="1704">Telekomunikāciju tehnoloģijas un datu pārraides inženierija (AEBGW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Uzņēmējdarbības finanses, AIMFW"
+									value="1706">Uzņēmējdarbības finanses (AIMFW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Uzņēmējdarbība un vadīšana, AIMUW"
+									value="1707">Uzņēmējdarbība un vadīšana (AIMUW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Inženiertehnika, mehānika un mašīnbūve, AMBMW"
+									value="1710">Inženiertehnika, mehānika un mašīnbūve (AMBMW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Inženiertehnika, mehānika un mašīnbūve, AMMMW"
+									value="1711">Inženiertehnika, mehānika un mašīnbūve (AMMMW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Ekonomika, AIBEW"
+									value="1712">Ekonomika (AIBEW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Uzņēmējdarbība un vadīšana, AIBUW"
+									value="1713">Uzņēmējdarbība un vadīšana (AIBUW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Viedās elektroniskās sistēmas, AECVW"
+									value="1716">Viedās elektroniskās sistēmas (AECVW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Viedās elektroniskās sistēmas, AEGVW"
+									value="1717">Viedās elektroniskās sistēmas (AEGVW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Būvuzņēmējdarbības un nekustamā īpašuma vadīšana, AIGWX"
+									value="1718">Būvuzņēmējdarbības un nekustamā īpašuma vadīšana (AIGWX)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Aviācijas transports, AMMA0"
+									value="1737">Aviācijas transports (AMMA0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Loģistika un piegādes ķēdes drošība, ACGHP"
+									value="1746">Loģistika un piegādes ķēdes drošība (ACGHP)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Loģistika un piegādes ķēdes drošība, ACGHC"
+									value="1747">Loģistika un piegādes ķēdes drošība (ACGHC)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Adaptronika, AECAW"
+									value="1754">Adaptronika (AECAW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Viedā elektroenerģētika, AEGRW"
+									value="1756">Viedā elektroenerģētika (AEGRW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Arhitektūra, AADA0"
+									value="1760">Arhitektūra (AADA0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Būvuzņēmējdarbības un nekustamā īpašuma vadīšana, AIGWB"
+									value="1775">Būvuzņēmējdarbības un nekustamā īpašuma vadīšana (AIGWB)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Telekomunikāciju tehnoloģijas un tīklu pārvaldība, AEMH0"
+									value="1786">Telekomunikāciju tehnoloģijas un tīklu pārvaldība (AEMH0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Telekomunikāciju tehnoloģijas un tīklu pārvaldība, AEMHW"
+									value="1787">Telekomunikāciju tehnoloģijas un tīklu pārvaldība (AEMHW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Datorzinātne, ADBW0"
+									value="1849">Datorzinātne (ADBW0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Finanšu pārvaldības informācijas sistēmas, ADCP0"
+									value="1859">Finanšu pārvaldības informācijas sistēmas (ADCP0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Finanšu pārvaldības informācijas sistēmas, ADCPW"
+									value="1860">Finanšu pārvaldības informācijas sistēmas (ADCPW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Izglītības zinātnes, AGMIB"
+									value="1887">Izglītības zinātnes (AGMIB)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Tehniskā tulkošana un tekstveide, AHCF0"
+									value="1904">Tehniskā tulkošana un tekstveide (AHCF0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Arhitektūra, AAGA0"
+									value="1948">Arhitektūra (AAGA0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Industriālā inženierija un vadība, ANMZ0"
+									value="1973">Industriālā inženierija un vadība (ANMZ0)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Vides inženierija, AEBIW"
+									value="1984">Vides inženierija (AEBIW)</option>
+								<option data-tokens="Ārzemju studentu departaments, 02A00, Digitālās humanitārās zinātnes, AHMDX"
+									value="1997">Digitālās humanitārās zinātnes (AHMDX)</option>
+							</optgroup><optgroup label="Cēsu studiju un zinātnes centrs (02C10)">
+								
+							</optgroup><optgroup label="Daugavpils studiju un zinātnes centrs (02C20)">
+								
+							</optgroup><optgroup label="Liepājas akadēmija (0L000)">
+								<option data-tokens="Liepājas akadēmija, 0L000, Uzņēmējdarbība un vadīšana, LICU0"
+									value="1253">Uzņēmējdarbība un vadīšana (LICU0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Elektrotehnoloģiju datorvadība, LECO0"
+									value="1254">Elektrotehnoloģiju datorvadība (LECO0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Mehatronika, LMCE0"
+									value="1444">Mehatronika (LMCE0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Būvniecība, LBKB0"
+									value="1488">Būvniecība (LBKB0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Datorsistēmas, LDBD0"
+									value="1569">Datorsistēmas (LDBD0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Biznesa un organizācijas vadība, LJCW0"
+									value="1797">Biznesa un organizācijas vadība (LJCW0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Sociāla darba vadība, LSGV0"
+									value="1798">Sociāla darba vadība (LSGV0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Kultūras vadība, LJCX0"
+									value="1799">Kultūras vadība (LJCX0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Tūrisma un rekreācijas vadība, LJCT0"
+									value="1800">Tūrisma un rekreācijas vadība (LJCT0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Informācijas tehnoloģijas, LDGX0"
+									value="1803">Informācijas tehnoloģijas (LDGX0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Vadības zinības, LJGY0"
+									value="1804">Vadības zinības (LJGY0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Jauno mediju māksla un dizains, LHBM0"
+									value="1806">Jauno mediju māksla un dizains (LHBM0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Sociālais darbinieks, LSCD0"
+									value="1809">Sociālais darbinieks (LSCD0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Rakstniecības studijas, LHMR0"
+									value="1810">Rakstniecības studijas (LHMR0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Eiropas valodu un kultūras studijas, LHBE0"
+									value="1811">Eiropas valodu un kultūras studijas (LHBE0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Informācijas tehnoloģijas, LDCX0"
+									value="1812">Informācijas tehnoloģijas (LDCX0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Izglītības zinātnes, LGMI0"
+									value="1815">Izglītības zinātnes (LGMI0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Skolotājs, LGSS0"
+									value="1817">Skolotājs (LGSS0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Logopēdija, LGCL0"
+									value="1818">Logopēdija (LGCL0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Pirmsskolas skolotājs, LGKP0"
+									value="1819">Pirmsskolas skolotājs (LGKP0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Sākumizglītības skolotājs, LGCT0"
+									value="1820">Sākumizglītības skolotājs (LGCT0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Skolotājs, LGCS0"
+									value="1821">Skolotājs (LGCS0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Vides inovāciju tehnoloģijas, LECU0"
+									value="1822">Vides inovāciju tehnoloģijas (LECU0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Viedās tehnoloģijas un mehatronika, LDCY0"
+									value="1824">Viedās tehnoloģijas un mehatronika (LDCY0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Logopēdija, NGCL0"
+									value="1830">Logopēdija (NGCL0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Skolotājs, NGCS0"
+									value="1831">Skolotājs (NGCS0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Sociālais darbinieks, NSCD0"
+									value="1834">Sociālais darbinieks (NSCD0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Biznesa un organizācijas vadība, NJCW0"
+									value="1837">Biznesa un organizācijas vadība (NJCW0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Kultūras vadība, NJCX0"
+									value="1838">Kultūras vadība (NJCX0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Datorzinātne, ADBW0"
+									value="1849">Datorzinātne (ADBW0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Eiropas valodu un kultūras studijas, LHBEB"
+									value="1864">Eiropas valodu un kultūras studijas (LHBEB)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Eiropas valodu un kultūras studijas, LHBEC"
+									value="1865">Eiropas valodu un kultūras studijas (LHBEC)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Eiropas valodu un kultūras studijas, LHBED"
+									value="1866">Eiropas valodu un kultūras studijas (LHBED)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Skolotājs, LGCSP"
+									value="1867">Skolotājs (LGCSP)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Skolotājs, NGCSP"
+									value="1868">Skolotājs (NGCSP)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Pirmsskolas skolotājs, NGKP0"
+									value="1869">Pirmsskolas skolotājs (NGKP0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Izglītības zinātnes, LGMIB"
+									value="1871">Izglītības zinātnes (LGMIB)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Sociālā darba vadība, LSGVP"
+									value="1872">Sociālā darba vadība (LSGVP)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Tūrisma un rekreācijas vadība, LJCTP"
+									value="1873">Tūrisma un rekreācijas vadība (LJCTP)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Biznesa un organizācijas vadība, LJCWP"
+									value="1875">Biznesa un organizācijas vadība (LJCWP)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Biznesa un organizācijas vadība, NJCWP"
+									value="1876">Biznesa un organizācijas vadība (NJCWP)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Logopēdija, NGCLW"
+									value="1878">Logopēdija (NGCLW)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Pirmsskolas skolotājs, NGKPW"
+									value="1879">Pirmsskolas skolotājs (NGKPW)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Biznesa un organizācijas vadība, NJCWW"
+									value="1880">Biznesa un organizācijas vadība (NJCWW)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Izglītības zinātnes, AGMIB"
+									value="1887">Izglītības zinātnes (AGMIB)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Sociālais darbinieks, ESCD0"
+									value="2000">Sociālais darbinieks (ESCD0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Digitālās izglītības tehnoloģijas, LGMD0"
+									value="2002">Digitālās izglītības tehnoloģijas (LGMD0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Digitālās izglītības tehnoloģijas, EGMD0"
+									value="2003">Digitālās izglītības tehnoloģijas (EGMD0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Pirmsskolas skolotājs, EGKP0"
+									value="2004">Pirmsskolas skolotājs (EGKP0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Pirmsskolas skolotājs, MGKP0"
+									value="2005">Pirmsskolas skolotājs (MGKP0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Skolotājs, EGCS0"
+									value="2008">Skolotājs (EGCS0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Izglītības zinātnes, EGMI0"
+									value="2012">Izglītības zinātnes (EGMI0)</option>
+								<option data-tokens="Liepājas akadēmija, 0L000, Izglītības zinātnes, EGMIB"
+									value="2014">Izglītības zinātnes (EGMIB)</option>
+							</optgroup><optgroup label="Latvijas Jūras akadēmija (0J000)">
+								<option data-tokens="Latvijas Jūras akadēmija, 0J000, Jūras transports - kuģa vadīšana, JUCZ0"
+									value="1702">Jūras transports - kuģa vadīšana (JUCZ0)</option>
+								<option data-tokens="Latvijas Jūras akadēmija, 0J000, Jūras transports - kuģa elektroautomātika, JUCE0"
+									value="1721">Jūras transports - kuģa elektroautomātika (JUCE0)</option>
+								<option data-tokens="Latvijas Jūras akadēmija, 0J000, Jūras transports - kuģa mehānika, JUCN0"
+									value="1722">Jūras transports - kuģa mehānika (JUCN0)</option>
+								<option data-tokens="Latvijas Jūras akadēmija, 0J000, Jūras transports, JUGT0"
+									value="1726">Jūras transports (JUGT0)</option>
+							</optgroup><optgroup label="Rēzeknes akadēmija (0R000)">
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Sākumizglītības skolotājs, LGCT0"
+									value="1820">Sākumizglītības skolotājs (LGCT0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Sākumizglītības skolotājs, NGCT0"
+									value="1832">Sākumizglītības skolotājs (NGCT0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Grāmatvedība, EIKG0"
+									value="1916">Grāmatvedība (EIKG0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Programmēšana, EDKU0"
+									value="1918">Programmēšana (EDKU0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Mašīnbūve, ENKC0"
+									value="1919">Mašīnbūve (ENKC0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Pārtikas produktu pārstrāde, EPKR0"
+									value="1920">Pārtikas produktu pārstrāde (EPKR0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Apģērbu dizains un tehnoloģija, EWKZ0"
+									value="1921">Apģērbu dizains un tehnoloģija (EWKZ0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Būvniecība, EBKB1"
+									value="1922">Būvniecība (EBKB1)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Speciālā izglītība, EGCU0"
+									value="1926">Speciālā izglītība (EGCU0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Ekonomika, EICE0"
+									value="1927">Ekonomika (EICE0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Uzņēmējdarbība, EJCD0"
+									value="1928">Uzņēmējdarbība (EJCD0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Mehatronika, EMCE1"
+									value="1930">Mehatronika (EMCE1)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Dizaina tehnoloģijas, EWCU0"
+									value="1931">Dizaina tehnoloģijas (EWCU0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Biznesa vadība, EJBA0"
+									value="1934">Biznesa vadība (EJBA0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Tiesību zinātne, ELBT0"
+									value="1935">Tiesību zinātne (ELBT0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Vadības zinātne, EJMB0"
+									value="1937">Vadības zinātne (EJMB0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Lāzertehnoloģijas, ENML0"
+									value="1939">Lāzertehnoloģijas (ENML0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Tiesību zinātne, ELGT0"
+									value="1941">Tiesību zinātne (ELGT0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Biznesa vadība, NJBA0"
+									value="1950">Biznesa vadība (NJBA0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Vadības zinātne, EJMBA"
+									value="1951">Vadības zinātne (EJMBA)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Vadības zinātne, EJMBB"
+									value="1952">Vadības zinātne (EJMBB)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Grāmatvedība, NIKG0"
+									value="1953">Grāmatvedība (NIKG0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Robežapsardze, NJCR0"
+									value="1955">Robežapsardze (NJCR0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Tiesību zinātne, ELGTA"
+									value="1957">Tiesību zinātne (ELGTA)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Būvniecība, EBKB0"
+									value="1960">Būvniecība (EBKB0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Mehatronika, EMCE0"
+									value="1965">Mehatronika (EMCE0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Datorsistēmas, EDBD0"
+									value="1966">Datorsistēmas (EDBD0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Speciālā izglītība, NGCU0"
+									value="1971">Speciālā izglītība (NGCU0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Datorsistēmas, EDCD0"
+									value="1998">Datorsistēmas (EDCD0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Sociālais darbinieks, ESCD0"
+									value="2000">Sociālais darbinieks (ESCD0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Digitālās izglītības tehnoloģijas, EGMD0"
+									value="2003">Digitālās izglītības tehnoloģijas (EGMD0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Pirmsskolas skolotājs, EGKP0"
+									value="2004">Pirmsskolas skolotājs (EGKP0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Sākumizglītības skolotājs, EGCT0"
+									value="2006">Sākumizglītības skolotājs (EGCT0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Sākumizglītības skolotājs, MGCT0"
+									value="2007">Sākumizglītības skolotājs (MGCT0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Skolotājs, EGCS0"
+									value="2008">Skolotājs (EGCS0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Izglītības zinātnes, EGMI0"
+									value="2012">Izglītības zinātnes (EGMI0)</option>
+								<option data-tokens="Rēzeknes akadēmija, 0R000, Izglītības zinātnes, EGMIB"
+									value="2014">Izglītības zinātnes (EGMIB)</option>
+							</optgroup><optgroup label="Rīgas Biznesa skola (01B00)">
+								
+							</optgroup>															
+						</select>
+				   </div>				   
+				   
+				   <div id="course-program-visible-block">
+				   	<hr/>
+			   		<!-- Course & Group toggle -->
+			   		
+					<div class="row">				   		
+						<div class="col-sm-6 course-block">
+								<h5 class="card-title body-header">Kurss</h5>
+								<select id="course-id" class="form-select form-control" required="required"></select>
+						</div>
+						
+						 <div class="col-sm-6 group-block">
+								<h5 class="card-title body-header">Grupa</h5>
+								<select id="group-id" class="form-select form-control" required="required"></select>
+						</div>
+					</div>
+					 
+					 <div id='semester-program-subjects-block'>
+						 <hr/>
+						 <h5 class="card-title body-header">Ieplānotie priekšmeti</h5>
+						 <div class="row">
+						 	<ul class="list-group list-group-flush" id="semester-program-subjects">
+							</ul>
+						 </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+        <div class="col-lg-9 col-md-8">
+		<div class="card scheduler-card">
+			<div class="card-body">
+				<div id="calendar-visible-block">
+	
+					<!-- Calendar view -->
+					<h5 class="card-title body-header">Kalendārais skats</h5>
+					<div class="row"></div>			
+					<div id="calendar"></div>
+					<div id="calendar-no-events"><p class="card-title body-header">Izvēlētajai studiju programmas grupai nav ieplānots neviens notikums!</p></div>
+				</div>	
+				<div id="no-calendar-show-block">
+					<img class="noScheduleRTUlogo" src="https://www.rtu.lv/www-static/x/images/logo_lv.svg" alt="RTU logo">
+				</div>	
+			</div>
+		</div>
+	</div>
+    </div>
+	</div>
+	<div class="mt-auto"><div>
+        <footer class="footer footer-expand-lg">
+            <div class="container">
+                <div class="row justify-content-md-center footer-row">
+	               <div class="col-md-3 text-light space-right">
+                    	<div class="row footer-header">Kontakti</div>
+                    	<div class="row">IT pakalpojumu centrs</br>Ķīpsalas iela 6a - 134. kab., Rīga, Latvija</br>Telefons: 67089999</br>E-pasts: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ff6ebdfedebeab1f3e9">[email&#160;protected]</a></div>
+                    </div>
+	                    
+                    <div class="col-md-3 text-light">
+                    	<div class="row footer-header">Saites</div>
+                    	<div class="row">
+                    		<span><a class="footer-link spacing-right" href="https://ortus.rtu.lv/" target="_blank">Ortus</a><a class="footer-link spacing-right" href="https://rtu.lv/" target="_blank">Mājaslapa</a></span>
+                    	</div>
+                    	<div class="row">
+                    		<a class="footer-link" href="https://nodarbibas.rtu.lv/room/transcripts" target="_blank"><span>Adrešu atšifrējumi</span></a>
+                    	</div>
+                    	<div class="row">
+                    		<a class="footer-link" href="https://www.rtu.lv/www-static/maps/campus_map_lv.pdf" target="_blank"><span>Universitātes pilsētiņa (Ķīpsalā)</span></a>
+                    		
+                    	</div>
+                    </div>
+                    <div class="col-md-5">
+                    	<div class="spacing-top">
+                    		<div class="image-backgroud">
+                    			<img src="/resources/images/eu_soc_lv.svg" alt="Image"/>
+                    			
+                    		</div>
+                    	</div>                   		
+                    </div>
+                </div>
+                <div class="row footer-row copyright text-light text-muted">
+                    <div class="col-md-12 text-center">
+                        <span class="copyright-text">&copy; Rīgas Tehniskā universitāte</span>
+                        <span class="copyright-year">2026</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div></div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4962bc58ade57da',t:'MTc5MTgwODgwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

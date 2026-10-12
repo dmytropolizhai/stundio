@@ -25,6 +25,7 @@ export const ClassBadge = ({ onClick }: { onClick: () => void }) => {
   const label = matchPersona<string | undefined | null>(identity, {
     student: () => selectedClass?.short,
     teacher: () => (selectedTeacher?.short ? teacherChipLabel(selectedTeacher.short) : null),
+    university: ({ group }) => group?.label,
   });
   if (label === null) return null;
 

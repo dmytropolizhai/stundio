@@ -26,10 +26,32 @@ export const useIdentity = (): Identity => {
   const subgroup = useAppStore((s) => s.settings.subgroup);
   const selectedTeacherId = useAppStore((s) => s.settings.selectedTeacherId);
   const teacherView = useAppStore((s) => s.settings.teacherView);
+  const university = useAppStore((s) => s.settings.university);
+  const universityGroup = useAppStore((s) => s.settings.universityGroup);
+  const universitySubgroup = useAppStore((s) => s.settings.universitySubgroup);
 
   return useMemo(
-    () => resolveIdentity({ persona, selectedClassId, subgroup, selectedTeacherId, teacherView }),
-    [persona, selectedClassId, subgroup, selectedTeacherId, teacherView],
+    () =>
+      resolveIdentity({
+        persona,
+        selectedClassId,
+        subgroup,
+        selectedTeacherId,
+        teacherView,
+        university,
+        universityGroup,
+        universitySubgroup,
+      }),
+    [
+      persona,
+      selectedClassId,
+      subgroup,
+      selectedTeacherId,
+      teacherView,
+      university,
+      universityGroup,
+      universitySubgroup,
+    ],
   );
 };
 
@@ -75,6 +97,7 @@ export const useIdentityLabel = (): string | undefined => {
   return matchPersona(identity, {
     student: () => selectedClass?.short,
     teacher: () => selectedTeacher?.short || selectedTeacher?.name || undefined,
+    university: ({ group }) => group?.label,
   });
 };
 

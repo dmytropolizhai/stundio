@@ -53,6 +53,7 @@ const identityLabel = (state: AppState): string | null =>
       }
       return teacherId;
     },
+    university: ({ group }) => group?.label ?? null,
   });
 
 /** What the widget should be showing for this store state, right now. */

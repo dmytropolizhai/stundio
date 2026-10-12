@@ -11,4 +11,5 @@ export {
   type StudentIdentity,
   type TeacherIdentity,
   type TeacherView,
+  type UniversityIdentity,
 } from "./identity.ts";

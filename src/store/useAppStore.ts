@@ -25,10 +25,24 @@ import {
   type Timetable,
 } from "@/lib/edupage";
 import { weekDates } from "@/lib/schedule";
-import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
+import {
+  DEFAULT_SETTINGS,
+  universityScheduleKey,
+  type AppCache,
+  type Settings,
+  type SubjectNote,
+} from "@/db";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
+import {
+  listUniversitySubgroups,
+  resolveUniversityDay,
+  type UniversityGroupRef,
+  type UniversityId,
+  type UniversityProgramEntry,
+  type UniversitySchedule,
+} from "@/lib/university";
 
 /**
  * Where a tapped notification wants the app to go. Set by the notification-tap listener
@@ -47,6 +61,8 @@ export type AppState = {
   substitutions: Record<ISODate, DaySubstitutions>;
   /** Keyed by subject label — see `useSubjects.ts`'s `subjectKey` (`name || short`). */
   notes: Record<string, SubjectNote>;
+  /** Cached university group schedules, keyed by `universityScheduleKey` ("lu:26R-…"). */
+  universitySchedules: Record<string, UniversitySchedule>;
   syncStatus: SyncStatus;
   lastSyncAt: ISODateTime | null;
   lastError: string | null;
@@ -80,6 +96,22 @@ export type AppState = {
   setTeacher: (teacherId: string | null) => Promise<void>;
   setTeacherView: (view: Settings["teacherView"]) => Promise<void>;
   setHighlightCoverLessons: (highlight: boolean) => Promise<void>;
+  /**
+   * Switches to university mode on `university`'s catalogue. A group picked at the other
+   * university is dropped, since its id means nothing here.
+   */
+  setUniversity: (university: UniversityId) => Promise<void>;
+  /** Picks the study group (and with it, the university), and its subgroup in the same write. */
+  setUniversityGroup: (group: UniversityGroupRef | null, subgroup?: string | null) => Promise<void>;
+  setUniversitySubgroup: (subgroup: string | null) => Promise<void>;
+  /** Live catalogue reads for the group picker — rejects when offline; nothing is cached. */
+  loadUniversityPrograms: (university: UniversityId) => Promise<UniversityProgramEntry[]>;
+  loadUniversityGroups: (program: UniversityProgramEntry) => Promise<UniversityGroupRef[]>;
+  /**
+   * Downloads a group's schedule before it is picked and returns its LU subgroups (`[]` when
+   * it has none). Rejects when offline — the picker then just skips the subgroup question.
+   */
+  previewUniversityGroup: (group: UniversityGroupRef) => Promise<string[]>;
   toggleFavorite: (classId: string) => Promise<void>;
   setTheme: (theme: Settings["theme"]) => Promise<void>;
   setLang: (lang: Settings["lang"]) => Promise<void>;
@@ -149,6 +181,8 @@ export type AppState = {
    * under this (hashed, for a teacher).
    */
   identityLabel: () => string | null;
+  /** The selected university group's cached schedule, or `null` outside university mode. */
+  universitySchedule: () => UniversitySchedule | null;
 };
 
 export type StoreDeps = { cache: AppCache; engine: SyncEngine; analytics?: AnalyticsClient };
@@ -177,11 +211,24 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
   const memo = createResolveMemo();
 
   return createStore<AppState>()((set, get) => {
+    /*
+     * The engine reads settings from the cache, not from this store. A screen that mounts on
+     * the `set` below (picking a group closes onboarding) refreshes at once, so `refresh` waits
+     * for the write to land — otherwise it syncs the role the user just left.
+     */
+    let settingsWrite: Promise<void> = Promise.resolve();
+    /*
+     * Refreshes overlap (open, resume, a pick, a pull). Only the latest one started may report
+     * a status: an older one can belong to a role the user has since left — an RVT sync still
+     * running when a university group is picked — and its errors are not this role's.
+     */
+    let latestRefresh = 0;
     const persist = async (patch: Partial<Settings>): Promise<void> => {
       const settings = { ...get().settings, ...patch };
       set({ settings });
       memo.clear();
-      await cache.putSettings(settings);
+      settingsWrite = cache.putSettings(settings);
+      await settingsWrite;
     };
 
     /** Pulls everything the cache currently holds into state. */
@@ -208,8 +255,23 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       const notes: Record<string, SubjectNote> = {};
       for (const note of loadedNotes) if (note !== null) notes[note.subject] = note;
 
+      const keys = await cache.listUniversityScheduleKeys();
+      const schedules = await Promise.all(keys.map((k) => cache.getUniversitySchedule(k)));
+      const universitySchedules: Record<string, UniversitySchedule> = {};
+      for (const schedule of schedules) {
+        if (schedule !== null) universitySchedules[universityScheduleKey(schedule)] = schedule;
+      }
+
       memo.clear();
-      set({ settings, metas, timetables, substitutions, notes, ready: true });
+      set({
+        settings,
+        metas,
+        timetables,
+        substitutions,
+        notes,
+        universitySchedules,
+        ready: true,
+      });
     };
 
     return {
@@ -219,6 +281,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       timetables: {},
       substitutions: {},
       notes: {},
+      universitySchedules: {},
       syncStatus: "idle",
       lastSyncAt: null,
       lastError: null,
@@ -229,7 +292,9 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
 
       refresh: async (options = {}) => {
         if (options.force === true) get().trackEvent("manual_refresh");
+        const generation = ++latestRefresh;
         set({ syncStatus: "syncing" });
+        await settingsWrite;
         const outcome = await engine.sync({
           ...(options.date === undefined ? {} : { date: options.date }),
           ...(options.scope === undefined ? {} : { scope: options.scope }),
@@ -237,6 +302,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           building: get().settings.building,
         });
         await readCache();
+        if (generation !== latestRefresh) return outcome;
         set({
           syncStatus: outcome.status,
           // Keep the previous timestamp on a failed sync: "updated 2h ago" beats "never".
@@ -267,6 +333,35 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),
       setTeacherView: (teacherView) => persist({ teacherView }),
       setHighlightCoverLessons: (highlightCoverLessons) => persist({ highlightCoverLessons }),
+      setUniversity: (university) => {
+        const group = get().settings.universityGroup;
+        const keep = group !== null && group.university === university;
+        return persist({
+          persona: "university",
+          university,
+          ...(keep ? {} : { universityGroup: null, universitySubgroup: null }),
+        });
+      },
+      setUniversityGroup: (universityGroup, universitySubgroup = null) =>
+        persist({
+          persona: "university",
+          universityGroup,
+          universitySubgroup,
+          ...(universityGroup === null ? {} : { university: universityGroup.university }),
+        }),
+      setUniversitySubgroup: (universitySubgroup) => persist({ universitySubgroup }),
+      loadUniversityPrograms: (university) => engine.universityPrograms(university),
+      loadUniversityGroups: (program) => engine.universityGroups(program),
+      previewUniversityGroup: async (group) => {
+        const schedule = await engine.prefetchUniversityGroup(group);
+        set({
+          universitySchedules: {
+            ...get().universitySchedules,
+            [universityScheduleKey(schedule)]: schedule,
+          },
+        });
+        return listUniversitySubgroups(schedule);
+      },
       setTheme: (theme) => persist({ theme }),
       setLang: (lang) => persist({ lang }),
       setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
@@ -366,6 +461,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         const id = matchPersona(state.identity(), {
           student: (s) => s.classId,
           teacher: () => null,
+          university: () => null,
         });
         if (id === null) return null;
         for (const timetable of Object.values(state.timetables)) {
@@ -389,7 +485,19 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
             }
             return null;
           },
+          // Web Push files devices by RVT's substitution feed; a university has none.
+          university: () => null,
         }),
+
+      universitySchedule: () => {
+        const identity = get().identity();
+        if (identity.persona !== "university" || identity.group === null) return null;
+        const key = universityScheduleKey({
+          university: identity.group.university,
+          groupId: identity.group.id,
+        });
+        return get().universitySchedules[key] ?? null;
+      },
 
       resolvedTeacherDay: (date, teacherId) => {
         const state = get();
@@ -420,6 +528,15 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         const state = get();
         if (classId === undefined) {
           const identity = state.identity();
+          if (identity.persona === "university") {
+            const schedule = state.universitySchedule();
+            if (schedule === null) return null;
+            const key = `university|${universityScheduleKey(schedule)}|${date}|${schedule.fetchedAt}|${identity.subgroup ?? ""}`;
+            const hit = memo.get(key);
+            if (hit !== undefined) return hit;
+            const day = resolveUniversityDay(schedule, date, { subgroup: identity.subgroup });
+            return day === null ? null : memo.set(key, day);
+          }
           if (identity.persona === "teacher") {
             const { teacherId, view } = identity;
             if (teacherId === null) return null;
@@ -455,6 +572,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         const subgroup = matchPersona(state.identity(), {
           student: (s) => s.subgroup,
           teacher: () => null,
+          university: () => null,
         });
         const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
         const relocateMoves = state.settings.showMovedOnTargetDay;

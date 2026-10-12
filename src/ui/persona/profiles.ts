@@ -29,7 +29,7 @@ export type PersonaProfile = {
   /** Bottom-nav tabs, per pill, in order. Teachers have no personal subject notes. */
   nav: NavGroups;
   /** Which picker makes this role's selection. */
-  picker: "class" | "teacher";
+  picker: "class" | "teacher" | "university";
   /** The role's identity glyph — badge chip, empty states. */
   icon: IconName;
   /** "Student" / "Teacher" — the role's own name. */
@@ -44,6 +44,11 @@ export type PersonaProfile = {
   changeIdentityLabel: MessageKey;
   /** Subgroups split a class; a teacher's timetable has none to pick. */
   hasSubgroups: boolean;
+  /**
+   * The source publishes changes as a separate feed (RVT's substitutions), so there are moved
+   * lessons to place and a Changes tab to read. A university's events already are the changes.
+   */
+  hasChangeFeed: boolean;
   /** The one-time "teachers can use Stundio too" sheet — pointless once you are one. */
   seesTeacherAnnouncement: boolean;
   /** The Customization sheet's per-role bits: its preview card and the subject-colour copy. */
@@ -71,6 +76,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     myChangesFilter: "changes.filter.myClass",
     changeIdentityLabel: "day.changeClass",
     hasSubgroups: true,
+    hasChangeFeed: true,
     seesTeacherAnnouncement: true,
     customization: {
       previewLeadsWith: "subject",
@@ -88,11 +94,35 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     myChangesFilter: "changes.filter.myChanges",
     changeIdentityLabel: "onboarding.teacher.title",
     hasSubgroups: false,
+    hasChangeFeed: true,
     seesTeacherAnnouncement: false,
     customization: {
       previewLeadsWith: "group",
       subjectColorsHint: "customization.subjectColors.hint.teacher",
       subjectColorsEmpty: "customization.subjectColors.empty.teacher",
+    },
+  },
+  /*
+   * RTU / LU students (MODEL-UNIVERSITY.md). No Changes tab: a university publishes no
+   * substitution feed — a moved lecture is simply the new event, already in the day. Subgroups
+   * are LU's own child groups ("fiziviens"), never RVT's numbered divisions.
+   */
+  university: {
+    nav: { schedule: ["home", "week"], personal: ["subjects", "settings"] },
+    picker: "university",
+    icon: "landmark",
+    roleLabel: "settings.persona.university",
+    subjectLabel: "settings.group",
+    noneSelected: "university.none",
+    myChangesFilter: "changes.filter.myClass",
+    changeIdentityLabel: "university.change",
+    hasSubgroups: true,
+    hasChangeFeed: false,
+    seesTeacherAnnouncement: false,
+    customization: {
+      previewLeadsWith: "subject",
+      subjectColorsHint: "customization.subjectColors.hint",
+      subjectColorsEmpty: "customization.subjectColors.empty",
     },
   },
 };

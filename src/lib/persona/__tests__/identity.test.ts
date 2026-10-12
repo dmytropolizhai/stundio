@@ -13,6 +13,14 @@ const base: PersonaSettings = {
   subgroup: "1",
   selectedTeacherId: "-403",
   teacherView: "form-class",
+  university: "lu",
+  universityGroup: {
+    university: "lu",
+    id: "26R-21023-PLK-1",
+    label: "26R-21023",
+    program: "Fizika",
+  },
+  universitySubgroup: "fiziviens",
 };
 
 describe("resolveIdentity", () => {
@@ -27,6 +35,19 @@ describe("resolveIdentity", () => {
       view: "form-class",
     });
   });
+
+  it("keeps only the university student's group — and drops one from the other university", () => {
+    expect(resolveIdentity({ ...base, persona: "university" })).toEqual({
+      persona: "university",
+      university: "lu",
+      group: base.universityGroup,
+      subgroup: "fiziviens",
+    });
+    expect(resolveIdentity({ ...base, persona: "university", university: "rtu" })).toMatchObject({
+      university: "rtu",
+      group: null,
+    });
+  });
 });
 
 describe("matchPersona", () => {
@@ -34,10 +55,14 @@ describe("matchPersona", () => {
     const cases = {
       student: (s: { classId: string | null }) => `class ${s.classId ?? "-"}`,
       teacher: (t: { teacherId: string | null }) => `teacher ${t.teacherId ?? "-"}`,
+      university: (u: { group: { id: string } | null }) => `group ${u.group?.id ?? "-"}`,
     };
     expect(matchPersona(resolveIdentity(base), cases)).toBe("class -10");
     expect(matchPersona(resolveIdentity({ ...base, persona: "teacher" }), cases)).toBe(
       "teacher -403",
+    );
+    expect(matchPersona(resolveIdentity({ ...base, persona: "university" }), cases)).toBe(
+      "group 26R-21023-PLK-1",
     );
   });
 });
@@ -51,6 +76,10 @@ describe("isIdentified", () => {
       isIdentified(resolveIdentity({ ...base, persona: "teacher", selectedTeacherId: null })),
     ).toBe(false);
     expect(isIdentified(resolveIdentity({ ...base, persona: "teacher" }))).toBe(true);
+    expect(isIdentified(resolveIdentity({ ...base, persona: "university" }))).toBe(true);
+    expect(
+      isIdentified(resolveIdentity({ ...base, persona: "university", universityGroup: null })),
+    ).toBe(false);
   });
 });
 
@@ -62,6 +91,10 @@ describe("identityKey", () => {
     expect(key({})).not.toBe(key({ selectedClassId: "-11" }));
     expect(key({ persona: "teacher" })).not.toBe(key({ persona: "teacher", teacherView: "own" }));
     expect(key({ persona: "teacher" })).not.toBe(key({}));
+    expect(key({ persona: "university" })).not.toBe(
+      key({ persona: "university", universitySubgroup: null }),
+    );
+    expect(key({ persona: "university" })).not.toBe(key({}));
   });
 
   it("ignores the inactive role's leftovers", () => {

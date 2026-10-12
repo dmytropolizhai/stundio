@@ -6,7 +6,7 @@ export type {
   SubjectColorValue,
   SubjectNote,
 } from "./types.ts";
-export { DEFAULT_SETTINGS } from "./types.ts";
+export { DEFAULT_SETTINGS, universityScheduleKey } from "./types.ts";
 export { createMemoryCache } from "./memory.ts";
 export {
   createCache,

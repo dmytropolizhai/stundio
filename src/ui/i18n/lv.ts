@@ -431,6 +431,31 @@ export const lv = {
   "error.title": "Kaut kas nogāja greizi",
   "error.hint": "Neizdevās ielādēt šo skatu.",
   "error.retry": "Mēģināt vēlreiz",
+
+  // University mode (RTU / LU) — MODEL-UNIVERSITY.md.
+  "onboarding.institution.title": "Kur tu mācies?",
+  "onboarding.institution.subtitle": "Izvēlies skolu vai augstskolu",
+  "institution.rvt.desc": "Skolēniem un skolotājiem",
+  "institution.rtu.desc": "Studentiem — pēc studiju grupas",
+  "institution.lu.desc": "Studentiem — pēc studiju grupas",
+  "settings.persona.university": "Students",
+  "settings.group": "Studiju grupa",
+  "university.none": "Vispirms izvēlies grupu",
+  "university.change": "Mainīt grupu",
+  "university.picker.title": "Izvēlies savu grupu",
+  "university.picker.subtitle": "Atrodi savu studiju programmu, tad grupu",
+  "university.search": "Meklēt programmu vai kodu…",
+  "university.loading": "Ielādē programmu sarakstu…",
+  "university.groupsLoading": "Ielādē grupas…",
+  "university.loadError": "Neizdevās ielādēt sarakstu",
+  "university.loadError.hint": "Grupas izvēlei vajag internetu.",
+  "university.noGroups": "Šai programmai vēl nav publicētu grupu",
+  "university.noResults": "Nekas netika atrasts",
+  "university.subgroup.title": "Izvēlies apakšgrupu",
+  "university.subgroup.hint": "Daļa nodarbību notiek pa apakšgrupām",
+  "university.subgroup.all": "Visas apakšgrupas",
+  "university.subgroup": "Apakšgrupa",
+  "university.institution": "Augstskola",
 } as const;
 
 export type Dict = Record<keyof typeof lv, string>;

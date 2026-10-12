@@ -12,6 +12,8 @@ import { TeacherPicker } from "./ui/screens/teacher-picker";
 import { OnboardingLanguage } from "./ui/screens/onboarding-language";
 import { OnboardingIntro } from "./ui/screens/onboarding-intro";
 import { OnboardingPersona } from "./ui/screens/onboarding-persona";
+import { OnboardingInstitution } from "./ui/screens/onboarding-institution";
+import { UniversityPicker } from "./ui/screens/university-picker";
 import { HomeView } from "./ui/screens/home-view";
 import { WeekView } from "./ui/screens/week-view";
 import { ChangesView } from "./ui/screens/changes-view";
@@ -81,16 +83,23 @@ const BootFailed = ({ onReady }: { onReady: () => void }) => (
  *
  * A language question comes first — every other screen from here on is translated, so it has
  * to be answered before anything else is worth showing. Then a short feature tour (skippable
- * at every step), then the DS's onboarding screen — a full-bleed brand flood, the wordmark,
- * and one oversized headline — hands off to the class picker. It is the only place in the app
- * that goes edge-to-edge in blue.
+ * at every step), then which school: RVT goes on to the student/teacher split and the DS's
+ * onboarding screen — a full-bleed brand flood, the wordmark, and one oversized headline —
+ * hands off to the class picker; RTU and LU go straight to the university group picker.
  */
 const Onboarding = () => {
   const t = useT();
   const [step, setStep] = useState<
-    "language" | "intro" | "persona" | "classPicker" | "teacherPicker"
+    | "language"
+    | "intro"
+    | "institution"
+    | "persona"
+    | "classPicker"
+    | "teacherPicker"
+    | "universityPicker"
   >("language");
   const setPersona = useAppStore((s) => s.setPersona);
+  const setUniversity = useAppStore((s) => s.setUniversity);
 
   useBackButton(
     () => {
@@ -98,7 +107,11 @@ const Onboarding = () => {
         setStep("persona");
         return true;
       }
-      if (step === "persona") {
+      if (step === "persona" || step === "universityPicker") {
+        setStep("institution");
+        return true;
+      }
+      if (step === "institution") {
         setStep("intro");
         return true;
       }
@@ -122,7 +135,42 @@ const Onboarding = () => {
   if (step === "intro") {
     return (
       <div className="flex h-full flex-col">
-        <OnboardingIntro onDone={() => setStep("persona")} />
+        <OnboardingIntro onDone={() => setStep("institution")} />
+      </div>
+    );
+  }
+
+  if (step === "institution") {
+    return (
+      <div className="flex h-full flex-col">
+        <OnboardingInstitution
+          onSelect={(institution) => {
+            if (institution === "rvt") {
+              setStep("persona");
+              return;
+            }
+            void setUniversity(institution);
+            setStep("universityPicker");
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (step === "universityPicker") {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="bg-card px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-brand">
+          <h1 className="mt-5 font-display text-hero tracking-hero">
+            {t("university.picker.title")}
+          </h1>
+          <p className="mt-3 font-text text-body-lg text-muted">
+            {t("university.picker.subtitle")}
+          </p>
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col pt-5">
+          <UniversityPicker />
+        </div>
       </div>
     );
   }
@@ -188,7 +236,7 @@ const Shell = () => {
   const teacherAnnouncement = useTeacherAnnouncement();
   const iphoneInstall = useIphoneInstallPrompt();
   const scheduleNav = useScheduleNavigation();
-  const [picking, setPicking] = useState<"class" | "teacher" | null>(null);
+  const [picking, setPicking] = useState<"class" | "teacher" | "university" | null>(null);
 
   useBackButton(
     () => {
@@ -207,6 +255,12 @@ const Shell = () => {
   useEffect(() => {
     trackEvent(`view_${tab}`);
   }, [tab, trackEvent]);
+
+  // Switching role can take away the tab on screen (a university has no Changes tab).
+  const tabAvailable = profile.nav.schedule.includes(tab) || profile.nav.personal.includes(tab);
+  useEffect(() => {
+    if (!tabAvailable) setTab("home");
+  }, [tabAvailable]);
 
   // A tapped notification (lesson reminder, substitution change, app update) — sent here by
   // `wireNotificationTaps` rather than acted on directly, since only the shell owns tab/date.
@@ -241,6 +295,26 @@ const Shell = () => {
           />
         </div>
         <ClassSelector
+          onPicked={() => {
+            setPicking(null);
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (picking === "university") {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
+          <TopBar
+            title={t("settings.group")}
+            onBack={() => {
+              setPicking(null);
+            }}
+          />
+        </div>
+        <UniversityPicker
           onPicked={() => {
             setPicking(null);
           }}
@@ -285,10 +359,14 @@ const Shell = () => {
             onPickClass={() => {
               setPicking(profile.picker);
             }}
-            onOpenChanges={(nextDate) => {
-              scheduleNav.setDate(nextDate);
-              setTab("changes");
-            }}
+            onOpenChanges={
+              profile.hasChangeFeed
+                ? (nextDate) => {
+                    scheduleNav.setDate(nextDate);
+                    setTab("changes");
+                  }
+                : undefined
+            }
           />
         )}
         {tab === "week" && (
@@ -321,6 +399,9 @@ const Shell = () => {
             }}
             onPickTeacher={() => {
               setPicking("teacher");
+            }}
+            onPickUniversityGroup={() => {
+              setPicking("university");
             }}
             onShowWhatsNew={whatsNew.show}
             onShowTeacherAnnouncement={teacherAnnouncement.show}

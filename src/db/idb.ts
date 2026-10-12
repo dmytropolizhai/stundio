@@ -12,12 +12,14 @@ import {
   type CachedTimetableList,
   type Settings,
   type SubjectNote,
+  universityScheduleKey,
 } from "./types.ts";
 import { createMemoryCache } from "./memory.ts";
 import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
+import type { UniversitySchedule } from "@/lib/university";
 
 export const DB_NAME = "rvt-stunda";
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 
 const LIST_KEY = "timetableList";
 const SETTINGS_KEY = "app";
@@ -28,6 +30,8 @@ export type EdupageDB = DBSchema & {
   substitutions: { key: ISODate; value: DaySubstitutions };
   settings: { key: string; value: Settings };
   notes: { key: string; value: SubjectNote };
+  /** One university group's events, keyed by `universityScheduleKey`. */
+  university: { key: string; value: UniversitySchedule };
 };
 
 export const openAppDb = (): Promise<IDBPDatabase<EdupageDB>> =>
@@ -39,6 +43,7 @@ export const openAppDb = (): Promise<IDBPDatabase<EdupageDB>> =>
       if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings");
       // User-authored, like settings: created on upgrade too, never dropped and recreated.
       if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes");
+      if (!db.objectStoreNames.contains("university")) db.createObjectStore("university");
     },
   });
 
@@ -90,6 +95,13 @@ export const createIdbCache = (
   },
   listNoteSubjects: async () => (await (await dbPromise).getAllKeys("notes")).map(String),
 
+  getUniversitySchedule: async (key) => (await (await dbPromise).get("university", key)) ?? null,
+  putUniversitySchedule: async (schedule) => {
+    await (await dbPromise).put("university", schedule, universityScheduleKey(schedule));
+  },
+  listUniversityScheduleKeys: async () =>
+    (await (await dbPromise).getAllKeys("university")).map(String),
+
   clearUserData: async () => {
     const db = await dbPromise;
     await Promise.all([db.clear("settings"), db.clear("notes")]);
@@ -103,6 +115,7 @@ export const createIdbCache = (
       db.clear("substitutions"),
       db.clear("settings"),
       db.clear("notes"),
+      db.clear("university"),
     ]);
   },
 });

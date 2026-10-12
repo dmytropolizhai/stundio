@@ -9,7 +9,8 @@ web
 ## Users
 
 Students of Rīgas Valsts tehnikums (RVT) — over 200 people already use it — plus teachers, who
-use it through Teacher Mode. Android is the main platform: Android users outnumber iOS ones.
+use it through Teacher Mode. Students of RTU and LU can use it too: they pick a study group
+instead of a class (`MODEL-UNIVERSITY.md`). Android is the main platform: Android users outnumber iOS ones.
 Web analytics so far: 1.1k unique visitors and 2k total visits. Students use it on a phone,
 one-handed, in the seconds between lessons: in a
 corridor, on a bus, standing outside a room they are not sure is the right room. Connectivity is

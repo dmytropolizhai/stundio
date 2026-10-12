@@ -8,8 +8,10 @@ import {
   type CachedTimetableList,
   type Settings,
   type SubjectNote,
+  universityScheduleKey,
 } from "./types.ts";
 import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
+import type { UniversitySchedule } from "@/lib/university";
 
 export const createMemoryCache = (): AppCache => {
   let list: CachedTimetableList | null = null;
@@ -17,6 +19,7 @@ export const createMemoryCache = (): AppCache => {
   const timetables = new Map<string, Timetable>();
   const substitutions = new Map<ISODate, DaySubstitutions>();
   const notes = new Map<string, SubjectNote>();
+  const university = new Map<string, UniversitySchedule>();
 
   return {
     getTimetableList: () => Promise.resolve(list),
@@ -66,6 +69,13 @@ export const createMemoryCache = (): AppCache => {
     },
     listNoteSubjects: () => Promise.resolve([...notes.keys()]),
 
+    getUniversitySchedule: (key) => Promise.resolve(university.get(key) ?? null),
+    putUniversitySchedule: (schedule) => {
+      university.set(universityScheduleKey(schedule), schedule);
+      return Promise.resolve();
+    },
+    listUniversityScheduleKeys: () => Promise.resolve([...university.keys()]),
+
     clearUserData: () => {
       settings = { ...DEFAULT_SETTINGS };
       notes.clear();
@@ -78,6 +88,7 @@ export const createMemoryCache = (): AppCache => {
       timetables.clear();
       substitutions.clear();
       notes.clear();
+      university.clear();
       return Promise.resolve();
     },
   };

@@ -14,6 +14,7 @@ import {
 } from "@/db";
 import { openDB } from "idb";
 import type { DaySubstitutions, Timetable } from "@/lib/edupage";
+import type { UniversitySchedule } from "@/lib/university";
 
 const timetable = (ttNum: string): Timetable => ({
   meta: {
@@ -35,6 +36,14 @@ const timetable = (ttNum: string): Timetable => ({
 
 const NOW = "2026-09-09T00:00:00.000Z";
 
+const schedule: UniversitySchedule = {
+  university: "lu",
+  groupId: "G",
+  events: [],
+  covered: [{ from: "2026-10-12", to: "2026-10-25" }],
+  fetchedAt: NOW,
+};
+
 const substitutions = (date: string): DaySubstitutions => ({
   date,
   mode: "classes",
@@ -54,6 +63,7 @@ const freshIdbCache = (): AppCache => {
       d.createObjectStore("substitutions");
       d.createObjectStore("settings");
       d.createObjectStore("notes");
+      d.createObjectStore("university");
     },
   });
   return createIdbCache(db);
@@ -147,7 +157,9 @@ describe.each(implementations)("AppCache — %s", (_name, make) => {
     await cache.putSubstitutions(substitutions("2026-09-09"));
     await cache.putSettings({ ...DEFAULT_SETTINGS, selectedClassId: "-927" });
     await cache.putNote({ subject: "Matemātika", text: "Bring calculator", updatedAt: NOW });
+    await cache.putUniversitySchedule(schedule);
     await cache.clear();
+    expect(await cache.listUniversityScheduleKeys()).toEqual([]);
 
     expect(await cache.listTimetableNums()).toEqual([]);
     expect(await cache.getSubstitutions("2026-09-09")).toBeNull();
@@ -160,12 +172,23 @@ describe.each(implementations)("AppCache — %s", (_name, make) => {
     await cache.putSubstitutions(substitutions("2026-09-09"));
     await cache.putSettings({ ...DEFAULT_SETTINGS, selectedClassId: "-927" });
     await cache.putNote({ subject: "Matemātika", text: "Bring calculator", updatedAt: NOW });
+    await cache.putUniversitySchedule(schedule);
     await cache.clearUserData();
+    // A downloaded schedule is re-derivable, like a timetable: it survives a user-data reset.
+    expect(await cache.getUniversitySchedule("lu:G")).toEqual(schedule);
 
     expect(await cache.listTimetableNums()).toEqual(["1175"]);
     expect(await cache.getSubstitutions("2026-09-09")).not.toBeNull();
     expect(await cache.getSettings()).toEqual(DEFAULT_SETTINGS);
     expect(await cache.getNote("Matemātika")).toBeNull();
+  });
+
+  it("stores university schedules keyed by university and group", async () => {
+    expect(await cache.getUniversitySchedule("lu:G")).toBeNull();
+    await cache.putUniversitySchedule(schedule);
+    await cache.putUniversitySchedule({ ...schedule, university: "rtu", groupId: "1" });
+    expect(await cache.getUniversitySchedule("lu:G")).toEqual(schedule);
+    expect((await cache.listUniversityScheduleKeys()).sort()).toEqual(["lu:G", "rtu:1"]);
   });
 
   it("stores, updates and deletes a note per subject", async () => {

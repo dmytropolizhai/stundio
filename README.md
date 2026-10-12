@@ -51,6 +51,7 @@ That’s why the app is **local-first**. Your timetable is stored on your device
   * Absent staff banner in Changes view highlights absent colleagues (*Skolotāji, kuri šodien nepiedalās*).
   * Dual-role support for form teachers (*klases audzinātājs*): easily toggle between your own teaching day and your form class's schedule.
   * Tailored schedule change and cover duty notifications.
+* **University students (RTU & LU)** — Students of **Rīgas Tehniskā universitāte** (`nodarbibas.rtu.lv`) and **Latvijas Universitāte** (`lekciju-saraksts.lu.lv`) pick their university, study program and group, and get the same Home, Week, Subjects, widget and share card. LU groups split into subgroups can show just their own subgroup's classes. Cancelled LU classes stay visible and crossed out. Universities publish no substitution feed, so there is no Changes tab in this mode. See [MODEL-UNIVERSITY.md](MODEL-UNIVERSITY.md).
 * **Offline-first** — The UI always works from the local cache. The app refreshes when you open it, manually pull to refresh (a brief "Updated" toast confirms a successful manual refresh), or return to the app. Offline detection warns when network is unavailable without blocking access to cached schedules. The installed web app opens offline too, falling back to its cached shell instead of hanging on the splash screen.
 * **Four languages** — The app interface is available in Latvian, English, Russian, and Ukrainian. Substitution notes from the school are kept exactly as published and clearly marked as school-provided text.
 
@@ -58,11 +59,11 @@ That’s why the app is **local-first**. Your timetable is stored on your device
 
 Stundio isn't trying to be a replacement for EduPage.
 
-* It only targets the public, class-based timetable of this school.
+* It only targets the public timetables of this school (class-based) and of RTU and LU (group-based).
 * There are no student accounts or individual logins.
 * It isn't a grades app. An **e-klase** integration is an idea for Phase 6, but nothing has been decided or started yet.
 * There is no Stundio account server, and no database of users. Your timetable, settings, and cache live on your device.
-* On Android the app talks to `pikcrvt.edupage.org` directly. The web app can't, because browsers block the cross-origin request, so it goes through a thin Cloudflare Pages Function that forwards the same request unchanged ([functions/](functions)). That proxy stores nothing. Two other small Functions handle the APK download redirect and Web Push delivery.
+* On Android the app talks to `pikcrvt.edupage.org`, `nodarbibas.rtu.lv` and `lekciju-saraksts.lu.lv` directly. The web app can't, because browsers block the cross-origin request, so it goes through thin Cloudflare Pages Functions (`/api-edupage`, `/api-university`) that forward the same request unchanged ([functions/](functions)). That proxy stores nothing. Two other small Functions handle the APK download redirect and Web Push delivery.
 
 ## Project status
 
@@ -75,12 +76,13 @@ Phases 0 through 4, the widget track, Phase 7, Phase 8, and Phase 5 are substant
 - Web and iOS as a PWA on Cloudflare Pages, with an edge proxy for EduPage requests and Web Push for schedule changes.
 - Phase 8: Teacher Mode with staff directory, cover duty badging, dual role support, absent staff banner, and targeted notifications.
 - Phase 5: Release and distribution via GitHub Releases with in-app self-updater. Over 200 students and teachers actively using the app.
+- Phase 9: RTU and LU university timetables, picked by study group.
 
 Phase 5 (release and distribution) is substantially complete. There will be no Google Play release: for an unofficial timetable parser, app-store distribution carries legal risk the project doesn't want, so APKs ship through GitHub Releases and the app updates itself from there.
 
 Phase 6 (an e-klase grades integration) is still undecided.
 
-For the detailed roadmap and progress history, see [PLAN.md](PLAN.md). For an explanation of how the EduPage scraping works, see [MODEL.md](MODEL.md).
+For the detailed roadmap and progress history, see [PLAN.md](PLAN.md). For an explanation of how the EduPage scraping works, see [MODEL.md](MODEL.md); for RTU and LU, see [MODEL-UNIVERSITY.md](MODEL-UNIVERSITY.md).
 
 ## Installing on Android
 
