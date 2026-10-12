@@ -119,3 +119,15 @@ export const identityKey = (identity: Identity): string =>
     teacher: (t) => `teacher|${t.teacherId ?? ""}|${t.view}`,
     university: (u) => `university|${u.university}|${u.group?.id ?? ""}|${u.subgroup ?? ""}`,
   });
+
+/**
+ * A role this user has already set up, other than the active one — `null` on a first run.
+ * Switching to a role with nothing picked yet leaves the app unidentified; this is what tells
+ * a returning user (who should land in that role's picker, and can back out to this role)
+ * apart from a new one (who gets the full onboarding).
+ */
+export const fallbackPersona = (settings: PersonaSettings): Persona | null =>
+  PERSONAS.find(
+    (persona) =>
+      persona !== settings.persona && isIdentified(resolveIdentity({ ...settings, persona })),
+  ) ?? null;

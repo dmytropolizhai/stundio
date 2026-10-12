@@ -1,5 +1,6 @@
 export {
   PERSONAS,
+  fallbackPersona,
   identityKey,
   isIdentified,
   matchPersona,

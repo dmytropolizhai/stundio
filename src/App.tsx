@@ -31,8 +31,9 @@ import { RefreshToast } from "./ui/components/RefreshToast.tsx";
 import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
 import { StateMessage } from "./ui/components/StateMessage.tsx";
 import { useCustomization, useTheme } from "@/ui/theme";
-import { translate, useT } from "@/ui/i18n";
-import { PERSONA_PROFILES, usePersona } from "@/ui/persona";
+import { translate, useT, type MessageKey } from "@/ui/i18n";
+import { PERSONA_PROFILES, usePersona, type PersonaProfile } from "@/ui/persona";
+import { fallbackPersona } from "@/lib/persona";
 import { nativeApp } from "@/lib/app";
 import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
 /**
@@ -221,6 +222,38 @@ const Onboarding = () => {
   );
 };
 
+type Picker = PersonaProfile["picker"];
+
+const PICKER_TITLES: Record<Picker, MessageKey> = {
+  class: "settings.class",
+  teacher: "onboarding.teacher.title",
+  university: "settings.group",
+};
+
+/** A role's picker as a full screen, with a back arrow — from Settings, or a role switch. */
+const PickerScreen = ({
+  picker,
+  onBack,
+  onPicked,
+}: {
+  picker: Picker;
+  onBack: () => void;
+  onPicked?: () => void;
+}) => {
+  const t = useT();
+  const props = onPicked === undefined ? {} : { onPicked };
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
+        <TopBar title={t(PICKER_TITLES[picker])} onBack={onBack} />
+      </div>
+      {picker === "class" && <ClassSelector {...props} />}
+      {picker === "teacher" && <TeacherPicker {...props} />}
+      {picker === "university" && <UniversityPicker {...props} />}
+    </div>
+  );
+};
+
 const Shell = () => {
   const t = useT();
   useTheme();
@@ -236,13 +269,22 @@ const Shell = () => {
   const teacherAnnouncement = useTeacherAnnouncement();
   const iphoneInstall = useIphoneInstallPrompt();
   const scheduleNav = useScheduleNavigation();
-  const [picking, setPicking] = useState<"class" | "teacher" | "university" | null>(null);
+  const [picking, setPicking] = useState<Picker | null>(null);
+  const returnTo = useAppStore((s) => fallbackPersona(s.settings));
+  const setPersona = useAppStore((s) => s.setPersona);
 
   useBackButton(
     () => {
       setPicking(null);
     },
     { enabled: picking !== null, priority: 15 },
+  );
+
+  useBackButton(
+    () => {
+      if (returnTo !== null) void setPersona(returnTo);
+    },
+    { enabled: !isOnboarded && returnTo !== null, priority: 15 },
   );
 
   useBackButton(
@@ -274,6 +316,22 @@ const Shell = () => {
     clearPendingNavigation();
   }, [pendingNavigation, clearPendingNavigation, scheduleNav]);
 
+  /*
+   * Switching to a role with nothing picked yet (Settings → role) un-identifies the app. A user
+   * who already set up another role goes straight to the new role's picker — never back to
+   * the language question — and backing out returns them to the role they came from.
+   */
+  if (!isOnboarded && returnTo !== null) {
+    return (
+      <PickerScreen
+        picker={profile.picker}
+        onBack={() => {
+          void setPersona(returnTo);
+        }}
+      />
+    );
+  }
+
   if (!isOnboarded) {
     return (
       <>
@@ -283,63 +341,17 @@ const Shell = () => {
     );
   }
 
-  if (picking === "class") {
+  if (picking !== null) {
     return (
-      <div className="flex h-full flex-col">
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
-          <TopBar
-            title={t("settings.class")}
-            onBack={() => {
-              setPicking(null);
-            }}
-          />
-        </div>
-        <ClassSelector
-          onPicked={() => {
-            setPicking(null);
-          }}
-        />
-      </div>
-    );
-  }
-
-  if (picking === "university") {
-    return (
-      <div className="flex h-full flex-col">
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
-          <TopBar
-            title={t("settings.group")}
-            onBack={() => {
-              setPicking(null);
-            }}
-          />
-        </div>
-        <UniversityPicker
-          onPicked={() => {
-            setPicking(null);
-          }}
-        />
-      </div>
-    );
-  }
-
-  if (picking === "teacher") {
-    return (
-      <div className="flex h-full flex-col">
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
-          <TopBar
-            title={t("onboarding.teacher.title")}
-            onBack={() => {
-              setPicking(null);
-            }}
-          />
-        </div>
-        <TeacherPicker
-          onPicked={() => {
-            setPicking(null);
-          }}
-        />
-      </div>
+      <PickerScreen
+        picker={picking}
+        onBack={() => {
+          setPicking(null);
+        }}
+        onPicked={() => {
+          setPicking(null);
+        }}
+      />
     );
   }
 

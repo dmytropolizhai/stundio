@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  fallbackPersona,
   identityKey,
   isIdentified,
   matchPersona,
@@ -104,5 +105,28 @@ describe("identityKey", () => {
     expect(key({ persona: "teacher" })).toBe(
       key({ persona: "teacher", selectedClassId: null, subgroup: null }),
     );
+  });
+});
+
+describe("fallbackPersona", () => {
+  it("names another role the user already set up", () => {
+    // A student who switched to teacher mode before picking a teacher.
+    expect(fallbackPersona({ ...base, persona: "teacher", selectedTeacherId: null })).toBe(
+      "student",
+    );
+    expect(fallbackPersona({ ...base, persona: "university", universityGroup: null })).toBe(
+      "student",
+    );
+  });
+
+  it("is null on a first run, with nothing picked anywhere", () => {
+    expect(
+      fallbackPersona({
+        ...base,
+        selectedClassId: null,
+        selectedTeacherId: null,
+        universityGroup: null,
+      }),
+    ).toBeNull();
   });
 });
