@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BottomSheet, Button, Card, Icon, TextField } from "@/ds";
 import { useT } from "@/ui/i18n";
 import { useFeedbackIdentity } from "@/ui/persona";
+import { SheetDescription } from "./SheetDescription.tsx";
 import { submitFeedback, type FeedbackIdentity, type FeedbackType } from "@/ui/feedback.ts";
 
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024; // 5 MB (Web3Forms limit)
@@ -20,6 +21,8 @@ export type FeedbackSheetProps = {
   identity?: FeedbackIdentity | undefined;
   onSubmitted?: (() => void) | undefined;
   title?: string | undefined;
+  /** What this kind of feedback is for — the Settings row's description, repeated here. */
+  description?: string | undefined;
   messageLabel?: string | undefined;
   messagePlaceholder?: string | undefined;
   submitLabel?: string | undefined;
@@ -33,6 +36,7 @@ export const FeedbackSheet = ({
   identity,
   onSubmitted,
   title,
+  description,
   messageLabel,
   messagePlaceholder,
   submitLabel,
@@ -188,6 +192,11 @@ export const FeedbackSheet = ({
         </div>
       ) : (
         <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
+          {description !== undefined && (
+            <div className="-mb-4">
+              <SheetDescription>{description}</SheetDescription>
+            </div>
+          )}
           <label className="flex flex-col gap-1.5">
             <span className="u-eyebrow">{resolvedMessageLabel}</span>
             <textarea

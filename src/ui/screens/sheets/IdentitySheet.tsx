@@ -3,6 +3,7 @@ import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
 import { PERSONAS, isIdentified, matchPersona, type Persona } from "@/lib/persona";
 import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
+import { SheetDescription, SheetTitle } from "../settings-view";
 
 type IdentitySheetProps = {
   open: boolean;
@@ -40,8 +41,13 @@ export const IdentitySheet = ({
   };
 
   return (
-    <BottomSheet open={open} onClose={onClose} title={t("settings.identity.sheetTitle")}>
-      <div className="flex flex-col gap-6 p-4">
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      title={<SheetTitle icon={profile.icon}>{t("settings.identity.sheetTitle")}</SheetTitle>}
+    >
+      <SheetDescription>{t("settings.identityHint")}</SheetDescription>
+      <div className="flex flex-col gap-6 p-4 pt-0">
         <SegmentedTabs<Persona>
           items={PERSONAS.map((key) => ({ key, label: t(PERSONA_PROFILES[key].roleLabel) }))}
           value={persona}

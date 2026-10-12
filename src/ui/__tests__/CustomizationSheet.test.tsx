@@ -22,7 +22,7 @@ const wrapper = (harness: Harness) =>
 const openSheet = async (harness: Harness): Promise<void> => {
   wrap(harness, <SettingsView onPickClass={() => {}} onShowWhatsNew={() => {}} />);
   await clickAndSettle(() => {
-    fireEvent.click(screen.getByText("Pielāgot lietotnes izskatu"));
+    fireEvent.click(screen.getByRole("button", { name: "Izskats" }));
   });
 };
 

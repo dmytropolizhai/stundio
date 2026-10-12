@@ -10,6 +10,8 @@ export type SwitchProps = {
   className?: string;
   /** Accessible name when `label` is absent or not a plain string. */
   "aria-label"?: string;
+  /** Id of the element that explains what the switch does (a settings row's description). */
+  "aria-describedby"?: string;
 };
 
 /**
@@ -29,6 +31,7 @@ export const Switch = ({
   disabled = false,
   className,
   "aria-label": ariaLabel,
+  "aria-describedby": ariaDescribedBy,
 }: SwitchProps) => {
   const control = (
     <RadixSwitch.Root
@@ -36,6 +39,7 @@ export const Switch = ({
       onCheckedChange={onChange}
       disabled={disabled}
       {...(ariaLabel === undefined ? {} : { "aria-label": ariaLabel })}
+      {...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy })}
       className={cn(
         "relative h-[30px] w-[50px] shrink-0 cursor-pointer rounded-pill border-0",
         "bg-ink-200 dark:bg-ink-700",

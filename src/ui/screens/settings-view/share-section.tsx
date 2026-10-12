@@ -1,8 +1,13 @@
-import { Button, SegmentedTabs, Switch } from "@/ds";
+import { useState } from "react";
 import { useAppStore } from "@/store";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 import { isIosDevice, isStandalonePwa } from "@/ui/lib/platform.ts";
-import { Row, Section } from "./settings-section.tsx";
+import { Section } from "./settings-section.tsx";
+import { SettingsRow } from "./settings-row.tsx";
+import { ChoiceSheet } from "./settings-sheet.tsx";
+
+/** The share-language option that follows the app's own language instead of a fixed one. */
+const FOLLOW_APP = "app";
 
 type ShareSectionProps = {
   onShowTeacherAnnouncement?: (() => void) | undefined;
@@ -17,66 +22,58 @@ export const ShareSection = ({
   const settings = useAppStore((s) => s.settings);
   const setShareLang = useAppStore((s) => s.setShareLang);
   const setShareLangSyncWithApp = useAppStore((s) => s.setShareLangSyncWithApp);
+  const [languageOpen, setLanguageOpen] = useState(false);
 
   return (
     <Section title={t("settings.share")}>
-      <Row className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-text text-body font-bold text-strong">{t("settings.shareSyncLang")}</p>
-          <p className="mt-0.5 font-text text-caption text-muted">
-            {t("settings.shareSyncLangHint")}
-          </p>
-        </div>
-        <Switch
-          aria-label={t("settings.shareSyncLang")}
-          checked={settings.shareLangSyncWithApp}
-          onChange={(checked) => {
-            void setShareLangSyncWithApp(checked);
-          }}
-        />
-      </Row>
-      {!settings.shareLangSyncWithApp && (
-        <Row>
-          <SegmentedTabs
-            label={t("settings.shareLanguage")}
-            value={settings.shareLang}
-            items={LANGS.map((key) => ({ key, label: LANG_NAMES[key] }))}
-            onChange={(value) => {
-              void setShareLang(value);
-            }}
-          />
-        </Row>
-      )}
+      <SettingsRow
+        icon="image"
+        label={t("settings.shareLanguage")}
+        description={t("settings.shareLanguageHint")}
+        value={
+          settings.shareLangSyncWithApp
+            ? t("settings.shareLangFollowApp")
+            : settings.shareLang.toUpperCase()
+        }
+        onClick={() => setLanguageOpen(true)}
+      />
       {onShowTeacherAnnouncement !== undefined && (
-        <Row className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="font-text text-body font-bold text-strong">
-              {t("settings.teacherShare")}
-            </p>
-            <p className="mt-0.5 font-text text-caption text-muted">
-              {t("settings.teacherShareHint")}
-            </p>
-          </div>
-          <Button size="sm" icon="share-2" onClick={onShowTeacherAnnouncement}>
-            {t("settings.teacherShareAction")}
-          </Button>
-        </Row>
+        <SettingsRow
+          icon="megaphone"
+          label={t("settings.teacherShare")}
+          description={t("settings.teacherShareHint")}
+          onClick={onShowTeacherAnnouncement}
+        />
       )}
       {onShowIphoneInstall !== undefined && isIosDevice() && !isStandalonePwa() && (
-        <Row className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="font-text text-body font-bold text-strong">
-              {t("settings.iphoneInstall")}
-            </p>
-            <p className="mt-0.5 font-text text-caption text-muted">
-              {t("settings.iphoneInstallHint")}
-            </p>
-          </div>
-          <Button size="sm" icon="plus" onClick={onShowIphoneInstall}>
-            {t("settings.iphoneInstall")}
-          </Button>
-        </Row>
+        <SettingsRow
+          icon="smartphone"
+          label={t("settings.iphoneInstall")}
+          description={t("settings.iphoneInstallHint")}
+          onClick={onShowIphoneInstall}
+        />
       )}
+
+      <ChoiceSheet
+        open={languageOpen}
+        onClose={() => setLanguageOpen(false)}
+        icon="image"
+        title={t("settings.shareLanguage")}
+        description={t("settings.shareLanguageHint")}
+        options={[
+          { key: FOLLOW_APP, label: t("settings.shareLangFollowApp") },
+          ...LANGS.map((key) => ({ key, label: LANG_NAMES[key], detail: key.toUpperCase() })),
+        ]}
+        value={settings.shareLangSyncWithApp ? FOLLOW_APP : settings.shareLang}
+        onChange={(value) => {
+          if (value === FOLLOW_APP) {
+            void setShareLangSyncWithApp(true);
+            return;
+          }
+          void setShareLangSyncWithApp(false);
+          void setShareLang(value);
+        }}
+      />
     </Section>
   );
 };

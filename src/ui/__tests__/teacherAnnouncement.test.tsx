@@ -99,7 +99,7 @@ describe("Teacher announcement", () => {
       });
 
       expect(screen.getByText("Paziņojums skolotājiem")).toBeDefined();
-      const shareButton = screen.getAllByRole("button", { name: /Skatīt/i })[0];
+      const shareButton = screen.getByRole("button", { name: "Paziņojums skolotājiem" });
       expect(shareButton).toBeDefined();
 
       if (shareButton) {

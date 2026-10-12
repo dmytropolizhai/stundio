@@ -8,7 +8,7 @@ import { SUBJECT_TONES, subjectAccent, subjectToneKey } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 import { usePersona } from "@/ui/persona";
 import { useSubjects } from "../../hooks/useSubjects.ts";
-import { Row, Section } from "../settings-view";
+import { Row, Section, SheetDescription, SheetTitle } from "../settings-view";
 
 /** The Card component's own four radius steps, softest to roundest. */
 const RADIUS_STEPS = ["md", "lg", "xl", "2xl"] as const;
@@ -280,7 +280,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
     <BottomSheet
       open={open}
       onClose={onClose}
-      title={t("customization.title")}
+      title={<SheetTitle icon="palette">{t("customization.title")}</SheetTitle>}
       footer={
         <Button
           variant="outline"
@@ -294,6 +294,8 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
         </Button>
       }
     >
+      <SheetDescription>{t("settings.customizationHint")}</SheetDescription>
+
       <Section title={t("customization.theme")}>
         <Row>
           <SegmentedTabs

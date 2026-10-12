@@ -307,8 +307,9 @@ describe("Android download banner & in-app update prompt", () => {
         </StoreContext.Provider>,
       );
 
-      // Current version text is displayed
-      expect(screen.getByText(/versija|version/i)).toBeDefined();
+      // The version row is displayed instead of the updates row
+      expect(screen.getByText("Versija")).toBeDefined();
+      expect(screen.queryByRole("button", { name: /^Atjauninājumi/ })).toBeNull();
       // Neither check button nor update button is rendered
       expect(screen.queryByRole("button", { name: /Pārbaud|Check/i })).toBeNull();
       expect(screen.queryByRole("button", { name: /Lejupielādēt|Download/i })).toBeNull();
@@ -336,8 +337,9 @@ describe("Android download banner & in-app update prompt", () => {
         </StoreContext.Provider>,
       );
 
-      // Current version text is displayed
-      expect(screen.getByText(/versija|version/i)).toBeDefined();
+      // The version row is displayed instead of the updates row
+      expect(screen.getByText("Versija")).toBeDefined();
+      expect(screen.queryByRole("button", { name: /^Atjauninājumi/ })).toBeNull();
       // Update download button or link is not rendered
       expect(screen.queryByRole("button", { name: /Lejupielādēt|Download/i })).toBeNull();
       expect(screen.queryByRole("link", { name: /Lejupielādēt|Download/i })).toBeNull();
@@ -354,6 +356,7 @@ describe("Android download banner & in-app update prompt", () => {
         </StoreContext.Provider>,
       );
 
+      fireEvent.click(screen.getByRole("button", { name: /^Atjauninājumi/ }));
       expect(screen.getByRole("button", { name: /Pārbaud|Check/i })).toBeDefined();
     });
 
@@ -379,6 +382,9 @@ describe("Android download banner & in-app update prompt", () => {
         </StoreContext.Provider>,
       );
 
+      // The row flags the new version; the sheet it opens carries the download.
+      const row = screen.getByRole("button", { name: /^Atjauninājumi v1\.2\.0/ });
+      fireEvent.click(row);
       expect(screen.getByRole("link", { name: /Lejupielādēt|Download/i })).toBeDefined();
     });
   });
