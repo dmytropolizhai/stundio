@@ -6,9 +6,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const post = vi.hoisted(() => vi.fn());
+const get = vi.hoisted(() => vi.fn());
 const isNativePlatformMock = vi.hoisted(() => vi.fn(() => false));
 vi.mock("@capacitor/core", () => ({
-  CapacitorHttp: { post },
+  CapacitorHttp: { post, get },
   Capacitor: { isNativePlatform: isNativePlatformMock },
 }));
 
@@ -18,6 +19,7 @@ const { USER_AGENT, capacitorHttp, fetchHttp, defaultHttp, isNativePlatform, par
 afterEach(() => {
   vi.restoreAllMocks();
   post.mockReset();
+  get.mockReset();
   isNativePlatformMock.mockReset();
   isNativePlatformMock.mockReturnValue(false);
 });
@@ -47,7 +49,46 @@ describe("capacitorHttp", () => {
   });
 });
 
+describe("capacitorHttp — university requests", () => {
+  it("GETs without a body", async () => {
+    get.mockResolvedValue({ status: 200, data: "<html>" });
+    const res = await capacitorHttp({ url: "https://lu/", method: "GET" });
+    expect(res).toEqual({ status: 200, data: "<html>" });
+    const req = get.mock.calls[0]?.[0] as { url: string; headers: Record<string, string> };
+    expect(req.url).toBe("https://lu/");
+    expect(req.headers["User-Agent"]).toBe(USER_AGENT);
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it("POSTs a form url-encoded", async () => {
+    post.mockResolvedValue({ status: 200, data: "[]" });
+    await capacitorHttp({ url: "https://rtu/x", method: "POST", form: { a: "1", b: "ā" } });
+    const req = post.mock.calls[0]?.[0] as { headers: Record<string, string>; data: unknown };
+    expect(req.headers["Content-Type"]).toContain("application/x-www-form-urlencoded");
+    expect(req.data).toBe("a=1&b=%C4%81");
+  });
+});
+
 describe("fetchHttp", () => {
+  it("GETs and POSTs forms", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(() => Promise.resolve(new Response("<p>", { status: 200 })));
+
+    expect(await fetchHttp({ url: "https://x", method: "GET" })).toEqual({
+      status: 200,
+      data: "<p>",
+    });
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("GET");
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBeUndefined();
+
+    await fetchHttp({ url: "https://x", method: "GET", headers: { A: "b" } });
+    expect(fetchMock.mock.calls[1]?.[1]?.headers).toEqual({ A: "b" });
+
+    await fetchHttp({ url: "https://x", form: { a: "1" } });
+    expect(fetchMock.mock.calls[2]?.[1]?.body).toBe("a=1");
+  });
+
   it("serialises the body and parses the response", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")

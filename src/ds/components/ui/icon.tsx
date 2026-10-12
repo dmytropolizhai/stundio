@@ -25,6 +25,7 @@ import {
   House,
   Image as ImageIcon,
   Info,
+  Landmark,
   Layers,
   LayoutGrid,
   Lightbulb,
@@ -137,6 +138,8 @@ const ICONS = {
   "sun-moon": SunMoon,
   "trash-2": Trash2,
   users: Users,
+  /* University mode (RTU / LU) — a university, as opposed to RVT's graduation cap. */
+  landmark: Landmark,
 } as const;
 
 export type IconName = keyof typeof ICONS;

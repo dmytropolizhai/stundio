@@ -11,6 +11,7 @@ import { useAppStore } from "@/store";
 import { useExactAlarmDenied } from "@/ui/hooks/useExactAlarmPermission.ts";
 import { useNotificationPermissionDenied } from "@/ui/hooks/useNotificationPermission.ts";
 import { useT } from "@/ui/i18n";
+import { usePersona } from "@/ui/persona";
 import { isIosDevice, isStandalonePwa } from "@/ui/lib/platform.ts";
 import { Section } from "./settings-section.tsx";
 import { SettingsRow, StatusDot } from "./settings-row.tsx";
@@ -32,6 +33,8 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
   const setNotifyNewTimetable = useAppStore((s) => s.setNotifyNewTimetable);
   const setNotifyAppUpdates = useAppStore((s) => s.setNotifyAppUpdates);
   const identityLabel = useAppStore((s) => s.identityLabel());
+  // Substitution and new-week alerts read RVT's feeds; a university has neither.
+  const { hasChangeFeed } = usePersona().profile;
   const [reminderOpen, setReminderOpen] = useState(false);
 
   const native = isNativePlatform();
@@ -137,32 +140,34 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
         />
       )}
 
-      <SettingsRow
-        icon="repeat"
-        label={t("settings.notifySubstitutionChanges")}
-        description={t("settings.notifySubstitutionChangesHint")}
-        checked={settings.notifySubstitutionChanges}
-        onCheckedChange={(checked) => {
-          if (native) {
-            if (checked) void ensureNotificationPermission();
-          } else if (checked) {
-            // The class's display short or the teacher's name, never an id: those are the only
-            // names the substitution feed publishes, so the only ones the server can file this
-            // device under and later find again.
-            if (identityLabel !== null) {
-              void subscribeWebPush(
-                { persona: settings.persona, label: identityLabel },
-                settings.lang,
-              );
+      {hasChangeFeed && (
+        <SettingsRow
+          icon="repeat"
+          label={t("settings.notifySubstitutionChanges")}
+          description={t("settings.notifySubstitutionChangesHint")}
+          checked={settings.notifySubstitutionChanges}
+          onCheckedChange={(checked) => {
+            if (native) {
+              if (checked) void ensureNotificationPermission();
+            } else if (checked) {
+              // The class's display short or the teacher's name, never an id: those are the only
+              // names the substitution feed publishes, so the only ones the server can file this
+              // device under and later find again.
+              if (identityLabel !== null) {
+                void subscribeWebPush(
+                  { persona: settings.persona, label: identityLabel },
+                  settings.lang,
+                );
+              }
+            } else {
+              void unsubscribeWebPush();
             }
-          } else {
-            void unsubscribeWebPush();
-          }
-          void setNotifySubstitutionChanges(checked);
-        }}
-      />
+            void setNotifySubstitutionChanges(checked);
+          }}
+        />
+      )}
 
-      {native && (
+      {native && hasChangeFeed && (
         <SettingsRow
           icon="calendar-days"
           label={t("settings.notifyNewTimetable")}

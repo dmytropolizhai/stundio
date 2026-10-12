@@ -10,7 +10,11 @@
 import { useMemo } from "react";
 import { useAppStore } from "@/store";
 import { classWeekLessons, teacherKey } from "@/lib/edupage";
-import type { SubjectRef, TeacherRef, Timetable } from "@/lib/edupage";
+import type { ResolvedDay, SubjectRef, TeacherRef, Timetable } from "@/lib/edupage";
+import { rigaClock, weekDates } from "@/lib/schedule";
+import { resolveUniversityDay } from "@/lib/university";
+import { useIdentity } from "@/ui/persona";
+import { useUniversityNames } from "./useUniversityNames.ts";
 
 export type SubjectSummary = {
   subject: SubjectRef;
@@ -83,15 +87,59 @@ const subjectsOfTeacher = (
     .sort((a, b) => b.count - a.count || a.subject.short.localeCompare(b.subject.short, "lv"));
 };
 
+/**
+ * A university group's subjects: this week's lessons, or next week's when this one is empty
+ * (a holiday, a session week). Read from resolved days, so they carry the names in the
+ * language the user chose and the subgroup they picked. Cancelled lessons don't count.
+ */
+const subjectsOfDays = (days: readonly (ResolvedDay | null)[]): SubjectCatalogue => {
+  const refs = new Map<string, SubjectRef>();
+  const counts = new Map<string, number>();
+  const lecturers = new Map<string, Map<string, TeacherRef>>();
+  for (const lesson of days.flatMap((d) => d?.lessons ?? [])) {
+    if (lesson.subject === null || lesson.status === "cancelled") continue;
+    const key = lesson.subject.name || lesson.subject.short;
+    if (!refs.has(key)) refs.set(key, lesson.subject);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+    const mine = lecturers.get(key) ?? new Map<string, TeacherRef>();
+    for (const teacher of lesson.teachers) mine.set(teacher.name, teacher);
+    lecturers.set(key, mine);
+  }
+  const subjects = [...counts.entries()]
+    .flatMap(([key, count]) => {
+      const subject = refs.get(key);
+      return subject === undefined
+        ? []
+        : [{ subject, count, teachers: [...(lecturers.get(key)?.values() ?? [])] }];
+    })
+    .sort((a, b) => b.count - a.count || a.subject.short.localeCompare(b.subject.short, "lv"));
+  return { subjects, teachers: [] };
+};
+
 export const useSubjects = (): SubjectCatalogue => {
   const timetables = useAppStore((s) => s.timetables);
-  const classId = useAppStore((s) => s.settings.selectedClassId);
   const subgroup = useAppStore((s) => s.settings.subgroup);
-  const persona = useAppStore((s) => s.settings.persona);
-  const teacherId = useAppStore((s) => s.settings.selectedTeacherId);
+  const identity = useIdentity();
+  // A record entry or `null` — a stable reference, so it is safe as a selector result.
+  const universitySchedule = useAppStore((s) => s.universitySchedule());
+  const names = useUniversityNames();
+  const classId = identity.persona === "student" ? identity.classId : null;
+  const teacherId = identity.persona === "teacher" ? identity.teacherId : null;
 
   return useMemo(() => {
-    if (persona === "teacher") {
+    if (identity.persona === "university") {
+      if (universitySchedule === null) return EMPTY;
+      const resolve = (d: string) =>
+        resolveUniversityDay(universitySchedule, d, { subgroup: identity.subgroup, names });
+      const thisWeek = weekDates(rigaClock().date);
+      const nextMonday = new Date(`${thisWeek[0] ?? ""}T12:00:00Z`);
+      nextMonday.setUTCDate(nextMonday.getUTCDate() + 7);
+      const current = subjectsOfDays(thisWeek.map(resolve));
+      return current.subjects.length > 0
+        ? current
+        : subjectsOfDays(weekDates(nextMonday.toISOString().slice(0, 10)).map(resolve));
+    }
+    if (identity.persona === "teacher") {
       return teacherId === null
         ? EMPTY
         : { subjects: subjectsOfTeacher(timetables, teacherId), teachers: [] };
@@ -162,5 +210,5 @@ export const useSubjects = (): SubjectCatalogue => {
       .sort((a, b) => a.teacher.short.localeCompare(b.teacher.short, "lv"));
 
     return { subjects, teachers };
-  }, [timetables, classId, subgroup, persona, teacherId]);
+  }, [timetables, classId, subgroup, identity, teacherId, universitySchedule, names]);
 };

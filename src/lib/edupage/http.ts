@@ -15,13 +15,25 @@ export const isNativePlatform = (): boolean => Capacitor.isNativePlatform();
 
 export type HttpRequest = {
   url: string;
-  body: unknown;
+  /** Ignored for a `GET`. Sent as JSON unless `form` is set. */
+  body?: unknown;
   headers?: Record<string, string>;
+  /** EduPage only ever takes `POST`; LU's lecture list is plain `GET` pages (MODEL-UNIVERSITY.md). */
+  method?: "GET" | "POST";
+  /** Send `body` as `application/x-www-form-urlencoded` — RTU's endpoints take nothing else. */
+  form?: Record<string, string>;
+  /**
+   * `false` hands back a redirect as-is, so its `Set-Cookie` can be read (LU's language switch).
+   * Native only: a browser hides a redirect's headers from script.
+   */
+  followRedirects?: boolean;
 };
 
 export type HttpResponse = {
   status: number;
   data: unknown;
+  /** Response headers, where the transport exposes them (native always does). */
+  headers?: Record<string, string>;
 };
 
 export type HttpClient = (req: HttpRequest) => Promise<HttpResponse>;
@@ -34,12 +46,32 @@ const baseHeaders = (extra?: Record<string, string>): Record<string, string> => 
   ...extra,
 });
 
+const FORM_CONTENT_TYPE = "application/x-www-form-urlencoded; charset=UTF-8";
+
 /** Native HTTP — the real transport on Android. */
-export const capacitorHttp: HttpClient = async ({ url, body, headers }) => {
+export const capacitorHttp: HttpClient = async ({
+  url,
+  body,
+  headers,
+  method,
+  form,
+  followRedirects,
+}) => {
+  if (method === "GET") {
+    const res = await CapacitorHttp.get({
+      url,
+      headers: { "User-Agent": USER_AGENT, ...headers },
+      ...(followRedirects === false ? { disableRedirects: true } : {}),
+    });
+    return { status: res.status, data: res.data, headers: res.headers };
+  }
   const res = await CapacitorHttp.post({
     url,
-    headers: baseHeaders({ "User-Agent": USER_AGENT, ...headers }),
-    data: body,
+    headers:
+      form === undefined
+        ? baseHeaders({ "User-Agent": USER_AGENT, ...headers })
+        : { "Content-Type": FORM_CONTENT_TYPE, "User-Agent": USER_AGENT, ...headers },
+    data: form === undefined ? body : new URLSearchParams(form).toString(),
   });
   return { status: res.status, data: res.data };
 };
@@ -48,12 +80,19 @@ export const capacitorHttp: HttpClient = async ({ url, body, headers }) => {
  * `fetch` transport for Vitest and the web dev preview.
  * Cross-origin calls to EduPage will fail here — that is expected, not a bug.
  */
-export const fetchHttp: HttpClient = async ({ url, body, headers }) => {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: baseHeaders(headers),
-    body: JSON.stringify(body),
-  });
+export const fetchHttp: HttpClient = async ({ url, body, headers, method, form }) => {
+  const res = await fetch(
+    url,
+    method === "GET"
+      ? { method: "GET", ...(headers === undefined ? {} : { headers }) }
+      : form === undefined
+        ? { method: "POST", headers: baseHeaders(headers), body: JSON.stringify(body) }
+        : {
+            method: "POST",
+            headers: { "Content-Type": FORM_CONTENT_TYPE, ...headers },
+            body: new URLSearchParams(form).toString(),
+          },
+  );
   const text = await res.text();
   return { status: res.status, data: parseLooseJson(text) };
 };

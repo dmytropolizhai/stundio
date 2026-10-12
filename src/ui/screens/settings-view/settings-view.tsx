@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { listBuildings, listSubgroups } from "@/lib/edupage";
+import { matchPersona } from "@/lib/persona";
+import { listUniversitySubgroups } from "@/lib/university";
 import { TopBar } from "@/ds";
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
 import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
@@ -21,6 +23,7 @@ import { DangerSection } from "./danger-section.tsx";
 type SettingsViewProps = {
   onPickClass: () => void;
   onPickTeacher?: () => void;
+  onPickUniversityGroup?: () => void;
   onShowWhatsNew: () => void;
   onShowTeacherAnnouncement?: (() => void) | undefined;
   onShowIphoneInstall?: (() => void) | undefined;
@@ -40,6 +43,7 @@ type SettingsViewProps = {
 export const SettingsView = ({
   onPickClass,
   onPickTeacher,
+  onPickUniversityGroup,
   onShowWhatsNew,
   onShowTeacherAnnouncement,
   onShowIphoneInstall,
@@ -52,24 +56,67 @@ export const SettingsView = ({
     type: "suggestion",
   });
 
-  const { persona } = useIdentity();
-  const subgroup = useAppStore((s) => s.settings.subgroup);
+  const identity = useIdentity();
+  const { persona } = identity;
+  const classSubgroup = useAppStore((s) => s.settings.subgroup);
+  const setClassSubgroup = useAppStore((s) => s.setSubgroup);
+  const setUniversitySubgroup = useAppStore((s) => s.setUniversitySubgroup);
+  // A record entry or `null` — a stable reference, so it is safe as a selector result.
+  const universitySchedule = useAppStore((s) => s.universitySchedule());
   const building = useAppStore((s) => s.settings.building);
   const identityLabel = useIdentityLabel();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
   const timetables = useAppStore((s) => s.timetables);
 
-  const buildings = useMemo(() => listBuildings(metas), [metas]);
-  const subgroups = useMemo(
+  /* RVT's divisions and buildings, or an LU group's child groups — whichever the role reads. */
+  const { buildings, subgroups, subgroup, setSubgroup, subgroupTitle, subgroupLabel } = useMemo(
     () =>
-      selectedClass === null ? [] : listSubgroups(Object.values(timetables), selectedClass.id),
-    [timetables, selectedClass],
+      matchPersona(identity, {
+        student: () => ({
+          buildings: listBuildings(metas),
+          subgroups:
+            selectedClass === null
+              ? []
+              : listSubgroups(Object.values(timetables), selectedClass.id),
+          subgroup: classSubgroup,
+          setSubgroup: setClassSubgroup,
+          subgroupTitle: t("settings.subgroup"),
+          subgroupLabel: (g: string) => `${t("settings.subgroup")} ${g}`,
+        }),
+        teacher: () => ({
+          buildings: listBuildings(metas),
+          subgroups: [],
+          subgroup: null,
+          setSubgroup: setClassSubgroup,
+          subgroupTitle: t("settings.subgroup"),
+          subgroupLabel: (g: string) => g,
+        }),
+        university: (u) => ({
+          buildings: [],
+          subgroups: listUniversitySubgroups(universitySchedule),
+          subgroup: u.subgroup,
+          setSubgroup: setUniversitySubgroup,
+          subgroupTitle: t("university.subgroup"),
+          subgroupLabel: (g: string) => g,
+        }),
+      }),
+    [
+      identity,
+      metas,
+      timetables,
+      selectedClass,
+      classSubgroup,
+      universitySchedule,
+      setClassSubgroup,
+      setUniversitySubgroup,
+      t,
+    ],
   );
 
   const facts = [
     ...(PERSONA_PROFILES[persona].hasSubgroups && subgroups.length > 1
-      ? [`${t("settings.subgroup")}: ${subgroup ?? t("settings.subgroupAll")}`]
+      ? [`${subgroupTitle}: ${subgroup ?? t("settings.subgroupAll")}`]
       : []),
     ...(buildings.length > 1
       ? [`${t("settings.building")}: ${building ?? t("settings.buildingAuto")}`]
@@ -88,7 +135,14 @@ export const SettingsView = ({
           onChangeIdentity={() => setIdentitySheetOpen(true)}
         />
 
-        <ScheduleSection buildings={buildings} subgroups={subgroups} />
+        <ScheduleSection
+          buildings={buildings}
+          subgroups={subgroups}
+          subgroup={subgroup}
+          onSubgroupChange={(next) => void setSubgroup(next)}
+          subgroupTitle={subgroupTitle}
+          subgroupLabel={subgroupLabel}
+        />
 
         <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 
@@ -126,6 +180,7 @@ export const SettingsView = ({
         onClose={() => setIdentitySheetOpen(false)}
         onPickClass={onPickClass}
         onPickTeacher={() => onPickTeacher?.()}
+        onPickUniversityGroup={() => onPickUniversityGroup?.()}
       />
 
       <CustomizationSheet

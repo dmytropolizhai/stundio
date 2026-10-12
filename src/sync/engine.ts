@@ -10,6 +10,9 @@
  *                     yet cover the day being viewed or the next school day
  *   regular week    → fetch only when that tt_num is not cached (it never changes in place)
  *   substitutions   → ALWAYS refetch today + next school day
+ *
+ * A university student (RTU / LU) reads none of that: `syncUniversity` fetches the group's
+ * dated events for the viewed week and the next instead (MODEL-UNIVERSITY.md §5).
  */
 import {
   EdupageError,
@@ -27,8 +30,23 @@ import {
   type ISODateTime,
   type TimetableMeta,
 } from "@/lib/edupage";
-import type { AppCache } from "@/db";
-import { matchPersona, resolveIdentity } from "@/lib/persona";
+import { universityScheduleKey, type AppCache } from "@/db";
+import { matchPersona, resolveIdentity, type UniversityIdentity } from "@/lib/persona";
+import {
+  UNIVERSITY_MAX_AGE_MS,
+  UniversityError,
+  coversRange,
+  fetchUniversityEvents,
+  fetchUniversityGroups,
+  fetchUniversityPrograms,
+  mergeSchedule,
+  pruneDate,
+  universityWindow,
+  type UniversityGroupRef,
+  type UniversityId,
+  type UniversityProgramEntry,
+  type UniversitySchedule,
+} from "@/lib/university";
 import { substitutionsChanged, teacherSubstitutionsChanged, weekDates } from "@/lib/schedule";
 import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
@@ -104,7 +122,7 @@ type SyncFailure = { message: string; server: boolean };
 
 const failure = (context: string, err: unknown): SyncFailure => ({
   message: `${context}: ${describe(err)}`,
-  server: err instanceof EdupageError,
+  server: err instanceof EdupageError || err instanceof UniversityError,
 });
 
 export const createSyncEngine = (deps: SyncDeps) => {
@@ -245,12 +263,84 @@ export const createSyncEngine = (deps: SyncDeps) => {
     return { done, changed };
   };
 
+  /** Fetches `range` of a group's events and folds it into the cached schedule. */
+  const fetchUniversityRange = async (
+    group: UniversityGroupRef,
+    range: { from: ISODate; to: ISODate },
+    today: ISODate,
+  ): Promise<UniversitySchedule> => {
+    const key = universityScheduleKey({ university: group.university, groupId: group.id });
+    const cached = await cache.getUniversitySchedule(key);
+    const events = await fetchUniversityEvents(http, group.university, group.id, range);
+    const schedule = mergeSchedule(
+      cached,
+      {
+        university: group.university,
+        groupId: group.id,
+        range,
+        events,
+        fetchedAt: now().toISOString(),
+      },
+      pruneDate(today),
+    );
+    await cache.putUniversitySchedule(schedule);
+    return schedule;
+  };
+
+  /**
+   * A university group's events for the viewed week + the next. Skipped while the cache
+   * already covers that window and is younger than `UNIVERSITY_MAX_AGE_MS` — open, resume and
+   * week paging would otherwise refetch on every swipe. `force` always refetches.
+   */
+  const syncUniversity = async (
+    identity: UniversityIdentity,
+    date: ISODate,
+    today: ISODate,
+    force: boolean,
+  ): Promise<SyncOutcome> => {
+    const errors: SyncFailure[] = [];
+    const refreshedDates: ISODate[] = [];
+    const group = identity.group;
+    if (group !== null) {
+      const key = universityScheduleKey({ university: group.university, groupId: group.id });
+      const cached = await cache.getUniversitySchedule(key);
+      const range = universityWindow(date);
+      const age =
+        cached === null ? Infinity : now().getTime() - new Date(cached.fetchedAt).getTime();
+      if (force || !coversRange(cached, range) || age >= UNIVERSITY_MAX_AGE_MS) {
+        try {
+          await fetchUniversityRange(group, range, today);
+          refreshedDates.push(...datesIn(range.from, range.to));
+        } catch (err) {
+          errors.push(failure(`${group.university} ${group.id}`, err));
+        }
+      }
+    }
+    const status: SyncOutcome["status"] =
+      errors.length === 0 ? "idle" : errors.some((e) => e.server) ? "error" : "offline";
+    return {
+      status,
+      lastSyncAt: errors.length === 0 ? now().toISOString() : null,
+      fetchedTtNum: null,
+      refreshedDates,
+      // A university publishes no change feed to diff against, so nothing is reported as changed.
+      changedDates: [],
+      newTimetableFrom: null,
+      prunedDays: 0,
+      errors: errors.map((e) => e.message),
+    };
+  };
+
   const sync = async (request: SyncRequest = {}): Promise<SyncOutcome> => {
     const errors: SyncFailure[] = [];
     const today = todayInRiga(now());
     const date = request.date ?? today;
 
     const settings = await cache.getSettings();
+    const identity = resolveIdentity(settings);
+    if (identity.persona === "university") {
+      return syncUniversity(identity, date, today, request.force ?? false);
+    }
     const building = request.building ?? settings.building ?? undefined;
     const { metas, newTimetableFrom } = await syncTimetableList(
       request.force ?? false,
@@ -289,19 +379,18 @@ export const createSyncEngine = (deps: SyncDeps) => {
         ? [...new Set([...weekDates(date), ...daysToRefresh(today)])]
         : [...new Set([date, ...daysToRefresh(today)])];
 
-    const scope: RefreshScope = await matchPersona<Promise<RefreshScope>>(
-      resolveIdentity(settings),
-      {
-        student: async ({ classId }) => ({
-          persona: "student",
-          className: await selectedClassName(classId, selections),
-        }),
-        teacher: async ({ teacherId }) => ({
-          persona: "teacher",
-          teacherKey: await selectedTeacherKey(teacherId, selections),
-        }),
-      },
-    );
+    const scope: RefreshScope = await matchPersona<Promise<RefreshScope>>(identity, {
+      student: async ({ classId }) => ({
+        persona: "student",
+        className: await selectedClassName(classId, selections),
+      }),
+      teacher: async ({ teacherId }) => ({
+        persona: "teacher",
+        teacherKey: await selectedTeacherKey(teacherId, selections),
+      }),
+      // Returned early above; kept for the exhaustive match.
+      university: () => Promise.resolve({ persona: "student", className: null }),
+    });
 
     const { done: refreshedDates, changed: changedDates } = await refreshSubstitutions(
       targetDates,
@@ -326,10 +415,36 @@ export const createSyncEngine = (deps: SyncDeps) => {
     };
   };
 
-  return { sync };
+  /*
+   * The university catalogue, for the group picker. Live on purpose and never cached: it is
+   * only read while picking, which needs a connection anyway (MODEL-UNIVERSITY.md §5). It lives
+   * here rather than in the picker so the UI still never holds an HTTP client.
+   */
+  const universityPrograms = (
+    university: UniversityId,
+    english = false,
+  ): Promise<UniversityProgramEntry[]> => fetchUniversityPrograms(http, university, english);
+  const universityGroups = (program: UniversityProgramEntry): Promise<UniversityGroupRef[]> =>
+    fetchUniversityGroups(http, program);
+  /**
+   * Fetches a group's current window into the cache *before* it is picked, so the picker can
+   * ask for an LU subgroup up front — and the sync right after the pick finds it fresh.
+   */
+  const prefetchUniversityGroup = (group: UniversityGroupRef): Promise<UniversitySchedule> => {
+    const today = todayInRiga(now());
+    return fetchUniversityRange(group, universityWindow(today), today);
+  };
+
+  return { sync, universityPrograms, universityGroups, prefetchUniversityGroup };
 };
 
 export type SyncEngine = ReturnType<typeof createSyncEngine>;
+
+const datesIn = (from: ISODate, to: ISODate): ISODate[] => {
+  const dates: ISODate[] = [];
+  for (let d = from; d <= to; d = addDays(d, 1)) dates.push(d);
+  return dates;
+};
 
 /** EduPage keys the timetable list by school year: August onwards belongs to the new one. */
 export const schoolYearOf = (date: ISODate): number => {

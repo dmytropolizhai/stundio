@@ -9,6 +9,9 @@ Companion docs — read the relevant one before touching that area:
 
 - `MODEL.md` — the reverse-engineered EduPage contract (endpoints, aSc tables, the join recipe,
   the substitution HTML grammar). **Authoritative for anything under `src/lib/edupage/`.**
+- `MODEL-UNIVERSITY.md` — the RTU (`nodarbibas.rtu.lv`) and LU (`lekciju-saraksts.lu.lv`)
+  contract and how their dated events map onto a `ResolvedDay`. **Authoritative for
+  `src/lib/university/`.**
 - `PRODUCT.md` — who this is for and what job it must nail ("what's on now / what's next").
 - `DESIGN.md` — the Studio design system spec that `src/ds/` implements.
 - `PLAN.md` — phased roadmap and current status.
@@ -62,9 +65,14 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   native re-render seam. The 2×1 tile's refresh button boots `WidgetSyncActivity` — an invisible
   `BridgeActivity` — and `src/widget/sync.ts` runs the app's own sync in it, publishes, then closes it
   (native work can't reach EduPage; the JS engine is the only fetcher).
-- **`src/lib/persona/`** — role resolution. Student and teacher are separate at the root (a
-  class + subgroup vs. a teacher + view), so the flat `Settings` fields are resolved once into a
-  discriminated `Identity` (`resolveIdentity`) and branched on with the exhaustive
+- **`src/lib/university/`** — RTU and LU: their catalogues (program → group), their dated
+  events, the two-week sync window, and `resolveUniversityDay`, which places events in the
+  university's fixed lesson slots and returns an ordinary `ResolvedDay`. That is why Home, Week,
+  Subjects, the widget and the share card need no university code. Pure apart from the injected
+  `HttpClient`. The web build reaches both origins through `functions/api-university`.
+- **`src/lib/persona/`** — role resolution. Student, teacher and university student are separate
+  at the root (a class + subgroup vs. a teacher + view vs. an RTU/LU group + LU subgroup), so
+  the flat `Settings` fields are resolved once into a discriminated `Identity` (`resolveIdentity`) and branched on with the exhaustive
   `matchPersona`; `isIdentified` / `identityKey` are the gate and the memo key. Pure, settings-
   shape only. The store exposes it as `identity()`; `sync/`, `widget/` and `notifications/`
   branch through it too.
@@ -80,7 +88,9 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **`src/db/`** — the `AppCache` port (`types.ts`) with an `idb` implementation and a memory
   fallback. Callers depend on the interface, never on `idb`.
 - **`src/sync/`** — orchestration only. Injects http, cache and clock, so the policy is testable
-  without a network or browser. Refresh policy is spelled out in `engine.ts` and `MODEL.md §6`.
+  without a network or browser. Refresh policy is spelled out in `engine.ts` and `MODEL.md §6`
+  (`MODEL-UNIVERSITY.md §5` for a university group). It also serves the university picker's live
+  catalogue reads, so the UI never holds an HTTP client.
 - **`src/store/`** — one vanilla Zustand store behind React context (`provider.tsx` +
   `context.ts`), wired for production in `boot.ts`. It caches and selects; it never fetches or
   parses.

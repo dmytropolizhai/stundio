@@ -6,6 +6,12 @@
 import type { Building, DaySubstitutions, ISODate, ISODateTime, Timetable } from "@/lib/edupage";
 import type { RawTimetableListEntry } from "@/lib/edupage";
 import type { Persona, TeacherView } from "@/lib/persona";
+import type {
+  UniversityGroupRef,
+  UniversityId,
+  UniversityNamesSetting,
+  UniversitySchedule,
+} from "@/lib/university";
 
 export type CachedTimetableList = {
   entries: RawTimetableListEntry[];
@@ -117,6 +123,14 @@ export type Settings = {
   highlightCoverLessons: boolean;
   /** Whether the download Android APK banner in the web app has been dismissed. */
   androidApkBannerDismissed: boolean;
+  /** University mode: which university's catalogue the group picker reads (MODEL-UNIVERSITY.md). */
+  university: UniversityId;
+  /** University mode: the picked study group, label included so it reads offline. */
+  universityGroup: UniversityGroupRef | null;
+  /** University mode: an LU child group to narrow the day to; `null` shows them all. */
+  universitySubgroup: string | null;
+  /** University mode: the university's own Latvian or English names; `auto` follows `lang`. */
+  universityNames: UniversityNamesSetting;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -156,6 +170,10 @@ export const DEFAULT_SETTINGS: Settings = {
   teacherAnnouncementDismissed: false,
   iphoneInstallPromptDismissed: false,
   androidApkBannerDismissed: false,
+  university: "rtu",
+  universityGroup: null,
+  universitySubgroup: null,
+  universityNames: "auto",
 };
 
 export type SubjectNote = {
@@ -192,7 +210,17 @@ export type AppCache = {
   deleteNote: (subject: string) => Promise<void>;
   listNoteSubjects: () => Promise<string[]>;
 
+  /** The cached events of one university group (`lib/university`), or `null`. */
+  getUniversitySchedule: (key: string) => Promise<UniversitySchedule | null>;
+  putUniversitySchedule: (schedule: UniversitySchedule) => Promise<void>;
+  listUniversityScheduleKeys: () => Promise<string[]>;
+
   /** Clears user-specific data (settings and notes), retaining downloaded timetables and substitutions. */
   clearUserData: () => Promise<void>;
   clear: () => Promise<void>;
 };
+
+/** How a university group's schedule is keyed in the cache: `"lu:26R-21023-PLK-1"`. */
+export const universityScheduleKey = (
+  schedule: Pick<UniversitySchedule, "university" | "groupId">,
+): string => `${schedule.university}:${schedule.groupId}`;

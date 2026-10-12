@@ -6,7 +6,8 @@ Phase 8 (Teacher Mode), and Phase 5 (Release & Distribution) are substantially c
 Android packaging, edge-to-edge, local notifications, WorkManager background refresh, native 2×1,
 countdown & 4×2 home-screen widgets, Cloudflare Pages edge proxy + PWA + Web Push, Teacher Mode
 persona & split-screen onboarding, GitHub Releases with APK distribution and in-app self-updater).
-Over 200 students and teachers actively using the app. Next: Phase 5 final polish (non-commercial
+Over 200 students and teachers actively using the app. Phase 9 (RTU & LU university timetables)
+is in. Next: Phase 5 final polish (non-commercial
 disclaimer), then Phase 6 (e-klase grades integration exploration).
 Research artefacts: `MODEL.md`, `src/lib/edupage/types.ts`, `reference/probe_*.py`, `data/` fixtures.
 This plan takes it from research → shipped Android v1 & Cloudflare PWA.
@@ -489,6 +490,36 @@ Every row is its own branch and PR, tested, per AGENT.md. Baseline before this p
 **Exit:** ✅ met. All T0–T10 steps implemented, integrated, and verified (893 tests / 73 files green, CI coverage thresholds passing: 91.36% statements, 80.75% branches, 90.62% functions, 92.05% lines). A teacher picks their side and their name during onboarding, sees their teaching day and week with correct classes, rooms and buildings, sees assigned cover duties highlighted and who is absent today, can jump to their form class if they have one, and all of it works offline and on `stundio.pages.dev`.
 
 ---
+
+## Phase 9 — University timetables: RTU & LU  (size: L — first slice shipped)
+
+**Goal:** university students get the same "what's on now / next" app. They pick a university,
+a study program and a group, instead of an RVT class. Contract: `MODEL-UNIVERSITY.md`.
+
+- [x] Sources reverse-engineered and fixtures captured (`data/rtu_*`, `data/lu_*`, 2026-10-12).
+  RTU is a form-POST JSON API (`nodarbibas.rtu.lv`); LU is server-rendered HTML with every
+  field in `data-*` attributes (`lekciju-saraksts.lu.lv`).
+- [x] `src/lib/university/`: parsers, fetchers, the two-week sync window, merge/prune, and
+  `resolveUniversityDay`, which maps dated events onto each university's lesson slots and
+  returns the app's ordinary `ResolvedDay`.
+- [x] Transport: `HttpClient` learned `GET` and form POST; `functions/api-university` and the
+  Vite dev proxy front both origins for the web build.
+- [x] Third role `university` in `lib/persona` (exhaustive `matchPersona`), its own
+  `PERSONA_PROFILES` row (no Changes tab, no change-feed notifications), settings + IndexedDB
+  store `university` (DB v4), and an engine branch that syncs the group instead of EduPage.
+- [x] UI: an onboarding "where do you study?" step (RVT / RTU / LU), the university group picker
+  (live catalogue, search, LU subgroup question, offline state), the role in the identity sheet,
+  and the LU subgroup in Settings.
+- [x] Official English names (RTU's `titleEN` / `eventTempNameEn`, LU's English catalogue and
+  `data-module-en`), with a "Names language" setting; RTU group labels translated.
+- [x] Search finds groups directly, across programs and courses.
+- [x] Real RVT / RTU / LU emblems in onboarding and the picker.
+- [x] LU's 2026-10-12 markup change (`", "` / `"; "` separators, `gh-group-name--full`).
+- [ ] Machine translation of names into RU/UA: deliberately not done — see MODEL-UNIVERSITY.md §3.
+- [ ] Saturday classes: the week grid, day stepping and the share card are Mon–Fri, so a
+  Saturday lecture (common in LU part-time groups) is cached but not shown yet.
+- [ ] Web Push for universities: the push worker only reads RVT's substitution feed.
+- [ ] Native widget strings: the tile shows the group label as-is; long LU labels may truncate.
 
 ## Parallel track — home-screen widget spike  (size: M–L — complete)
 

@@ -213,7 +213,17 @@ describe("Teacher Day and Week Views", () => {
       void harness.store.getState().setPersona("teacher");
     });
 
-    wrap(harness, <ScheduleSection buildings={[]} subgroups={["1", "2"]} />);
+    wrap(
+      harness,
+      <ScheduleSection
+        buildings={[]}
+        subgroups={["1", "2"]}
+        subgroup={null}
+        onSubgroupChange={() => undefined}
+        subgroupTitle="Pusgrupa"
+        subgroupLabel={(g) => g}
+      />,
+    );
 
     expect(screen.queryByText("Pusgrupa")).toBeNull();
   });

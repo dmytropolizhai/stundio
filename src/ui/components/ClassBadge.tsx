@@ -4,6 +4,7 @@ import { matchPersona } from "@/lib/persona";
 import { usePersona } from "@/ui/persona";
 import { useSelectedClass } from "../hooks/useClasses.ts";
 import { useSelectedTeacher } from "../hooks/useTeachers.ts";
+import { formatUniversityGroup } from "../hooks/useUniversityNames.ts";
 
 /** "Surname Firstname" → "F. Surname" — a chip is too narrow for the full name. */
 const teacherChipLabel = (short: string): string => {
@@ -25,6 +26,7 @@ export const ClassBadge = ({ onClick }: { onClick: () => void }) => {
   const label = matchPersona<string | undefined | null>(identity, {
     student: () => selectedClass?.short,
     teacher: () => (selectedTeacher?.short ? teacherChipLabel(selectedTeacher.short) : null),
+    university: ({ group }) => (group === null ? undefined : formatUniversityGroup(group, t)),
   });
   if (label === null) return null;
 

@@ -16,6 +16,9 @@ const base = {
   subgroup: null,
   selectedTeacherId: null,
   teacherView: "own",
+  university: "rtu",
+  universityGroup: null,
+  universitySubgroup: null,
 } as const;
 
 describe("resolveShareSubject", () => {
@@ -86,5 +89,21 @@ describe("resolveShareSubject", () => {
         timetables,
       ),
     ).toBeNull();
+    expect(resolveShareSubject(settingsOf({ ...base, persona: "university" }), [])).toBeNull();
+  });
+
+  it("names a university student's group", () => {
+    const group = {
+      university: "rtu",
+      id: "38532",
+      label: "RABA0 · 1. k. · 1. gr.",
+      program: "A",
+    } as const;
+    expect(
+      resolveShareSubject(
+        settingsOf({ ...base, persona: "university", universityGroup: group }),
+        [],
+      ),
+    ).toEqual({ label: "RABA0 · 1. k. · 1. gr.", classTeacher: null });
   });
 });

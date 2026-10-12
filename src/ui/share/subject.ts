@@ -51,4 +51,5 @@ export const resolveShareSubject = (
       }
       return null;
     },
+    university: ({ group }) => (group === null ? null : { label: group.label, classTeacher: null }),
   });

@@ -41,7 +41,7 @@ afterEach(async () => {
 });
 
 describe("openAppDb", () => {
-  it("creates all five stores at the declared version", async () => {
+  it("creates all six stores at the declared version", async () => {
     const db = await track(openAppDb());
     expect(db.version).toBe(DB_VERSION);
     expect([...db.objectStoreNames].sort()).toEqual([
@@ -50,13 +50,14 @@ describe("openAppDb", () => {
       "settings",
       "substitutions",
       "timetables",
+      "university",
     ]);
   });
 
   it("reopens an existing database without recreating stores", async () => {
     (await openAppDb()).close();
     const again = await track(openAppDb());
-    expect([...again.objectStoreNames]).toHaveLength(5);
+    expect([...again.objectStoreNames]).toHaveLength(6);
   });
 
   it("round-trips through the real schema", async () => {
