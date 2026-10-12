@@ -26,6 +26,28 @@ export type ChangelogEntry = {
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: "v2.1.0",
+    date: "2026-10-09",
+    lines: {
+      lv: [
+        "Nedēļas skatā tagad redzams garā starpbrīža atdalītājs.",
+        "Dienas un nedēļas skata pārslēdzēji pārvietoti uz ērto opciju izvēlni augšējā joslā.",
+      ],
+      en: [
+        "The Week view now shows a divider for the long break.",
+        "Day and Week view toggles moved into a handy options menu in the header.",
+      ],
+      ru: [
+        "В недельном расписании теперь отображается разделитель длинной перемены.",
+        "Переключатели вида дня и недели перенесены в удобное меню параметров в заголовке.",
+      ],
+      ua: [
+        "У тижневому розкладі тепер відображається роздільник довгої перерви.",
+        "Перемикачі вигляду дня й тижня перенесено до зручного меню параметрів у заголовку.",
+      ],
+    },
+  },
+  {
     version: "v2.0.0",
     date: "2026-09-30",
     lines: {
