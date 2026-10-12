@@ -40,8 +40,9 @@ export const DataSection = () => {
             className={cn(syncing && "animate-spin motion-reduce:animate-none")}
           />
         }
+        disabled={syncing}
         onClick={() => {
-          if (!syncing) void refresh({ force: true });
+          void refresh({ force: true });
         }}
       />
       <SettingsRow

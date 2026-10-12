@@ -53,6 +53,8 @@ type ToggleRowProps = BaseProps & {
 
 type ActionRowProps = BaseProps & {
   onClick: () => void;
+  /** Greys the row out and drops taps, e.g. Sync while a sync is already running. */
+  disabled?: boolean;
   /** Replaces the chevron, e.g. a refresh glyph for a row that acts instead of opening. */
   trailing?: ReactNode;
 };
@@ -133,9 +135,10 @@ export const SettingsRow = (props: SettingsRowProps) => {
       <button
         type="button"
         onClick={props.onClick}
+        disabled={props.disabled}
         aria-labelledby={value === undefined ? labelId : `${labelId} ${valueId}`}
         aria-describedby={descriptionId}
-        className={cn(ROW, PRESSABLE)}
+        className={cn(ROW, props.disabled === true ? "cursor-default opacity-60" : PRESSABLE)}
       >
         {body}
         <span aria-hidden="true" className="flex shrink-0 items-center text-muted">

@@ -294,6 +294,7 @@ export const ua: Dict = {
   "settings.updateAction": "Завантажити",
   "settings.updateDownloading": "Завантаження… {percent}%",
   "settings.updateError": "Помилка оновлення: {message}",
+  "settings.updateFailed": "Помилка оновлення",
   "whatsNew.title": "Що нового",
   "whatsNew.eyebrow": "Версія {version}",
   "whatsNew.done": "Зрозуміло",

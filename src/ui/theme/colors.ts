@@ -22,6 +22,16 @@ export const SUBJECT_TONES = ["amber", "sky", "lilac", "pink", "mint", "lime"] a
 
 export type SubjectTone = (typeof SUBJECT_TONES)[number];
 
+/** Each tone's fill utility, spelled out in full so Tailwind finds the classes. */
+export const SUBJECT_TONE_BG: Record<SubjectTone, string> = {
+  amber: "bg-amber",
+  sky: "bg-sky",
+  lilac: "bg-lilac",
+  pink: "bg-pink",
+  mint: "bg-mint",
+  lime: "bg-lime",
+};
+
 /**
  * FNV-1a. Any stable hash would do; what matters is that it is pure and version-independent, so
  * the same subject lands on the same accent on every device and after every timetable republish.

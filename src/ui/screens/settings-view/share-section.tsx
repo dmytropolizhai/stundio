@@ -70,7 +70,6 @@ export const ShareSection = ({
             void setShareLangSyncWithApp(true);
             return;
           }
-          void setShareLangSyncWithApp(false);
           void setShareLang(value);
         }}
       />

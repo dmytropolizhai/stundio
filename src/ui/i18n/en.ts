@@ -289,6 +289,7 @@ export const en: Dict = {
   "settings.updateAction": "Download",
   "settings.updateDownloading": "Downloading… {percent}%",
   "settings.updateError": "Update failed: {message}",
+  "settings.updateFailed": "Update failed",
   "whatsNew.title": "What’s new",
   "whatsNew.eyebrow": "Version {version}",
   "whatsNew.done": "Got it",

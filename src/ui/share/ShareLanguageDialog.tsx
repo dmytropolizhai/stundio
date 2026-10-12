@@ -35,7 +35,6 @@ export const ShareLanguageDialog = ({ open, onDone }: { open: boolean; onDone: (
                 tone="surface"
                 radius="lg"
                 onClick={() => {
-                  if (settings.shareLangSyncWithApp) void setShareLangSyncWithApp(false);
                   void setShareLang(key);
                 }}
                 className={`flex items-center justify-center border-2 ${

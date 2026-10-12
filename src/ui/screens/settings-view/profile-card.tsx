@@ -20,12 +20,14 @@ type ProfileCardProps = {
 export const ProfileCard = ({ persona, label, facts, onChangeIdentity }: ProfileCardProps) => {
   const t = useT();
   const profile = PERSONA_PROFILES[persona];
+  // aria-label replaces the button's text, so the chips have to be spoken here too.
+  const spoken = [`${t(profile.roleLabel)}: ${label ?? t(profile.noneSelected)}`, ...facts];
 
   return (
     <button
       type="button"
       onClick={onChangeIdentity}
-      aria-label={`${t(profile.roleLabel)}: ${label ?? t(profile.noneSelected)}. ${t("settings.change")}`}
+      aria-label={`${spoken.join(". ")}. ${t("settings.change")}`}
       className="mb-7 flex w-full cursor-pointer items-center gap-3.5 rounded-xl border-0 bg-card p-4 text-left shadow-card transition-transform duration-(--dur-instant) ease-(--ease-out) active:scale-(--press-scale)"
     >
       <span

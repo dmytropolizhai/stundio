@@ -102,6 +102,36 @@ describe("Settings rows", () => {
     ).toBe("true");
   });
 
+  it("gives a choice sheet one tab stop and moves focus with the arrow keys", async () => {
+    const harness = await bootHarness();
+    renderSettings(harness);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: /^Ēka/ }));
+    });
+    const radios = within(screen.getByRole("dialog")).getAllByRole("radio");
+    expect(radios.map((radio) => radio.tabIndex)).toEqual(radios.map((_, i) => (i === 0 ? 0 : -1)));
+
+    radios[0]!.focus();
+    fireEvent.keyDown(radios[0]!, { key: "ArrowDown" });
+    expect(document.activeElement).toBe(radios[1]);
+    fireEvent.keyDown(radios[1]!, { key: "End" });
+    expect(document.activeElement).toBe(radios.at(-1));
+    fireEvent.keyDown(radios.at(-1)!, { key: "ArrowDown" });
+    expect(document.activeElement).toBe(radios[0]);
+    // Moving focus is not a pick: the sheet stays open on the same value.
+    expect(harness.store.getState().settings.building).toBeNull();
+  });
+
+  it("disables the sync row while a sync is running", async () => {
+    const harness = await bootHarness();
+    renderSettings(harness);
+    await clickAndSettle(() => {
+      harness.store.setState({ syncStatus: "syncing" });
+    });
+    const row = screen.getByRole("button", { name: /^Sinhronizācija/ });
+    expect((row as HTMLButtonElement).disabled).toBe(true);
+  });
+
   it("names the switch by its label and describes it by the row's description", async () => {
     const harness = await bootHarness();
     renderSettings(harness);
@@ -124,8 +154,9 @@ describe("Settings rows", () => {
       fireEvent.click(screen.getByRole("radio", { name: "Pusgrupa 2" }));
     });
     expect(harness.store.getState().settings.subgroup).toBe("2");
-    // The profile card repeats it as a chip.
+    // The profile card repeats it as a chip, and speaks it in its own name.
     expect(screen.getByText("Pusgrupa: 2")).toBeDefined();
+    expect(screen.getByRole("button", { name: /DT3-2\. Pusgrupa: 2\./ })).toBeDefined();
 
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("button", { name: /^Pusgrupa/ }));
@@ -279,6 +310,9 @@ describe("Settings rows", () => {
       await settle();
 
       expect(screen.getByText("Paziņojumi bloķēti")).toBeDefined();
+      // Switches left on deliver nothing while the OS blocks them, so the bell is muted.
+      const heading = screen.getByRole("heading", { name: "Paziņojumi" });
+      expect(heading.querySelector(".lucide-bell-off")).not.toBeNull();
       expect(screen.getByText("Atgādinājumi var kavēties")).toBeDefined();
       const [openSystem, openAlarms] = screen.getAllByRole("button", {
         name: "Atvērt iestatījumus",
@@ -335,7 +369,11 @@ describe("Settings rows", () => {
           <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />
         </StoreContext.Provider>,
       );
-      expect(screen.getByText(/42/)).toBeDefined();
+      expect(within(screen.getByRole("dialog")).getByText(/42/)).toBeDefined();
+      // The row carries the progress too, so it survives closing the sheet.
+      expect(
+        screen.getByRole("button", { name: /^Atjauninājumi.*42/, hidden: true }),
+      ).toBeDefined();
 
       spy.mockReturnValue({ phase: "error", message: "boom", install, canInstallInApp: true });
       view.rerender(
@@ -343,7 +381,10 @@ describe("Settings rows", () => {
           <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />
         </StoreContext.Provider>,
       );
-      expect(screen.getByText(/boom/)).toBeDefined();
+      expect(within(screen.getByRole("dialog")).getByText(/boom/)).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: /^Atjauninājumi.*Neizdevās atjaunināt/, hidden: true }),
+      ).toBeDefined();
     });
   });
 });

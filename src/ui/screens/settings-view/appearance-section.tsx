@@ -4,7 +4,7 @@ import type { Settings } from "@/db";
 import { useAppStore } from "@/store";
 import { useSubjects } from "@/ui/hooks/useSubjects.ts";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
-import { SUBJECT_TONES, subjectAccent, type SubjectAccent, type SubjectTone } from "@/ui/theme";
+import { SUBJECT_TONES, SUBJECT_TONE_BG, subjectAccent, subjectTone } from "@/ui/theme";
 import { Section } from "./settings-section.tsx";
 import { SettingsRow } from "./settings-row.tsx";
 import { ChoiceSheet } from "./settings-sheet.tsx";
@@ -16,19 +16,7 @@ const THEME_ICONS: Record<Settings["theme"], IconName> = {
   dark: "moon",
 };
 
-const TONE_BG = {
-  amber: "bg-amber",
-  sky: "bg-sky",
-  lilac: "bg-lilac",
-  pink: "bg-pink",
-  mint: "bg-mint",
-  lime: "bg-lime",
-} as const;
-
 const PREVIEW_COUNT = 3;
-
-const subjectAccentFor = (tone: SubjectTone, enabled: boolean): SubjectAccent =>
-  enabled ? { tone } : subjectAccent(null, {}, false);
 
 /**
  * The customization row's value: the first few subjects in the colour they actually render in.
@@ -45,7 +33,9 @@ const SubjectSwatches = () => {
       ? subjects.slice(0, PREVIEW_COUNT).map((s) => subjectAccent(s.subject, overrides, enabled))
       : // No timetable cached yet: the first tones, collapsed the way `subjectAccent` collapses
         // every subject when colour-coding is off.
-        SUBJECT_TONES.slice(0, PREVIEW_COUNT).map((tone) => subjectAccentFor(tone, enabled));
+        SUBJECT_TONES.slice(0, PREVIEW_COUNT).map((tone) => ({
+          tone: enabled ? tone : subjectTone(null, {}, false),
+        }));
 
   return (
     <span aria-hidden="true" className="flex">
@@ -54,7 +44,7 @@ const SubjectSwatches = () => {
           key={i}
           className={cn(
             "block size-3.5 rounded-pill ring-2 ring-card not-first:-ml-1",
-            accent.tone !== "custom" && TONE_BG[accent.tone],
+            accent.tone !== "custom" && SUBJECT_TONE_BG[accent.tone],
           )}
           {...(accent.tone === "custom" ? { style: { backgroundColor: accent.fill } } : {})}
         />

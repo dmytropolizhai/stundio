@@ -294,6 +294,7 @@ export const ru: Dict = {
   "settings.updateAction": "Скачать",
   "settings.updateDownloading": "Загрузка… {percent}%",
   "settings.updateError": "Не удалось обновить: {message}",
+  "settings.updateFailed": "Не удалось обновить",
   "whatsNew.title": "Что нового",
   "whatsNew.eyebrow": "Версия {version}",
   "whatsNew.done": "Понятно",

@@ -40,20 +40,12 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
   if (isIosDevice() && !isStandalonePwa()) {
     return (
       <Section title={title} icon="bell-off">
-        {onShowIphoneInstall === undefined ? (
-          <SettingsRow
-            icon="square-plus"
-            label={t("settings.iphoneInstall")}
-            description={t("settings.notificationsIosPwaRequired")}
-          />
-        ) : (
-          <SettingsRow
-            icon="square-plus"
-            label={t("settings.iphoneInstall")}
-            description={t("settings.notificationsIosPwaRequired")}
-            onClick={onShowIphoneInstall}
-          />
-        )}
+        <SettingsRow
+          icon="square-plus"
+          label={t("settings.iphoneInstall")}
+          description={t("settings.notificationsIosPwaRequired")}
+          {...(onShowIphoneInstall === undefined ? {} : { onClick: onShowIphoneInstall })}
+        />
       </Section>
     );
   }
@@ -74,12 +66,14 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
     minutes > 0 ? t("settings.minutes", { minutes }) : t("settings.notifyLessonReminderOff");
 
   // A muted bell on the group title when nothing would ever be delivered.
+  // A blocked OS permission counts as off: whatever is switched on, nothing reaches the device.
   const allOff =
-    !settings.notifySubstitutionChanges &&
-    (!native ||
-      (settings.notifyLessonReminderMinutes === 0 &&
-        !settings.notifyNewTimetable &&
-        !settings.notifyAppUpdates));
+    notifyPermissionDenied ||
+    (!settings.notifySubstitutionChanges &&
+      (!native ||
+        (settings.notifyLessonReminderMinutes === 0 &&
+          !settings.notifyNewTimetable &&
+          !settings.notifyAppUpdates)));
 
   return (
     <Section

@@ -297,6 +297,7 @@ export const lv = {
   "settings.updateAction": "Lejupielādēt",
   "settings.updateDownloading": "Lejupielādē… {percent}%",
   "settings.updateError": "Neizdevās atjaunināt: {message}",
+  "settings.updateFailed": "Neizdevās atjaunināt",
   "whatsNew.title": "Kas jauns",
   "whatsNew.eyebrow": "Versija {version}",
   "whatsNew.done": "Sapratu",

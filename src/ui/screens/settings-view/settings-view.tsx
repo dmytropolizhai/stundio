@@ -53,7 +53,8 @@ export const SettingsView = ({
   });
 
   const { persona } = useIdentity();
-  const settings = useAppStore((s) => s.settings);
+  const subgroup = useAppStore((s) => s.settings.subgroup);
+  const building = useAppStore((s) => s.settings.building);
   const identityLabel = useIdentityLabel();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
@@ -68,10 +69,10 @@ export const SettingsView = ({
 
   const facts = [
     ...(PERSONA_PROFILES[persona].hasSubgroups && subgroups.length > 1
-      ? [`${t("settings.subgroup")}: ${settings.subgroup ?? t("settings.subgroupAll")}`]
+      ? [`${t("settings.subgroup")}: ${subgroup ?? t("settings.subgroupAll")}`]
       : []),
     ...(buildings.length > 1
-      ? [`${t("settings.building")}: ${settings.building ?? t("settings.buildingAuto")}`]
+      ? [`${t("settings.building")}: ${building ?? t("settings.buildingAuto")}`]
       : []),
   ];
 

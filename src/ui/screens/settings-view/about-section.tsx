@@ -22,21 +22,26 @@ const UpdateSheet = ({
   open,
   onClose,
   check,
+  install,
 }: {
   open: boolean;
   onClose: () => void;
   /** The section's own check, shared so opening the sheet never starts a second request. */
   check: ReturnType<typeof useUpdateCheck>;
+  /** Owned by the section too, so the row can show a download that outlives the sheet. */
+  install: ReturnType<typeof useUpdateInstall>;
 }) => {
   const t = useT();
   const { result: update, checking, checked, recheck } = check;
-  const install = useUpdateInstall();
 
+  // No status line until there is one: the current version is already printed underneath.
   const status = update?.hasUpdate
     ? t("settings.updateAvailable", { version: update.latestVersion })
     : checked
       ? t("settings.upToDate")
-      : t("settings.currentVersion", { version: __APP_VERSION__ });
+      : checking
+        ? t("settings.checkingForUpdates")
+        : undefined;
 
   let action;
   if (update?.hasUpdate) {
@@ -83,7 +88,9 @@ const UpdateSheet = ({
       footer={action}
     >
       <SheetDescription>{t("settings.updatesHint")}</SheetDescription>
-      <p className="font-text text-body font-bold text-strong">{status}</p>
+      {status !== undefined && (
+        <p className="font-text text-body font-bold text-strong">{status}</p>
+      )}
       <p className="mt-0.5 font-text text-caption text-muted">
         {t("settings.currentVersion", { version: __APP_VERSION__ })}
       </p>
@@ -101,20 +108,29 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
   const isNative = isNativePlatform();
   const check = useUpdateCheck({ enabled: isNative });
   const { result: update, checking, checked } = check;
+  const install = useUpdateInstall();
   const [updateOpen, setUpdateOpen] = useState(false);
 
-  const updateValue = update?.hasUpdate ? (
-    <>
-      <StatusDot tone="warning" />
-      <ValueBadge>{update.latestVersion}</ValueBadge>
-    </>
-  ) : checking ? (
-    t("settings.checkingForUpdates")
-  ) : checked ? (
-    t("settings.upToDate")
-  ) : (
-    __APP_VERSION__
-  );
+  const updateValue =
+    install.phase === "downloading" ? (
+      t("settings.updateDownloading", { percent: install.percent })
+    ) : install.phase === "error" ? (
+      <>
+        <StatusDot tone="danger" />
+        <span className="truncate">{t("settings.updateFailed")}</span>
+      </>
+    ) : update?.hasUpdate ? (
+      <>
+        <StatusDot tone="warning" />
+        <ValueBadge>{update.latestVersion}</ValueBadge>
+      </>
+    ) : checking ? (
+      t("settings.checkingForUpdates")
+    ) : checked ? (
+      t("settings.upToDate")
+    ) : (
+      __APP_VERSION__
+    );
 
   return (
     <Section title={t("settings.about")}>
@@ -154,7 +170,12 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
       />
 
       {isNative && (
-        <UpdateSheet open={updateOpen} onClose={() => setUpdateOpen(false)} check={check} />
+        <UpdateSheet
+          open={updateOpen}
+          onClose={() => setUpdateOpen(false)}
+          check={check}
+          install={install}
+        />
       )}
     </Section>
   );
