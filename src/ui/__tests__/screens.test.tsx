@@ -603,8 +603,12 @@ describe("SettingsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
+    // A closed set opens a sheet of options rather than sitting inline on the row.
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("English"));
+      fireEvent.click(screen.getByRole("button", { name: /^Valoda/ }));
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("radio", { name: /English/ }));
     });
 
     expect(harness.store.getState().settings.lang).toBe("en");
@@ -616,7 +620,10 @@ describe("SettingsView", () => {
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Tumšs"));
+      fireEvent.click(screen.getByRole("button", { name: /^Noformējums/ }));
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("radio", { name: "Tumšs" }));
     });
     expect(harness.store.getState().settings.theme).toBe("dark");
   });
@@ -666,12 +673,14 @@ describe("SettingsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
-    const auto = screen.queryByText("Automātiski");
-    // The fixture list carries both buildings, so the control is present.
-    expect(auto).not.toBeNull();
+    // The fixture list carries both buildings, so the row is present, showing "auto".
+    const row = screen.getByRole("button", { name: "Ēka Automātiski" });
 
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("TIC"));
+      fireEvent.click(row);
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("radio", { name: "TIC" }));
     });
     expect(harness.store.getState().settings.building).toBe("TIC");
   });
@@ -682,7 +691,7 @@ describe("SettingsView", () => {
     const before = harness.server.calls.substitutions;
 
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Atjaunināt"));
+      fireEvent.click(screen.getByRole("button", { name: /^Sinhronizācija/ }));
     });
     expect(harness.server.calls.substitutions).toBeGreaterThan(before);
   });
@@ -692,11 +701,10 @@ describe("SettingsView", () => {
     const onPickClass = vi.fn();
     wrap(harness, <SettingsView onPickClass={onPickClass} onShowWhatsNew={vi.fn()} />);
 
-    // Twice now: once as the header eyebrow, once as the value of the class row.
-    fireEvent.click(screen.getByText("Mainīt"));
-    // opens identity sheet
-    const changeButtons = screen.getAllByText("Mainīt");
-    fireEvent.click(changeButtons[changeButtons.length - 1]!);
+    // The profile card names the class and opens the identity sheet…
+    fireEvent.click(screen.getByRole("button", { name: /Mainīt/ }));
+    // …whose own "change" button routes to the picker.
+    fireEvent.click(screen.getByRole("button", { name: "Mainīt" }));
     expect(onPickClass).toHaveBeenCalled();
   });
 
@@ -717,7 +725,7 @@ describe("SettingsView", () => {
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     expect(screen.getByText("Bīstamā zona")).toBeDefined();
-    const resetButton = screen.getByRole("button", { name: "Dzēst" });
+    const resetButton = screen.getByRole("button", { name: "Dzēst visus datus" });
     fireEvent.click(resetButton);
 
     expect(screen.getByText("Dzēst visus datus?")).toBeDefined();
@@ -732,9 +740,11 @@ describe("SettingsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
-    const resetButton = screen.getByRole("button", { name: "Dzēst" });
+    const resetButton = screen.getByRole("button", { name: "Dzēst visus datus" });
     fireEvent.click(resetButton);
 
+    // The row behind the open sheet is hidden from the accessibility tree, so this is the
+    // sheet's own confirm button.
     const confirmButton = screen.getByRole("button", { name: "Dzēst visus datus" });
     await clickAndSettle(() => {
       fireEvent.click(confirmButton);

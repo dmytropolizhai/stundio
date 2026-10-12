@@ -1,44 +1,57 @@
-import { Button, Switch } from "@/ds";
+import { Icon, cn } from "@/ds";
 import { useAppStore } from "@/store";
-import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
+import { useSyncSummary } from "@/ui/hooks/useSyncSummary.ts";
 import { useT } from "@/ui/i18n";
-import { Row, Section } from "./settings-section.tsx";
+import { Section } from "./settings-section.tsx";
+import { SettingsRow, StatusDot } from "./settings-row.tsx";
+
+const DOT = {
+  synced: "success",
+  syncing: "warning",
+  offline: "offline",
+  failed: "danger",
+} as const;
 
 export const DataSection = () => {
   const t = useT();
-  const syncStatus = useAppStore((s) => s.syncStatus);
-  const settings = useAppStore((s) => s.settings);
+  const { state, label } = useSyncSummary();
+  const analyticsEnabled = useAppStore((s) => s.settings.analyticsEnabled);
   const refresh = useAppStore((s) => s.refresh);
   const setAnalyticsEnabled = useAppStore((s) => s.setAnalyticsEnabled);
+  const syncing = state === "syncing";
 
   return (
     <Section title={t("settings.data")}>
-      <Row className="flex flex-wrap items-center justify-between gap-3">
-        <SyncBadge collapsible={false} />
-        <Button
-          size="sm"
-          disabled={syncStatus === "syncing"}
-          icon="refresh-cw"
-          onClick={() => {
-            void refresh({ force: true });
-          }}
-        >
-          {t("sync.refresh")}
-        </Button>
-      </Row>
-      <Row className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-text text-body font-bold text-strong">{t("settings.analytics")}</p>
-          <p className="mt-0.5 font-text text-caption text-muted">{t("settings.analyticsHint")}</p>
-        </div>
-        <Switch
-          aria-label={t("settings.analytics")}
-          checked={settings.analyticsEnabled}
-          onChange={(checked) => {
-            void setAnalyticsEnabled(checked);
-          }}
-        />
-      </Row>
+      {/* Acts instead of opening: a tap refreshes, so the trailing glyph is the refresh arrow. */}
+      <SettingsRow
+        icon="cloud"
+        label={t("settings.sync")}
+        description={t("settings.syncHint")}
+        value={
+          <>
+            <StatusDot tone={DOT[state]} />
+            <span className="truncate">{label}</span>
+          </>
+        }
+        trailing={
+          <Icon
+            name="refresh-cw"
+            size={18}
+            className={cn(syncing && "animate-spin motion-reduce:animate-none")}
+          />
+        }
+        disabled={syncing}
+        onClick={() => {
+          void refresh({ force: true });
+        }}
+      />
+      <SettingsRow
+        icon="chart-column"
+        label={t("settings.analytics")}
+        description={t("settings.analyticsHint")}
+        checked={analyticsEnabled}
+        onCheckedChange={(checked) => void setAnalyticsEnabled(checked)}
+      />
     </Section>
   );
 };

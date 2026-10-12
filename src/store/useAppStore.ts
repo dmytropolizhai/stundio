@@ -111,6 +111,7 @@ export type AppState = {
   /** Not user-facing — the what's-new sheet marks this build's notes as read. */
   setLastSeenChangelogVersion: (version: string) => Promise<void>;
   setAnalyticsEnabled: (enabled: boolean) => Promise<void>;
+  /** Pins the share card to `lang`, which also stops it following the app language. */
   setShareLang: (lang: Settings["shareLang"]) => Promise<void>;
   setShareLangSyncWithApp: (sync: boolean) => Promise<void>;
   /** Not user-facing — `useShareWeek` marks the one-time language prompt as already shown. */
@@ -311,7 +312,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setLastSeenChangelogVersion: (lastSeenChangelogVersion) =>
         persist({ lastSeenChangelogVersion }),
       setAnalyticsEnabled: (analyticsEnabled) => persist({ analyticsEnabled }),
-      setShareLang: (shareLang) => persist({ shareLang }),
+      setShareLang: (shareLang) => persist({ shareLang, shareLangSyncWithApp: false }),
       setShareLangSyncWithApp: (shareLangSyncWithApp) => persist({ shareLangSyncWithApp }),
       setShareLangPromptShown: (shareLangPromptShown) => persist({ shareLangPromptShown }),
       recordAppOpen: () => persist({ appOpenCount: get().settings.appOpenCount + 1 }),

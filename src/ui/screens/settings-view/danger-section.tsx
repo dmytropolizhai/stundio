@@ -4,8 +4,11 @@ import { isNativePlatform } from "@/lib/edupage";
 import { isWebPushSupported, unsubscribeWebPush } from "@/notifications/webPush";
 import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
-import { Row, Section } from "./settings-section.tsx";
+import { Section } from "./settings-section.tsx";
+import { SettingsRow } from "./settings-row.tsx";
+import { SheetDescription, SheetTitle } from "./settings-sheet.tsx";
 
+/** The one red row on the screen, in a card of its own so nothing else sits next to it. */
 export const DangerSection = () => {
   const t = useT();
   const resetAllData = useAppStore((s) => s.resetAllData);
@@ -28,23 +31,15 @@ export const DangerSection = () => {
   return (
     <>
       <Section title={t("settings.dangerZone")}>
-        <Row className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="font-text text-body font-bold text-danger">{t("settings.resetData")}</p>
-            <p className="mt-0.5 font-text text-caption text-muted">
-              {t("settings.resetDataHint")}
-            </p>
-          </div>
-          <Button
-            size="sm"
-            variant="danger"
-            onClick={() => {
-              setConfirmResetOpen(true);
-            }}
-          >
-            {t("settings.resetDataAction")}
-          </Button>
-        </Row>
+        <SettingsRow
+          icon="trash-2"
+          tone="danger"
+          label={t("settings.resetData")}
+          description={t("settings.resetDataHint")}
+          onClick={() => {
+            setConfirmResetOpen(true);
+          }}
+        />
       </Section>
 
       <BottomSheet
@@ -52,7 +47,11 @@ export const DangerSection = () => {
         onClose={() => {
           if (!resetting) setConfirmResetOpen(false);
         }}
-        title={t("settings.resetDataConfirmTitle")}
+        title={
+          <SheetTitle icon="trash-2" tone="danger">
+            {t("settings.resetDataConfirmTitle")}
+          </SheetTitle>
+        }
         footer={
           <div className="flex flex-col gap-2.5">
             <Button
@@ -78,6 +77,7 @@ export const DangerSection = () => {
           </div>
         }
       >
+        <SheetDescription>{t("settings.resetDataHint")}</SheetDescription>
         <p className="font-text text-body text-muted">{t("settings.resetDataConfirmBody")}</p>
       </BottomSheet>
     </>

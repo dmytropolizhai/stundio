@@ -7,13 +7,11 @@ import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
 import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
 import { FeedbackSheet } from "@/ui/components/FeedbackSheet.tsx";
 import { useT } from "@/ui/i18n";
-import { useIdentity, useIdentityLabel } from "@/ui/persona";
+import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
 import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
-import { IdentitySection } from "./class-section.tsx";
-import { CustomizationSection } from "./customization-section.tsx";
-import { GeneralSection } from "./general-section.tsx";
+import { ProfileCard } from "./profile-card.tsx";
+import { AppearanceSection } from "./appearance-section.tsx";
 import { ShareSection } from "./share-section.tsx";
-import { NavigationSection } from "./navigation-section.tsx";
 import { ScheduleSection } from "./schedule-section.tsx";
 import { NotificationsSection } from "./notifications-section.tsx";
 import { DataSection } from "./data-section.tsx";
@@ -34,8 +32,10 @@ type SettingsViewProps = {
  * Every control writes straight through the store to the cache, so a change survives a cold
  * start without a save button.
  *
- * Theme, language and building are all small closed sets, so all three use the DS segmented
- * control rather than three different shapes of picker.
+ * One row shape throughout (`SettingsRow`): an icon tile to scan by, a one-sentence description,
+ * the current value on the right, and a switch or a chevron. Closed sets (theme, language,
+ * building, subgroup, reminder time) open a `ChoiceSheet` that repeats the row's description.
+ * Groups run from what changes most often (the schedule) to what changes least (about, reset).
  */
 export const SettingsView = ({
   onPickClass,
@@ -53,6 +53,8 @@ export const SettingsView = ({
   });
 
   const { persona } = useIdentity();
+  const subgroup = useAppStore((s) => s.settings.subgroup);
+  const building = useAppStore((s) => s.settings.building);
   const identityLabel = useIdentityLabel();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
@@ -65,31 +67,37 @@ export const SettingsView = ({
     [timetables, selectedClass],
   );
 
+  const facts = [
+    ...(PERSONA_PROFILES[persona].hasSubgroups && subgroups.length > 1
+      ? [`${t("settings.subgroup")}: ${subgroup ?? t("settings.subgroupAll")}`]
+      : []),
+    ...(buildings.length > 1
+      ? [`${t("settings.building")}: ${building ?? t("settings.buildingAuto")}`]
+      : []),
+  ];
+
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
       <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
         <TopBar title={t("settings.title")} />
 
-        <IdentitySection
+        <ProfileCard
           persona={persona}
           label={identityLabel}
+          facts={facts}
           onChangeIdentity={() => setIdentitySheetOpen(true)}
         />
 
-        <CustomizationSection onOpenCustomization={() => setCustomizing(true)} />
+        <ScheduleSection buildings={buildings} subgroups={subgroups} />
 
-        <GeneralSection buildings={buildings} subgroups={subgroups} />
+        <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
+
+        <AppearanceSection onOpenCustomization={() => setCustomizing(true)} />
 
         <ShareSection
           onShowTeacherAnnouncement={onShowTeacherAnnouncement}
           onShowIphoneInstall={onShowIphoneInstall}
         />
-
-        <ScheduleSection />
-
-        <NavigationSection />
-
-        <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 
         <DataSection />
 
@@ -100,7 +108,8 @@ export const SettingsView = ({
 
         <DangerSection />
 
-        <div className="flex justify-center pt-2 pb-4">
+        <div className="flex flex-col items-center gap-2 px-4 pt-2 pb-4 text-center">
+          <p className="max-w-sm font-text text-caption text-muted">{t("settings.aboutText")}</p>
           <a
             href={REPO_URL}
             target="_blank"
@@ -129,6 +138,11 @@ export const SettingsView = ({
       <FeedbackSheet
         open={feedbackState.open}
         type={feedbackState.type}
+        description={
+          feedbackState.type === "bug"
+            ? t("settings.reportIssueHint")
+            : t("settings.suggestFeatureHint")
+        }
         onClose={() => {
           setFeedbackState((s) => ({ ...s, open: false }));
         }}

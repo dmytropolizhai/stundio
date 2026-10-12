@@ -2,25 +2,16 @@ import { useState, type CSSProperties, type ReactNode } from "react";
 import { LessonCard } from "@/ds/components/ui/lesson-card.tsx";
 import { BottomSheet, Button, ColorWheel, SegmentedTabs, Switch, cn, Slider } from "@/ds";
 import { useAppStore } from "@/store";
-import type { Settings, SubjectColorTone } from "@/db";
+import type { Settings } from "@/db";
 import type { SubjectRef } from "@/lib/edupage";
-import { SUBJECT_TONES, subjectAccent, subjectToneKey } from "@/ui/theme";
+import { SUBJECT_TONES, SUBJECT_TONE_BG, subjectAccent, subjectToneKey } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 import { usePersona } from "@/ui/persona";
 import { useSubjects } from "../../hooks/useSubjects.ts";
-import { Row, Section } from "../settings-view";
+import { Row, Section, SheetDescription, SheetTitle } from "../settings-view";
 
 /** The Card component's own four radius steps, softest to roundest. */
 const RADIUS_STEPS = ["md", "lg", "xl", "2xl"] as const;
-
-const TONE_BG: Record<SubjectColorTone, string> = {
-  amber: "bg-amber",
-  sky: "bg-sky",
-  lilac: "bg-lilac",
-  pink: "bg-pink",
-  mint: "bg-mint",
-  lime: "bg-lime",
-};
 
 /**
  * The teacher preview's heading: a group and a room, as `lessonHeading` builds it. School data is
@@ -148,7 +139,7 @@ const SubjectColorRow = ({
             key={option}
             label={option}
             pressed={!isCustom && accent.tone === option}
-            className={TONE_BG[option]}
+            className={SUBJECT_TONE_BG[option]}
             onClick={() => {
               setWheelOpen(false);
               void setOverride(tokenKey, option);
@@ -217,7 +208,7 @@ const AppAccentRow = () => {
               key={option}
               label={option}
               pressed={appAccent === option}
-              className={TONE_BG[option]}
+              className={SUBJECT_TONE_BG[option]}
               onClick={() => {
                 void setAppAccent(option);
               }}
@@ -280,7 +271,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
     <BottomSheet
       open={open}
       onClose={onClose}
-      title={t("customization.title")}
+      title={<SheetTitle icon="palette">{t("customization.title")}</SheetTitle>}
       footer={
         <Button
           variant="outline"
@@ -294,6 +285,8 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
         </Button>
       }
     >
+      <SheetDescription>{t("settings.customizationHint")}</SheetDescription>
+
       <Section title={t("customization.theme")}>
         <Row>
           <SegmentedTabs
