@@ -38,6 +38,7 @@ import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
 import {
   listUniversitySubgroups,
   resolveUniversityDay,
+  resolveUniversityNames,
   type UniversityGroupRef,
   type UniversityId,
   type UniversityProgramEntry,
@@ -104,6 +105,7 @@ export type AppState = {
   /** Picks the study group (and with it, the university), and its subgroup in the same write. */
   setUniversityGroup: (group: UniversityGroupRef | null, subgroup?: string | null) => Promise<void>;
   setUniversitySubgroup: (subgroup: string | null) => Promise<void>;
+  setUniversityNames: (names: Settings["universityNames"]) => Promise<void>;
   /** Live catalogue reads for the group picker — rejects when offline; nothing is cached. */
   loadUniversityPrograms: (university: UniversityId) => Promise<UniversityProgramEntry[]>;
   loadUniversityGroups: (program: UniversityProgramEntry) => Promise<UniversityGroupRef[]>;
@@ -350,7 +352,15 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           ...(universityGroup === null ? {} : { university: universityGroup.university }),
         }),
       setUniversitySubgroup: (universitySubgroup) => persist({ universitySubgroup }),
-      loadUniversityPrograms: (university) => engine.universityPrograms(university),
+      setUniversityNames: (universityNames) => persist({ universityNames }),
+      // The English catalogue only when the names will be shown in English.
+      loadUniversityPrograms: (university) => {
+        const { universityNames, lang } = get().settings;
+        return engine.universityPrograms(
+          university,
+          resolveUniversityNames(universityNames, lang) === "en",
+        );
+      },
       loadUniversityGroups: (program) => engine.universityGroups(program),
       previewUniversityGroup: async (group) => {
         const schedule = await engine.prefetchUniversityGroup(group);
@@ -531,10 +541,17 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
           if (identity.persona === "university") {
             const schedule = state.universitySchedule();
             if (schedule === null) return null;
-            const key = `university|${universityScheduleKey(schedule)}|${date}|${schedule.fetchedAt}|${identity.subgroup ?? ""}`;
+            const names = resolveUniversityNames(
+              state.settings.universityNames,
+              state.settings.lang,
+            );
+            const key = `university|${universityScheduleKey(schedule)}|${date}|${schedule.fetchedAt}|${identity.subgroup ?? ""}|${names}`;
             const hit = memo.get(key);
             if (hit !== undefined) return hit;
-            const day = resolveUniversityDay(schedule, date, { subgroup: identity.subgroup });
+            const day = resolveUniversityDay(schedule, date, {
+              subgroup: identity.subgroup,
+              names,
+            });
             return day === null ? null : memo.set(key, day);
           }
           if (identity.persona === "teacher") {

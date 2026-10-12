@@ -510,6 +510,12 @@ a study program and a group, instead of an RVT class. Contract: `MODEL-UNIVERSIT
 - [x] UI: an onboarding "where do you study?" step (RVT / RTU / LU), the university group picker
   (live catalogue, search, LU subgroup question, offline state), the role in the identity sheet,
   and the LU subgroup in Settings.
+- [x] Official English names (RTU's `titleEN` / `eventTempNameEn`, LU's English catalogue and
+  `data-module-en`), with a "Names language" setting; RTU group labels translated.
+- [x] Search finds groups directly, across programs and courses.
+- [x] Real RVT / RTU / LU emblems in onboarding and the picker.
+- [x] LU's 2026-10-12 markup change (`", "` / `"; "` separators, `gh-group-name--full`).
+- [ ] Machine translation of names into RU/UA: deliberately not done — see MODEL-UNIVERSITY.md §3.
 - [ ] Saturday classes: the week grid, day stepping and the share card are Mon–Fri, so a
   Saturday lecture (common in LU part-time groups) is cached but not shown yet.
 - [ ] Web Push for universities: the push worker only reads RVT's substitution feed.

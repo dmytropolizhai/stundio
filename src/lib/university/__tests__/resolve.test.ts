@@ -72,13 +72,28 @@ describe("resolveUniversityDay", () => {
       period: "3",
       span: 1,
       end: "14:05",
-      subject: { id: "Ēku tipoloģija", name: "Ēku tipoloģija" },
+      subject: { id: "AD0064", name: "Ēku tipoloģija" },
       teachers: [{ name: "U.Bratuškins" }],
       rooms: [{ name: "Ķīp. 6-307" }],
       status: "normal",
       building: "Ķīpsalas 6",
       group: null,
     });
+  });
+
+  it("shows the university's English names when asked, and Latvian where it has none", () => {
+    const en = resolveUniversityDay(rtu, "2026-10-01", { names: "en" });
+    expect(en?.lessons.find((l) => l.start === "12:30")?.subject).toEqual({
+      id: "AD0064",
+      name: "Building Types",
+      short: "Building Types",
+    });
+    const luEn = resolveUniversityDay(lu, "2026-10-01", { names: "en" });
+    expect(luEn?.lessons.map((l) => l.subject?.name)).toContain("Physics I");
+    // "Matemātiskā analīze I" has no English name at LU: it stays Latvian.
+    const analysis = lu.events.find((e) => e.subject === "Matemātiskā analīze I");
+    const day = analysis && resolveUniversityDay(lu, analysis.date, { names: "en" });
+    expect(day?.lessons.map((l) => l.subject?.name)).toContain("Matemātiskā analīze I");
   });
 
   it("gives an empty, covered day no buildings and its institution as the fallback", () => {
@@ -115,8 +130,10 @@ describe("resolveUniversityDay", () => {
       start: "08:15",
       end: "09:50",
       subject: "S",
+      subjectEn: null,
       subjectCode: null,
       kind: null,
+      kindEn: null,
       lecturers: [],
       room: null,
       building: null,

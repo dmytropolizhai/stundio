@@ -1,7 +1,7 @@
 /**
  * The university side of `sync`: which dates to fetch, how a fetch merges into the cached
  * schedule, and the source-agnostic fetchers the engine and the group picker call.
- * Refresh policy: MODEL-UNIVERSITY.md §4.
+ * Refresh policy: MODEL-UNIVERSITY.md §5.
  */
 import type { HttpClient, ISODate, ISODateTime } from "@/lib/edupage";
 import { fetchLuCatalog, fetchLuEvents } from "./lu.ts";
@@ -121,11 +121,13 @@ export type UniversityProgramEntry = UniversityProgram & {
   semesterId?: string;
 };
 
+/** `english` also reads LU's English catalogue; RTU always sends both names. */
 export const fetchUniversityPrograms = async (
   http: HttpClient,
   university: UniversityId,
+  english = false,
 ): Promise<UniversityProgramEntry[]> => {
-  if (university === "lu") return fetchLuCatalog(http);
+  if (university === "lu") return fetchLuCatalog(http, english);
   const semester = await fetchRtuCurrentSemester(http);
   const programs = await fetchRtuPrograms(http, semester.id);
   return programs.map((p) => ({ ...p, semesterId: semester.id }));

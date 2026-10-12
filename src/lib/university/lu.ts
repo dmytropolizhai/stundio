@@ -6,17 +6,24 @@
  */
 import type { HttpClient, ISODate } from "@/lib/edupage";
 import { attributesOf, textOf } from "./html.ts";
-import { getHtml } from "./transport.ts";
+import { getHtml, universityBaseUrl, UniversityError } from "./transport.ts";
 import type { UniversityEvent, UniversityGroupRef, UniversityProgram } from "./types.ts";
 
 /** A program with its groups — the LU front page lists both at once. */
 export type LuProgram = UniversityProgram & { groups: UniversityGroupRef[] };
 
-/** `"26R-21023 Fizika Akadēmiskā bakalaura,Pilna laika: klātiene,1-sem."` → `"26R-21023 · 1-sem."`. */
+/** "1-sem." (until 2026-10-12) or "1. sem." (since) — LU reformats its labels without notice. */
+const SEMESTER = /^\d+\.?\s*-?\s*sem\.?$/;
+
+/**
+ * `"26R-21023 Fizika Akadēmiskā bakalaura, Pilna laika: klātiene, 1. sem."` →
+ * `"26R-21023 · Pilna laika: klātiene · 1. sem."`. Splits on bare commas, so both the old
+ * `","` and the current `", "` separators read the same.
+ */
 export const luGroupLabel = (text: string): string => {
   const code = /^\S+/.exec(text)?.[0] ?? text;
   const parts = text.split(",").map((p) => p.trim());
-  const semester = parts.find((p) => /^\d+-sem\.?/.test(p));
+  const semester = parts.find((p) => SEMESTER.test(p));
   const mode = parts.length > 1 ? parts[1] : undefined;
   return [code, mode, semester].filter((p) => p !== undefined && p !== "").join(" · ");
 };
@@ -55,11 +62,40 @@ export const parseLuCatalog = (html: string): LuProgram[] => {
         title: title || head,
         faculty,
         level: level === undefined ? null : textOf(level),
+        titleEn: null,
+        facultyEn: null,
+        levelEn: null,
         groups,
       });
     }
   }
   return programs;
+};
+
+/**
+ * Folds the English front page's names into the Latvian catalogue. Both list the same programs
+ * and groups in the same order; where a program has no English name, LU repeats the Latvian
+ * one, which is left out here rather than shown twice.
+ */
+export const mergeLuEnglish = (lv: LuProgram[], en: LuProgram[]): LuProgram[] => {
+  const byCode = new Map<string, LuProgram[]>();
+  for (const p of en) byCode.set(p.code, [...(byCode.get(p.code) ?? []), p]);
+  const seen = new Map<string, number>();
+  return lv.map((program) => {
+    const nth = seen.get(program.code) ?? 0;
+    seen.set(program.code, nth + 1);
+    const english = byCode.get(program.code)?.[nth];
+    if (english === undefined) return program;
+    const differs = (a: string | null, b: string | null) => (b !== null && b !== a ? b : null);
+    const titleEn = differs(program.title, english.title);
+    return {
+      ...program,
+      titleEn,
+      facultyEn: differs(program.faculty, english.faculty),
+      levelEn: differs(program.level, english.level),
+      groups: program.groups.map((g) => ({ ...g, programEn: titleEn })),
+    };
+  });
 };
 
 const luDate = (ddmmyyyy: string): ISODate | null => {
@@ -72,27 +108,39 @@ const luTime = (v: string | undefined): string | null => {
   return m === null ? null : `${(m[1] ?? "").padStart(2, "0")}:${m[2] ?? ""}`;
 };
 
-/** The group's own label, which `data-groups` entries are prefixed with. */
+/**
+ * The group's own label, which `data-groups` entries start with. Since 2026-10-12 the heading
+ * carries a `--full` and a `--short` variant; the full one is the label.
+ */
 export const parseLuGroupLabel = (html: string): string | null => {
-  const m = /<span class="gh-val gh-group-name">([\s\S]*?)<\/span>/.exec(html);
+  const m =
+    /<span class="gh-val gh-group-name gh-group-name--full">([\s\S]*?)<\/span>/.exec(html) ??
+    /<span class="gh-val gh-group-name">([\s\S]*?)<\/span>/.exec(html);
   return m === null ? null : textOf(m[1] ?? "");
 };
 
 /**
- * Which child group an event is for. `data-groups` lists `<label>,[<subgroup>,]<module>`
- * entries; the event is the whole group's when any entry for our label has no subgroup.
+ * Which child group an event is for. `data-groups` lists `<label>,[<subgroup>,]<module code>`
+ * entries. LU has written them joined by `", "` with bare `","` inside (until 2026-10-12) and
+ * by `"; "` with `", "` inside (since). The label is known and every entry ends with the event's module code, so the
+ * entries are cut at that code instead of at commas. An entry for our label without a subgroup
+ * means the whole group; one subgroup means it is theirs alone; several (every subgroup listed)
+ * means everyone.
  */
-export const luSubgroupOf = (groups: string, label: string | null): string | null => {
-  if (label === null) return null;
+export const luSubgroupOf = (
+  groups: string,
+  label: string | null,
+  moduleCode: string | null,
+): string | null => {
+  if (label === null || moduleCode === null || moduleCode === "") return null;
   const subgroups = new Set<string>();
-  for (const entry of groups.split(", ")) {
-    if (!entry.startsWith(`${label},`)) continue;
-    const rest = entry.slice(label.length + 1).split(",");
-    if (rest.length < 2) return null; // whole group
-    const subgroup = rest[0]?.trim();
-    if (subgroup !== undefined && subgroup !== "") subgroups.add(subgroup);
+  for (const raw of groups.split(moduleCode)) {
+    const entry = raw.replace(/^[\s,;]+/, "");
+    if (!entry.startsWith(label)) continue;
+    const subgroup = entry.slice(label.length).replace(/^[\s,;]+|[\s,;]+$/g, "");
+    if (subgroup === "") return null; // whole group
+    subgroups.add(subgroup);
   }
-  // Exactly one subgroup → it's theirs; several (every subgroup listed) means everyone.
   return subgroups.size === 1 ? ([...subgroups][0] ?? null) : null;
 };
 
@@ -109,6 +157,8 @@ export const parseLuEvents = (html: string): UniversityEvent[] => {
 
     const room = a["data-room"] || null;
     const code = a["data-module-code"] || null;
+    // LU repeats the Latvian name here when a module has no English one.
+    const english = a["data-module-en"] || a["data-title-en"] || null;
     events.push({
       // LU publishes no event id; this tuple is unique within a group's page.
       id: `${date}|${start}|${code ?? subject}|${room ?? ""}|${String(events.length)}`,
@@ -116,15 +166,17 @@ export const parseLuEvents = (html: string): UniversityEvent[] => {
       start,
       end,
       subject,
+      subjectEn: english !== null && english !== subject ? english : null,
       subjectCode: code,
       kind: a["data-event-type"] || null,
+      kindEn: null,
       lecturers: (a["data-staff"] ?? "")
         .split(", ")
         .map((s) => s.trim())
         .filter(Boolean),
       room,
       building: a["data-room-building"] || null,
-      subgroup: luSubgroupOf(a["data-groups"] ?? "", label),
+      subgroup: luSubgroupOf(a["data-groups"] ?? "", label, code),
       cancelled: a["data-state"] === "Cancelled",
     });
   }
@@ -136,8 +188,39 @@ const luQueryDate = (date: ISODate): string => {
   return `${d ?? ""}.${m ?? ""}.${y ?? ""}`;
 };
 
-export const fetchLuCatalog = async (http: HttpClient): Promise<LuProgram[]> =>
-  parseLuCatalog(await getHtml(http, "lu", "/"));
+/**
+ * LU keeps the interface language in its signed `session` cookie, set by `GET /lang/en`
+ * (MODEL-UNIVERSITY.md §2). In a browser the cookie can be neither read nor sent, so the
+ * `/api-university` proxy does the round trip itself when asked with `X-University-Lang`; on
+ * device the client does it, with the redirect left unfollowed so its `Set-Cookie` is visible.
+ */
+const englishHeaders = async (http: HttpClient): Promise<Record<string, string>> => {
+  if (universityBaseUrl("lu").startsWith("/")) return { "X-University-Lang": "en" };
+  const res = await http({
+    url: `${universityBaseUrl("lu")}/lang/en`,
+    method: "GET",
+    followRedirects: false,
+  });
+  const header = Object.entries(res.headers ?? {}).find(([k]) => k.toLowerCase() === "set-cookie");
+  const session = /session=([^;,\s]+)/.exec(header?.[1] ?? "")?.[1];
+  if (session === undefined) throw new UniversityError("lu: no English session", res.status);
+  return { Cookie: `session=${session}` };
+};
+
+/**
+ * The catalogue, with the English names folded in when `english` is set. An English page that
+ * fails to load leaves the Latvian catalogue as it is — names are a nicety, the groups are not.
+ */
+export const fetchLuCatalog = async (http: HttpClient, english = false): Promise<LuProgram[]> => {
+  const lv = parseLuCatalog(await getHtml(http, "lu", "/"));
+  if (!english) return lv;
+  try {
+    const headers = await englishHeaders(http);
+    return mergeLuEnglish(lv, parseLuCatalog(await getHtml(http, "lu", "/", headers)));
+  } catch {
+    return lv;
+  }
+};
 
 export const fetchLuEvents = async (
   http: HttpClient,

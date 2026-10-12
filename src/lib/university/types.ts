@@ -22,6 +22,11 @@ export type UniversityGroupRef = {
   label: string;
   /** The study program's name, as the source writes it. */
   program: string;
+  /** The program's official English name, when the university publishes one. */
+  programEn?: string | null;
+  /** RTU: the course (study year) and group number, so the label can be said in any language. */
+  course?: number;
+  number?: string;
 };
 
 /** One study program in a university's catalogue — the first level of the group picker. */
@@ -34,6 +39,10 @@ export type UniversityProgram = {
   faculty: string;
   /** Degree level ("Akadēmiskā bakalaura"), when the source says. */
   level: string | null;
+  /** The university's own English names — for foreign students. `null` when it has none. */
+  titleEn: string | null;
+  facultyEn: string | null;
+  levelEn: string | null;
 };
 
 export type UniversityEvent = {
@@ -42,11 +51,15 @@ export type UniversityEvent = {
   date: ISODate;
   start: HHMM;
   end: HHMM;
-  /** The subject's name, verbatim from the source (school text — never translated). */
+  /** The subject's name, verbatim from the source (school text — never machine-translated). */
   subject: string;
+  /** The university's own English name for the subject, when it publishes one. */
+  subjectEn: string | null;
   subjectCode: string | null;
   /** "Lekc." / "Lekcija | Lecture" — verbatim, display-only. */
   kind: string | null;
+  /** "Lect." — RTU's English kind; LU's `kind` is already bilingual. */
+  kindEn: string | null;
   lecturers: string[];
   room: string | null;
   building: string | null;
@@ -65,6 +78,26 @@ export type UniversitySchedule = {
   covered: { from: ISODate; to: ISODate }[];
   fetchedAt: ISODateTime;
 };
+
+/**
+ * Which of a university's own names to show. Both universities publish official English names
+ * for foreign students; there is no machine translation — a name the university never
+ * translated stays Latvian.
+ */
+export type UniversityNames = "lv" | "en";
+/** The setting: `"auto"` reads Latvian in a Latvian app and English in every other language. */
+export type UniversityNamesSetting = "auto" | UniversityNames;
+
+export const resolveUniversityNames = (
+  setting: UniversityNamesSetting,
+  appLang: string,
+): UniversityNames => (setting === "auto" ? (appLang === "lv" ? "lv" : "en") : setting);
+
+/** A program's name in the chosen language, falling back to the Latvian one. */
+export const programTitle = (
+  program: Pick<UniversityProgram, "title" | "titleEn">,
+  names: UniversityNames,
+): string => (names === "en" ? (program.titleEn ?? program.title) : program.title);
 
 export const UNIVERSITY_NAMES: Record<UniversityId, string> = {
   rtu: "Rīgas Tehniskā universitāte",

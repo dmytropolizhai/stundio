@@ -57,6 +57,23 @@ describe("university mode", () => {
     expect(store.getState().resolvedDay("2026-11-02")).toBeNull();
   });
 
+  it("shows the university's English names when the app is not in Latvian", async () => {
+    const store = makeStore();
+    await store.getState().hydrate();
+    await store.getState().setUniversityGroup(LU_GROUP);
+    await store.getState().refresh();
+    const names = () =>
+      store
+        .getState()
+        .resolvedDay("2026-10-14")
+        ?.lessons.map((l) => l.subject?.name) ?? [];
+    expect(names()).toContain("Fizika I");
+    await store.getState().setLang("en");
+    expect(names()).toContain("Physics I");
+    await store.getState().setUniversityNames("lv");
+    expect(names()).toContain("Fizika I");
+  });
+
   it("narrows to a subgroup and keeps whole-group events", async () => {
     const store = makeStore();
     await store.getState().hydrate();

@@ -28,7 +28,7 @@ const USER_AGENT = "rvt-stunda/0.1 (+https://polizhai.site; personal timetable a
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-Requested-With",
+  "Access-Control-Allow-Headers": "Content-Type, X-Requested-With, X-University-Lang",
   "Access-Control-Max-Age": "86400",
 };
 
@@ -71,6 +71,16 @@ export const onRequest = async (context: EventContext): Promise<Response> => {
   }
 
   try {
+    /*
+     * LU keeps its interface language in a signed session cookie set by `/lang/en`. A browser
+     * can neither read nor send that cookie cross-origin, so the app asks for English with a
+     * header and the proxy makes the round trip on its behalf. Nothing is stored here.
+     */
+    if (university === "lu" && request.headers.get("x-university-lang") === "en") {
+      const lang = await fetch(`${origin}/lang/en`, { headers, redirect: "manual" });
+      const session = /session=([^;,\s]+)/.exec(lang.headers.get("set-cookie") ?? "")?.[1];
+      if (session !== undefined) headers["Cookie"] = `session=${session}`;
+    }
     const upstream = await fetch(`${origin}${path}${url.search}`, {
       method: request.method,
       headers,

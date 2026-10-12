@@ -41,6 +41,9 @@ describe("RTU catalogue", () => {
       title: "Arhitektūra",
       faculty: "Arhitektūras un dizaina institūts",
       level: null,
+      titleEn: "Architecture",
+      facultyEn: "Institute of Architecture and Design",
+      levelEn: null,
     });
     expect(parseRtuPrograms(null)).toEqual([]);
     expect(parseRtuPrograms([1, { program: "x" }, { program: [null, { programId: 1 }] }])).toEqual(
@@ -51,9 +54,15 @@ describe("RTU catalogue", () => {
   it("labels groups by program code, course and group", () => {
     const [program] = parseRtuPrograms(readJsonFixture(RTU.programs));
     if (program === undefined) throw new Error("no program");
+    const shared = {
+      university: "rtu",
+      program: "Arhitektūra",
+      programEn: "Architecture",
+      course: 1,
+    };
     expect(parseRtuGroups(readJsonFixture(RTU.groups), program)).toEqual([
-      { university: "rtu", id: "38532", label: "RABA0 · 1. k. · 1. gr.", program: "Arhitektūra" },
-      { university: "rtu", id: "38536", label: "RABA0 · 1. k. · 2. gr.", program: "Arhitektūra" },
+      { ...shared, id: "38532", label: "RABA0 · 1. k. · 1. gr.", number: "1" },
+      { ...shared, id: "38536", label: "RABA0 · 1. k. · 2. gr.", number: "2" },
     ]);
     expect(parseRtuGroups([{ semesterProgramId: 9, course: 2, group: 3 }], program)[0]?.label).toBe(
       "RABA0 · 2. k. · 3. gr.",
@@ -81,7 +90,8 @@ describe("RTU events", () => {
       ),
     ).toEqual({ kind: "Lekc, Pr.d.", subject: "Arhitektūras projektēšanas darbnīca I" });
     // The group's own subject list wins.
-    expect(splitRtuEventName("Lekc. Ēku tipoloģija, U.Bratuškins", null, subjects)).toEqual({
+    const titles = subjects.map((s) => s.title);
+    expect(splitRtuEventName("Lekc. Ēku tipoloģija, U.Bratuškins", null, titles)).toEqual({
       kind: "Lekc.",
       subject: "Ēku tipoloģija",
     });
@@ -101,8 +111,10 @@ describe("RTU events", () => {
       start: "12:30",
       end: "14:05",
       subject: "Ēku tipoloģija",
-      subjectCode: null,
+      subjectEn: "Building Types",
+      subjectCode: "AD0064",
       kind: "Lekc.",
+      kindEn: "Lect.",
       lecturers: ["U.Bratuškins"],
       room: "Ķīp. 6-307",
       building: "Ķīpsalas 6",

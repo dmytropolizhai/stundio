@@ -18,6 +18,8 @@ import {
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
 import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
 import type { FeedbackIdentity } from "@/ui/feedback.ts";
+import { useT } from "@/ui/i18n";
+import { formatUniversityGroup } from "@/ui/hooks/useUniversityNames.ts";
 import { PERSONA_PROFILES, type PersonaProfile } from "./profiles.ts";
 
 export const useIdentity = (): Identity => {
@@ -91,13 +93,14 @@ export const useIsFormTeacher = (): boolean => {
  * teacher's short (or full name) for a teacher. `undefined` while nothing is picked or cached.
  */
 export const useIdentityLabel = (): string | undefined => {
+  const t = useT();
   const identity = useIdentity();
   const selectedClass = useSelectedClass();
   const selectedTeacher = useSelectedTeacher();
   return matchPersona(identity, {
     student: () => selectedClass?.short,
     teacher: () => selectedTeacher?.short || selectedTeacher?.name || undefined,
-    university: ({ group }) => group?.label,
+    university: ({ group }) => (group === null ? undefined : formatUniversityGroup(group, t)),
   });
 };
 

@@ -442,7 +442,7 @@ export const ru: Dict = {
   "university.change": "Сменить группу",
   "university.picker.title": "Выбери свою группу",
   "university.picker.subtitle": "Найди свою программу, затем группу",
-  "university.search": "Найти программу или код…",
+  "university.search": "Найти программу, код или группу…",
   "university.loading": "Загружаем программы…",
   "university.groupsLoading": "Загружаем группы…",
   "university.loadError": "Не удалось загрузить список",
@@ -454,4 +454,13 @@ export const ru: Dict = {
   "university.subgroup.all": "Все подгруппы",
   "university.subgroup": "Подгруппа",
   "university.institution": "Университет",
+  "university.groups": "Группы",
+  "university.programs": "Программы",
+  "university.rtuGroup": "{code} · {course} курс · {group} группа",
+  "settings.universityNames": "Язык названий",
+  "settings.universityNamesHint":
+    "Названия предметов и программ — официальные, на латышском или английском",
+  "settings.universityNames.auto": "Автоматически",
+  "settings.universityNames.lv": "Латышский",
+  "settings.universityNames.en": "English",
 };

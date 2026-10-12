@@ -41,7 +41,8 @@ export const ScheduleSection = ({
   const setShowMovedOnTargetDay = useAppStore((s) => s.setShowMovedOnTargetDay);
   const setShowTime = useAppStore((s) => s.setShowTime);
   const setShowSubjectsTab = useAppStore((s) => s.setShowSubjectsTab);
-  const [sheet, setSheet] = useState<"subgroup" | "building" | null>(null);
+  const setUniversityNames = useAppStore((s) => s.setUniversityNames);
+  const [sheet, setSheet] = useState<"subgroup" | "building" | "names" | null>(null);
 
   const showSubgroup = profile.hasSubgroups && subgroups.length > 1;
   const showBuilding = buildings.length > 1;
@@ -52,6 +53,10 @@ export const ScheduleSection = ({
     { key: NONE, label: t("settings.subgroupAll") },
     ...subgroups.map((g) => ({ key: g, label: subgroupLabel(g) })),
   ];
+  const namesOptions = (["auto", "lv", "en"] as const).map((key) => ({
+    key,
+    label: t(`settings.universityNames.${key}`),
+  }));
   const buildingOptions = [
     { key: NONE, label: t("settings.buildingAuto") },
     ...buildings.map((b) => ({ key: b, label: b })),
@@ -66,6 +71,15 @@ export const ScheduleSection = ({
           description={t("settings.subgroupHint")}
           value={subgroup ?? t("settings.subgroupAll")}
           onClick={() => setSheet("subgroup")}
+        />
+      )}
+      {profile.hasEnglishNames && (
+        <SettingsRow
+          icon="globe"
+          label={t("settings.universityNames")}
+          description={t("settings.universityNamesHint")}
+          value={t(`settings.universityNames.${settings.universityNames}`)}
+          onClick={() => setSheet("names")}
         />
       )}
       {showBuilding && (
@@ -121,6 +135,16 @@ export const ScheduleSection = ({
         onChange={(value) => {
           onSubgroupChange(value === NONE ? null : value);
         }}
+      />
+      <ChoiceSheet
+        open={sheet === "names"}
+        onClose={() => setSheet(null)}
+        icon="globe"
+        title={t("settings.universityNames")}
+        description={t("settings.universityNamesHint")}
+        options={namesOptions}
+        value={settings.universityNames}
+        onChange={(value) => void setUniversityNames(value)}
       />
       <ChoiceSheet
         open={sheet === "building"}

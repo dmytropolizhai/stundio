@@ -3,40 +3,17 @@
  * RVT continues to the student/teacher split; RTU and LU go straight to the group picker,
  * since a university student is the only role there (MODEL-UNIVERSITY.md).
  */
-import { Card, Icon, type IconName } from "@/ds";
-import { UNIVERSITY_NAMES, type UniversityId } from "@/lib/university";
+import { Card, Icon } from "@/ds";
+import { UNIVERSITY_NAMES } from "@/lib/university";
 import { useT, type MessageKey } from "@/ui/i18n";
+import { InstitutionLogo, type Institution } from "@/ui/components/InstitutionLogo.tsx";
 
-export type Institution = "rvt" | UniversityId;
+export type { Institution };
 
-const OPTIONS: {
-  key: Institution;
-  name: string;
-  short: string;
-  desc: MessageKey;
-  icon: IconName;
-}[] = [
-  {
-    key: "rvt",
-    name: "Rīgas Valsts tehnikums",
-    short: "RVT",
-    desc: "institution.rvt.desc",
-    icon: "graduation-cap",
-  },
-  {
-    key: "rtu",
-    name: UNIVERSITY_NAMES.rtu,
-    short: "RTU",
-    desc: "institution.rtu.desc",
-    icon: "landmark",
-  },
-  {
-    key: "lu",
-    name: UNIVERSITY_NAMES.lu,
-    short: "LU",
-    desc: "institution.lu.desc",
-    icon: "landmark",
-  },
+const OPTIONS: { key: Institution; name: string; short: string; desc: MessageKey }[] = [
+  { key: "rvt", name: "Rīgas Valsts tehnikums", short: "RVT", desc: "institution.rvt.desc" },
+  { key: "rtu", name: UNIVERSITY_NAMES.rtu, short: "RTU", desc: "institution.rtu.desc" },
+  { key: "lu", name: UNIVERSITY_NAMES.lu, short: "LU", desc: "institution.lu.desc" },
 ];
 
 export const OnboardingInstitution = ({ onSelect }: { onSelect: (key: Institution) => void }) => {
@@ -63,9 +40,7 @@ export const OnboardingInstitution = ({ onSelect }: { onSelect: (key: Institutio
               aria-label={`${option.name} — ${t(option.desc)}`}
               className="flex items-center gap-4"
             >
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand-strong">
-                <Icon name={option.icon} size={20} />
-              </span>
+              <InstitutionLogo institution={option.key} size={52} />
               <span className="flex min-w-0 flex-col">
                 <span className="font-text text-body font-bold text-strong">
                   {option.short} · {option.name}

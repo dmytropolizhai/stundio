@@ -89,7 +89,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   fallback. Callers depend on the interface, never on `idb`.
 - **`src/sync/`** — orchestration only. Injects http, cache and clock, so the policy is testable
   without a network or browser. Refresh policy is spelled out in `engine.ts` and `MODEL.md §6`
-  (`MODEL-UNIVERSITY.md §4` for a university group). It also serves the university picker's live
+  (`MODEL-UNIVERSITY.md §5` for a university group). It also serves the university picker's live
   catalogue reads, so the UI never holds an HTTP client.
 - **`src/store/`** — one vanilla Zustand store behind React context (`provider.tsx` +
   `context.ts`), wired for production in `boot.ts`. It caches and selects; it never fetches or

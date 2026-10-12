@@ -17,8 +17,10 @@ const event = (date: string, id = date): UniversityEvent => ({
   start: "10:00",
   end: "11:00",
   subject: "S",
+  subjectEn: null,
   subjectCode: null,
   kind: null,
+  kindEn: null,
   lecturers: [],
   room: null,
   building: null,
@@ -138,5 +140,18 @@ describe("source-agnostic fetchers", () => {
     const before = fake.requests.length;
     expect((await fetchUniversityGroups(fake.http, first)).length).toBe(1);
     expect(fake.requests.length).toBe(before);
+  });
+});
+
+describe("name language", () => {
+  it("follows the app language on auto and the user's pick otherwise", async () => {
+    const { resolveUniversityNames, programTitle } = await import("../types.ts");
+    expect(resolveUniversityNames("auto", "lv")).toBe("lv");
+    expect(resolveUniversityNames("auto", "ru")).toBe("en");
+    expect(resolveUniversityNames("lv", "en")).toBe("lv");
+    expect(resolveUniversityNames("en", "lv")).toBe("en");
+    expect(programTitle({ title: "Fizika", titleEn: "Physics" }, "en")).toBe("Physics");
+    expect(programTitle({ title: "Fizika", titleEn: null }, "en")).toBe("Fizika");
+    expect(programTitle({ title: "Fizika", titleEn: "Physics" }, "lv")).toBe("Fizika");
   });
 });

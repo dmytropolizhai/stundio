@@ -16,6 +16,7 @@ import { SettingsView } from "../screens/settings-view";
 import { IdentitySheet } from "../screens/sheets/IdentitySheet.tsx";
 import { TabBar } from "../components/TabBar.tsx";
 import { ClassBadge } from "../components/ClassBadge.tsx";
+import { SubjectsView } from "../screens/subjects-view";
 import { clickAndSettle } from "./harness.tsx";
 
 const RTU_GROUP: UniversityGroupRef = {
@@ -23,13 +24,19 @@ const RTU_GROUP: UniversityGroupRef = {
   id: "38532",
   label: "RABA0 · 1. k. · 1. gr.",
   program: "Arhitektūra",
+  programEn: "Architecture",
+  course: 1,
+  number: "1",
 };
+/** How the picker and the chip say RTU_GROUP in Latvian. */
+const RTU_GROUP_LV = "RABA0 · 1. kurss · 1. grupa";
 const LU_GROUP: UniversityGroupRef = {
   university: "lu",
   id: "26R-21023-PLK-1",
-  label: "26R-21023 · Pilna laika: klātiene · 1-sem.",
+  label: "26R-21023 · Pilna laika: klātiene · 1. sem.",
   program: "Fizika",
 };
+const SEARCH = "Meklēt programmu, kodu vai grupu…";
 
 const boot = async (
   university: "rtu" | "lu" = "lu",
@@ -65,6 +72,10 @@ describe("OnboardingInstitution", () => {
   });
 });
 
+const search = async (value: string) => {
+  fireEvent.change(await screen.findByLabelText(SEARCH), { target: { value } });
+};
+
 describe("UniversityPicker", () => {
   it("walks LU program → group → subgroup and commits them together", async () => {
     const { store } = await boot("lu");
@@ -73,14 +84,13 @@ describe("UniversityPicker", () => {
 
     expect(screen.getByText("Ielādē programmu sarakstu…")).toBeDefined();
     await screen.findAllByText("Fizika");
+    expect(screen.getByAltText("LU")).toBeDefined();
 
-    fireEvent.change(screen.getByLabelText("Meklēt programmu vai kodu…"), {
-      target: { value: "21023" },
-    });
+    await search("21023");
+    // The program row, not the matching group that names the program under it.
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Fizika"));
+      fireEvent.click(screen.getByRole("button", { name: /^Fizika 21023/ }));
     });
-
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText(LU_GROUP.label));
     });
@@ -97,17 +107,16 @@ describe("UniversityPicker", () => {
     expect(onPicked).toHaveBeenCalled();
   });
 
-  it("lets the subgroup question be skipped", async () => {
+  it("finds an LU group straight from the search, whatever its program", async () => {
     const { store } = await boot("lu");
     wrap(store, <UniversityPicker />);
-    fireEvent.change(await screen.findByLabelText("Meklēt programmu vai kodu…"), {
-      target: { value: "21023" },
-    });
+    // The group's own code and semester — no program picked first.
+    await search("26R-21023 1. sem");
+    const groups = await screen.findByText("Grupas");
+    const list = groups.parentElement as HTMLElement;
+    expect(within(list).getByText(LU_GROUP.label)).toBeDefined();
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Fizika"));
-    });
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByText(LU_GROUP.label));
+      fireEvent.click(within(list).getByText(LU_GROUP.label));
     });
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("button", { name: "Visas apakšgrupas" }));
@@ -116,7 +125,29 @@ describe("UniversityPicker", () => {
     expect(store.getState().settings.universitySubgroup).toBeNull();
   });
 
-  it("commits an RTU group straight away — RTU has no subgroups", async () => {
+  it("looks up an RTU program's groups once a search narrows to it", async () => {
+    const { store, fake } = await boot("rtu");
+    wrap(store, <UniversityPicker />);
+    await search("RABA0");
+    expect(await screen.findByText(RTU_GROUP_LV)).toBeDefined();
+    expect(fake.requests.some((r) => r.url.endsWith("/findGroupByCourseId"))).toBe(true);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByText(RTU_GROUP_LV));
+    });
+    await waitFor(() => {
+      expect(store.getState().settings.universityGroup).toEqual(RTU_GROUP);
+    });
+  });
+
+  it("does not fetch RTU groups for a broad search", async () => {
+    const { store, fake } = await boot("rtu");
+    wrap(store, <UniversityPicker />);
+    await search("a");
+    await screen.findAllByText("Arhitektūra");
+    expect(fake.requests.some((r) => r.url.endsWith("/findGroupByCourseId"))).toBe(false);
+  });
+
+  it("commits an RTU group from its program straight away — RTU has no subgroups", async () => {
     const { store } = await boot("rtu");
     const onPicked = vi.fn();
     wrap(store, <UniversityPicker onPicked={onPicked} />);
@@ -126,12 +157,41 @@ describe("UniversityPicker", () => {
       fireEvent.click(screen.getAllByText("Arhitektūra")[0] as HTMLElement);
     });
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText(RTU_GROUP.label));
+      fireEvent.click(screen.getByText(RTU_GROUP_LV));
     });
     await waitFor(() => {
       expect(onPicked).toHaveBeenCalled();
     });
     expect(store.getState().settings.universityGroup).toEqual(RTU_GROUP);
+  });
+
+  it("shows the universities' English names to an English-speaking student", async () => {
+    const { store, fake } = await boot("rtu");
+    await store.getState().setLang("en");
+    wrap(store, <UniversityPicker />);
+    expect((await screen.findAllByText("Architecture")).length).toBeGreaterThan(0);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("radio", { name: "LU" }));
+    });
+    expect(await screen.findByText("Library Science and Information")).toBeDefined();
+    // LU's English page needs its language session.
+    expect(fake.requests.some((r) => r.url.endsWith("/lang/en"))).toBe(true);
+    // English names are searchable too.
+    fireEvent.change(screen.getByLabelText("Search program, code or group…"), {
+      target: { value: "library science" },
+    });
+    // The program, and its groups captioned with the English program name.
+    expect(screen.getByText("Groups")).toBeDefined();
+    expect(screen.getAllByText("Library Science and Information").length).toBeGreaterThan(1);
+  });
+
+  it("keeps Latvian names when the user asks for them", async () => {
+    const { store, fake } = await boot("lu");
+    await store.getState().setLang("en");
+    await store.getState().setUniversityNames("lv");
+    wrap(store, <UniversityPicker />);
+    expect(await screen.findByText("Bibliotēkzinātne un informācija")).toBeDefined();
+    expect(fake.requests.some((r) => r.url.endsWith("/lang/en"))).toBe(false);
   });
 
   it("goes back from the groups to the programs", async () => {
@@ -141,11 +201,27 @@ describe("UniversityPicker", () => {
     await clickAndSettle(() => {
       fireEvent.click(screen.getAllByText("Arhitektūra")[0] as HTMLElement);
     });
-    await screen.findByText(RTU_GROUP.label);
+    await screen.findByText(RTU_GROUP_LV);
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText(/RABA0 · Arhitektūra/));
     });
-    expect(screen.getByLabelText("Meklēt programmu vai kodu…")).toBeDefined();
+    expect(screen.getByLabelText(SEARCH)).toBeDefined();
+  });
+
+  it("retries a program's groups that failed to load", async () => {
+    const { store, fake } = await boot("rtu");
+    wrap(store, <UniversityPicker />);
+    await screen.findAllByText("Arhitektūra");
+    fake.offline = true;
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getAllByText("Arhitektūra")[0] as HTMLElement);
+    });
+    expect(await screen.findByText("Neizdevās ielādēt sarakstu")).toBeDefined();
+    fake.offline = false;
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Mēģināt vēlreiz" }));
+    });
+    expect(await screen.findByText(RTU_GROUP_LV)).toBeDefined();
   });
 
   it("switches university from the tabs", async () => {
@@ -157,14 +233,13 @@ describe("UniversityPicker", () => {
     });
     expect(store.getState().settings.university).toBe("rtu");
     await screen.findAllByText("Arhitektūra");
+    expect(screen.getByAltText("RTU")).toBeDefined();
   });
 
   it("says nothing matched", async () => {
     const { store } = await boot("lu");
     wrap(store, <UniversityPicker />);
-    fireEvent.change(await screen.findByLabelText("Meklēt programmu vai kodu…"), {
-      target: { value: "zzzz" },
-    });
+    await search("zzzz");
     expect(await screen.findByText("Nekas netika atrasts")).toBeDefined();
   });
 
@@ -188,10 +263,10 @@ describe("UniversityPicker", () => {
     await clickAndSettle(() => {
       fireEvent.click(screen.getAllByText("Arhitektūra")[0] as HTMLElement);
     });
-    await screen.findByText(RTU_GROUP.label);
+    await screen.findByText(RTU_GROUP_LV);
     fake.offline = true;
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText(RTU_GROUP.label));
+      fireEvent.click(screen.getByText(RTU_GROUP_LV));
     });
     await waitFor(() => {
       expect(store.getState().settings.universityGroup).toEqual(RTU_GROUP);
@@ -208,11 +283,50 @@ describe("university role chrome", () => {
     expect(within(schedule).queryByRole("button", { name: "Izmaiņas" })).toBeNull();
   });
 
-  it("badges the group label", async () => {
+  it("badges the group label in the app's language", async () => {
     const { store } = await boot("rtu");
     await store.getState().setUniversityGroup(RTU_GROUP);
+    const { unmount } = wrap(store, <ClassBadge onClick={vi.fn()} />);
+    expect(screen.getByText(RTU_GROUP_LV)).toBeDefined();
+    unmount();
+    await store.getState().setLang("en");
     wrap(store, <ClassBadge onClick={vi.fn()} />);
-    expect(screen.getByText(RTU_GROUP.label)).toBeDefined();
+    expect(screen.getByText("RABA0 · Year 1 · Group 1")).toBeDefined();
+  });
+
+  it("offers the names language in Settings", async () => {
+    const { store } = await boot("rtu");
+    await store.getState().setUniversityGroup(RTU_GROUP);
+    wrap(store, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: /^Nosaukumu valoda/ }));
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("radio", { name: "English" }));
+    });
+    expect(store.getState().settings.universityNames).toBe("en");
+  });
+
+  it("lists the group's own subjects, with their lecturers", async () => {
+    vi.useFakeTimers({ toFake: ["Date"], now: new Date("2026-10-14T08:00:00Z") });
+    try {
+      const { store } = await boot("lu");
+      await store.getState().setUniversityGroup(LU_GROUP);
+      await store.getState().refresh();
+      wrap(store, <SubjectsView />);
+      expect(screen.getAllByText("Fizika I").length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Barinovs/).length).toBeGreaterThan(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("logos every school on the onboarding step", async () => {
+    const { store } = await boot();
+    wrap(store, <OnboardingInstitution onSelect={vi.fn()} />);
+    expect(screen.getByAltText("RVT")).toBeDefined();
+    expect(screen.getByAltText("RTU")).toBeDefined();
+    expect(screen.getByAltText("LU")).toBeDefined();
   });
 
   it("offers the LU subgroup in Settings and hides RVT-only rows", async () => {

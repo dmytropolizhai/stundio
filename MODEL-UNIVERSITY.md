@@ -61,6 +61,10 @@ Event row (`data/rtu_events_38532_2026-10.json`):
   `", " + lecturerInfoText`.
 - Lecturers are `lecturerInfoText` split on `", "`.
 - Building = `room.roomName` before `" - "` (`"Ķīpsalas 6"`). Room label = `roomInfoText`.
+- English: `titleEN` on departments, programs and `getSemProgSubjects`, and
+  `eventTempNameEn` / `lecturerInfoTextEn` on events — RTU always sends both languages.
+  A subject's English name comes from the subject list first, else from splitting
+  `eventTempNameEn` the same way.
 - `statusId` is `1` for nearly every row. `3` appears on a few rows that look like ordinary
   lessons, and the official site renders every status identically. Its meaning is unknown, so
   Stundio does not treat it as a cancellation.
@@ -96,19 +100,43 @@ Event row (`data/lu_group_26R-21023-PLK-1_chrono.html`):
 ```
 
 - The subject is `data-module`. `data-title` gets a `"- Cancelled"` suffix on cancelled rows.
+  `data-module-en` is its English name — or the Latvian one again when LU has none.
 - `data-state` is `Live` or `Cancelled`. A cancelled row stays in place, and the
   replacement (if there is one) is a separate `Live` row at the same time.
 - `data-staff`: lecturers, `", "`-separated.
 - The group page also lists events of the group's **subgroups** ("child groups":
-  `fiziviens`, `fizidivi`, …). `data-groups` is a `", "`-separated list of
-  `<group label>,[<subgroup>,]<module code>`. The group label is the page's
-  `<span class="gh-group-name">`. An entry for our label with a subgroup token marks a
-  subgroup-only event. An entry without one marks a whole-group event.
+  `fiziviens`, `fizidivi`, …). `data-groups` is a list of
+  `<group label>,[<subgroup>,]<module code>` entries. The group label is the page's
+  `<span class="gh-group-name gh-group-name--full">` (plain `gh-group-name` before). An entry
+  for our label with a subgroup token marks a subgroup-only event; one without marks a
+  whole-group event.
+- **LU reformatted all of this on 2026-10-12** without notice. Until then labels and entries
+  used a bare `","` inside and `", "` between entries (`…,1-sem.,fiziviens,FiziB011, …`);
+  since then they use `", "` inside and `"; "` between entries (`…, 1. sem., fiziviens,
+  FiziB011; …`), and the semester reads `1. sem.` instead of `1-sem.`. The parser reads both:
+  it cuts entries at the event's own module code rather than at a separator, and fixtures of
+  both formats are kept (`data/lu_group_*_chrono_v1.html` is the old one).
+- **English**: LU keeps the interface language in its signed Flask `session` cookie, set by
+  `GET /lang/en` (a 302). With that cookie the front page carries English faculty, program and
+  level names (same programs and groups, same order — `data/lu_index_en.html`). On device the
+  client asks `/lang/en` without following the redirect and sends the cookie back; in a
+  browser, which can neither read nor send it, the app adds `X-University-Lang: en` and the
+  `/api-university` proxy does the round trip. Group labels stay Latvian either way.
 - Attribute values are HTML-escaped (`&quot;`, `&amp;`, `&#x…;`).
 - Without the date filter the page holds the whole semester (~700 KB), so Stundio asks for
   just the window it needs.
 
-## 3. How Stundio maps them
+## 3. Names: official English, no machine translation
+
+Both universities publish official English names for their foreign students. Settings →
+"Names language" picks Latvian, English, or automatic (Latvian in a Latvian app, English in
+every other language). A name the university never translated stays Latvian. There is no
+machine translation into Russian or Ukrainian: it would mean sending the timetable to a third-
+party service (no backend, AGENT.md), and a mistranslated course name is worse than the
+official one. RTU group labels ("1. kurss · 2. grupa") are built from the course and number,
+so they are said in the app's own language.
+
+## 4. How Stundio maps them
 
 Both sources normalise to one `UniversityEvent[]` per group (`lib/university/`). A day is
 turned into the same `ResolvedDay` the EduPage path produces (`resolveUniversityDay`):
@@ -120,7 +148,7 @@ university-specific code.
 What does not exist for universities, and is therefore hidden or empty: substitutions and the
 Changes tab's feed, building pinning, teacher mode, and RVT's school announcements.
 
-## 4. Refresh policy
+## 5. Refresh policy
 
 - Events: the sync window is the viewed week plus the next one (`universityWindow`). That is
   one LU request, or one or two RTU month requests. It is refetched when the cached window
@@ -128,4 +156,8 @@ Changes tab's feed, building pinning, teacher mode, and RVT's school announcemen
   pull-to-refresh. Cached events outside the fetched window are kept, so weeks you already
   browsed stay available offline. Events older than 14 days are pruned.
 - Catalogue (programs / groups): fetched live while picking, never cached. Picking a group
-  needs a connection, just as picking an RVT class on first run does.
+  needs a connection, just as picking an RVT class on first run does. The LU front page is
+  ~450 KB and slow (~6 s); its English twin doubles that, so it is only read when names are
+  shown in English.
+- Search reaches groups directly. LU lists every group on its front page; RTU lists groups per
+  program, so the picker fetches them once a query narrows to four programs or fewer.

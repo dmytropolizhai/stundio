@@ -66,8 +66,13 @@ export const getHtml = async (
   http: HttpClient,
   university: UniversityId,
   path: string,
+  headers?: Record<string, string>,
 ): Promise<string> => {
-  const res = await http({ url: `${universityBaseUrl(university)}${path}`, method: "GET" });
+  const res = await http({
+    url: `${universityBaseUrl(university)}${path}`,
+    method: "GET",
+    ...(headers === undefined ? {} : { headers }),
+  });
   checkStatus(path, res.status, res.data);
   if (typeof res.data !== "string") {
     throw new UniversityError(`${path}: response was not HTML`, res.data);

@@ -7,6 +7,7 @@ import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { useSubjects } from "@/ui/hooks/useSubjects.ts";
 import { SubjectNoteSheet } from "@/ui/screens/sheets/SubjectNoteSheet.tsx";
 import { useT } from "@/ui/i18n";
+import { usePersona } from "@/ui/persona";
 import type { SubjectRef } from "@/lib/edupage";
 import { SubjectCard } from "./subject-card.tsx";
 import { TeacherList } from "./teacher-list.tsx";
@@ -24,7 +25,8 @@ import { TeacherList } from "./teacher-list.tsx";
 export const SubjectsView = () => {
   const t = useT();
   const ready = useAppStore((s) => s.ready);
-  const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
+  // The role's own selection, not `selectedClassId`: a university student has no class.
+  const { identified, profile } = usePersona();
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const { subjects, teachers } = useSubjects();
@@ -33,8 +35,8 @@ export const SubjectsView = () => {
 
   const body = () => {
     if (!ready) return <DaySkeleton rows={4} />;
-    if (selectedClassId === null) {
-      return <StateMessage icon="graduation-cap" title={t("day.noClass")} />;
+    if (!identified) {
+      return <StateMessage icon={profile.icon} title={t(profile.noneSelected)} />;
     }
     if (subjects.length === 0) {
       return (

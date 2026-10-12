@@ -41,6 +41,7 @@ export const parseRtuPrograms = (data: unknown): UniversityProgram[] => {
   return data.flatMap((department) => {
     if (!isRecord(department) || !Array.isArray(department["program"])) return [];
     const faculty = str(department["titleLV"]) ?? "";
+    const facultyEn = str(department["titleEN"]);
     return department["program"].flatMap((program): UniversityProgram[] => {
       if (!isRecord(program)) return [];
       const id = num(program["programId"]);
@@ -54,6 +55,9 @@ export const parseRtuPrograms = (data: unknown): UniversityProgram[] => {
           title,
           faculty,
           level: null,
+          titleEn: str(program["titleEN"]),
+          facultyEn,
+          levelEn: null,
         },
       ];
     });
@@ -81,17 +85,23 @@ export const parseRtuGroups = (data: unknown, program: UniversityProgram): Unive
         id: String(id),
         label: rtuGroupLabel(program.code, course, group),
         program: program.title,
+        programEn: program.titleEn,
+        course,
+        number: group,
       },
     ];
   });
 };
 
-/** Subject titles of one group, for pulling the subject out of an event's name. */
-export const parseRtuSubjects = (data: unknown): string[] =>
+export type RtuSubject = { title: string; titleEn: string | null; code: string | null };
+
+/** One group's subjects, for pulling the subject — and its code and English name — out of an event. */
+export const parseRtuSubjects = (data: unknown): RtuSubject[] =>
   Array.isArray(data)
-    ? data.flatMap((s) => {
-        const title = isRecord(s) ? str(s["titleLV"]) : null;
-        return title === null ? [] : [title];
+    ? data.flatMap((s): RtuSubject[] => {
+        if (!isRecord(s)) return [];
+        const title = str(s["titleLV"]);
+        return title === null ? [] : [{ title, titleEn: str(s["titleEN"]), code: str(s["code"]) }];
       })
     : [];
 
@@ -140,7 +150,12 @@ export const splitRtuEventName = (
   return { kind, subject: subject.trim() === "" ? name : subject.trim() };
 };
 
-export const parseRtuEvents = (data: unknown, subjects: readonly string[]): UniversityEvent[] => {
+export const parseRtuEvents = (
+  data: unknown,
+  subjects: readonly RtuSubject[],
+): UniversityEvent[] => {
+  const titles = subjects.map((s) => s.title);
+  const titlesEn = subjects.flatMap((s) => (s.titleEn === null ? [] : [s.titleEn]));
   if (!Array.isArray(data)) return [];
   return data.flatMap((row): UniversityEvent[] => {
     if (!isRecord(row)) return [];
@@ -151,7 +166,14 @@ export const parseRtuEvents = (data: unknown, subjects: readonly string[]): Univ
     if (name === null || epoch === null || start === null || end === null) return [];
 
     const lecturerText = str(row["lecturerInfoText"]);
-    const { kind, subject } = splitRtuEventName(name, lecturerText, subjects);
+    const { kind, subject } = splitRtuEventName(name, lecturerText, titles);
+    const known = subjects.find((s) => s.title === subject);
+    const nameEn = str(row["eventTempNameEn"]);
+    const english =
+      nameEn === null ? null : splitRtuEventName(nameEn, str(row["lecturerInfoTextEn"]), titlesEn);
+    // The group's own English title first; else the English event name, split the same way.
+    const subjectEn =
+      known?.titleEn ?? (english !== null && english.subject !== subject ? english.subject : null);
     const room = isRecord(row["room"]) ? row["room"] : null;
     const roomName = room === null ? null : str(room["roomName"]);
     const separator = roomName?.indexOf(" - ") ?? -1;
@@ -163,8 +185,10 @@ export const parseRtuEvents = (data: unknown, subjects: readonly string[]): Univ
         start,
         end,
         subject,
-        subjectCode: null,
+        subjectEn,
+        subjectCode: known?.code ?? null,
         kind,
+        kindEn: english?.kind ?? null,
         lecturers:
           lecturerText === null
             ? []

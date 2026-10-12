@@ -49,6 +49,8 @@ export type PersonaProfile = {
    * lessons to place and a Changes tab to read. A university's events already are the changes.
    */
   hasChangeFeed: boolean;
+  /** The source publishes official English names too, so Settings offers the choice. */
+  hasEnglishNames: boolean;
   /** The one-time "teachers can use Stundio too" sheet — pointless once you are one. */
   seesTeacherAnnouncement: boolean;
   /** The Customization sheet's per-role bits: its preview card and the subject-colour copy. */
@@ -77,6 +79,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     changeIdentityLabel: "day.changeClass",
     hasSubgroups: true,
     hasChangeFeed: true,
+    hasEnglishNames: false,
     seesTeacherAnnouncement: true,
     customization: {
       previewLeadsWith: "subject",
@@ -95,6 +98,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     changeIdentityLabel: "onboarding.teacher.title",
     hasSubgroups: false,
     hasChangeFeed: true,
+    hasEnglishNames: false,
     seesTeacherAnnouncement: false,
     customization: {
       previewLeadsWith: "group",
@@ -118,6 +122,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
     changeIdentityLabel: "university.change",
     hasSubgroups: true,
     hasChangeFeed: false,
+    hasEnglishNames: true,
     seesTeacherAnnouncement: false,
     customization: {
       previewLeadsWith: "subject",

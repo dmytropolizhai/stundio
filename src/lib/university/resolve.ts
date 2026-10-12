@@ -18,6 +18,7 @@ import {
 import {
   UNIVERSITY_SHORT,
   type UniversityEvent,
+  type UniversityNames,
   type UniversityId,
   type UniversitySchedule,
 } from "./types.ts";
@@ -85,15 +86,20 @@ export const slotsOf = (
 export const isCovered = (schedule: UniversitySchedule, date: ISODate): boolean =>
   schedule.covered.some((r) => r.from <= date && date <= r.to);
 
-const toLesson = (periods: readonly Period[], event: UniversityEvent): ResolvedLesson => {
+const toLesson = (
+  periods: readonly Period[],
+  event: UniversityEvent,
+  names: UniversityNames,
+): ResolvedLesson => {
   const { period, span } = slotsOf(periods, event.start, event.end);
   const subjectId = event.subjectCode ?? event.subject;
+  const name = names === "en" ? (event.subjectEn ?? event.subject) : event.subject;
   return {
     period,
     start: event.start,
     end: event.end,
     span,
-    subject: { id: subjectId, name: event.subject, short: event.subject },
+    subject: { id: subjectId, name, short: name },
     teachers: event.lecturers.map((name) => ({ id: name, name, short: name })),
     rooms: event.room === null ? [] : [{ id: event.room, name: event.room, short: event.room }],
     group: event.subgroup,
@@ -115,6 +121,8 @@ export const listUniversitySubgroups = (schedule: UniversitySchedule | null): st
 export type UniversityResolveOptions = {
   /** Show only whole-group events plus this subgroup's. `null` shows everything. */
   subgroup?: string | null;
+  /** Which of the university's own names to show; English falls back to Latvian. */
+  names?: UniversityNames;
 };
 
 /**
@@ -135,7 +143,7 @@ export const resolveUniversityDay = (
         e.date === date && (subgroup === null || e.subgroup === null || e.subgroup === subgroup),
     )
     .sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end))
-    .map((e) => toLesson(periods, e));
+    .map((e) => toLesson(periods, e, options.names ?? "lv"));
 
   const buildings = [
     ...new Set(lessons.flatMap((l) => (l.building === undefined ? [] : [l.building]))),

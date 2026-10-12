@@ -23,8 +23,15 @@ export const RTU = {
 
 export const LU = {
   index: "lu_index.html",
+  indexEn: "lu_index_en.html",
+  /** The markup since 2026-10-12 afternoon: labels and `data-groups` joined by ", ". */
   chrono: "lu_group_26R-21023-PLK-1_chrono.html",
+  /** The markup until then: joined by a bare ",". Kept so the parser reads both. */
+  chronoV1: "lu_group_26R-21023-PLK-1_chrono_v1.html",
 } as const;
+
+/** The value LU's `/lang/en` sets — any opaque string does for the fake. */
+export const LU_EN_SESSION = "eyJsYW5nIjoiZW4ifQ.test";
 
 export type FakeUniversity = {
   http: HttpClient;
@@ -65,7 +72,17 @@ export const createFakeUniversity = (): FakeUniversity => {
         }
       }
       if (url.host === "lekciju-saraksts.lu.lv") {
-        if (url.pathname === "/") return answer(LU.index);
+        if (url.pathname === "/lang/en") {
+          return Promise.resolve({
+            status: 302,
+            data: "",
+            headers: { "Set-Cookie": `session=${LU_EN_SESSION}; HttpOnly; Path=/` },
+          });
+        }
+        if (url.pathname === "/") {
+          const english = req.headers?.["Cookie"] === `session=${LU_EN_SESSION}`;
+          return answer(english ? LU.indexEn : LU.index);
+        }
         if (url.pathname.endsWith("/hronologiski")) return answer(LU.chrono);
       }
       return Promise.reject(new Error(`unexpected url ${req.url}`));

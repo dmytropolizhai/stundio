@@ -6,7 +6,12 @@
 import type { Building, DaySubstitutions, ISODate, ISODateTime, Timetable } from "@/lib/edupage";
 import type { RawTimetableListEntry } from "@/lib/edupage";
 import type { Persona, TeacherView } from "@/lib/persona";
-import type { UniversityGroupRef, UniversityId, UniversitySchedule } from "@/lib/university";
+import type {
+  UniversityGroupRef,
+  UniversityId,
+  UniversityNamesSetting,
+  UniversitySchedule,
+} from "@/lib/university";
 
 export type CachedTimetableList = {
   entries: RawTimetableListEntry[];
@@ -124,6 +129,8 @@ export type Settings = {
   universityGroup: UniversityGroupRef | null;
   /** University mode: an LU child group to narrow the day to; `null` shows them all. */
   universitySubgroup: string | null;
+  /** University mode: the university's own Latvian or English names; `auto` follows `lang`. */
+  universityNames: UniversityNamesSetting;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -166,6 +173,7 @@ export const DEFAULT_SETTINGS: Settings = {
   university: "rtu",
   universityGroup: null,
   universitySubgroup: null,
+  universityNames: "auto",
 };
 
 export type SubjectNote = {

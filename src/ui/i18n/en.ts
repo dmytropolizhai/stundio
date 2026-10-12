@@ -437,7 +437,7 @@ export const en: Dict = {
   "university.change": "Change group",
   "university.picker.title": "Pick your group",
   "university.picker.subtitle": "Find your study program, then your group",
-  "university.search": "Search program or code…",
+  "university.search": "Search program, code or group…",
   "university.loading": "Loading programs…",
   "university.groupsLoading": "Loading groups…",
   "university.loadError": "Couldn't load the list",
@@ -449,4 +449,13 @@ export const en: Dict = {
   "university.subgroup.all": "All subgroups",
   "university.subgroup": "Subgroup",
   "university.institution": "University",
+  "university.groups": "Groups",
+  "university.programs": "Programs",
+  "university.rtuGroup": "{code} · Year {course} · Group {group}",
+  "settings.universityNames": "Names language",
+  "settings.universityNamesHint":
+    "Subject and program names — the university's official ones, in Latvian or English",
+  "settings.universityNames.auto": "Automatic",
+  "settings.universityNames.lv": "Latvian",
+  "settings.universityNames.en": "English",
 };

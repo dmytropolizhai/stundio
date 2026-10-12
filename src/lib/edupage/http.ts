@@ -22,11 +22,18 @@ export type HttpRequest = {
   method?: "GET" | "POST";
   /** Send `body` as `application/x-www-form-urlencoded` — RTU's endpoints take nothing else. */
   form?: Record<string, string>;
+  /**
+   * `false` hands back a redirect as-is, so its `Set-Cookie` can be read (LU's language switch).
+   * Native only: a browser hides a redirect's headers from script.
+   */
+  followRedirects?: boolean;
 };
 
 export type HttpResponse = {
   status: number;
   data: unknown;
+  /** Response headers, where the transport exposes them (native always does). */
+  headers?: Record<string, string>;
 };
 
 export type HttpClient = (req: HttpRequest) => Promise<HttpResponse>;
@@ -42,10 +49,21 @@ const baseHeaders = (extra?: Record<string, string>): Record<string, string> => 
 const FORM_CONTENT_TYPE = "application/x-www-form-urlencoded; charset=UTF-8";
 
 /** Native HTTP — the real transport on Android. */
-export const capacitorHttp: HttpClient = async ({ url, body, headers, method, form }) => {
+export const capacitorHttp: HttpClient = async ({
+  url,
+  body,
+  headers,
+  method,
+  form,
+  followRedirects,
+}) => {
   if (method === "GET") {
-    const res = await CapacitorHttp.get({ url, headers: { "User-Agent": USER_AGENT, ...headers } });
-    return { status: res.status, data: res.data };
+    const res = await CapacitorHttp.get({
+      url,
+      headers: { "User-Agent": USER_AGENT, ...headers },
+      ...(followRedirects === false ? { disableRedirects: true } : {}),
+    });
+    return { status: res.status, data: res.data, headers: res.headers };
   }
   const res = await CapacitorHttp.post({
     url,

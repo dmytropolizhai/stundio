@@ -72,6 +72,39 @@ describe("Cloudflare Pages Function: api-university proxy", () => {
     expect(fetchMock.mock.calls[1]?.[0]).toBe("https://nodarbibas.rtu.lv/");
   });
 
+  it("fetches LU in English by making the language round trip itself", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation((input) =>
+      Promise.resolve(
+        (input as string).endsWith("/lang/en")
+          ? // A plain `Response` hides Set-Cookie from script; Workers' fetch does not.
+            ({
+              status: 302,
+              headers: new Headers({ "set-cookie": "session=abc.def; HttpOnly; Path=/" }),
+            } as Response)
+          : new Response("<html>en</html>"),
+      ),
+    );
+    const res = await onRequest(
+      ctx("https://s.dev/api-university/lu/", { headers: { "X-University-Lang": "en" } }),
+    );
+    expect(await res.text()).toBe("<html>en</html>");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("https://lekciju-saraksts.lu.lv/lang/en");
+    expect(fetchMock.mock.calls[0]?.[1]?.redirect).toBe("manual");
+    const headers = fetchMock.mock.calls[1]?.[1]?.headers as Record<string, string>;
+    expect(headers["Cookie"]).toBe("session=abc.def");
+  });
+
+  it("goes on in Latvian when LU sets no session", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(() => Promise.resolve(new Response("<html>lv</html>")));
+    await onRequest(
+      ctx("https://s.dev/api-university/lu/", { headers: { "X-University-Lang": "en" } }),
+    );
+    const headers = fetchMock.mock.calls[1]?.[1]?.headers as Record<string, string>;
+    expect(headers["Cookie"]).toBeUndefined();
+  });
+
   it("reports an upstream failure as 502", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("down"));
     const res = await onRequest(ctx("https://s.dev/api-university/rtu/"));

@@ -444,7 +444,7 @@ export const lv = {
   "university.change": "Mainīt grupu",
   "university.picker.title": "Izvēlies savu grupu",
   "university.picker.subtitle": "Atrodi savu studiju programmu, tad grupu",
-  "university.search": "Meklēt programmu vai kodu…",
+  "university.search": "Meklēt programmu, kodu vai grupu…",
   "university.loading": "Ielādē programmu sarakstu…",
   "university.groupsLoading": "Ielādē grupas…",
   "university.loadError": "Neizdevās ielādēt sarakstu",
@@ -456,6 +456,15 @@ export const lv = {
   "university.subgroup.all": "Visas apakšgrupas",
   "university.subgroup": "Apakšgrupa",
   "university.institution": "Augstskola",
+  "university.groups": "Grupas",
+  "university.programs": "Programmas",
+  "university.rtuGroup": "{code} · {course}. kurss · {group}. grupa",
+  "settings.universityNames": "Nosaukumu valoda",
+  "settings.universityNamesHint":
+    "Priekšmetu un programmu nosaukumi — augstskolas oficiālie, latviski vai angliski",
+  "settings.universityNames.auto": "Automātiski",
+  "settings.universityNames.lv": "Latviski",
+  "settings.universityNames.en": "English",
 } as const;
 
 export type Dict = Record<keyof typeof lv, string>;

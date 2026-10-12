@@ -12,7 +12,7 @@
  *   substitutions   → ALWAYS refetch today + next school day
  *
  * A university student (RTU / LU) reads none of that: `syncUniversity` fetches the group's
- * dated events for the viewed week and the next instead (MODEL-UNIVERSITY.md §4).
+ * dated events for the viewed week and the next instead (MODEL-UNIVERSITY.md §5).
  */
 import {
   EdupageError,
@@ -417,11 +417,13 @@ export const createSyncEngine = (deps: SyncDeps) => {
 
   /*
    * The university catalogue, for the group picker. Live on purpose and never cached: it is
-   * only read while picking, which needs a connection anyway (MODEL-UNIVERSITY.md §4). It lives
+   * only read while picking, which needs a connection anyway (MODEL-UNIVERSITY.md §5). It lives
    * here rather than in the picker so the UI still never holds an HTTP client.
    */
-  const universityPrograms = (university: UniversityId): Promise<UniversityProgramEntry[]> =>
-    fetchUniversityPrograms(http, university);
+  const universityPrograms = (
+    university: UniversityId,
+    english = false,
+  ): Promise<UniversityProgramEntry[]> => fetchUniversityPrograms(http, university, english);
   const universityGroups = (program: UniversityProgramEntry): Promise<UniversityGroupRef[]> =>
     fetchUniversityGroups(http, program);
   /**
