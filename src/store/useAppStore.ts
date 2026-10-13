@@ -25,10 +25,17 @@ import {
   type Timetable,
 } from "@/lib/edupage";
 import { weekDates } from "@/lib/schedule";
-import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
+import {
+  DEFAULT_SETTINGS,
+  type AppCache,
+  type Settings,
+  type SubjectNote,
+  type TransitDestination,
+} from "@/db";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
+import { getTransitRoutes, type TransitRoute, type TransitRouteQuery } from "@/lib/commute";
 
 /**
  * Where a tapped notification wants the app to go. Set by the notification-tap listener
@@ -56,6 +63,9 @@ export type AppState = {
    */
   manualRefreshCount: number;
   pendingNavigation: NotificationNavigationTarget | null;
+  transitRoutes: TransitRoute[];
+  transitRoutesLoading: boolean;
+  transitRoutesError: "missing-key" | "request-failed" | null;
 
   hydrate: () => Promise<void>;
   refresh: (options?: {
@@ -74,6 +84,8 @@ export type AppState = {
   setConnectivity: (online: boolean) => void;
   setClass: (classId: string | null) => Promise<void>;
   setBuilding: (building: Building | null) => Promise<void>;
+  setCommuteHome: (value: string) => Promise<void>;
+  setTransitDestinations: (value: TransitDestination[]) => Promise<void>;
   /** `null` shows every division merged — only meaningful for the currently selected class. */
   setSubgroup: (subgroup: string | null) => Promise<void>;
   setPersona: (persona: Settings["persona"]) => Promise<void>;
@@ -126,6 +138,7 @@ export type AppState = {
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
   clearPendingNavigation: () => void;
+  loadTransitRoutes: (query: TransitRouteQuery) => Promise<void>;
   /** No-op when the user has opted out. Screen views, manual refreshes — nothing PII-bearing. */
   trackEvent: (event: string) => void;
   resolvedDay: (date: ISODate, classId?: string) => ResolvedDay | null;
@@ -175,6 +188,7 @@ const createResolveMemo = () => {
 
 export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: StoreDeps) => {
   const memo = createResolveMemo();
+  let transitRequestId = 0;
 
   return createStore<AppState>()((set, get) => {
     const persist = async (patch: Partial<Settings>): Promise<void> => {
@@ -186,7 +200,18 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
 
     /** Pulls everything the cache currently holds into state. */
     const readCache = async (): Promise<void> => {
-      const [settings, list] = await Promise.all([cache.getSettings(), cache.getTimetableList()]);
+      const [storedSettings, list] = await Promise.all([
+        cache.getSettings(),
+        cache.getTimetableList(),
+      ]);
+      const transitDestinations = storedSettings.transitDestinations.filter(
+        (destination) =>
+          destination.id !== "rvt-main-building" &&
+          destination.address !== "Krišjāņa Valdemāra iela 1C, Rīga",
+      );
+      const settings = { ...storedSettings, transitDestinations };
+      if (transitDestinations.length !== storedSettings.transitDestinations.length)
+        await cache.putSettings(settings);
       const metas =
         list === null ? [] : list.entries.map((e) => toTimetableMeta(e, list.fetchedAt));
 
@@ -224,6 +249,9 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       lastError: null,
       manualRefreshCount: 0,
       pendingNavigation: null,
+      transitRoutes: [],
+      transitRoutesLoading: false,
+      transitRoutesError: null,
 
       hydrate: readCache,
 
@@ -259,9 +287,31 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
         }
       },
 
+      loadTransitRoutes: async (query) => {
+        const requestId = ++transitRequestId;
+        set({ transitRoutesLoading: true, transitRoutesError: null });
+        try {
+          const transitRoutes = await getTransitRoutes(query);
+          if (requestId === transitRequestId) set({ transitRoutes, transitRoutesLoading: false });
+        } catch (error) {
+          if (requestId === transitRequestId) {
+            set({
+              transitRoutes: [],
+              transitRoutesLoading: false,
+              transitRoutesError:
+                error instanceof Error && error.message === "missing-key"
+                  ? "missing-key"
+                  : "request-failed",
+            });
+          }
+        }
+      },
+
       // A subgroup label from the previous class means nothing for the new one, so it resets.
       setClass: (classId) => persist({ selectedClassId: classId, subgroup: null }),
       setBuilding: (building) => persist({ building }),
+      setCommuteHome: (commuteHome) => persist({ commuteHome }),
+      setTransitDestinations: (transitDestinations) => persist({ transitDestinations }),
       setSubgroup: (subgroup) => persist({ subgroup }),
       setPersona: (persona) => persist({ persona }),
       setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),

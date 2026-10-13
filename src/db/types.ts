@@ -27,7 +27,13 @@ export type SubjectColorTone = "amber" | "sky" | "lilac" | "pink" | "mint" | "li
  */
 export type SubjectColorValue = SubjectColorTone | `#${string}`;
 
+export type TransitDestination = { id: string; label: string; address: string };
+
 export type Settings = {
+  /** Saved commute origin used by the Transit planner. */
+  commuteHome: string;
+  /** User-saved starting addresses shown beneath the Rīgas Satiksme live map. */
+  transitDestinations: TransitDestination[];
   selectedClassId: string | null;
   building: Building | null;
   /**
@@ -120,6 +126,8 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
+  commuteHome: "",
+  transitDestinations: [],
   selectedClassId: null,
   building: null,
   subgroup: null,
