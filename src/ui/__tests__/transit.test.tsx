@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import type { Timetable } from "@/lib/edupage";
 import { TransitView } from "../screens/transit-view";
+import { LiveMapCard, SLOW_MAP_MS } from "../screens/transit-view/live-map-card.tsx";
 import { CommuteSection } from "../screens/settings-view/commute-section.tsx";
 import { SettingsView } from "../screens/settings-view";
 import { bootHarness, clickAndSettle, type Harness } from "./harness.tsx";
@@ -232,5 +233,74 @@ describe("Commute settings", () => {
       void harness.store.getState().setPersona("teacher");
     });
     expect(screen.queryByRole("textbox", { name: "Home address" })).toBeNull();
+  });
+});
+
+describe("Live map connection warning", () => {
+  const frame = () => screen.getByTitle("Rīgas satiksme live transit map");
+  const warning = () => screen.queryByRole("status");
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("warns while offline and reloads the map once the connection is back", async () => {
+    const harness = await setup();
+    harness.store.setState({ syncStatus: "offline" });
+    wrap(harness, <LiveMapCard />);
+    expect(warning()?.textContent).toContain("No internet connection");
+    const offlineFrame = frame();
+
+    act(() => {
+      harness.store.setState({ syncStatus: "idle" });
+    });
+    expect(warning()).toBeNull();
+    expect(frame()).not.toBe(offlineFrame);
+  });
+
+  it("warns about a slow connection only when the map has not loaded in time", async () => {
+    const harness = await setup();
+    vi.useFakeTimers();
+    wrap(harness, <LiveMapCard />);
+    act(() => {
+      vi.advanceTimersByTime(SLOW_MAP_MS - 1);
+    });
+    expect(warning()).toBeNull();
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(warning()?.textContent).toContain("Slow connection");
+
+    fireEvent.load(frame());
+    expect(warning()).toBeNull();
+  });
+
+  it("stays quiet when the map loads quickly", async () => {
+    const harness = await setup();
+    vi.useFakeTimers();
+    wrap(harness, <LiveMapCard />);
+    fireEvent.load(frame());
+    act(() => {
+      vi.advanceTimersByTime(SLOW_MAP_MS);
+    });
+    expect(warning()).toBeNull();
+  });
+
+  it("restarts the slow-load clock for each reload after going offline", async () => {
+    const harness = await setup();
+    vi.useFakeTimers();
+    wrap(harness, <LiveMapCard />);
+    fireEvent.load(frame());
+    act(() => {
+      harness.store.setState({ syncStatus: "offline" });
+    });
+    act(() => {
+      harness.store.setState({ syncStatus: "idle" });
+    });
+    expect(warning()).toBeNull();
+    act(() => {
+      vi.advanceTimersByTime(SLOW_MAP_MS);
+    });
+    expect(warning()?.textContent).toContain("Slow connection");
   });
 });

@@ -10,8 +10,8 @@ import { dayProgress } from "@/lib/schedule";
 import { useNow } from "@/ui/hooks/useNow.ts";
 import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
+import { LiveMapCard } from "./live-map-card.tsx";
 
-const LIVE_MAP_URL = "https://saraksti.lv/#riga/map";
 const googleTransitUrl = (building: string, origin: string) => {
   const params = new URLSearchParams({
     api: "1",
@@ -196,21 +196,7 @@ export const TransitView = () => {
           </form>
         </Card>
 
-        <Card className="mb-4 p-4">
-          <h2 className="mb-1 font-display text-title font-semibold text-strong">
-            {t("transit.live.title")}
-          </h2>
-          <p className="mb-3 font-text text-body-sm text-muted">{t("transit.live.description")}</p>
-          <div className="overflow-hidden rounded-2xl bg-sunken shadow-card">
-            <iframe
-              title={t("transit.live.frameTitle")}
-              src={LIVE_MAP_URL}
-              referrerPolicy="strict-origin-when-cross-origin"
-              className="h-[min(58svh,660px)] min-h-[400px] w-full border-0 bg-app"
-            />
-          </div>
-          <p className="mt-2 font-text text-caption text-muted">{t("transit.live.source")}</p>
-        </Card>
+        <LiveMapCard />
       </div>
     </div>
   );

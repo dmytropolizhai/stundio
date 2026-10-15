@@ -218,6 +218,10 @@ export const lv = {
     "Apskati transportlīdzekļu atrašanās vietas kartē un reāllaika pienākšanas laikus pieturās.",
   "transit.live.source": "Tiešraides karte no Rīgas satiksmes",
   "transit.live.frameTitle": "Rīgas satiksmes reāllaika transporta karte",
+  "transit.live.offline":
+    "Nav interneta savienojuma — reāllaika karti nevar ielādēt. Tā ielādēsies, kad savienojums atjaunosies.",
+  "transit.live.slow":
+    "Lēns savienojums — karte ielādējas ilgi, un transporta atrašanās vietas var kavēties.",
   "transit.destinations.building": "Galamērķa ēka",
   "transit.destinations.chooseBuilding": "Izvēlies ēku",
   "transit.destinations.buildingNeeded":

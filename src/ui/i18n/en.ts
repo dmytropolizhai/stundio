@@ -210,6 +210,10 @@ export const en: Dict = {
     "See public transport vehicles on the map and live arrival times at stops.",
   "transit.live.source": "Live map from Rīgas satiksme",
   "transit.live.frameTitle": "Rīgas satiksme live transit map",
+  "transit.live.offline":
+    "No internet connection — the live map can't load. It will reload once you're back online.",
+  "transit.live.slow":
+    "Slow connection — the live map is taking a while to load and vehicle positions may lag.",
   "transit.destinations.building": "Destination building",
   "transit.destinations.chooseBuilding": "Choose a building",
   "transit.destinations.buildingNeeded":
