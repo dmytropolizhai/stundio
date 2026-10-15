@@ -90,6 +90,9 @@ describe("TabBar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Izmaiņas" }));
     expect(onChange).toHaveBeenCalledWith("changes");
 
+    fireEvent.click(screen.getByRole("button", { name: "Transports" }));
+    expect(onChange).toHaveBeenCalledWith("transit");
+
     fireEvent.click(screen.getByRole("button", { name: "Iestatījumi" }));
     expect(onChange).toHaveBeenCalledWith("settings");
   });
@@ -113,7 +116,7 @@ describe("TabBar", () => {
         .getAllByRole("button")
         .map((button) => button.getAttribute("aria-label"));
     expect(names(schedule)).toEqual(["Sākums", "Nedēļa", "Izmaiņas"]);
-    expect(names(personal)).toEqual(["Priekšmeti", "Iestatījumi"]);
+    expect(names(personal)).toEqual(["Priekšmeti", "Transports", "Iestatījumi"]);
     // The personal pill is icon-only: its names reach assistive tech, not the screen.
     expect(within(schedule).getByText("Sākums")).toBeDefined();
     expect(within(personal).queryByText("Iestatījumi")).toBeNull();
@@ -126,6 +129,7 @@ describe("TabBar", () => {
     const personal = screen.getByRole("navigation", { name: "Personīgi" });
     expect(within(personal).getAllByRole("button")).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "Priekšmeti" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Transports" })).toBeNull();
   });
 
   it("collapses the Subjects slot while it is switched off, and grows it back", async () => {
@@ -135,14 +139,16 @@ describe("TabBar", () => {
 
     // Still in the DOM — a zero-width column, so switching it on can animate — but out of reach.
     expect(screen.queryByRole("button", { name: "Priekšmeti" })).toBeNull();
-    expect(personal.style.gridTemplateColumns).toBe("0px calc(var(--nav-height) - 12px)");
+    expect(personal.style.gridTemplateColumns).toBe(
+      "0px calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px)",
+    );
 
     await act(async () => {
       await harness.store.getState().setShowSubjectsTab(true);
     });
     expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();
     expect(personal.style.gridTemplateColumns).toBe(
-      "calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px)",
+      "calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px)",
     );
   });
 

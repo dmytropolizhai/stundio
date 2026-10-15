@@ -4,6 +4,24 @@
 
 Help a student get from home to the correct RVT building in time for the first lesson, with a useful walking-to-stop experience and honest live-transit information.
 
+## Current implementation (PR #153 review fixes)
+
+The student Transit tab keeps saved route origins above the embedded Rīgas Satiksme map.
+Home is edited locally in Settings and persisted on blur, then used as the default route origin.
+Additional addresses are stored on-device without cleanup during cache hydration.
+
+Campus options are enumerated with `selectTimetables`. The current or next active lesson supplies
+the default building; a pinned building or the only published building provides a fallback.
+Students can choose any published building. After lessons finish, multiple unpinned buildings
+require an explicit choice. With no cached buildings, the screen asks the student to refresh.
+Google Maps receives the school name and published building label as a destination search query;
+it resolves the place and calculates the route. No campus street address is hard-coded.
+
+Every route opens through an ordinary external anchor. Without a saved home address, Maps chooses
+the origin. Stundio does not request geolocation, and the iframe does not delegate location access.
+There is no Routes API adapter, API key configuration, route-loading store state, or in-app ETA.
+The remaining sections describe possible future work, not shipped capabilities.
+
 ## Product shape
 
 - Add a student-only **Commute** screen; teachers keep the existing schedule navigation.
@@ -48,18 +66,12 @@ Help a student get from home to the correct RVT building in time for the first l
 - **Privacy:** home coordinates and trip history stay local. Avoid retaining trip history by default. GPS is used only while the student has explicitly started commute tracking.
 - **App architecture:** keep schedule selection and leave-time maths in pure `src/lib/commute/` logic; isolate Maps and Rīgas Satiksme network access behind providers; persist preferences through the existing store/cache; keep UI consuming cached state and provider results through the existing store boundary.
 
-## Build sequence
+## Possible future work
 
-1. **Built:** add a student-only Transit tab that loads the Rīgas Satiksme-linked live map (`saraksti.lv`) on demand, with a full-screen link fallback. The embedded map can use the browser's geolocation only when the student chooses its location control.
-2. **Partly built:** save the home address in Settings; get a foreground GPS location when Transit is opened after 07:00; use the selected class's first lesson/building for the schoolbound direction and switch to homebound at lesson start.
-3. **Partly built:** request up to four alternative transit itineraries using Google Routes API and display legs, route names, colors, stops and times in the Transit tab. The API needs a restricted `VITE_GOOGLE_MAPS_ROUTES_API_KEY`; without it, the screen shows an explanation. An itinerary is not guaranteed to include live vehicle positions or predicted arrivals.
-4. Add Rīgas Satiksme scheduled service from GTFS, with feed freshness shown in the UI.
-5. Add direct live vehicle positions only after an official, accessible feed is confirmed. Match positions to scheduled trips/stops and show feed age so old GPS fixes are not presented as live.
-
-## External inputs needed for a production route/live-data release
-
-- Confirmation of a supported real-time feed or approved `saraksti.lv` embedding. Candidates to contact: Rīgas Satiksme / saraksti.lv, Timey, and Pieturas. Ask for format, licensing, access, update cadence, and redistribution rights.
-- Google Cloud project configuration and a platform-restricted Routes API key only if Stundio calculates route options itself; Google Maps app handoff does not require a key.
-- RVT main and TIC destination coordinates, verified against the school timetable's building labels.
-- Google Cloud project and restricted Routes API key if Stundio should show transit alternatives and walking legs within its own screen and calculate the leave time automatically.
-- A restricted Google Routes API key in the local/deployment environment (`VITE_GOOGLE_MAPS_ROUTES_API_KEY`). Enable Routes API and billing in Google Cloud; usage may be billed according to the current Google Maps Platform pricing.
+- Walking buffers, departure reminders and trip progress remain deferred.
+- In-app routing requires a separately approved architecture; private API keys cannot ship in
+  the public client bundle. Plain Google Maps handoff needs no key.
+- Direct vehicle positions require a supported feed, confirmed reuse permission and freshness
+  handling. Do not make the app depend on undocumented endpoints.
+- Exact destination coordinates would require a verified mapping for all published buildings,
+  including buildings added later; the current handoff uses school/building search labels.

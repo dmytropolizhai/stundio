@@ -32,7 +32,7 @@ export type TransitDestination = { id: string; label: string; address: string };
 export type Settings = {
   /** Saved commute origin used by the Transit planner. */
   commuteHome: string;
-  /** User-saved starting addresses shown beneath the Rīgas Satiksme live map. */
+  /** User-saved route origins shown above the Rīgas Satiksme live map. */
   transitDestinations: TransitDestination[];
   selectedClassId: string | null;
   building: Building | null;

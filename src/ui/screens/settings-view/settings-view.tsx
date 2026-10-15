@@ -91,7 +91,7 @@ export const SettingsView = ({
 
         <ScheduleSection buildings={buildings} subgroups={subgroups} />
 
-        {persona === "student" && <CommuteSection />}
+        {PERSONA_PROFILES[persona].nav.personal.includes("transit") && <CommuteSection />}
 
         <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 
