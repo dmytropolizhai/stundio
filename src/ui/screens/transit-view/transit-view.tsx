@@ -14,10 +14,18 @@ import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
 import { LiveMapCard } from "./live-map-card.tsx";
 
+// EduPage only gives a building label, and Google resolves "Rīgas Valsts tehnikums, <label>" to the
+// school's registered address whatever the label is, so known buildings get a street address.
+const BUILDING_ADDRESSES: Record<string, string> = {
+  "Galvenā ēka": "Krišjāņa Valdemāra iela 1c, Rīga, LV-1010",
+  TIC: "Dārzciema iela 70, Rīga, LV-1073",
+  "TIC Olaine": "Zeiferta iela 2, Olaine, LV-2114",
+};
+
 const googleTransitUrl = (building: string, origin: string) => {
   const params = new URLSearchParams({
     api: "1",
-    destination: `Rīgas Valsts tehnikums, ${building}`,
+    destination: BUILDING_ADDRESSES[building] ?? `Rīgas Valsts tehnikums, ${building}`,
     travelmode: "transit",
   });
   if (origin.trim()) params.set("origin", origin.trim());
