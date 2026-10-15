@@ -18,6 +18,7 @@ import { DataSection } from "./data-section.tsx";
 import { AboutSection } from "./about-section.tsx";
 import { DangerSection } from "./danger-section.tsx";
 import { CommuteSection } from "./commute-section.tsx";
+import { TabsSection } from "./tabs-section.tsx";
 
 type SettingsViewProps = {
   onPickClass: () => void;
@@ -90,6 +91,8 @@ export const SettingsView = ({
         />
 
         <ScheduleSection buildings={buildings} subgroups={subgroups} />
+
+        <TabsSection />
 
         {PERSONA_PROFILES[persona].nav.personal.includes("transit") && <CommuteSection />}
 

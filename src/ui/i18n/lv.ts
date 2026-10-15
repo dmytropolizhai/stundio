@@ -273,6 +273,9 @@ export const lv = {
   "settings.showSubjectsTab": "Cilne “Priekšmeti”",
   "settings.showSubjectsTabHint": "Rāda priekšmetu cilni apakšējā izvēlnē, blakus iestatījumiem.",
   "settings.notifications": "Paziņojumi",
+  "settings.showTransitTab": "Cilne “Transports”",
+  "settings.showTransitTabHint":
+    "Rāda Rīgas satiksmes transporta cilni apakšējā izvēlnē, blakus iestatījumiem.",
   "settings.notifyLessonReminder": "Atgādinājums pirms stundas",
   "settings.notifyLessonReminderHint": "Paziņo pirms nākamās stundas sākuma.",
   "settings.notifyLessonReminderOff": "Izslēgts",
@@ -427,6 +430,7 @@ export const lv = {
   "settings.iphoneInstall": "Pievienot sākuma ekrānam",
   "settings.iphoneInstallHint": "Instalēt Stundio kā lietotni savā iPhone",
 
+  "settings.group.tabs": "Cilnes",
   "settings.group.schedule": "Saraksts",
   "settings.group.appearance": "Izskats un valoda",
   "settings.identityHint": "Kura saraksts rādās sākumā, nedēļā un logrīkā.",

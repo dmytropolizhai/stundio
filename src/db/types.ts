@@ -54,6 +54,8 @@ export type Settings = {
   showTime: boolean;
   /** Whether the Subjects tab sits in the bottom nav's personal pill. Student-only. */
   showSubjectsTab: boolean;
+  /** Whether the Rīgas satiksme Transit tab sits in the bottom nav's personal pill. */
+  showTransitTab: boolean;
   /** Unfilled shows the subject accent only as a rail; filled tints the whole lesson card. */
   lessonCardStyle: "outline" | "filled";
   /** Corner radius for cards — one of the Card component's own four radius steps. */
@@ -142,6 +144,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showMovedOnTargetDay: true,
   showTime: false,
   showSubjectsTab: true,
+  showTransitTab: true,
   lessonCardStyle: "outline",
   cardRadius: "xl",
   cardElevation: "soft",

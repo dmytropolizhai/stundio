@@ -35,6 +35,7 @@ export const TabBar = ({ tab, onChange }: { tab: Tab; onChange: (tab: Tab) => vo
   const t = useT();
   const { profile } = usePersona();
   const showSubjectsTab = useAppStore((s) => s.settings.showSubjectsTab);
+  const showTransitTab = useAppStore((s) => s.settings.showTransitTab);
 
   const groups = [
     { key: "schedule", tabs: profile.nav.schedule },
@@ -55,7 +56,8 @@ export const TabBar = ({ tab, onChange }: { tab: Tab; onChange: (tab: Tab) => vo
               icon: TAB_ICONS[id],
               label: t(`nav.${id}`),
               // Collapsed, not dropped: switching it back on grows the slot out of the pill.
-              hidden: id === "subjects" && !showSubjectsTab,
+              hidden:
+                (id === "subjects" && !showSubjectsTab) || (id === "transit" && !showTransitTab),
             }));
             return (
               <BottomNav

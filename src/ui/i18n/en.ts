@@ -264,6 +264,9 @@ export const en: Dict = {
   "settings.notifications": "Notifications",
   "settings.showSubjectsTab": "Subjects tab",
   "settings.showSubjectsTabHint": "Shows the Subjects tab in the bottom menu, next to Settings.",
+  "settings.showTransitTab": "Transit tab",
+  "settings.showTransitTabHint":
+    "Shows the Rīgas satiksme Transit tab in the bottom menu, next to Settings.",
   "settings.notifyLessonReminder": "Lesson reminder",
   "settings.notifyLessonReminderHint": "Notify before the next lesson starts.",
   "settings.notifyLessonReminderOff": "Off",
@@ -418,6 +421,7 @@ export const en: Dict = {
   "settings.iphoneInstall": "Add to Home Screen",
   "settings.iphoneInstallHint": "Install Stundio as an app on your iPhone",
 
+  "settings.group.tabs": "Tabs",
   "settings.group.schedule": "Schedule",
   "settings.group.appearance": "Appearance & language",
   "settings.identityHint": "Whose timetable Home, Week and the widget show.",
