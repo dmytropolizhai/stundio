@@ -42,8 +42,7 @@ import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
  * doesn't know or care what kind of notification produced it.
  */
 export type NotificationNavigationTarget =
-  | { tab: "home" | "changes"; date: ISODate }
-  | { tab: "settings" };
+  { tab: "home" | "changes"; date: ISODate } | { tab: "settings" };
 
 export type AppState = {
   ready: boolean;

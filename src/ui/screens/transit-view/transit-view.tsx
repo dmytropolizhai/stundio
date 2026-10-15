@@ -135,25 +135,7 @@ export const TransitView = () => {
                 )}
               </div>
             </Card>
-            {mapEnabled && (
-              <Card className="mb-4 p-4">
-                <h2 className="mb-1 font-display text-title font-semibold text-strong">
-                  {t("transit.live.title")}
-                </h2>
-                <p className="mb-3 font-text text-body-sm text-muted">
-                  {t("transit.live.description")}
-                </p>
-                <div className="overflow-hidden rounded-2xl bg-sunken shadow-card">
-                  <iframe
-                    title={t("transit.live.frameTitle")}
-                    src={LIVE_MAP_URL}
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    className="h-[min(58svh,660px)] min-h-[400px] w-full border-0 bg-app"
-                  />
-                </div>
-                <p className="mt-2 font-text text-caption text-muted">{t("transit.live.source")}</p>
-              </Card>
-            )}
+            {mapEnabled && <LiveMapCard />}
           </>
         ) : (
           <Card className="mb-4 p-5">
@@ -208,7 +190,37 @@ export const TransitView = () => {
               </ul>
             )}
 
-        <LiveMapCard />
+            <form className="space-y-3" onSubmit={addDestination}>
+              <label className="block">
+                <span className="mb-1 block font-text text-caption font-medium text-muted">
+                  {t("transit.destinations.nameLabel")}
+                </span>
+                <input
+                  className="w-full rounded-xl border border-hairline bg-card px-3 py-2.5 font-text text-body-sm text-strong outline-none focus:border-brand"
+                  value={label}
+                  onChange={(event) => setLabel(event.currentTarget.value)}
+                  placeholder={t("transit.destinations.namePlaceholder")}
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block font-text text-caption font-medium text-muted">
+                  {t("transit.destinations.addressLabel")}
+                </span>
+                <input
+                  className="w-full rounded-xl border border-hairline bg-card px-3 py-2.5 font-text text-body-sm text-strong outline-none focus:border-brand"
+                  value={address}
+                  onChange={(event) => setAddress(event.currentTarget.value)}
+                  placeholder={t("transit.destinations.addressPlaceholder")}
+                  required
+                />
+              </label>
+              <Button block type="submit" icon="plus">
+                {t("transit.destinations.add")}
+              </Button>
+            </form>
+          </Card>
+        )}
       </div>
     </div>
   );
