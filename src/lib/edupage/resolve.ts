@@ -436,6 +436,16 @@ export const resolveDayAcross = (
   const consumed = new Set<Substitution>();
   const out: ResolvedLesson[] = [];
 
+  const hasMovedInFor = (entry: BaseEntry): boolean => {
+    const name = entry.lesson.subject?.name ?? entry.lesson.subject?.short;
+    return mine.some(
+      (s) =>
+        s.kind === "moved_in" &&
+        s.subject === (name ?? null) &&
+        (s.group === null || entry.groups.includes(s.group)),
+    );
+  };
+
   // Base lessons with their changes applied.
   for (const entry of base) {
     const applied = mine.filter((s) => !isNewLesson(s) && appliesTo(s, entry));
@@ -480,6 +490,15 @@ export const resolveDayAcross = (
     }
 
     if (movedTo !== undefined && options.relocateMoves === true) continue;
+
+    /* A same-day move ("Moved to period: 7 - 8") publishes the lesson twice: a vacated row on
+       its old slot and a `moved_in` row on the new one. Showing both lists one lesson twice, so
+       the vacated slot goes — but only when the new slot really is in the feed, or the lesson
+       would vanish from the day. */
+    const sameDayMove = applied.some(
+      (s) => s.kind === "moved_out" && s.movedToPeriod !== null && s.movedToDate === null,
+    );
+    if (sameDayMove && hasMovedInFor(entry)) continue;
 
     out.push({
       ...entry.lesson,
