@@ -35,6 +35,22 @@ beforeEach(() => {
 });
 
 describe("hydrate", () => {
+  it("preserves every saved transit address and never writes settings while hydrating", async () => {
+    const store = makeStore();
+    const destinations = [
+      { id: "rvt-main-building", label: "Campus", address: "Elsewhere" },
+      { id: "custom", label: "Work", address: "Krišjāņa Valdemāra iela 1C, Rīga" },
+    ];
+    await store.getState().setTransitDestinations(destinations);
+    await store.getState().setCommuteHome("My home");
+    const put = vi.spyOn(cache, "putSettings");
+    await store.getState().hydrate();
+    await store.getState().hydrate();
+    expect(store.getState().settings.transitDestinations).toEqual(destinations);
+    expect(store.getState().settings.commuteHome).toBe("My home");
+    expect(put).not.toHaveBeenCalled();
+  });
+
   it("starts empty and not ready", () => {
     const store = makeStore();
     expect(store.getState().ready).toBe(false);
