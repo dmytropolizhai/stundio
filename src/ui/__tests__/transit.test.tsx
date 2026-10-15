@@ -78,7 +78,7 @@ describe("Transit", () => {
     const harness = await setup("Brīvības iela 10, Rīga");
     wrap(harness);
     expect(params().get("origin")).toBe("Brīvības iela 10, Rīga");
-    expect(params().get("destination")).toBe("TIC, Test School");
+    expect(params().get("destination")).toBe("Dārzciema iela 70, Rīga, LV-1073");
     expect(params().get("travelmode")).toBe("transit");
     expect(links()[0]?.target).toBe("_blank");
     expect(links()[0]?.rel).toBe("noreferrer");
@@ -117,26 +117,26 @@ describe("Transit", () => {
     clock.minutes = 8 * 60 + 10;
     const harness = await setup();
     const { unmount } = wrap(harness);
-    expect(params().get("destination")).toContain("TIC");
+    expect(params().get("destination")).toContain("Dārzciema iela 70");
     unmount();
     clock.minutes = 8 * 60 + 45;
     wrap(harness);
-    expect(params().get("destination")).toContain("New campus");
+    expect(params().get("destination")).toContain("New campus, Test School");
   });
 
   it("honours a pinned building and a manual choice, resetting the choice on a pin change", async () => {
     const harness = await setup();
     wrap(harness);
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "New campus" } });
-    expect(params().get("destination")).toContain("New campus");
+    expect(params().get("destination")).toContain("New campus, Test School");
     await clickAndSettle(() => {
       void harness.store.getState().setBuilding("TIC");
     });
-    expect(params().get("destination")).toContain("TIC");
+    expect(params().get("destination")).toContain("Dārzciema iela 70");
     await clickAndSettle(() => {
       void harness.store.getState().setBuilding("New campus");
     });
-    expect(params().get("destination")).toContain("New campus");
+    expect(params().get("destination")).toContain("New campus, Test School");
   });
 
   it("asks for a campus after lessons end instead of guessing among buildings", async () => {
@@ -145,7 +145,7 @@ describe("Transit", () => {
     expect(links()).toHaveLength(0);
     expect(screen.getByText(/Choose the destination building/)).toBeDefined();
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "New campus" } });
-    expect(params().get("destination")).toContain("New campus");
+    expect(params().get("destination")).toContain("New campus, Test School");
   });
 
   it("can use the sole published campus without a lesson or class", async () => {
