@@ -158,8 +158,10 @@ describe("resolveDay — invariants across every class with changes", () => {
       if (id === "") continue;
       const base = timetable.lessons.filter((l) => l.classIds.includes(id) && l.day === "wed");
       const day = resolveDay(timetable, subs, id, FIXTURE_DATE);
-      // Every base lesson survives; extra rows only ever come from moved_in/added.
-      expect(day.lessons.length).toBeGreaterThanOrEqual(base.length);
+      // Every base lesson survives, except a same-day move's vacated slot, which its `moved`
+      // twin on the new slot replaces; extra rows only ever come from moved_in/added.
+      const moved = day.lessons.filter((l) => l.status === "moved").length;
+      expect(day.lessons.length).toBeGreaterThanOrEqual(base.length - moved);
       expect(
         day.lessons.filter((l) => l.status === "added" || l.status === "moved").length,
       ).toBeGreaterThanOrEqual(day.lessons.length - base.length);
@@ -676,5 +678,56 @@ describe("resolveDay — relocateMoves", () => {
     const arrived = fri.lessons.find((l) => l.status === "moved");
     expect(arrived?.subject?.name).toBe(incoming[0]?.subject?.name);
     expect(arrived?.movedTo).toBeUndefined();
+  });
+});
+
+describe("resolveDay — same-day period move", () => {
+  const cls = classId("DT3-2");
+  const first = resolveDay(timetable, null, cls, FIXTURE_DATE).lessons[0]!;
+  const name = first.subject?.name ?? first.subject?.short ?? null;
+  const row = (
+    kind: "moved_out" | "moved_in",
+    periods: number[],
+  ): DaySubstitutions["items"][0] => ({
+    date: FIXTURE_DATE,
+    className: "DT3-2",
+    group: null,
+    periods,
+    isOriginalSlot: kind === "moved_out",
+    kind,
+    subject: name,
+    subjectFrom: null,
+    teacher: null,
+    teacherFrom: null,
+    room: null,
+    roomFrom: null,
+    movedFromPeriod: kind === "moved_in" ? Number(first.period) : null,
+    movedToPeriod: kind === "moved_out" ? 7 : null,
+    movedFromDate: null,
+    movedToDate: null,
+    raw: kind === "moved_out" ? `${name} - Moved to period: 7` : `${name} - Moved from period: 1`,
+  });
+  const withRows = (...items: DaySubstitutions["items"]): DaySubstitutions => ({ ...subs, items });
+
+  it("lists the lesson once, on its new slot", () => {
+    const day = resolveDay(
+      timetable,
+      withRows(row("moved_out", [Number(first.period)]), row("moved_in", [7])),
+      cls,
+      FIXTURE_DATE,
+    );
+    const matches = day.lessons.filter((l) => (l.subject?.name ?? l.subject?.short) === name);
+    expect(matches.some((l) => l.period === first.period)).toBe(false);
+    expect(matches.some((l) => l.period === "7" && l.status === "moved")).toBe(true);
+  });
+
+  it("keeps the vacated slot when the feed has no matching moved-in row", () => {
+    const day = resolveDay(
+      timetable,
+      withRows(row("moved_out", [Number(first.period)])),
+      cls,
+      FIXTURE_DATE,
+    );
+    expect(day.lessons.some((l) => l.period === first.period && l.status === "moved")).toBe(true);
   });
 });

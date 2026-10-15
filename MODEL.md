@@ -198,6 +198,9 @@ Arrow glyph is `➔` (U+2794).
 2. Index `DaySubstitutions.items` by `(className, group, period)`.
 3. For each base lesson: apply `cancelled` / `substitution` / `room_change` / `moved_out`.
 4. Append `moved_in` and `added` items as new `ResolvedLesson`s (`moved_in` → status `moved`, `added` → `added`).
+   A same-day move (`moved_out` with `movedToPeriod`, no date) is published twice — vacated row +
+   `moved_in` row — so the vacated slot is dropped when a matching `moved_in` (same subject/group)
+   exists; without one it stays, so the lesson never disappears from the day.
 5. Keep `cancelled` lessons visible with `status: "cancelled"` (don't drop — users want to see it).
 6. `changeNote` ← `Substitution.raw`; keep `original` teachers/rooms/period for a diff UI.
 
