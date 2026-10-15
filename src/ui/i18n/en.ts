@@ -214,7 +214,7 @@ export const en: Dict = {
   "transit.destinations.chooseBuilding": "Choose a building",
   "transit.destinations.buildingNeeded":
     "Choose the destination building. If the list is empty, refresh your timetable.",
-  "transit.destinations.title": "Saved destinations",
+  "transit.destinations.title": "Starting points",
   "transit.destinations.description": "Saved addresses are route starting points to RVT.",
   "transit.destinations.currentLocation": "From current location",
   "transit.destinations.openGoogleMaps": "Open Google Maps",
@@ -222,7 +222,7 @@ export const en: Dict = {
   "transit.destinations.namePlaceholder": "School, work, friends…",
   "transit.destinations.addressLabel": "Address",
   "transit.destinations.addressPlaceholder": "Street, building, city",
-  "transit.destinations.add": "Add destination",
+  "transit.destinations.add": "Add starting point",
   "transit.destinations.remove": "Remove {label}",
   "subjects.perWeek": "{n}× a week",
   "subjects.teachers": "Teachers",
