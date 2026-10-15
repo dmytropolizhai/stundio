@@ -5,7 +5,22 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", "android", "coverage", ".venv", "reference", ".claude"] },
+  {
+    ignores: [
+      "dist",
+      "android",
+      "coverage",
+      ".venv",
+      "reference",
+      ".claude",
+      ".desktop-tools",
+      ".flatpak-builder",
+      "build-flatpak",
+      "flatpak-repo",
+      "src-tauri/target",
+      "src-tauri/gen",
+    ],
+  },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],

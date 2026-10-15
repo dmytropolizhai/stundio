@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/ds";
 import { isNativePlatform } from "@/lib/edupage";
+import { isDesktop } from "@/lib/desktop";
 import {
   ensureExactAlarmPermission,
   ensureNotificationPermission,
@@ -34,7 +35,8 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
   const identityLabel = useAppStore((s) => s.identityLabel());
   const [reminderOpen, setReminderOpen] = useState(false);
 
-  const native = isNativePlatform();
+  const desktop = isDesktop();
+  const native = isNativePlatform() || desktop;
   const title = t("settings.notifications");
 
   if (isIosDevice() && !isStandalonePwa()) {
@@ -73,7 +75,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
       (!native ||
         (settings.notifyLessonReminderMinutes === 0 &&
           !settings.notifyNewTimetable &&
-          !settings.notifyAppUpdates)));
+          (desktop || !settings.notifyAppUpdates))));
 
   return (
     <Section
@@ -81,6 +83,13 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
       icon={allOff ? "bell-off" : "bell"}
       indicator={notifyPermissionDenied ? <StatusDot tone="danger" /> : undefined}
     >
+      {desktop && (
+        <SettingsRow
+          icon="info"
+          label={t("settings.notifications")}
+          description={t("settings.desktopNotificationsHint")}
+        />
+      )}
       {notifyPermissionDenied && (
         <SettingsRow
           icon="triangle-alert"
@@ -118,7 +127,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
         />
       )}
 
-      {native && exactAlarmDenied && settings.notifyLessonReminderMinutes > 0 && (
+      {native && !desktop && exactAlarmDenied && settings.notifyLessonReminderMinutes > 0 && (
         <SettingsRow
           icon="triangle-alert"
           tone="alert"
@@ -174,7 +183,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
           }}
         />
       )}
-      {native && (
+      {native && !desktop && (
         <SettingsRow
           icon="download"
           label={t("settings.notifyAppUpdates")}
@@ -209,7 +218,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
               // show it *on time*. Without the second one Android delivers the reminder whenever
               // Doze next wakes up.
               void ensureNotificationPermission().then((granted) => {
-                if (granted) return ensureExactAlarmPermission();
+                if (granted && !desktop) return ensureExactAlarmPermission();
                 return granted;
               });
             }

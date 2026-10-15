@@ -2,6 +2,9 @@ import type { Dict } from "./lv.ts";
 
 export const ua: Dict = {
   "app.title": "Stundio",
+  "settings.desktopNotificationsHint":
+    "Нагадування працюють, поки Stundio відкрито. Зміни перевіряються під час відкриття застосунку або повернення до нього.",
+  "settings.desktopUpdatesHint": "Встановлюйте оновлення через магазин застосунків Linux.",
   "general.continue": "Продовжити",
 
   "nav.home": "Головна",

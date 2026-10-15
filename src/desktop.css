@@ -1,0 +1,23 @@
+/* Expand the existing layout in desktop windows without altering generated design tokens.
+   Narrow windows retain the phone layout; wide timetables get room for readable subjects. */
+@media (min-width: 720px) {
+  :root[data-platform="desktop"] {
+    --screen-max: 840px;
+  }
+}
+
+/* Keep the complete date range readable when a desktop window is made phone-sized. */
+@media (max-width: 719px) {
+  :root[data-platform="desktop"] .desktop-week-header {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+  }
+
+  :root[data-platform="desktop"] .desktop-week-header > div:first-child {
+    flex-basis: 100%;
+  }
+
+  :root[data-platform="desktop"] .desktop-week-header > div:last-child {
+    margin-left: auto;
+  }
+}

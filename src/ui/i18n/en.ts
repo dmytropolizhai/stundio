@@ -2,6 +2,9 @@ import type { Dict } from "./lv.ts";
 
 export const en: Dict = {
   "app.title": "Stundio",
+  "settings.desktopNotificationsHint":
+    "Reminders work while Stundio is open. Changes are checked when you open or return to the app.",
+  "settings.desktopUpdatesHint": "Install updates through your Linux software store.",
   "general.continue": "Continue",
 
   "nav.home": "Home",

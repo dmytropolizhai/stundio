@@ -1,0 +1,32 @@
+[package]
+name = "stundio"
+version = "2.1.0"
+description = "Offline timetable companion for Rīgas Valsts tehnikums"
+authors = ["Dmytro Polizhai", "Stundio contributors"]
+license = "MIT"
+repository = "https://github.com/dmytropolizhai/stundio"
+edition = "2021"
+rust-version = "1.90"
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+ashpd = { version = "0.13", default-features = false, features = ["tokio", "notification"] }
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = { version = "2", default-features = false, features = ["xdg-portal"] }
+tauri-plugin-fs = "2"
+tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-window-state = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

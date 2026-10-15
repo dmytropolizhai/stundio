@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Stundio
+Comment=Your RVT timetable, even offline
+Comment[lv]=RVT stundu saraksts arī bezsaistē
+Exec=stundio
+Icon=io.github.dmytropolizhai.stundio
+Terminal=false
+Categories=Education;
+Keywords=timetable;schedule;school;RVT;EduPage;
+StartupNotify=true
+StartupWMClass=io.github.dmytropolizhai.stundio

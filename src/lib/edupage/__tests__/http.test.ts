@@ -4,6 +4,7 @@
  * the live server (by design — see http.ts).
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as desktop from "@/lib/desktop";
 
 const post = vi.hoisted(() => vi.fn());
 const isNativePlatformMock = vi.hoisted(() => vi.fn(() => false));
@@ -76,6 +77,24 @@ describe("parseLooseJson", () => {
 });
 
 describe("defaultHttp and isNativePlatform", () => {
+  it("uses native desktop networking and parses EduPage's prefixed JSON", async () => {
+    vi.spyOn(desktop, "isDesktop").mockReturnValue(true);
+    const postDesktop = vi.spyOn(desktop, "desktopPost").mockResolvedValue({
+      status: 200,
+      text: 'prefix {"r":789}',
+    });
+    const res = await defaultHttp({
+      url: "https://pikcrvt.edupage.org/test",
+      body: { year: 2026 },
+    });
+    expect(res).toEqual({ status: 200, data: { r: 789 } });
+    expect(postDesktop).toHaveBeenCalledWith(
+      "https://pikcrvt.edupage.org/test",
+      { year: 2026 },
+      { "Content-Type": "application/json", "User-Agent": USER_AGENT },
+    );
+    expect(post).not.toHaveBeenCalled();
+  });
   it("reports platform via isNativePlatform", () => {
     isNativePlatformMock.mockReturnValue(true);
     expect(isNativePlatform()).toBe(true);

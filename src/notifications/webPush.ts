@@ -8,6 +8,7 @@
 import type { Lang } from "@/ui/i18n";
 import { teacherKey } from "@/lib/edupage";
 import type { Persona } from "@/lib/persona";
+import { isDesktop } from "@/lib/desktop";
 
 /**
  * Whom this device wants pushes about: the active role plus the name the feed knows them by
@@ -48,6 +49,7 @@ export const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
 };
 
 export const isWebPushSupported = (): boolean => {
+  if (isDesktop()) return false;
   return (
     typeof window !== "undefined" &&
     "serviceWorker" in navigator &&

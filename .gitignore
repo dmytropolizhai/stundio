@@ -17,3 +17,13 @@ android/.gradle
 android/local.properties
 android/app/src/main/assets/public
 src/ds/assets/fonts/*.otf
+
+# Linux build tools, caches and generated bundles
+.desktop-tools/
+.flatpak-builder/
+build-flatpak/
+flatpak-repo/
+*.flatpak
+src-tauri/target/
+src-tauri/gen/
+__pycache__/

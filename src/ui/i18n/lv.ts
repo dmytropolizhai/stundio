@@ -8,6 +8,9 @@
  */
 export const lv = {
   "app.title": "Stundio",
+  "settings.desktopNotificationsHint":
+    "Atgādinājumi darbojas, kamēr Stundio ir atvērts. Izmaiņas tiek pārbaudītas, atverot lietotni vai atgriežoties tajā.",
+  "settings.desktopUpdatesHint": "Jauninājumus instalē savas Linux programmatūras veikalā.",
   "general.continue": "Turpināt",
 
   "nav.home": "Sākums",

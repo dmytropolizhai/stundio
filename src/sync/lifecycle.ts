@@ -8,6 +8,7 @@
  * `@capacitor/network` itself — that import is isolated to `lib/network/native.ts` (CLAUDE.md).
  */
 import { App } from "@capacitor/app";
+import { isDesktop, watchDesktopResume } from "@/lib/desktop";
 import type { NetworkPort } from "@/lib/network";
 
 /** Minimum gap between resume-triggered refreshes; tab-switching should not spam the school. */
@@ -28,6 +29,7 @@ export const watchAppResume = ({
   now = () => Date.now(),
   throttleMs = RESUME_THROTTLE_MS,
 }: LifecycleDeps): (() => void) => {
+  if (isDesktop()) return watchDesktopResume(refresh, now, throttleMs);
   // -Infinity, not 0: the first resume must always fire, whatever the clock reads.
   let lastRun = Number.NEGATIVE_INFINITY;
   let disposed = false;

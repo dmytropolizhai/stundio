@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.dmytropolizhai.stundio</id>
+  <name>Stundio</name>
+  <summary>Your RVT timetable, even offline</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="io.github.dmytropolizhai">
+    <name>Dmytro Polizhai and contributors</name>
+  </developer>
+  <description>
+    <p>Check lessons, classrooms and substitutions for Rīgas Valsts tehnikums in Riga, Latvia. Choose a class or teacher to see today's schedule and the week ahead. No school account is required.</p>
+    <p>Your timetable and preferences stay on your device, so previously loaded schedules remain available without an internet connection.</p>
+    <ul>
+      <li>See the current and next lesson, including room and teacher.</li>
+      <li>Browse daily and weekly schedules with substitutions.</li>
+      <li>Switch between student and teacher views.</li>
+      <li>Save a picture of your week using the desktop file chooser.</li>
+      <li>Receive lesson reminders while the app is running.</li>
+      <li>Choose Latvian, English, Russian or Ukrainian, and light or dark themes.</li>
+    </ul>
+    <p>Stundio is designed specifically for Rīgas Valsts tehnikums and reads its public EduPage timetable. Changes are checked when you open or return to the app, or refresh manually. Notifications do not run after the app is closed.</p>
+  </description>
+  <launchable type="desktop-id">io.github.dmytropolizhai.stundio.desktop</launchable>
+  <url type="homepage">https://github.com/dmytropolizhai/stundio</url>
+  <url type="bugtracker">https://github.com/dmytropolizhai/stundio/issues</url>
+  <url type="vcs-browser">https://github.com/dmytropolizhai/stundio</url>
+  <url type="contribute">https://github.com/dmytropolizhai/stundio/blob/main/README.md</url>
+  <content_rating type="oars-1.1" />
+  <screenshots>
+    <screenshot type="default">
+      <caption>Today's lessons and the next school day</caption>
+      <image type="source">https://raw.githubusercontent.com/dmytropolizhai/stundio/main/.github/assets/screenshots/linux-home.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>The weekly timetable on Linux</caption>
+      <image type="source">https://raw.githubusercontent.com/dmytropolizhai/stundio/main/.github/assets/screenshots/linux-week.png</image>
+    </screenshot>
+  </screenshots>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </supports>
+  <recommends>
+    <internet>first-run</internet>
+  </recommends>
+  <releases>
+    <release version="2.1.0" date="2026-10-15">
+      <description><p>Linux desktop support with offline schedules, native timetable access, desktop reminders and image export.</p></description>
+    </release>
+  </releases>
+</component>

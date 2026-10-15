@@ -6,6 +6,7 @@
  * code alone proves nothing. `callEdupage` is the single place that check lives.
  */
 import { isNativePlatform, type HttpClient } from "./http.ts";
+import { isDesktop } from "@/lib/desktop";
 import type { ISODate } from "./types.ts";
 
 /** The anonymous hash. Not a placeholder — see CLAUDE.md. */
@@ -20,15 +21,15 @@ export const EDUPAGE_PROXY_PREFIX = "/api-edupage";
 /**
  * Where requests are actually sent.
  *
- * In native builds (Capacitor on Android), requests go straight to the school
- * via `CapacitorHttp` which is not bound by CORS. In all browser environments
+ * In native builds (Capacitor on Android, Tauri on Linux), requests go straight to the school
+ * via the corresponding native HTTP port, without browser CORS. In all browser environments
  * (local Vite dev or Cloudflare Pages production), calls route through the
  * `/api-edupage` proxy to terminate CORS and attach server-expected headers.
  * Under Vitest tests, the fake server answers directly without a proxy.
  */
 export const apiBaseUrl = (subdomain: string): string => {
   if (import.meta.env.MODE === "test") return schoolBaseUrl(subdomain);
-  return isNativePlatform() ? schoolBaseUrl(subdomain) : EDUPAGE_PROXY_PREFIX;
+  return isNativePlatform() || isDesktop() ? schoolBaseUrl(subdomain) : EDUPAGE_PROXY_PREFIX;
 };
 
 export class EdupageError extends Error {

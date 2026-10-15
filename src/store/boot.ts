@@ -21,6 +21,7 @@ import {
 } from "@/notifications";
 import { createAnalyticsClient, defaultHttp as analyticsHttp } from "@/lib/analytics";
 import { runWidgetSync, wireWidget } from "@/widget";
+import { isDesktop, clearDesktopReminders } from "@/lib/desktop";
 
 /** The Plausible site the app reports to (a fake domain — there is no web page behind it). */
 const ANALYTICS_DOMAIN = "stundio.lv";
@@ -31,6 +32,7 @@ export type Boot = () => Promise<{ store: Store; dispose?: () => void }>;
 export const bootApp: Boot = async () => {
   const cache = await createCache();
   const isNative = isNativePlatform();
+  const desktop = isDesktop();
   const store = createAppStore({
     cache,
     engine: createSyncEngine({ http: defaultHttp, cache }),
@@ -42,7 +44,7 @@ export const bootApp: Boot = async () => {
   store.getState().trackEvent("app_open");
   void store.getState().recordAppOpen();
 
-  const notifications = isNative ? wireNotifications(store) : { dispose: () => {} };
+  const notifications = isNative || desktop ? wireNotifications(store) : { dispose: () => {} };
   const notificationTaps = isNative ? wireNotificationTaps(store) : { dispose: () => {} };
   // The home-screen tile follows the store, so a finished sync (or a class change) redraws it
   // immediately — the plugin pokes AppWidgetManager rather than waiting for the 30-min tick.
@@ -64,7 +66,7 @@ export const bootApp: Boot = async () => {
     if (inFlightRefresh !== null) return inFlightRefresh;
     const promise = (async () => {
       const outcome = await store.getState().refresh();
-      if (isNative) {
+      if (isNative || desktop) {
         notifyOnChanges(store, outcome, hadPreviousSync);
         notifyOnNewTimetable(store, outcome, hadPreviousSync);
       } else if (hadPreviousSync && outcome.changedDates.length > 0) {
@@ -94,7 +96,7 @@ export const bootApp: Boot = async () => {
    * without the user touching anything.
    */
   let disposeWebPushSync = () => {};
-  if (!isNative) {
+  if (!isNative && !desktop) {
     let lastRegistration: string | null = null;
 
     const syncWebPush = () => {
@@ -116,7 +118,7 @@ export const bootApp: Boot = async () => {
   }
 
   let disposeSw = () => {};
-  if (!isNative && typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+  if (!isNative && !desktop && typeof navigator !== "undefined" && "serviceWorker" in navigator) {
     const onSwMessage = (event: MessageEvent<unknown>) => {
       const data = event.data as { type?: unknown; date?: unknown } | null | undefined;
       if (data?.type === "NAVIGATE_DAY" && typeof data.date === "string") {
@@ -143,6 +145,7 @@ export const bootApp: Boot = async () => {
     disposeWebPushSync();
     disposeSw();
     notifications.dispose();
+    if (desktop) clearDesktopReminders();
     notificationTaps.dispose();
     widget.dispose();
   };

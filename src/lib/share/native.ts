@@ -8,6 +8,7 @@
  * the app's cache dir and hands the OS an `ACTION_SEND` intent.
  */
 import { Capacitor, registerPlugin } from "@capacitor/core";
+import { isDesktop, saveDesktopImage } from "@/lib/desktop";
 
 export type NativeSharePayload = {
   /** Raw base64 PNG bytes — no `data:` prefix. */
@@ -25,6 +26,10 @@ export type ImageSharePlugin = {
 
 const ImageShare = registerPlugin<ImageSharePlugin>("ImageShare");
 
-/** Android only — the plugin is this app's own, and there is no iOS target. */
+/** Android shares through the OS; Linux saves through the file portal. Browsers use fallback sharing. */
 export const nativeShare = (): ((payload: NativeSharePayload) => Promise<void>) | null =>
-  Capacitor.getPlatform() === "android" ? (payload) => ImageShare.share(payload) : null;
+  isDesktop()
+    ? (payload) => saveDesktopImage(payload.base64, payload.fileName)
+    : Capacitor.getPlatform() === "android"
+      ? (payload) => ImageShare.share(payload)
+      : null;

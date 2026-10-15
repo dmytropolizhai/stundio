@@ -1,0 +1,29 @@
+name: Linux Flatpak
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build an offline-source Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6.8
+        with:
+          bundle: Stundio.flatpak
+          manifest-path: packaging/flatpak/io.github.dmytropolizhai.stundio.json
+          cache-key: stundio-linux-${{ hashFiles('package-lock.json', 'src-tauri/Cargo.lock') }}

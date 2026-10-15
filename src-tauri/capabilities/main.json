@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Only the bundled main window may use desktop integrations.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:allow-save",
+    "fs:allow-write-file",
+    "notification:allow-is-permission-granted",
+    "notification:allow-request-permission",
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://pikcrvt.edupage.org/**" }]
+    }
+  ]
+}

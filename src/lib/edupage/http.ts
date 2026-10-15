@@ -3,9 +3,11 @@
  *
  * EduPage sends no `Access-Control-Allow-Origin`, so the browser `fetch` implementation
  * below CANNOT reach it cross-origin — it exists for tests and for the Vite dev preview.
- * On device, `capacitorHttp` goes through the native layer and is not subject to CORS.
+ * On Android, `capacitorHttp` goes through the native layer and is not subject to CORS.
+ * Linux uses the scoped Tauri HTTP port for the same reason.
  */
 import { Capacitor, CapacitorHttp } from "@capacitor/core";
+import { desktopPost, isDesktop } from "@/lib/desktop";
 
 /**
  * True only when running inside the Android (or future iOS) native app shell.
@@ -59,11 +61,21 @@ export const fetchHttp: HttpClient = async ({ url, body, headers }) => {
 };
 
 /**
- * The default transport for this platform: native HTTP in the Capacitor container,
+ * The default transport for this platform: native HTTP in the Capacitor or Tauri container,
  * standard `fetch` in web browsers (where requests pass through the dev or Cloudflare proxy).
  */
-export const defaultHttp: HttpClient = (req) =>
-  isNativePlatform() ? capacitorHttp(req) : fetchHttp(req);
+export const defaultHttp: HttpClient = async (req) => {
+  if (isNativePlatform()) return capacitorHttp(req);
+  if (isDesktop()) {
+    const res = await desktopPost(
+      req.url,
+      req.body,
+      baseHeaders({ "User-Agent": USER_AGENT, ...req.headers }),
+    );
+    return { status: res.status, data: parseLooseJson(res.text) };
+  }
+  return fetchHttp(req);
+};
 
 /**
  * EduPage occasionally prefixes the JSON body with junk; the Python probe strips it the
