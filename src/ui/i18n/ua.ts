@@ -212,6 +212,10 @@ export const ua: Dict = {
     "Переглядайте на мапі, де перебуває транспорт, і час прибуття на зупинки наживо.",
   "transit.live.source": "Мапа Rīgas satiksme",
   "transit.live.frameTitle": "Мапа транспорту Rīgas satiksme наживо",
+  "transit.live.offline":
+    "Немає підключення до інтернету — мапа не завантажиться. Вона оновиться, коли зв'язок повернеться.",
+  "transit.live.slow":
+    "Повільне з'єднання — мапа довго завантажується, положення транспорту може відставати.",
   "transit.destinations.building": "Будівля призначення",
   "transit.destinations.chooseBuilding": "Виберіть будівлю",
   "transit.destinations.buildingNeeded":

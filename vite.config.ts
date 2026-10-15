@@ -91,6 +91,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "happy-dom",
+    // Tests never touch the network (AGENT.md); happy-dom would otherwise fetch every iframe's src.
+    environmentOptions: { happyDOM: { settings: { disableIframePageLoading: true } } },
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.test.ts", "src/**/*.test.tsx", "functions/**/*.test.ts"],
     coverage: {

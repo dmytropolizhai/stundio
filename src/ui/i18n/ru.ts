@@ -212,6 +212,10 @@ export const ru: Dict = {
     "Смотрите на карте, где находятся транспортные средства, и проверяйте время прибытия на остановки.",
   "transit.live.source": "Карта Rīgas satiksme",
   "transit.live.frameTitle": "Карта транспорта Rīgas satiksme в реальном времени",
+  "transit.live.offline":
+    "Нет подключения к интернету — карта не загрузится. Она обновится, когда связь вернётся.",
+  "transit.live.slow":
+    "Медленное соединение — карта долго загружается, положение транспорта может отставать.",
   "transit.destinations.building": "Здание назначения",
   "transit.destinations.chooseBuilding": "Выберите здание",
   "transit.destinations.buildingNeeded":
