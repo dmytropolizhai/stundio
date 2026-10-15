@@ -207,6 +207,10 @@ export const ru: Dict = {
 
   "subjects.title": "Предметы",
   "transit.title": "Транспорт",
+  "transit.tab.destination": "Назначение",
+  "transit.tab.saved": "Сохранённые адреса",
+  "settings.transitMap.show": "Показать карту Rīgas satiksme",
+  "settings.transitMap.hide": "Скрыть карту Rīgas satiksme",
   "transit.live.title": "Транспорт Риги в реальном времени",
   "transit.live.description":
     "Смотрите на карте, где находятся транспортные средства, и проверяйте время прибытия на остановки.",

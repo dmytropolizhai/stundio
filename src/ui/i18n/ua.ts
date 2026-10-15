@@ -207,6 +207,10 @@ export const ua: Dict = {
 
   "subjects.title": "Предмети",
   "transit.title": "Транспорт",
+  "transit.tab.destination": "Призначення",
+  "transit.tab.saved": "Збережені адреси",
+  "settings.transitMap.show": "Показати карту Rīgas satiksme",
+  "settings.transitMap.hide": "Сховати карту Rīgas satiksme",
   "transit.live.title": "Транспорт Риги наживо",
   "transit.live.description":
     "Переглядайте на мапі, де перебуває транспорт, і час прибуття на зупинки наживо.",

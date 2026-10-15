@@ -34,6 +34,8 @@ export type Settings = {
   commuteHome: string;
   /** User-saved route origins shown above the Rīgas Satiksme live map. */
   transitDestinations: TransitDestination[];
+  /** Whether the Rīgas satiksme live map is shown on the Transit tab (toggled from Settings). */
+  transitMapEnabled: boolean;
   selectedClassId: string | null;
   building: Building | null;
   /**
@@ -128,6 +130,7 @@ export type Settings = {
 export const DEFAULT_SETTINGS: Settings = {
   commuteHome: "",
   transitDestinations: [],
+  transitMapEnabled: true,
   selectedClassId: null,
   building: null,
   subgroup: null,

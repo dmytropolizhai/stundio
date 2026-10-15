@@ -82,6 +82,7 @@ export type AppState = {
   setBuilding: (building: Building | null) => Promise<void>;
   setCommuteHome: (value: string) => Promise<void>;
   setTransitDestinations: (value: TransitDestination[]) => Promise<void>;
+  setTransitMapEnabled: (value: boolean) => Promise<void>;
   /** `null` shows every division merged — only meaningful for the currently selected class. */
   setSubgroup: (subgroup: string | null) => Promise<void>;
   setPersona: (persona: Settings["persona"]) => Promise<void>;
@@ -272,6 +273,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setBuilding: (building) => persist({ building }),
       setCommuteHome: (commuteHome) => persist({ commuteHome }),
       setTransitDestinations: (transitDestinations) => persist({ transitDestinations }),
+      setTransitMapEnabled: (transitMapEnabled) => persist({ transitMapEnabled }),
       setSubgroup: (subgroup) => persist({ subgroup }),
       setPersona: (persona) => persist({ persona }),
       setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),

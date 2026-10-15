@@ -57,6 +57,9 @@ const setup = async (home = "") => {
 };
 const wrap = (harness: Harness, node: React.ReactNode = <TransitView />) =>
   render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
+const openSaved = () => {
+  fireEvent.click(screen.getByRole("radio", { name: "Saved addresses" }));
+};
 const links = () => screen.queryAllByRole<HTMLAnchorElement>("link", { name: "Open Google Maps" });
 const params = (index = 0) => new URL(links()[index]?.href ?? "https://invalid.test").searchParams;
 
@@ -80,6 +83,26 @@ describe("Transit", () => {
     const frame = screen.getByTitle("Rīgas satiksme live transit map");
     expect(frame.getAttribute("src")).toBe("https://saraksti.lv/#riga/map");
     expect(frame.hasAttribute("allow")).toBe(false);
+  });
+
+  it("splits Destination and Saved addresses into two tabs", async () => {
+    wrap(await setup("Home"));
+    expect(screen.getByRole("radio", { name: "Destination", checked: true })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Place name" })).toBeNull();
+    openSaved();
+    expect(screen.getByRole("textbox", { name: "Place name" })).toBeDefined();
+    expect(screen.queryByRole("combobox")).toBeNull();
+    expect(screen.queryByTitle("Rīgas satiksme live transit map")).toBeNull();
+  });
+
+  it("hides the live map when it is switched off, and keeps the tabs", async () => {
+    const harness = await setup("Home");
+    harness.store.setState({
+      settings: { ...harness.store.getState().settings, transitMapEnabled: false },
+    });
+    wrap(harness);
+    expect(screen.queryByTitle("Rīgas satiksme live transit map")).toBeNull();
+    expect(links()).toHaveLength(1);
   });
 
   it("lets Maps choose the origin when no home address exists", async () => {
@@ -146,6 +169,7 @@ describe("Transit", () => {
   it("adds and removes saved origins and clears the form, without losing addresses on hydrate", async () => {
     const harness = await setup("Home");
     wrap(harness);
+    openSaved();
     const name = screen.getByRole<HTMLInputElement>("textbox", { name: "Place name" });
     const address = screen.getByRole<HTMLInputElement>("textbox", { name: "Address" });
     fireEvent.change(name, { target: { value: "  Work  " } });
@@ -153,7 +177,7 @@ describe("Transit", () => {
     await clickAndSettle(() => {
       fireEvent.submit(name.closest("form")!);
     });
-    expect(params(1).get("origin")).toBe("Krišjāņa Valdemāra iela 1C, Rīga");
+    expect(params().get("origin")).toBe("Krišjāņa Valdemāra iela 1C, Rīga");
     expect(name.value).toBe("");
     expect(address.value).toBe("");
     await act(async () => {
@@ -169,6 +193,7 @@ describe("Transit", () => {
   it("ignores whitespace-only input and can save on a device without randomUUID", async () => {
     const harness = await setup();
     wrap(harness);
+    openSaved();
     const name = screen.getByRole<HTMLInputElement>("textbox", { name: "Place name" });
     const address = screen.getByRole("textbox", { name: "Address" });
     fireEvent.change(name, { target: { value: "   " } });
@@ -222,6 +247,32 @@ describe("Commute settings", () => {
       fireEvent.blur(input);
     });
     expect((await harness.cache.getSettings()).commuteHome).toBe("");
+  });
+
+  it("toggles the Rīgas satiksme map from the Settings top bar and persists it", async () => {
+    const harness = await setup();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+    expect(harness.store.getState().settings.transitMapEnabled).toBe(true);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Hide Rīgas satiksme map" }));
+    });
+    expect(harness.store.getState().settings.transitMapEnabled).toBe(false);
+    expect((await harness.cache.getSettings()).transitMapEnabled).toBe(false);
+    const show = screen.getByRole("button", { name: "Show Rīgas satiksme map" });
+    expect(show.getAttribute("aria-pressed")).toBe("false");
+    await clickAndSettle(() => {
+      fireEvent.click(show);
+    });
+    expect(harness.store.getState().settings.transitMapEnabled).toBe(true);
+  });
+
+  it("hides the map toggle for roles without the transit tab", async () => {
+    const harness = await setup();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+    await clickAndSettle(() => {
+      void harness.store.getState().setPersona("teacher");
+    });
+    expect(screen.queryByRole("button", { name: /Rīgas satiksme map/ })).toBeNull();
   });
 
   it("shows commute settings only for roles with the transit tab", async () => {

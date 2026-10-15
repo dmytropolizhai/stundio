@@ -213,6 +213,10 @@ export const lv = {
 
   "subjects.title": "Priekšmeti",
   "transit.title": "Transports",
+  "transit.tab.destination": "Galamērķis",
+  "transit.tab.saved": "Saglabātās adreses",
+  "settings.transitMap.show": "Rādīt Rīgas satiksmes karti",
+  "settings.transitMap.hide": "Slēpt Rīgas satiksmes karti",
   "transit.live.title": "Rīgas satiksme reāllaikā",
   "transit.live.description":
     "Apskati transportlīdzekļu atrašanās vietas kartē un reāllaika pienākšanas laikus pieturās.",
