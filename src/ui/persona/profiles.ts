@@ -12,7 +12,7 @@ import type { IconName } from "@/ds";
 import type { Persona } from "@/lib/persona";
 import type { MessageKey } from "@/ui/i18n";
 
-export type Tab = "home" | "week" | "changes" | "subjects" | "settings";
+export type Tab = "home" | "week" | "changes" | "subjects" | "transit" | "settings";
 
 /**
  * The bottom nav floats as two separate pills: the timetable itself (today, the week, what
@@ -62,7 +62,10 @@ export type PersonaProfile = {
 
 export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
   student: {
-    nav: { schedule: ["home", "week", "changes"], personal: ["subjects", "settings"] },
+    nav: {
+      schedule: ["home", "week", "changes"],
+      personal: ["subjects", "transit", "settings"],
+    },
     picker: "class",
     icon: "graduation-cap",
     roleLabel: "settings.persona.student",

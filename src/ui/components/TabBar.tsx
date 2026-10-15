@@ -15,6 +15,7 @@ const TAB_ICONS: Record<Tab, IconName> = {
   week: "layout-grid",
   changes: "repeat",
   subjects: "graduation-cap",
+  transit: "bus-front",
   settings: "settings",
 };
 /**

@@ -5,6 +5,7 @@ export type {
   SubjectColorTone,
   SubjectColorValue,
   SubjectNote,
+  TransitDestination,
 } from "./types.ts";
 export { DEFAULT_SETTINGS } from "./types.ts";
 export { createMemoryCache } from "./memory.ts";

@@ -16,6 +16,7 @@ import { HomeView } from "./ui/screens/home-view";
 import { WeekView } from "./ui/screens/week-view";
 import { ChangesView } from "./ui/screens/changes-view";
 import { SubjectsView } from "./ui/screens/subjects-view";
+import { TransitView } from "./ui/screens/transit-view";
 import { SettingsView } from "./ui/screens/settings-view";
 import { SplashScreen } from "./ui/screens/splash-screen";
 import { WhatsNewSheet } from "./ui/screens/sheets/WhatsNewSheet.tsx";
@@ -208,6 +209,10 @@ const Shell = () => {
     trackEvent(`view_${tab}`);
   }, [tab, trackEvent]);
 
+  useEffect(() => {
+    if (![...profile.nav.schedule, ...profile.nav.personal].includes(tab)) setTab("home");
+  }, [profile, tab]);
+
   // A tapped notification (lesson reminder, substitution change, app update) — sent here by
   // `wireNotificationTaps` rather than acted on directly, since only the shell owns tab/date.
   useEffect(() => {
@@ -314,6 +319,7 @@ const Shell = () => {
           />
         )}
         {tab === "subjects" && <SubjectsView />}
+        {tab === "transit" && <TransitView />}
         {tab === "settings" && (
           <SettingsView
             onPickClass={() => {

@@ -25,7 +25,13 @@ import {
   type Timetable,
 } from "@/lib/edupage";
 import { weekDates } from "@/lib/schedule";
-import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
+import {
+  DEFAULT_SETTINGS,
+  type AppCache,
+  type Settings,
+  type SubjectNote,
+  type TransitDestination,
+} from "@/db";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
@@ -74,6 +80,8 @@ export type AppState = {
   setConnectivity: (online: boolean) => void;
   setClass: (classId: string | null) => Promise<void>;
   setBuilding: (building: Building | null) => Promise<void>;
+  setCommuteHome: (value: string) => Promise<void>;
+  setTransitDestinations: (value: TransitDestination[]) => Promise<void>;
   /** `null` shows every division merged — only meaningful for the currently selected class. */
   setSubgroup: (subgroup: string | null) => Promise<void>;
   setPersona: (persona: Settings["persona"]) => Promise<void>;
@@ -262,6 +270,8 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       // A subgroup label from the previous class means nothing for the new one, so it resets.
       setClass: (classId) => persist({ selectedClassId: classId, subgroup: null }),
       setBuilding: (building) => persist({ building }),
+      setCommuteHome: (commuteHome) => persist({ commuteHome }),
+      setTransitDestinations: (transitDestinations) => persist({ transitDestinations }),
       setSubgroup: (subgroup) => persist({ subgroup }),
       setPersona: (persona) => persist({ persona }),
       setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),
