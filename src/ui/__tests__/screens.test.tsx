@@ -669,6 +669,17 @@ describe("SettingsView", () => {
     expect(screen.queryByRole("switch", { name: "Cilne “Priekšmeti”" })).toBeNull();
   });
 
+  it("persists the transit-tab switch", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
+
+    expect(harness.store.getState().settings.showTransitTab).toBe(true);
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("switch", { name: "Cilne “Transports”" }));
+    });
+    expect(harness.store.getState().settings.showTransitTab).toBe(false);
+  });
+
   it("offers a building override once more than one building is cached", async () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);

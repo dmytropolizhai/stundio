@@ -268,6 +268,9 @@ export const ru: Dict = {
   "settings.showSubjectsTab": "Вкладка «Предметы»",
   "settings.showSubjectsTabHint":
     "Показывает вкладку предметов в нижнем меню, рядом с настройками.",
+  "settings.showTransitTab": "Вкладка «Транспорт»",
+  "settings.showTransitTabHint":
+    "Показывает вкладку транспорта Rīgas satiksme в нижнем меню, рядом с настройками.",
   "settings.notifyLessonReminder": "Напоминание об уроке",
   "settings.notifyLessonReminderHint": "Уведомлять перед началом следующего урока.",
   "settings.notifyLessonReminderOff": "Выкл",
@@ -423,6 +426,7 @@ export const ru: Dict = {
   "settings.iphoneInstall": "Добавить на экран «Домой»",
   "settings.iphoneInstallHint": "Установить Stundio как приложение на iPhone",
 
+  "settings.group.tabs": "Вкладки",
   "settings.group.schedule": "Расписание",
   "settings.group.appearance": "Внешний вид и язык",
   "settings.identityHint": "Чьё расписание показывать на главной, в неделе и в виджете.",
