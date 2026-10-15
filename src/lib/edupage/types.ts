@@ -90,6 +90,12 @@ export type Timetable = {
   subjects: SubjectRef[];
   rooms: RoomRef[];
   lessons: Lesson[];
+  /**
+   * The school's own name, from the `globals` table's `reg_name` ("Riga State Technical, Kr.
+   * Valdemāra iela 1c, Rīga" → "Riga State Technical"). Absent on timetables cached before this
+   * was read, and when the school leaves it blank.
+   */
+  school?: string;
 };
 
 /* ------------------------------------------------------------------ *

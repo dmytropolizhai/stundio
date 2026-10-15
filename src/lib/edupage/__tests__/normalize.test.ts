@@ -84,6 +84,17 @@ describe("normalizeTimetable", () => {
     expect(timetable.rooms).toHaveLength(160);
   });
 
+  it("takes the school name from the globals `reg_name`, without its street address", () => {
+    const reg = (reg_name: string) => ({ globals: [{ reg_name }] });
+    const meta = timetable.meta;
+    expect(
+      normalizeTimetable(reg("Riga State Technical, Kr. Valdemāra iela 1c, Rīga"), meta).timetable
+        .school,
+    ).toBe("Riga State Technical");
+    expect(normalizeTimetable(reg(""), meta).timetable.school).toBeUndefined();
+    expect(normalizeTimetable({}, meta).timetable.school).toBeUndefined();
+  });
+
   it("drops unplaced cards (empty `days` bitmask)", () => {
     expect(stats.cards).toBe(3336);
     expect(stats.placedCards).toBe(2768);

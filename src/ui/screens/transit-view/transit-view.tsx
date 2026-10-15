@@ -14,10 +14,10 @@ import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
 import { LiveMapCard } from "./live-map-card.tsx";
 
-const googleTransitUrl = (building: string, origin: string) => {
+const googleTransitUrl = (building: string, school: string, origin: string) => {
   const params = new URLSearchParams({
     api: "1",
-    destination: `${building}, Rīgas Valsts tehnikums`,
+    destination: [building, school].filter(Boolean).join(", "),
     travelmode: "transit",
   });
   if (origin.trim()) params.set("origin", origin.trim());
@@ -35,6 +35,9 @@ export const TransitView = () => {
   const pinnedBuilding = useAppStore((s) => s.settings.building);
   const classId = useAppStore((s) => s.settings.selectedClassId);
   const metas = useAppStore((s) => s.metas);
+  const school = useAppStore(
+    (s) => Object.values(s.timetables).find((t) => t.school !== undefined)?.school ?? "",
+  );
   const now = useNow();
   const day = useAppStore((s) => s.resolvedDay(now.date));
   const buildings = selectTimetables(metas, now.date)
@@ -128,7 +131,11 @@ export const TransitView = () => {
                 </div>
                 {building && (
                   <Button asChild block size="lg" icon="map-pin">
-                    <a href={googleTransitUrl(building, home)} target="_blank" rel="noreferrer">
+                    <a
+                      href={googleTransitUrl(building, school, home)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       {t("transit.destinations.openGoogleMaps")}
                     </a>
                   </Button>
@@ -177,7 +184,7 @@ export const TransitView = () => {
                     {building && (
                       <Button asChild block size="lg" variant="outline" icon="arrow-right">
                         <a
-                          href={googleTransitUrl(building, destination.address)}
+                          href={googleTransitUrl(building, school, destination.address)}
                           target="_blank"
                           rel="noreferrer"
                         >
