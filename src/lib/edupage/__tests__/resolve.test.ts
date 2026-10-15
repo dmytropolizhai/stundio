@@ -721,13 +721,16 @@ describe("resolveDay — same-day period move", () => {
     expect(matches.some((l) => l.period === "7" && l.status === "moved")).toBe(true);
   });
 
-  it("keeps the vacated slot when the feed has no matching moved-in row", () => {
+  it("places the lesson on its new slot when the feed has no moved-in row", () => {
     const day = resolveDay(
       timetable,
       withRows(row("moved_out", [Number(first.period)])),
       cls,
       FIXTURE_DATE,
     );
-    expect(day.lessons.some((l) => l.period === first.period && l.status === "moved")).toBe(true);
+    expect(day.lessons.some((l) => l.period === first.period && l.status === "moved")).toBe(false);
+    const placed = day.lessons.find((l) => l.period === "7" && l.status === "moved");
+    expect(placed?.subject?.name).toBe(first.subject?.name);
+    expect(placed?.original?.period).toBe(first.period);
   });
 });
