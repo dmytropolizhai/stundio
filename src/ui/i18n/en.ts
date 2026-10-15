@@ -214,6 +214,10 @@ export const en: Dict = {
     "See public transport vehicles on the map and live arrival times at stops.",
   "transit.live.source": "Live map from Rīgas satiksme",
   "transit.live.frameTitle": "Rīgas satiksme live transit map",
+  "transit.live.offline":
+    "No internet connection — the live map can't load. It will reload once you're back online.",
+  "transit.live.slow":
+    "Slow connection — the live map is taking a while to load and vehicle positions may lag.",
   "transit.destinations.building": "Destination building",
   "transit.destinations.chooseBuilding": "Choose a building",
   "transit.destinations.buildingNeeded":
@@ -268,6 +272,9 @@ export const en: Dict = {
   "settings.notifications": "Notifications",
   "settings.showSubjectsTab": "Subjects tab",
   "settings.showSubjectsTabHint": "Shows the Subjects tab in the bottom menu, next to Settings.",
+  "settings.showTransitTab": "Transit tab",
+  "settings.showTransitTabHint":
+    "Shows the Rīgas satiksme Transit tab in the bottom menu, next to Settings.",
   "settings.notifyLessonReminder": "Lesson reminder",
   "settings.notifyLessonReminderHint": "Notify before the next lesson starts.",
   "settings.notifyLessonReminderOff": "Off",
@@ -422,6 +429,7 @@ export const en: Dict = {
   "settings.iphoneInstall": "Add to Home Screen",
   "settings.iphoneInstallHint": "Install Stundio as an app on your iPhone",
 
+  "settings.group.tabs": "Tabs",
   "settings.group.schedule": "Schedule",
   "settings.group.appearance": "Appearance & language",
   "settings.identityHint": "Whose timetable Home, Week and the widget show.",

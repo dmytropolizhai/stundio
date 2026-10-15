@@ -42,7 +42,8 @@ import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
  * doesn't know or care what kind of notification produced it.
  */
 export type NotificationNavigationTarget =
-  { tab: "home" | "changes"; date: ISODate } | { tab: "settings" };
+  | { tab: "home" | "changes"; date: ISODate }
+  | { tab: "settings" };
 
 export type AppState = {
   ready: boolean;
@@ -96,6 +97,7 @@ export type AppState = {
   setShowMovedOnTargetDay: (show: boolean) => Promise<void>;
   setShowTime: (showTime: boolean) => Promise<void>;
   setShowSubjectsTab: (showSubjectsTab: boolean) => Promise<void>;
+  setShowTransitTab: (showTransitTab: boolean) => Promise<void>;
   setLessonCardStyle: (style: Settings["lessonCardStyle"]) => Promise<void>;
   setCardRadius: (radius: Settings["cardRadius"]) => Promise<void>;
   setCardElevation: (elevation: Settings["cardElevation"]) => Promise<void>;
@@ -285,6 +287,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       setShowMovedOnTargetDay: (showMovedOnTargetDay) => persist({ showMovedOnTargetDay }),
       setShowTime: (showTime) => persist({ showTime }),
       setShowSubjectsTab: (showSubjectsTab) => persist({ showSubjectsTab }),
+      setShowTransitTab: (showTransitTab) => persist({ showTransitTab }),
       setLessonCardStyle: (lessonCardStyle) => persist({ lessonCardStyle }),
       setCardRadius: (cardRadius) => persist({ cardRadius }),
       setCardElevation: (cardElevation) => persist({ cardElevation }),

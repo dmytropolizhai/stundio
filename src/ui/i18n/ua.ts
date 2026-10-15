@@ -216,6 +216,10 @@ export const ua: Dict = {
     "Переглядайте на мапі, де перебуває транспорт, і час прибуття на зупинки наживо.",
   "transit.live.source": "Мапа Rīgas satiksme",
   "transit.live.frameTitle": "Мапа транспорту Rīgas satiksme наживо",
+  "transit.live.offline":
+    "Немає підключення до інтернету — мапа не завантажиться. Вона оновиться, коли зв'язок повернеться.",
+  "transit.live.slow":
+    "Повільне з'єднання — мапа довго завантажується, положення транспорту може відставати.",
   "transit.destinations.building": "Будівля призначення",
   "transit.destinations.chooseBuilding": "Виберіть будівлю",
   "transit.destinations.buildingNeeded":
@@ -273,6 +277,9 @@ export const ua: Dict = {
   "settings.showSubjectsTabHint":
     "Показує вкладку предметів у нижньому меню, поруч із налаштуваннями.",
   "settings.notifications": "Сповіщення",
+  "settings.showTransitTab": "Вкладка «Транспорт»",
+  "settings.showTransitTabHint":
+    "Показує вкладку транспорту Rīgas satiksme в нижньому меню, поруч із налаштуваннями.",
   "settings.notifyLessonReminder": "Нагадування про урок",
   "settings.notifyLessonReminderHint": "Сповіщати перед початком наступного уроку.",
   "settings.notifyLessonReminderOff": "Вимкнено",
@@ -428,6 +435,7 @@ export const ua: Dict = {
   "settings.iphoneInstall": "Додати на початковий екран",
   "settings.iphoneInstallHint": "Встановити Stundio як застосунок на iPhone",
 
+  "settings.group.tabs": "Вкладки",
   "settings.group.schedule": "Розклад",
   "settings.group.appearance": "Вигляд і мова",
   "settings.identityHint": "Чий розклад показувати на головній, у тижні та у віджеті.",

@@ -12,8 +12,8 @@ import { dayProgress } from "@/lib/schedule";
 import { useNow } from "@/ui/hooks/useNow.ts";
 import { useAppStore } from "@/store";
 import { useT } from "@/ui/i18n";
+import { LiveMapCard } from "./live-map-card.tsx";
 
-const LIVE_MAP_URL = "https://saraksti.lv/#riga/map";
 const googleTransitUrl = (building: string, origin: string) => {
   const params = new URLSearchParams({
     api: "1",
@@ -208,37 +208,7 @@ export const TransitView = () => {
               </ul>
             )}
 
-            <form className="space-y-3" onSubmit={addDestination}>
-              <label className="block">
-                <span className="mb-1 block font-text text-caption font-medium text-muted">
-                  {t("transit.destinations.nameLabel")}
-                </span>
-                <input
-                  className="w-full rounded-xl border border-hairline bg-card px-3 py-2.5 font-text text-body-sm text-strong outline-none focus:border-brand"
-                  value={label}
-                  onChange={(event) => setLabel(event.currentTarget.value)}
-                  placeholder={t("transit.destinations.namePlaceholder")}
-                  required
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1 block font-text text-caption font-medium text-muted">
-                  {t("transit.destinations.addressLabel")}
-                </span>
-                <input
-                  className="w-full rounded-xl border border-hairline bg-card px-3 py-2.5 font-text text-body-sm text-strong outline-none focus:border-brand"
-                  value={address}
-                  onChange={(event) => setAddress(event.currentTarget.value)}
-                  placeholder={t("transit.destinations.addressPlaceholder")}
-                  required
-                />
-              </label>
-              <Button block type="submit" icon="plus">
-                {t("transit.destinations.add")}
-              </Button>
-            </form>
-          </Card>
-        )}
+        <LiveMapCard />
       </div>
     </div>
   );
