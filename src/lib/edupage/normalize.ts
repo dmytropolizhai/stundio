@@ -88,6 +88,10 @@ export type NormalizeStats = {
 
 export type NormalizeResult = { timetable: Timetable; stats: NormalizeStats };
 
+/** `reg_name` is "<school>, <street>, <city>"; only the name is wanted, as the address is one site's. */
+const schoolName = (tables: RawTables): string | undefined =>
+  strOrNull(tables["globals"]?.[0]?.["reg_name"])?.split(",")[0]?.trim() || undefined;
+
 export const normalizeTimetable = (tables: RawTables, meta: TimetableMeta): NormalizeResult => {
   const classes = (tables["classes"] ?? []).map(toClassRef);
   const teachers = (tables["teachers"] ?? []).map(toTeacherRef);
@@ -160,8 +164,18 @@ export const normalizeTimetable = (tables: RawTables, meta: TimetableMeta): Norm
     });
   }
 
+  const school = schoolName(tables);
   return {
-    timetable: { meta, periods, classes, teachers, subjects, rooms, lessons },
+    timetable: {
+      meta,
+      periods,
+      classes,
+      teachers,
+      subjects,
+      rooms,
+      lessons,
+      ...(school && { school }),
+    },
     stats: { cards: cards.length, placedCards, orphanCards },
   };
 };

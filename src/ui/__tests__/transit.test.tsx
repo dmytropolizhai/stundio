@@ -29,6 +29,7 @@ const timetable = (building: string, period: string): Timetable => ({
   teachers: [],
   rooms: [],
   subjects: [{ id: "subject", short: "M", name: "Math" }],
+  school: "Test School",
   lessons: [
     {
       id: building,
@@ -77,7 +78,7 @@ describe("Transit", () => {
     const harness = await setup("Brīvības iela 10, Rīga");
     wrap(harness);
     expect(params().get("origin")).toBe("Brīvības iela 10, Rīga");
-    expect(params().get("destination")).toBe("Rīgas Valsts tehnikums, TIC");
+    expect(params().get("destination")).toBe("TIC, Test School");
     expect(params().get("travelmode")).toBe("transit");
     expect(links()[0]?.target).toBe("_blank");
     expect(links()[0]?.rel).toBe("noreferrer");
