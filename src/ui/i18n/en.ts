@@ -205,6 +205,10 @@ export const en: Dict = {
 
   "subjects.title": "Subjects",
   "transit.title": "Transit",
+  "transit.tab.destination": "Destination",
+  "transit.tab.saved": "Saved addresses",
+  "settings.transitMap.show": "Show Rīgas satiksme map",
+  "settings.transitMap.hide": "Hide Rīgas satiksme map",
   "transit.live.title": "Riga transit live",
   "transit.live.description":
     "See public transport vehicles on the map and live arrival times at stops.",

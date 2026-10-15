@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { listBuildings, listSubgroups } from "@/lib/edupage";
-import { TopBar } from "@/ds";
+import { IconButton, TopBar } from "@/ds";
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
 import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
 import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
@@ -57,6 +57,9 @@ export const SettingsView = ({
   const { persona } = useIdentity();
   const subgroup = useAppStore((s) => s.settings.subgroup);
   const building = useAppStore((s) => s.settings.building);
+  const mapEnabled = useAppStore((s) => s.settings.transitMapEnabled);
+  const setMapEnabled = useAppStore((s) => s.setTransitMapEnabled);
+  const hasTransit = PERSONA_PROFILES[persona].nav.personal.includes("transit");
   const identityLabel = useIdentityLabel();
   const selectedClass = useSelectedClass();
   const metas = useAppStore((s) => s.metas);
@@ -81,7 +84,20 @@ export const SettingsView = ({
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
       <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
-        <TopBar title={t("settings.title")} />
+        <TopBar
+          title={t("settings.title")}
+          actions={
+            hasTransit && (
+              <IconButton
+                icon="bus-front"
+                variant={mapEnabled ? "brand" : "light"}
+                aria-pressed={mapEnabled}
+                label={t(mapEnabled ? "settings.transitMap.hide" : "settings.transitMap.show")}
+                onClick={() => void setMapEnabled(!mapEnabled)}
+              />
+            )
+          }
+        />
 
         <ProfileCard
           persona={persona}
@@ -94,7 +110,7 @@ export const SettingsView = ({
 
         <TabsSection />
 
-        {PERSONA_PROFILES[persona].nav.personal.includes("transit") && <CommuteSection />}
+        {hasTransit && <CommuteSection />}
 
         <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 
