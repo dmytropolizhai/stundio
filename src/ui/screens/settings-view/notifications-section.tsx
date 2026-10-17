@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/ds";
-import { isNativePlatform } from "@/lib/edupage";
-import { desktopNotificationsFailing, isDesktop } from "@/lib/desktop";
+import { desktopNotificationsFailing } from "@/lib/desktop";
+import { currentPlatform, hasAppNotifications } from "@/lib/platform";
 import {
   ensureExactAlarmPermission,
   ensureNotificationPermission,
@@ -35,8 +35,11 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
   const identityLabel = useAppStore((s) => s.identityLabel());
   const [reminderOpen, setReminderOpen] = useState(false);
 
-  const desktop = isDesktop();
-  const native = isNativePlatform() || desktop;
+  const platform = currentPlatform();
+  const desktop = platform === "desktop";
+  const android = platform === "android";
+  // Shows its own reminders and alerts (Android, Linux); the web build has Web Push instead.
+  const native = hasAppNotifications(platform);
   const title = t("settings.notifications");
 
   if (isIosDevice() && !isStandalonePwa()) {
@@ -75,7 +78,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
       (!native ||
         (settings.notifyLessonReminderMinutes === 0 &&
           !settings.notifyNewTimetable &&
-          (desktop || !settings.notifyAppUpdates))));
+          (!android || !settings.notifyAppUpdates))));
 
   return (
     <Section
@@ -135,7 +138,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
         />
       )}
 
-      {native && !desktop && exactAlarmDenied && settings.notifyLessonReminderMinutes > 0 && (
+      {android && exactAlarmDenied && settings.notifyLessonReminderMinutes > 0 && (
         <SettingsRow
           icon="triangle-alert"
           tone="alert"
@@ -191,7 +194,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
           }}
         />
       )}
-      {native && !desktop && (
+      {android && (
         <SettingsRow
           icon="download"
           label={t("settings.notifyAppUpdates")}
@@ -226,7 +229,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
               // show it *on time*. Without the second one Android delivers the reminder whenever
               // Doze next wakes up.
               void ensureNotificationPermission().then((granted) => {
-                if (granted && !desktop) return ensureExactAlarmPermission();
+                if (granted && android) return ensureExactAlarmPermission();
                 return granted;
               });
             }

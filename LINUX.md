@@ -93,7 +93,9 @@ updates become available only after a Flathub submission is accepted.
 
 ## Regenerate dependency sources
 
-Do this whenever either lockfile changes. The generator version is recorded in
+Do this whenever either lockfile changes. CI regenerates them itself before building, so a
+stale commit only produces a warning, but a Flathub submission needs the committed files
+current. The generator version is recorded in
 `packaging/flatpak/generated/tools.json`.
 
 ```sh

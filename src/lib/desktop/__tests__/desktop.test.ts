@@ -26,12 +26,12 @@ vi.mock("@tauri-apps/plugin-notification", () => ({
 import {
   clearDesktopReminders,
   desktopNotificationsFailing,
-  desktopPost,
+  desktopFetch,
   ensureDesktopNotificationPermission,
   notifyDesktop,
   saveDesktopImage,
   scheduleDesktopReminders,
-  watchDesktopResume,
+  onDesktopFocus,
 } from "../index.ts";
 
 beforeEach(() => {
@@ -47,15 +47,14 @@ afterEach(() => {
 });
 
 describe("Linux desktop integration", () => {
-  it("posts JSON through native HTTP and preserves server errors for the existing parser", async () => {
+  it("fetches through native HTTP and preserves server errors for the existing parser", async () => {
     ports.fetch.mockResolvedValue(new Response("school unavailable", { status: 503 }));
-    await expect(
-      desktopPost("https://pikcrvt.edupage.org/test", { year: 2026 }, { Referer: "school" }),
-    ).resolves.toEqual({ status: 503, text: "school unavailable" });
+    const init = { method: "POST", headers: { Referer: "school" }, body: '{"year":2026}' };
+    const response = await desktopFetch("https://pikcrvt.edupage.org/test", init);
+    expect(response.status).toBe(503);
+    await expect(response.text()).resolves.toBe("school unavailable");
     expect(ports.fetch).toHaveBeenCalledWith("https://pikcrvt.edupage.org/test", {
-      method: "POST",
-      headers: { Referer: "school" },
-      body: '{"year":2026}',
+      ...init,
       connectTimeout: 15_000,
       signal: expect.any(AbortSignal) as AbortSignal,
     });
@@ -68,7 +67,7 @@ describe("Linux desktop integration", () => {
           init.signal.addEventListener("abort", () => reject(init.signal.reason as Error));
         }),
     );
-    const request = desktopPost("https://pikcrvt.edupage.org/test", {}, {});
+    const request = desktopFetch("https://pikcrvt.edupage.org/test", { method: "POST" });
     const settled = expect(request).rejects.toMatchObject({ name: "TimeoutError" });
     await vi.advanceTimersByTimeAsync(30_000);
     await settled;
@@ -131,25 +130,18 @@ describe("Linux desktop integration", () => {
     expect(ports.notify).not.toHaveBeenCalled();
   });
 
-  it("throttles resume refreshes and disposes the focus listener", async () => {
+  it("reports only gained focus and disposes the focus listener", async () => {
     const unlisten = vi.fn();
     ports.focus.mockResolvedValue(unlisten);
-    const refresh = vi.fn();
-    const dispose = watchDesktopResume(refresh);
+    const active = vi.fn();
+    const dispose = onDesktopFocus(active);
     const listener = ports.focus.mock.calls[0]?.[0] as (event: { payload: boolean }) => void;
-    listener({ payload: true });
-    expect(refresh).toHaveBeenCalledOnce();
     listener({ payload: false });
+    expect(active).not.toHaveBeenCalled();
     listener({ payload: true });
-    expect(refresh).toHaveBeenCalledOnce();
-    await vi.advanceTimersByTimeAsync(60_000);
-    listener({ payload: true });
-    expect(refresh).toHaveBeenCalledTimes(2);
+    expect(active).toHaveBeenCalledOnce();
     dispose();
     await Promise.resolve();
     expect(unlisten).toHaveBeenCalledOnce();
-    await vi.advanceTimersByTimeAsync(60_000);
-    listener({ payload: true });
-    expect(refresh).toHaveBeenCalledTimes(2);
   });
 });

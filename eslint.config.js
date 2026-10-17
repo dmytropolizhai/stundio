@@ -163,4 +163,24 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Tauri stays behind the desktop ports, so the shared code keeps building for Android/web.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/lib/desktop/**"],
+    rules: {
+      // The typescript-eslint twin, so it adds to the per-folder Capacitor rules above
+      // instead of replacing them (a later config's same-named rule wins outright).
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@tauri-apps/*"],
+              message: "Only src/lib/desktop/ may import Tauri.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

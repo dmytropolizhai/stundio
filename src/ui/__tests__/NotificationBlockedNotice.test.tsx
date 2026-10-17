@@ -15,6 +15,10 @@ vi.mock("@/lib/edupage", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
   return { ...actual, isNativePlatform: () => native.isNative };
 });
+vi.mock("@/lib/platform", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return { ...actual, currentPlatform: () => (native.isNative ? "android" : "web") };
+});
 vi.mock("@/notifications/localNotifications", () => ({
   isNotificationPermissionDenied: () => Promise.resolve(native.denied),
   openNotificationSettings: native.openSettings,

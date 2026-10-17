@@ -15,25 +15,23 @@ export const isDesktop = (): boolean => isTauri();
 /** A stalled response must still settle: boot.ts shares one in-flight refresh for all callers. */
 const REQUEST_TIMEOUT_MS = 30_000;
 
-/** Restricted to the school's HTTPS origin by the shell capability. No web proxy required. */
-export const desktopPost = async (
-  url: string,
-  body: unknown,
-  headers: Record<string, string>,
-): Promise<{ status: number; text: string }> => {
+/**
+ * `fetch` through the shell's native HTTP, which is not subject to CORS. Restricted to the
+ * school's HTTPS origin by the shell capability, so no web proxy is required. The body is read
+ * inside the timeout too: a connection that stalls mid-response is the case it exists for.
+ */
+export const desktopFetch = async (url: string, init: RequestInit): Promise<Response> => {
   const controller = new AbortController();
   const timer = setTimeout(() => {
     controller.abort(new DOMException("EduPage did not respond", "TimeoutError"));
   }, REQUEST_TIMEOUT_MS);
   try {
     const response = await nativeFetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
+      ...init,
       connectTimeout: 15_000,
       signal: controller.signal,
     });
-    return { status: response.status, text: await response.text() };
+    return new Response(await response.text(), { status: response.status });
   } finally {
     clearTimeout(timer);
   }
@@ -100,22 +98,12 @@ export const scheduleDesktopReminders = (
   }
 };
 
-/** Refresh when returning to the window, using the same throttle as mobile resume. */
-export const watchDesktopResume = (
-  refresh: () => void | Promise<void>,
-  now: () => number = Date.now,
-  throttleMs = 60_000,
-): (() => void) => {
-  let disposed = false;
-  // -Infinity, as in watchAppResume: the first return to the window must always fire.
-  let lastRun = Number.NEGATIVE_INFINITY;
+/** Calls `listener` whenever the window gains focus — the desktop's "app became active". */
+export const onDesktopFocus = (listener: () => void): (() => void) => {
   const handle = getCurrentWindow().onFocusChanged(({ payload: focused }) => {
-    if (disposed || !focused || now() - lastRun < throttleMs) return;
-    lastRun = now();
-    void refresh();
+    if (focused) listener();
   });
   return () => {
-    disposed = true;
     void handle.then((unlisten) => unlisten());
   };
 };

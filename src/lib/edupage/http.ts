@@ -7,7 +7,8 @@
  * Linux uses the scoped Tauri HTTP port for the same reason.
  */
 import { Capacitor, CapacitorHttp } from "@capacitor/core";
-import { desktopPost, isDesktop } from "@/lib/desktop";
+import { desktopFetch } from "@/lib/desktop";
+import { currentPlatform } from "@/lib/platform";
 
 /**
  * True only when running inside the Android (or future iOS) native app shell.
@@ -47,34 +48,48 @@ export const capacitorHttp: HttpClient = async ({ url, body, headers }) => {
 };
 
 /**
+ * A JSON POST over any `fetch`-shaped function; the headers it adds go on every request.
+ * Callers pass a wrapper that looks the function up per call, so a test's stub is used.
+ */
+const postJson =
+  (
+    fetchImpl: (url: string, init: RequestInit) => Promise<Response>,
+    extraHeaders: Record<string, string> = {},
+  ): HttpClient =>
+  async ({ url, body, headers }) => {
+    const res = await fetchImpl(url, {
+      method: "POST",
+      headers: baseHeaders({ ...extraHeaders, ...headers }),
+      body: JSON.stringify(body),
+    });
+    const text = await res.text();
+    return { status: res.status, data: parseLooseJson(text) };
+  };
+
+/**
  * `fetch` transport for Vitest and the web dev preview.
  * Cross-origin calls to EduPage will fail here — that is expected, not a bug.
  */
-export const fetchHttp: HttpClient = async ({ url, body, headers }) => {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: baseHeaders(headers),
-    body: JSON.stringify(body),
-  });
-  const text = await res.text();
-  return { status: res.status, data: parseLooseJson(text) };
-};
+export const fetchHttp: HttpClient = postJson((url, init) => fetch(url, init));
+
+/** Tauri's native HTTP on Linux. Unlike a browser it may set `User-Agent`, as Android does. */
+export const desktopHttp: HttpClient = postJson((url, init) => desktopFetch(url, init), {
+  "User-Agent": USER_AGENT,
+});
 
 /**
  * The default transport for this platform: native HTTP in the Capacitor or Tauri container,
  * standard `fetch` in web browsers (where requests pass through the dev or Cloudflare proxy).
  */
-export const defaultHttp: HttpClient = async (req) => {
-  if (isNativePlatform()) return capacitorHttp(req);
-  if (isDesktop()) {
-    const res = await desktopPost(
-      req.url,
-      req.body,
-      baseHeaders({ "User-Agent": USER_AGENT, ...req.headers }),
-    );
-    return { status: res.status, data: parseLooseJson(res.text) };
+export const defaultHttp: HttpClient = (req) => {
+  switch (currentPlatform()) {
+    case "android":
+      return capacitorHttp(req);
+    case "desktop":
+      return desktopHttp(req);
+    case "web":
+      return fetchHttp(req);
   }
-  return fetchHttp(req);
 };
 
 /**

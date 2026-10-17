@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { isNativePlatform } from "@/lib/edupage";
-import { isDesktop } from "@/lib/desktop";
+import { currentPlatform } from "@/lib/platform";
 import { isNotificationPermissionDenied } from "@/notifications/localNotifications";
 
 /**
@@ -16,22 +15,23 @@ export const useNotificationPermissionDenied = (): boolean => {
   const [denied, setDenied] = useState(false);
 
   const refresh = useCallback(() => {
-    // The Linux notification portal does not expose a denied/default permission state.
-    if (isDesktop()) {
-      setDenied(false);
-      return;
-    }
-    if (!isNativePlatform()) {
-      if (typeof window !== "undefined" && "Notification" in window) {
-        setDenied(Notification.permission === "denied");
-      } else {
+    switch (currentPlatform()) {
+      case "desktop":
+        // The Linux notification portal does not expose a denied/default permission state.
         setDenied(false);
-      }
-      return;
+        return;
+      case "web":
+        setDenied(
+          typeof window !== "undefined" &&
+            "Notification" in window &&
+            Notification.permission === "denied",
+        );
+        return;
+      case "android":
+        void isNotificationPermissionDenied()
+          .then(setDenied)
+          .catch(() => setDenied(false));
     }
-    void isNotificationPermissionDenied()
-      .then(setDenied)
-      .catch(() => setDenied(false));
   }, []);
 
   useEffect(() => {

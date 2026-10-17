@@ -29,6 +29,14 @@ vi.mock("@/lib/desktop", async (importOriginal) => {
   };
 });
 
+vi.mock("@/lib/platform", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    currentPlatform: () => (env.isNative ? "android" : env.isDesktop ? "desktop" : "web"),
+  };
+});
+
 vi.mock("@/lib/edupage", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
   return { ...actual, isNativePlatform: () => env.isNative };

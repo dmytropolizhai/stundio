@@ -5,8 +5,8 @@
  * HTTP 200 even for failures — errors arrive as an `{ e: "..." }` envelope, so the status
  * code alone proves nothing. `callEdupage` is the single place that check lives.
  */
-import { isNativePlatform, type HttpClient } from "./http.ts";
-import { isDesktop } from "@/lib/desktop";
+import type { HttpClient } from "./http.ts";
+import { currentPlatform, reachesSchoolDirectly } from "@/lib/platform";
 import type { ISODate } from "./types.ts";
 
 /** The anonymous hash. Not a placeholder — see CLAUDE.md. */
@@ -29,7 +29,7 @@ export const EDUPAGE_PROXY_PREFIX = "/api-edupage";
  */
 export const apiBaseUrl = (subdomain: string): string => {
   if (import.meta.env.MODE === "test") return schoolBaseUrl(subdomain);
-  return isNativePlatform() || isDesktop() ? schoolBaseUrl(subdomain) : EDUPAGE_PROXY_PREFIX;
+  return reachesSchoolDirectly(currentPlatform()) ? schoolBaseUrl(subdomain) : EDUPAGE_PROXY_PREFIX;
 };
 
 export class EdupageError extends Error {

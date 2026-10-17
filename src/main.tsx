@@ -1,14 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { isNativePlatform } from "@/lib/edupage";
-import { isDesktop } from "@/lib/desktop";
+import { currentPlatform } from "@/lib/platform";
 import App from "./App.tsx";
 import "./index.css";
 import "./desktop.css";
 
-if (isDesktop()) document.documentElement.dataset.platform = "desktop";
+const platform = currentPlatform();
+if (platform === "desktop") document.documentElement.dataset.platform = "desktop";
 
-if ("serviceWorker" in navigator && !isNativePlatform() && !isDesktop()) {
+if ("serviceWorker" in navigator && platform === "web") {
   window.addEventListener("load", () => {
     void navigator.serviceWorker.register("/sw.js").catch(() => {});
   });
