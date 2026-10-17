@@ -13,6 +13,13 @@ import { LocalNotifications, type ActionPerformed } from "@capacitor/local-notif
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { rigaClock, type LessonReminder } from "@/lib/schedule";
 import { translate, type Lang } from "@/ui/i18n";
+import {
+  isDesktop,
+  hasDesktopNotificationPermission,
+  ensureDesktopNotificationPermission,
+  notifyDesktop,
+  scheduleDesktopReminders,
+} from "@/lib/desktop";
 
 /**
  * Carried in each notification's `extra` and read back in `onNotificationTap` once the user
@@ -63,6 +70,7 @@ const ensureChannel = async (): Promise<void> => {
 
 /** Never prompts — just reports whether permission is currently granted. */
 export const hasNotificationPermission = async (): Promise<boolean> => {
+  if (isDesktop()) return hasDesktopNotificationPermission();
   const current = await LocalNotifications.checkPermissions();
   return current.display === "granted";
 };
@@ -73,6 +81,8 @@ export const hasNotificationPermission = async (): Promise<boolean> => {
  * instead of the normal in-app request, since the OS won't show its dialog again either way.
  */
 export const isNotificationPermissionDenied = async (): Promise<boolean> => {
+  // Linux notification servers do not expose Android's denied/default distinction.
+  if (isDesktop()) return false;
   const current = await LocalNotifications.checkPermissions();
   return current.display === "denied";
 };
@@ -130,6 +140,7 @@ export const ensureExactAlarmPermission = async (): Promise<boolean> => {
  * that's a cold OS permission dialog with no context, which is exactly what we don't want.
  */
 export const ensureNotificationPermission = async (): Promise<boolean> => {
+  if (isDesktop()) return ensureDesktopNotificationPermission();
   const current = await LocalNotifications.checkPermissions();
   if (current.display === "granted") return true;
   if (current.display === "denied") return false;
@@ -147,6 +158,16 @@ export const rescheduleLessonReminders = async (
   minutesBefore: number,
   lang: Lang,
 ): Promise<void> => {
+  if (isDesktop()) {
+    scheduleDesktopReminders(
+      reminders.map((reminder) => ({
+        at: reminder.fireAt,
+        title: lessonTitle(reminder.lesson, minutesBefore, lang),
+        body: lessonBody(reminder.lesson),
+      })),
+    );
+    return;
+  }
   const pending = await LocalNotifications.getPending();
   const ours = pending.notifications.filter(
     (n) => n.id >= LESSON_ID_BAND && n.id < LESSON_ID_BAND + 1_000_000_000,
@@ -175,6 +196,7 @@ export const notifySubstitutionsChanged = async (
   body: string,
   date: ISODate,
 ): Promise<void> => {
+  if (isDesktop()) return notifyDesktop(title, body);
   await ensureChannel();
   await LocalNotifications.schedule({
     notifications: [
@@ -194,6 +216,7 @@ export const notifyNewTimetable = async (
   body: string,
   date: ISODate,
 ): Promise<void> => {
+  if (isDesktop()) return notifyDesktop(title, body);
   await ensureChannel();
   await LocalNotifications.schedule({
     notifications: [
@@ -230,6 +253,7 @@ export const notifyAppUpdate = async (title: string, body: string): Promise<void
  * callers never need to await this — nothing here is used before it settles.
  */
 export const onNotificationTap = (handler: (extra: NotificationExtra) => void): (() => void) => {
+  if (isDesktop()) return () => {};
   const handle = LocalNotifications.addListener(
     "localNotificationActionPerformed",
     (action: ActionPerformed) => {

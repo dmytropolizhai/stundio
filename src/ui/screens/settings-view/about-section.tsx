@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BottomSheet, Button } from "@/ds";
 import { isNativePlatform } from "@/lib/edupage";
+import { isDesktop } from "@/lib/desktop";
 import type { FeedbackType } from "@/ui/feedback.ts";
 import { useUpdateCheck } from "@/ui/hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "@/ui/hooks/useUpdateInstall.ts";
@@ -152,7 +153,7 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
         <SettingsRow
           icon="info"
           label={t("settings.version")}
-          description={t("settings.versionHint")}
+          description={t(isDesktop() ? "settings.desktopUpdatesHint" : "settings.versionHint")}
           value={__APP_VERSION__}
         />
       )}

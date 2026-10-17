@@ -1,0 +1,65 @@
+name: Linux Flatpak
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The offline build reads packaging/flatpak/generated/, which only `npm run flatpak:sources`
+  # refreshes. Regenerating here means a lockfile bump without it (Dependabot, a contributor
+  # without flatpak-builder-tools) still builds, and only gets a warning to commit the update.
+  sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned flatpak-builder-tools
+        run: |
+          revision=$(python3 -c 'import json; print(json.load(open("packaging/flatpak/generated/tools.json"))["flatpak-builder-tools"])')
+          git clone --quiet https://github.com/flatpak/flatpak-builder-tools.git .desktop-tools/flatpak-builder-tools
+          git -C .desktop-tools/flatpak-builder-tools checkout --quiet "$revision"
+          pip install --quiet .desktop-tools/flatpak-builder-tools/node tomlkit aiohttp
+      - name: Regenerate dependency sources from the lockfiles
+        run: python3 packaging/flatpak/generate-sources.py
+      - name: Check the committed sources are current
+        run: |
+          if ! git diff --quiet -- packaging/flatpak/generated; then
+            message="packaging/flatpak/generated/ is out of date with the lockfiles. This build used regenerated sources; run 'npm run flatpak:sources' (see LINUX.md) and commit the result before a Flathub submission."
+            echo "::warning title=Flatpak sources out of date::$message"
+            echo "$message" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-sources
+          path: packaging/flatpak/generated
+          retention-days: 1
+
+  flatpak:
+    needs: sources
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: flatpak-sources
+          path: packaging/flatpak/generated
+      - name: Build an offline-source Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6.8
+        with:
+          bundle: Stundio.flatpak
+          manifest-path: packaging/flatpak/io.github.dmytropolizhai.stundio.json
+          cache-key: stundio-linux-${{ hashFiles('package-lock.json', 'src-tauri/Cargo.lock') }}

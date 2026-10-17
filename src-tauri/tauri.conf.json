@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Stundio",
+  "version": "2.1.0",
+  "identifier": "io.github.dmytropolizhai.stundio",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "create": false,
+        "title": "Stundio",
+        "width": 1080,
+        "height": 780,
+        "minWidth": 380,
+        "minHeight": 540,
+        "zoomHotkeysEnabled": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src ipc: http://ipc.localhost https://api.web3forms.com https://plausible.io https://api.github.com; frame-src https://saraksti.lv; object-src 'none'; base-uri 'self'; form-action 'none'"
+    }
+  },
+  "bundle": {
+    "active": false,
+    "icon": ["icons/icon.png"],
+    "category": "Education",
+    "shortDescription": "Your RVT timetable, even offline",
+    "longDescription": "Lessons, substitutions and teacher schedules for Rīgas Valsts tehnikums."
+  }
+}

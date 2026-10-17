@@ -5,7 +5,22 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", "android", "coverage", ".venv", "reference", ".claude"] },
+  {
+    ignores: [
+      "dist",
+      "android",
+      "coverage",
+      ".venv",
+      "reference",
+      ".claude",
+      ".desktop-tools",
+      ".flatpak-builder",
+      "build-flatpak",
+      "flatpak-repo",
+      "src-tauri/target",
+      "src-tauri/gen",
+    ],
+  },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
@@ -142,6 +157,26 @@ export default tseslint.config(
             {
               group: ["@capacitor/*"],
               message: "Only src/lib/app/native.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Tauri stays behind the desktop ports, so the shared code keeps building for Android/web.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/lib/desktop/**"],
+    rules: {
+      // The typescript-eslint twin, so it adds to the per-folder Capacitor rules above
+      // instead of replacing them (a later config's same-named rule wins outright).
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@tauri-apps/*"],
+              message: "Only src/lib/desktop/ may import Tauri.",
             },
           ],
         },

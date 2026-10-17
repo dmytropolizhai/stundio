@@ -6,6 +6,10 @@ There’s no login, no account, and no complicated setup. Pick your class and yo
 
 It runs as an Android app and as an installable web app (PWA) at **[stundio.pages.dev](https://stundio.pages.dev)**, which is also how iPhone and desktop users get it.
 
+A Linux desktop target with local Flatpak packaging is available for development and testing.
+See [LINUX.md](LINUX.md) for builds, installation, desktop behavior and Flathub preparation.
+It is not yet published on Flathub.
+
 **Already in use:** more than 200 people use Stundio, including teachers. So far the web app has had about 1.1k unique visitors and 2k total visits, and Android users outnumber iOS users.
 
 The name comes from **“stunda”**, the Latvian word for “lesson”.

@@ -8,6 +8,8 @@
  * `@capacitor/network` itself — that import is isolated to `lib/network/native.ts` (CLAUDE.md).
  */
 import { App } from "@capacitor/app";
+import { onDesktopFocus } from "@/lib/desktop";
+import { currentPlatform } from "@/lib/platform";
 import type { NetworkPort } from "@/lib/network";
 
 /** Minimum gap between resume-triggered refreshes; tab-switching should not spam the school. */
@@ -17,6 +19,17 @@ export type LifecycleDeps = {
   refresh: () => void | Promise<void>;
   now?: () => number;
   throttleMs?: number;
+};
+
+/** The shell's "the app is in front again" signal: Capacitor's resume, or window focus on Linux. */
+const onAppActive = (listener: () => void): (() => void) => {
+  if (currentPlatform() === "desktop") return onDesktopFocus(listener);
+  const handle = App.addListener("appStateChange", ({ isActive }) => {
+    if (isActive) listener();
+  });
+  return () => {
+    void handle.then((h) => h.remove());
+  };
 };
 
 /**
@@ -32,8 +45,8 @@ export const watchAppResume = ({
   let lastRun = Number.NEGATIVE_INFINITY;
   let disposed = false;
 
-  const handle = App.addListener("appStateChange", ({ isActive }) => {
-    if (!isActive || disposed) return;
+  const stopListening = onAppActive(() => {
+    if (disposed) return;
     const at = now();
     if (at - lastRun < throttleMs) return;
     lastRun = at;
@@ -42,7 +55,7 @@ export const watchAppResume = ({
 
   return () => {
     disposed = true;
-    void handle.then((h) => h.remove());
+    stopListening();
   };
 };
 

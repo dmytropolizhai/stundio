@@ -8,6 +8,8 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 
 const env = vi.hoisted(() => ({
   isNative: false,
+  isDesktop: false,
+  notificationsFailing: false,
   denied: false,
   exactAllowed: true,
   webPush: false,
@@ -17,6 +19,23 @@ const env = vi.hoisted(() => ({
   subscribe: vi.fn(() => Promise.resolve(true)),
   unsubscribe: vi.fn(() => Promise.resolve(true)),
 }));
+
+vi.mock("@/lib/desktop", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    isDesktop: () => env.isDesktop,
+    desktopNotificationsFailing: () => env.notificationsFailing,
+  };
+});
+
+vi.mock("@/lib/platform", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    currentPlatform: () => (env.isNative ? "android" : env.isDesktop ? "desktop" : "web"),
+  };
+});
 
 vi.mock("@/lib/edupage", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
@@ -78,12 +97,54 @@ describe("Settings rows", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
-    Object.assign(env, { isNative: false, denied: false, exactAllowed: true, webPush: false });
+    Object.assign(env, {
+      isNative: false,
+      isDesktop: false,
+      notificationsFailing: false,
+      denied: false,
+      exactAllowed: true,
+      webPush: false,
+    });
     env.ensureNotification.mockClear();
     env.ensureExact.mockClear();
     env.openSettings.mockClear();
     env.subscribe.mockClear();
     env.unsubscribe.mockClear();
+  });
+
+  it("offers desktop reminders with their runtime limit and store-managed updates", async () => {
+    env.isDesktop = true;
+    const harness = await bootHarness();
+    renderSettings(harness);
+    await settle();
+    expect(screen.getByText(/Atgādinājumi darbojas, kamēr Stundio ir atvērts/)).toBeDefined();
+    expect(screen.getByText("Tikai, kamēr Stundio ir atvērts")).toBeDefined();
+    expect(screen.queryByText("Paziņojumi nesasniedz darbvirsmu")).toBeNull();
+    expect(
+      screen.getByText("Jauninājumus instalē savas Linux programmatūras veikalā."),
+    ).toBeDefined();
+    expect(screen.getByRole("button", { name: /^Atgādinājums pirms stundas/ })).toBeDefined();
+    expect(screen.getByRole("switch", { name: "Jauns stundu saraksts" })).toBeDefined();
+    expect(screen.queryByRole("switch", { name: "Jauninājumi" })).toBeNull();
+    await clickAndSettle(() =>
+      fireEvent.click(screen.getByRole("button", { name: /^Atgādinājums pirms stundas/ })),
+    );
+    await clickAndSettle(() =>
+      fireEvent.click(screen.getByRole("radio", { name: "5 min pirms stundas" })),
+    );
+    expect(harness.store.getState().settings.notifyLessonReminderMinutes).toBe(5);
+    expect(env.ensureNotification).toHaveBeenCalled();
+    expect(env.ensureExact).not.toHaveBeenCalled();
+  });
+
+  it("warns on desktop when no notification service answered", async () => {
+    env.isDesktop = true;
+    env.notificationsFailing = true;
+    const harness = await bootHarness();
+    renderSettings(harness);
+    await settle();
+    expect(screen.getByText("Paziņojumi nesasniedz darbvirsmu")).toBeDefined();
+    expect(screen.getByText(/xdg-desktop-portal-gtk/)).toBeDefined();
   });
 
   it("describes a row and repeats the description when its sheet opens", async () => {

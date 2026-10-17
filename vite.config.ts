@@ -75,6 +75,9 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5173,
+    strictPort: true,
+    watch: { ignored: ["**/src-tauri/**", "**/.desktop-tools/**", "**/.flatpak-builder/**"] },
     // `host: true` so a phone on the same Wi-Fi can open the dev server.
     host: true,
     // EduPage sends no CORS headers, so the browser cannot call it directly (CLAUDE.md).

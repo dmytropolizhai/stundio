@@ -44,6 +44,7 @@ export const WeekTopBar = ({
   return (
     <>
       <TopBar
+        className="desktop-week-header"
         title={
           <div className="flex items-center gap-0.5">
             <IconButton

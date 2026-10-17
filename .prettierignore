@@ -15,3 +15,10 @@ package-lock.json
 
 # Docs are hand-formatted (tables, wrapping) — keep prettier out.
 *.md
+.desktop-tools
+.flatpak-builder
+build-flatpak
+flatpak-repo
+src-tauri/target
+src-tauri/gen
+packaging/flatpak/generated

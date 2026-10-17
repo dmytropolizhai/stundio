@@ -77,6 +77,16 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   regroups the same substitution page by teacher and hashes the names it reads to match.
 - **`src/lib/version/`**, **`src/lib/analytics/`** — GitHub release update checks; anonymous
   Plausible pings (opt-out, no cookies or persistent id).
+- **`src/lib/platform/`** — which shell is running (`currentPlatform()`: android / desktop /
+  web) and the capabilities that follow from it (`reachesSchoolDirectly`,
+  `hasAppNotifications`). Branch on these instead of pairing `isNativePlatform()` with
+  `isDesktop()` at the call site.
+- **`src/lib/desktop/`**, **`src-tauri/`** — Linux desktop ports and the Tauri shell. Desktop
+  HTTP bypasses the web proxy with a school-only capability; image export uses the file portal,
+  notifications use the notification portal (falling back to the daemon), and window focus
+  feeds `sync/lifecycle.ts`'s one resume throttle. Tauri imports stay inside `lib/desktop/`
+  (enforced by ESLint). Flatpak builds and distribution are documented
+  in `LINUX.md`; generated dependency sources must follow both lockfiles.
 - **`src/db/`** — the `AppCache` port (`types.ts`) with an `idb` implementation and a memory
   fallback. Callers depend on the interface, never on `idb`.
 - **`src/sync/`** — orchestration only. Injects http, cache and clock, so the policy is testable

@@ -1,10 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { isNativePlatform } from "@/lib/edupage";
+import { currentPlatform } from "@/lib/platform";
 import App from "./App.tsx";
 import "./index.css";
+import "./desktop.css";
 
-if ("serviceWorker" in navigator && !isNativePlatform()) {
+const platform = currentPlatform();
+if (platform === "desktop") document.documentElement.dataset.platform = "desktop";
+
+if ("serviceWorker" in navigator && platform === "web") {
   window.addEventListener("load", () => {
     void navigator.serviceWorker.register("/sw.js").catch(() => {});
   });

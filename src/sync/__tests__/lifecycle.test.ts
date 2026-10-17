@@ -10,6 +10,16 @@ type Listener = (state: { isActive: boolean }) => void;
 const addListener = vi.hoisted(() => vi.fn());
 vi.mock("@capacitor/app", () => ({ App: { addListener } }));
 
+const platform = vi.hoisted(() => ({ current: "android" }));
+vi.mock("@/lib/platform", () => ({ currentPlatform: () => platform.current }));
+const desktopFocus = vi.hoisted(() => ({ fire: () => {}, dispose: vi.fn() }));
+vi.mock("@/lib/desktop", () => ({
+  onDesktopFocus: (listener: () => void) => {
+    desktopFocus.fire = listener;
+    return desktopFocus.dispose;
+  },
+}));
+
 const { watchAppResume, watchConnectivity } = await import("../lifecycle.ts");
 
 const setup = () => {
@@ -28,6 +38,28 @@ const setup = () => {
 };
 
 describe("watchAppResume", () => {
+  it("throttles window focus on Linux with the same policy, first focus included", () => {
+    platform.current = "desktop";
+    try {
+      const refresh = vi.fn();
+      let clock = 0;
+      const dispose = watchAppResume({ refresh, now: () => clock, throttleMs: 60_000 });
+      desktopFocus.fire();
+      desktopFocus.fire();
+      expect(refresh).toHaveBeenCalledOnce();
+      clock = 60_000;
+      desktopFocus.fire();
+      expect(refresh).toHaveBeenCalledTimes(2);
+      expect(addListener).not.toHaveBeenCalled();
+      dispose();
+      expect(desktopFocus.dispose).toHaveBeenCalledOnce();
+      desktopFocus.fire();
+      expect(refresh).toHaveBeenCalledTimes(2);
+    } finally {
+      platform.current = "android";
+    }
+  });
+
   it("refreshes when the app becomes active", () => {
     const { fire } = setup();
     const refresh = vi.fn();

@@ -8,6 +8,13 @@
  */
 export const lv = {
   "app.title": "Stundio",
+  "settings.desktopNotificationsTitle": "Tikai, kamēr Stundio ir atvērts",
+  "settings.desktopNotificationsFailed": "Paziņojumi nesasniedz darbvirsmu",
+  "settings.desktopNotificationsFailedHint":
+    "Neatbildēja neviens paziņojumu pakalpojums. Hyprland, Sway un citos logu pārvaldniekos instalē xdg-desktop-portal-gtk vai paziņojumu dēmonu, piemēram, mako vai dunst.",
+  "settings.desktopNotificationsHint":
+    "Atgādinājumi darbojas, kamēr Stundio ir atvērts. Izmaiņas tiek pārbaudītas, atverot lietotni vai atgriežoties tajā.",
+  "settings.desktopUpdatesHint": "Jauninājumus instalē savas Linux programmatūras veikalā.",
   "general.continue": "Turpināt",
 
   "nav.home": "Sākums",
