@@ -205,6 +205,7 @@ Still unverified on a physical device (no JDK/Android SDK here).
         subject-colour hint / empty state speak about the subjects they teach, not a class.
 - [x] App icon, adaptive icon, splash, status-bar styling, edge-to-edge (`SystemBarsPlugin` native Android integration).
 - [x] Faster cold start: cache hydration reads all object stores in parallel, the "synced before" probe no longer queues behind it, and the splash's minimum rise is 450 ms (was 900 ms).
+- [x] Lighter first load: Manrope is one variable file per subset (latin, latin-ext, cyrillic) instead of five static weights, JetBrains Mono is latin-only at 400/500 (fonts 396 kB → 124 kB, 37 → 7 files), and framer-motion runs under `LazyMotion` + `domAnimation` with the `m` component (133 → 88 kB).
 - [x] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline detection & banner.
 - [x] `@capacitor/local-notifications`: after a foreground/resume sync, if today's (or
       tomorrow's) substitutions changed vs the cached snapshot → fire a local notification.

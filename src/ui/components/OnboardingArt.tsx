@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import type { ResolvedLesson } from "@/lib/edupage";
 import { SyncStatus } from "@/ds";
 import { LessonRow } from "./LessonRow.tsx";
@@ -82,7 +82,7 @@ export const AppScreensArt = () => {
     <div aria-hidden="true" className="relative h-48 w-full">
       {SCREENS.map((screen, i) => (
         <div key={screen.id} className="absolute inset-0 flex items-center justify-center">
-          <motion.img
+          <m.img
             src={screen.src}
             alt=""
             initial={{ opacity: 0, x: 0, rotate: 0, scale: screen.scale, y: 10 }}
@@ -200,7 +200,7 @@ export const NotificationArt = () => {
   const reduceMotion = useReducedMotion() ?? false;
 
   return (
-    <motion.div
+    <m.div
       aria-hidden="true"
       initial={{ opacity: 0, y: reduceMotion ? 0 : -18 }}
       animate={{ opacity: 1, y: 0 }}
@@ -225,6 +225,6 @@ export const NotificationArt = () => {
 
         <span className="font-text text-caption text-muted">244 D(30)P · Montvida Monta</span>
       </div>
-    </motion.div>
+    </m.div>
   );
 };

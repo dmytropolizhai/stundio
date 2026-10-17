@@ -4,6 +4,7 @@
  * kilobyte counts inside a WebView.
  */
 import { useCallback, useEffect, useState } from "react";
+import { LazyMotion, domAnimation } from "framer-motion";
 import { AppStoreProvider, useAppStore } from "@/store";
 import { Button, TopBar, TooltipProvider } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
@@ -368,19 +369,24 @@ export default function App() {
   }, []);
 
   return (
-    <TooltipProvider>
-      <ErrorBoundary>
-        <AppStoreProvider errorFallback={() => <BootFailed onReady={markReady} />}>
-          <BootSignal onReady={markReady} />
-          <Shell />
-        </AppStoreProvider>
-        {/*
+    // `domAnimation` is bundled synchronously (not the async-loaded form): a lazy feature chunk
+    // would be one more file an offline cold start has to find. `strict` makes a stray
+    // `motion.*` fail loudly instead of quietly pulling the full feature set back in.
+    <LazyMotion features={domAnimation} strict>
+      <TooltipProvider>
+        <ErrorBoundary>
+          <AppStoreProvider errorFallback={() => <BootFailed onReady={markReady} />}>
+            <BootSignal onReady={markReady} />
+            <Shell />
+          </AppStoreProvider>
+          {/*
           Sits *over* the shell rather than in the provider's `fallback` slot: the splash owns its
           own exit (top out, then fade), and a fallback would be torn out the frame boot lands.
           It removes itself once the fade is done, so there is no permanent overlay node.
         */}
-        <SplashScreen ready={ready} />
-      </ErrorBoundary>
-    </TooltipProvider>
+          <SplashScreen ready={ready} />
+        </ErrorBoundary>
+      </TooltipProvider>
+    </LazyMotion>
   );
 }
