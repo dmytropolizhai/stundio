@@ -4,10 +4,17 @@ import { isNativePlatform } from "@/lib/edupage";
 import type { FeedbackType } from "@/ui/feedback.ts";
 import { useUpdateCheck } from "@/ui/hooks/useUpdateCheck.ts";
 import { useUpdateInstall } from "@/ui/hooks/useUpdateInstall.ts";
-import { useT } from "@/ui/i18n";
+import { useLang, useT } from "@/ui/i18n";
 import { Section } from "./settings-section.tsx";
 import { SettingsRow, StatusDot, ValueBadge } from "./settings-row.tsx";
 import { SheetDescription, SheetTitle } from "./settings-sheet.tsx";
+
+/**
+ * The standalone donation page (`public/donate.html`). Absolute, because on Android the app is
+ * served from the APK and `/donate` would resolve inside it; `?lang=` keeps the page in the
+ * app's language instead of the browser's.
+ */
+const DONATE_URL = "https://stundio.pages.dev/donate";
 
 type AboutSectionProps = {
   onShowWhatsNew: () => void;
@@ -105,6 +112,7 @@ const UpdateSheet = ({
 
 export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionProps) => {
   const t = useT();
+  const lang = useLang();
   const isNative = isNativePlatform();
   const check = useUpdateCheck({ enabled: isNative });
   const { result: update, checking, checked } = check;
@@ -167,6 +175,12 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
         label={t("settings.suggestFeatureRow")}
         description={t("settings.suggestFeatureHint")}
         onClick={() => onOpenFeedback("suggestion")}
+      />
+      <SettingsRow
+        icon="coffee"
+        label={t("settings.donateRow")}
+        description={t("settings.donateHint")}
+        href={`${DONATE_URL}?lang=${lang}`}
       />
 
       {isNative && (

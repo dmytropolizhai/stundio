@@ -4,7 +4,7 @@
  * Every row leads with a 32px icon tile, so the left edge of the screen reads as a column of
  * glyphs a student can scan without reading; the current value sits on the right so the state is
  * visible without opening anything; the trailing control says what a tap does (a switch flips in
- * place, a chevron opens a sheet). The description under the label is the same sentence the
+ * place, a chevron opens a sheet, an arrow leaves the app for a web page). The description under the label is the same sentence the
  * row's sheet opens with (`SheetDescription`), so the two never drift apart.
  *
  * Tiles are neutral on purpose: the six pastel accents belong to subjects (DESIGN.md, The Index
@@ -59,12 +59,17 @@ type ActionRowProps = BaseProps & {
   trailing?: ReactNode;
 };
 
+type LinkRowProps = BaseProps & {
+  /** Opened in a new tab (the system browser on Android), never inside the app's webview. */
+  href: string;
+};
+
 type StaticRowProps = BaseProps & {
   /** An interactive control of its own (a button), so the row itself stays a plain container. */
   trailing?: ReactNode;
 };
 
-export type SettingsRowProps = ToggleRowProps | ActionRowProps | StaticRowProps;
+export type SettingsRowProps = ToggleRowProps | ActionRowProps | LinkRowProps | StaticRowProps;
 
 const ROW =
   "relative flex min-h-14 w-full items-center gap-3 border-0 bg-transparent py-2.5 pr-4 pl-3 text-left " +
@@ -145,6 +150,24 @@ export const SettingsRow = (props: SettingsRowProps) => {
           {props.trailing ?? <Icon name="chevron-right" size={18} />}
         </span>
       </button>
+    );
+  }
+
+  if ("href" in props) {
+    return (
+      <a
+        href={props.href}
+        target="_blank"
+        rel="noreferrer"
+        aria-labelledby={value === undefined ? labelId : `${labelId} ${valueId}`}
+        aria-describedby={descriptionId}
+        className={cn(ROW, PRESSABLE, "no-underline")}
+      >
+        {body}
+        <span aria-hidden="true" className="flex shrink-0 items-center text-muted">
+          <Icon name="external-link" size={18} />
+        </span>
+      </a>
     );
   }
 
