@@ -1,5 +1,5 @@
 import type { TouchEvent } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useT } from "@/ui/i18n";
 import type { Slide } from "./slides.ts";
 
@@ -34,7 +34,7 @@ export const IntroSlide = ({
   const Art = slide.art;
 
   return (
-    <motion.div
+    <m.div
       key={step}
       role="group"
       tabIndex={0}
@@ -61,6 +61,6 @@ export const IntroSlide = ({
         <h1 className="font-display text-title tracking-display text-strong">{t(slide.title)}</h1>
         <p className="max-w-70 font-text text-body text-muted">{t(slide.body)}</p>
       </div>
-    </motion.div>
+    </m.div>
   );
 };

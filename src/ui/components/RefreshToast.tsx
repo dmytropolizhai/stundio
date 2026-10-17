@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useAppStore } from "@/store";
 import { Icon } from "@/ds";
 import { useT } from "@/ui/i18n";
@@ -42,7 +42,7 @@ export const RefreshToast = () => {
     >
       <AnimatePresence>
         {visible ? (
-          <motion.div
+          <m.div
             key="toast"
             data-testid="refresh-toast"
             className="flex items-center gap-2 rounded-pill bg-card px-4 py-2 font-text text-caption font-bold text-strong shadow-raised"
@@ -53,7 +53,7 @@ export const RefreshToast = () => {
           >
             <Icon name="check" size={16} className="text-success" />
             {t("sync.toast")}
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </div>

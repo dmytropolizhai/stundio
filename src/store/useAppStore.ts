@@ -200,23 +200,28 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       const metas =
         list === null ? [] : list.entries.map((e) => toTimetableMeta(e, list.fetchedAt));
 
-      const nums = await cache.listTimetableNums();
-      const loaded = await Promise.all(nums.map((n) => cache.getTimetable(n)));
+      // Independent object stores: read them side by side so a cold open costs the slowest
+      // read, not the sum of five round trips. Each store lists its keys, then fetches them all.
+      const [timetableList, daysList, notesList] = await Promise.all([
+        cache
+          .listTimetableNums()
+          .then((nums) => Promise.all(nums.map((n) => cache.getTimetable(n)))),
+        // Every cached day, not a window around "today": the week view browses freely, and a
+        // day left out here renders its cancelled lessons as if nothing had changed. Retention
+        // (`SUBSTITUTION_RETENTION_DAYS`) is what bounds this, not the calendar.
+        cache
+          .listSubstitutionDates()
+          .then((dates) => Promise.all(dates.map((d) => cache.getSubstitutions(d)))),
+        cache
+          .listNoteSubjects()
+          .then((subjects) => Promise.all(subjects.map((s) => cache.getNote(s)))),
+      ]);
       const timetables: Record<string, Timetable> = {};
-      for (const t of loaded) if (t !== null) timetables[t.meta.ttNum] = t;
-
-      // Every cached day, not a window around "today": the week view browses freely, and a
-      // day left out here renders its cancelled lessons as if nothing had changed. Retention
-      // (`SUBSTITUTION_RETENTION_DAYS`) is what bounds this, not the calendar.
-      const dates = await cache.listSubstitutionDates();
-      const days = await Promise.all(dates.map((d) => cache.getSubstitutions(d)));
+      for (const t of timetableList) if (t !== null) timetables[t.meta.ttNum] = t;
       const substitutions: Record<ISODate, DaySubstitutions> = {};
-      for (const day of days) if (day !== null) substitutions[day.date] = day;
-
-      const subjects = await cache.listNoteSubjects();
-      const loadedNotes = await Promise.all(subjects.map((s) => cache.getNote(s)));
+      for (const day of daysList) if (day !== null) substitutions[day.date] = day;
       const notes: Record<string, SubjectNote> = {};
-      for (const note of loadedNotes) if (note !== null) notes[note.subject] = note;
+      for (const note of notesList) if (note !== null) notes[note.subject] = note;
 
       memo.clear();
       set({ settings, metas, timetables, substitutions, notes, ready: true });

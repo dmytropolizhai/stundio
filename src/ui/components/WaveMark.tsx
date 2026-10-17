@@ -69,7 +69,7 @@ export const WaveMark = ({ level, size = 144, className }: WaveMarkProps) => {
           snapping. The bob lives one node deeper because it owns `transform` too.
         */}
         <div
-          className="absolute inset-0 transition-transform duration-900 ease-standard motion-reduce:transition-none"
+          className="absolute inset-0 transition-transform duration-450 ease-standard motion-reduce:transition-none"
           style={{ transform: `translateY(${String(100 - level)}%)` }}
         >
           <div className="absolute inset-0 animate-wave-bob">

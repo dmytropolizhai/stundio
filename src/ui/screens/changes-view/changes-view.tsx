@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion";
+import { animate, m, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
 import { addDays } from "@/sync";
@@ -167,7 +167,7 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
           />
         </div>
 
-        <motion.div style={{ x, willChange: "transform" }} className="min-h-0 flex-1">
+        <m.div style={{ x, willChange: "transform" }} className="min-h-0 flex-1">
           {scope === "myClass" ? (
             <ChangesMyClass
               changedLessons={changedLessons}
@@ -187,7 +187,7 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
               onSearchChange={setSearch}
             />
           )}
-        </motion.div>
+        </m.div>
 
         <div className="mt-8 flex justify-center pb-8">
           <Button variant="outline" icon="external-link" asChild>

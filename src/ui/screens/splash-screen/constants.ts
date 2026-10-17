@@ -2,7 +2,7 @@
 export const HOLD_LEVEL = 90;
 
 /** The rise. Must match the `duration-*` on `WaveMark`'s lift. */
-export const RISE_MS = 900;
+export const RISE_MS = 450;
 
 /** Time the topped-out mark stays on screen before the fade starts. */
 export const TOP_OUT_MS = 340;

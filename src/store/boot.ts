@@ -42,7 +42,11 @@ export const bootApp: Boot = async () => {
   });
 
   // Paint from cache first; the network catches up underneath.
-  await store.getState().hydrate();
+  // The "has synced before" probe rides along with hydration instead of queuing behind it.
+  const [, previousList] = await Promise.all([
+    store.getState().hydrate(),
+    cache.getTimetableList(),
+  ]);
   store.getState().trackEvent("app_open");
   void store.getState().recordAppOpen();
 
@@ -53,7 +57,7 @@ export const bootApp: Boot = async () => {
   const widget = wireWidget(store);
   // A cached timetable list means this device has synced before — gates the "schedule
   // changed" notification off the very first, baseline-less sync.
-  const hadPreviousSync = (await cache.getTimetableList()) !== null;
+  const hadPreviousSync = previousList !== null;
 
   /*
    * De-duped, not just "the tracked refresh": a resume can fire (or the user can relaunch)

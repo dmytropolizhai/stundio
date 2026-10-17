@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactNode, type TouchEvent } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const THRESHOLD = 72;
 /** Resistance: the finger travels ~2.5x further than the indicator, which feels native. */
@@ -56,7 +56,7 @@ export const PullToRefresh = ({
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
-      <motion.div
+      <m.div
         className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center"
         animate={{ y: refreshing ? 12 : pull - 8, opacity: refreshing || pull > 8 ? 1 : 0 }}
         transition={{ duration: 0.12 }}
@@ -64,7 +64,7 @@ export const PullToRefresh = ({
         <span className="rounded-pill bg-card px-3 py-1 font-text text-caption font-bold text-muted shadow-card">
           {refreshing ? "…" : armed ? releaseLabel : label}
         </span>
-      </motion.div>
+      </m.div>
 
       <div
         ref={scroller}
@@ -75,9 +75,9 @@ export const PullToRefresh = ({
         onTouchCancel={onTouchEnd}
         data-testid="scroller"
       >
-        <motion.div animate={{ y: pull }} transition={{ duration: 0.12 }}>
+        <m.div animate={{ y: pull }} transition={{ duration: 0.12 }}>
           {children}
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

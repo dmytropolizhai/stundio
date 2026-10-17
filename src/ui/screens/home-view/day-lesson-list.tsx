@@ -1,5 +1,5 @@
 import { Fragment, useMemo, type ReactNode } from "react";
-import { motion, type MotionValue } from "framer-motion";
+import { m, type MotionValue } from "framer-motion";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { FREE_PERIOD_MIN_MINUTES, minutesOf } from "@/lib/schedule";
 import { lessonBuilding } from "@/ui/theme";
@@ -111,7 +111,7 @@ export const DayLessonList = ({
   ]);
 
   return (
-    <motion.ul
+    <m.ul
       className="mt-3 flex flex-col gap-3"
       style={{
         x,
@@ -122,6 +122,6 @@ export const DayLessonList = ({
       {rows.map((row) => (
         <Fragment key={row.key}>{row.node}</Fragment>
       ))}
-    </motion.ul>
+    </m.ul>
   );
 };

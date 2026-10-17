@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Card, WeekGrid, type WeekGridDay, type WeekGridPeriod } from "@/ds";
 
 /**
@@ -111,7 +111,7 @@ export const PersonaTimetableArt = ({ persona }: PersonaTimetableArtProps) => {
   /* The screen's one authored moment: the two weeks arrive, the student's a beat ahead. */
   return (
     <div inert aria-hidden="true" style={LIT}>
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -125,7 +125,7 @@ export const PersonaTimetableArt = ({ persona }: PersonaTimetableArtProps) => {
         <Card elevation="raised" className="p-3">
           <WeekGrid days={days} periods={rows} />
         </Card>
-      </motion.div>
+      </m.div>
     </div>
   );
 };
