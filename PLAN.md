@@ -204,6 +204,7 @@ Still unverified on a physical device (no JDK/Android SDK here).
         card leads with group · room (subject underneath), like their day list, and the
         subject-colour hint / empty state speak about the subjects they teach, not a class.
 - [x] App icon, adaptive icon, splash, status-bar styling, edge-to-edge (`SystemBarsPlugin` native Android integration).
+- [x] Faster cold start: cache hydration reads all object stores in parallel, the "synced before" probe no longer queues behind it, and the splash's minimum rise is 450 ms (was 900 ms).
 - [x] `@capacitor/app` resume → `refresh()`. `@capacitor/network` → offline detection & banner.
 - [x] `@capacitor/local-notifications`: after a foreground/resume sync, if today's (or
       tomorrow's) substitutions changed vs the cached snapshot → fire a local notification.
