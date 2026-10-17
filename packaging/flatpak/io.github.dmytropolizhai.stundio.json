@@ -13,7 +13,8 @@
     "--share=ipc",
     "--socket=wayland",
     "--socket=fallback-x11",
-    "--device=dri"
+    "--device=dri",
+    "--talk-name=org.freedesktop.Notifications"
   ],
   "build-options": {
     "append-path": "/usr/lib/sdk/node24/bin:/usr/lib/sdk/rust-stable/bin",

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/ds";
 import { isNativePlatform } from "@/lib/edupage";
-import { isDesktop } from "@/lib/desktop";
+import { desktopNotificationsFailing, isDesktop } from "@/lib/desktop";
 import {
   ensureExactAlarmPermission,
   ensureNotificationPermission,
@@ -86,8 +86,16 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
       {desktop && (
         <SettingsRow
           icon="info"
-          label={t("settings.notifications")}
+          label={t("settings.desktopNotificationsTitle")}
           description={t("settings.desktopNotificationsHint")}
+        />
+      )}
+      {desktop && desktopNotificationsFailing() && (
+        <SettingsRow
+          icon="triangle-alert"
+          tone="alert"
+          label={t("settings.desktopNotificationsFailed")}
+          description={t("settings.desktopNotificationsFailedHint")}
         />
       )}
       {notifyPermissionDenied && (

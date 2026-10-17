@@ -25,6 +25,7 @@ vi.mock("@tauri-apps/plugin-notification", () => ({
 
 import {
   clearDesktopReminders,
+  desktopNotificationsFailing,
   desktopPost,
   ensureDesktopNotificationPermission,
   notifyDesktop,
@@ -96,6 +97,15 @@ describe("Linux desktop integration", () => {
     ports.request.mockResolvedValue("granted");
     await expect(ensureDesktopNotificationPermission()).resolves.toBe(true);
     expect(ports.request).toHaveBeenCalledOnce();
+  });
+
+  it("remembers a failed send so Settings can say notifications are not shown", async () => {
+    ports.notify.mockRejectedValueOnce(new Error("portal: no backend; daemon: no owner"));
+    await expect(notifyDesktop("Lesson", "Room 12")).rejects.toThrow("no owner");
+    expect(desktopNotificationsFailing()).toBe(true);
+    ports.notify.mockResolvedValueOnce(undefined);
+    await notifyDesktop("Lesson", "Room 12");
+    expect(desktopNotificationsFailing()).toBe(false);
   });
 
   it("replaces reminders so changed or disabled schedules cannot fire stale notifications", async () => {

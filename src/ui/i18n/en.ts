@@ -2,6 +2,10 @@ import type { Dict } from "./lv.ts";
 
 export const en: Dict = {
   "app.title": "Stundio",
+  "settings.desktopNotificationsTitle": "Only while Stundio is open",
+  "settings.desktopNotificationsFailed": "Notifications aren't reaching the desktop",
+  "settings.desktopNotificationsFailedHint":
+    "No notification service answered. On Hyprland, Sway and other window managers, install xdg-desktop-portal-gtk or a notification daemon such as mako or dunst.",
   "settings.desktopNotificationsHint":
     "Reminders work while Stundio is open. Changes are checked when you open or return to the app.",
   "settings.desktopUpdatesHint": "Install updates through your Linux software store.",

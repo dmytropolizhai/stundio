@@ -16,13 +16,29 @@ opens without a connection. Android and PWA builds continue using their existing
 - Schedule-change and new-timetable alerts follow the existing refresh policy: launch,
   returning to the window (with a one-minute throttle), and manual refresh. There is no
   background network polling or closed-app Web Push on Linux.
-- Notifications use `org.freedesktop.portal.Notification`; the file chooser uses the XDG
-  file portal. The app needs no general access to the home directory or notification bus.
+- Notifications use `org.freedesktop.portal.Notification`, falling back to the notification
+  daemon (`org.freedesktop.Notifications`) where the desktop's portal backend lacks it.
+  Settings warns when neither answers. The file chooser uses the XDG file portal; the app
+  needs no general access to the home directory.
 - External links open in the default browser. Remote pages receive no app capabilities.
 - The window remembers its size and position. Launching a second instance focuses the first.
 - Updates belong to the Flatpak repository/software store. Android APK installation and
   Android update notifications are not offered on Linux. Android home-screen widgets remain
   Android features.
+
+## Desktop environments
+
+GNOME and KDE Plasma provide everything out of the box. Window managers ship partial portal
+backends, so check two packages there (Hyprland, Sway, river, i3 and similar):
+
+- **Saving a shared week** needs a portal with a file chooser. `xdg-desktop-portal-hyprland`
+  and `xdg-desktop-portal-wlr` have none; install `xdg-desktop-portal-gtk` next to them.
+- **Notifications** need a running notification daemon such as mako, dunst or swaync. With
+  `xdg-desktop-portal-gtk` installed they go through the portal; without it, straight to the
+  daemon.
+
+On NVIDIA under Wayland the app sets `WEBKIT_DISABLE_DMABUF_RENDERER=1` itself, which avoids
+WebKitGTK's blank or flickering window. Set the variable to `0` to opt back in.
 
 ## Develop with host tools
 

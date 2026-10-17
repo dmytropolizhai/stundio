@@ -9,6 +9,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 const env = vi.hoisted(() => ({
   isNative: false,
   isDesktop: false,
+  notificationsFailing: false,
   denied: false,
   exactAllowed: true,
   webPush: false,
@@ -21,7 +22,11 @@ const env = vi.hoisted(() => ({
 
 vi.mock("@/lib/desktop", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
-  return { ...actual, isDesktop: () => env.isDesktop };
+  return {
+    ...actual,
+    isDesktop: () => env.isDesktop,
+    desktopNotificationsFailing: () => env.notificationsFailing,
+  };
 });
 
 vi.mock("@/lib/edupage", async (importOriginal) => {
@@ -87,6 +92,7 @@ describe("Settings rows", () => {
     Object.assign(env, {
       isNative: false,
       isDesktop: false,
+      notificationsFailing: false,
       denied: false,
       exactAllowed: true,
       webPush: false,
@@ -104,6 +110,8 @@ describe("Settings rows", () => {
     renderSettings(harness);
     await settle();
     expect(screen.getByText(/Atgādinājumi darbojas, kamēr Stundio ir atvērts/)).toBeDefined();
+    expect(screen.getByText("Tikai, kamēr Stundio ir atvērts")).toBeDefined();
+    expect(screen.queryByText("Paziņojumi nesasniedz darbvirsmu")).toBeNull();
     expect(
       screen.getByText("Jauninājumus instalē savas Linux programmatūras veikalā."),
     ).toBeDefined();
@@ -119,6 +127,16 @@ describe("Settings rows", () => {
     expect(harness.store.getState().settings.notifyLessonReminderMinutes).toBe(5);
     expect(env.ensureNotification).toHaveBeenCalled();
     expect(env.ensureExact).not.toHaveBeenCalled();
+  });
+
+  it("warns on desktop when no notification service answered", async () => {
+    env.isDesktop = true;
+    env.notificationsFailing = true;
+    const harness = await bootHarness();
+    renderSettings(harness);
+    await settle();
+    expect(screen.getByText("Paziņojumi nesasniedz darbvirsmu")).toBeDefined();
+    expect(screen.getByText(/xdg-desktop-portal-gtk/)).toBeDefined();
   });
 
   it("describes a row and repeats the description when its sheet opens", async () => {

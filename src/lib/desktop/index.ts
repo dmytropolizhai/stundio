@@ -55,8 +55,24 @@ export const hasDesktopNotificationPermission = (): Promise<boolean> => isPermis
 export const ensureDesktopNotificationPermission = async (): Promise<boolean> =>
   (await isPermissionGranted()) || (await requestPermission()) === "granted";
 
+/*
+ * Linux reports notification permission as always granted, so the only sign that nothing is
+ * shown (no portal backend and no daemon, e.g. a bare Hyprland setup) is the send failing.
+ * Settings reads this to say so instead of leaving the toggles looking like they work.
+ */
+let lastNotificationFailed = false;
+
+export const desktopNotificationsFailing = (): boolean => lastNotificationFailed;
+
 export const notifyDesktop = async (title: string, body: string): Promise<void> => {
-  if (await hasDesktopNotificationPermission()) await invoke("notify_desktop", { title, body });
+  if (!(await hasDesktopNotificationPermission())) return;
+  try {
+    await invoke("notify_desktop", { title, body });
+    lastNotificationFailed = false;
+  } catch (error) {
+    lastNotificationFailed = true;
+    throw error;
+  }
 };
 
 const reminderTimers = new Set<ReturnType<typeof setTimeout>>();
