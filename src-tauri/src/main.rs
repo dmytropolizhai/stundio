@@ -2,8 +2,18 @@
 //! Remote pages always open in the browser and never inherit the application's IPC access.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::sync::atomic::{AtomicU64, Ordering};
+
 use tauri::{webview::NewWindowResponse, Manager, WebviewWindowBuilder};
 use tauri_plugin_opener::OpenerExt;
+
+/// The portal replaces a notification that reuses an id, so every one gets its own
+/// (the process id keeps a relaunch from reusing the last run's).
+static NEXT_NOTIFICATION_ID: AtomicU64 = AtomicU64::new(0);
+
+/// The live map the Transit tab embeds (the CSP's `frame-src`). WebKitGTK runs the
+/// navigation handler for subframes too, so it has to be let through here as well.
+const EMBEDDED_ORIGIN: &str = "https://saraksti.lv";
 
 /// Use the notification portal so Flatpak needs no direct notification-service permission.
 #[tauri::command]
@@ -19,8 +29,13 @@ async fn notify_desktop(
     let proxy = NotificationProxy::new()
         .await
         .map_err(|error| error.to_string())?;
+    let id = format!(
+        "schedule-{}-{}",
+        std::process::id(),
+        NEXT_NOTIFICATION_ID.fetch_add(1, Ordering::Relaxed)
+    );
     proxy
-        .add_notification("schedule", Notification::new(&title).body(body.as_str()))
+        .add_notification(&id, Notification::new(&title).body(body.as_str()))
         .await
         .map_err(|error| error.to_string())
 }
@@ -48,6 +63,7 @@ fn main() {
                 .on_navigation(move |url| {
                     if url.scheme() == "tauri"
                         || url.host_str() == Some("tauri.localhost")
+                        || url.origin().ascii_serialization() == EMBEDDED_ORIGIN
                         || (cfg!(debug_assertions)
                             && url.origin().ascii_serialization() == "http://localhost:5173")
                     {

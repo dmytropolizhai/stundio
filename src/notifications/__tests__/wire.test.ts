@@ -84,6 +84,32 @@ describe("wireNotifications", () => {
     dispose();
   });
 
+  it("re-plans reminders when the day turns over without a store change", async () => {
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
+    try {
+      vi.setSystemTime(new Date(`${DATE}T20:50:00Z`)); // 23:50 in Riga
+      const store = makeStore();
+      await store.getState().refresh({ date: DATE });
+      await store.getState().setClass(classIdOf(store));
+      const { dispose } = wireNotifications(store);
+      await Promise.resolve();
+      await Promise.resolve();
+      const before = rescheduleLessonReminders.mock.calls.length;
+
+      await vi.advanceTimersByTimeAsync(5 * 60_000); // still the same day: no-op
+      expect(rescheduleLessonReminders).toHaveBeenCalledTimes(before);
+
+      await vi.advanceTimersByTimeAsync(10 * 60_000); // 00:05 the next day
+      expect(rescheduleLessonReminders).toHaveBeenCalledTimes(before + 1);
+
+      dispose();
+      await vi.advanceTimersByTimeAsync(60 * 60_000);
+      expect(rescheduleLessonReminders).toHaveBeenCalledTimes(before + 1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("does not touch the plugin before the store is ready", () => {
     const store = makeStore();
     const { dispose } = wireNotifications(store);

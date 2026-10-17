@@ -56,7 +56,21 @@ describe("Linux desktop integration", () => {
       headers: { Referer: "school" },
       body: '{"year":2026}',
       connectTimeout: 15_000,
+      signal: expect.any(AbortSignal) as AbortSignal,
     });
+  });
+
+  it("aborts a response that stalls after connecting", async () => {
+    ports.fetch.mockImplementation(
+      (_url: string, init: { signal: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          init.signal.addEventListener("abort", () => reject(init.signal.reason as Error));
+        }),
+    );
+    const request = desktopPost("https://pikcrvt.edupage.org/test", {}, {});
+    const settled = expect(request).rejects.toMatchObject({ name: "TimeoutError" });
+    await vi.advanceTimersByTimeAsync(30_000);
+    await settled;
   });
 
   it("writes only the file selected in the chooser", async () => {
@@ -114,17 +128,18 @@ describe("Linux desktop integration", () => {
     const dispose = watchDesktopResume(refresh);
     const listener = ports.focus.mock.calls[0]?.[0] as (event: { payload: boolean }) => void;
     listener({ payload: true });
-    expect(refresh).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(60_000);
+    expect(refresh).toHaveBeenCalledOnce();
     listener({ payload: false });
     listener({ payload: true });
-    listener({ payload: true });
     expect(refresh).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(60_000);
+    listener({ payload: true });
+    expect(refresh).toHaveBeenCalledTimes(2);
     dispose();
     await Promise.resolve();
     expect(unlisten).toHaveBeenCalledOnce();
     await vi.advanceTimersByTimeAsync(60_000);
     listener({ payload: true });
-    expect(refresh).toHaveBeenCalledOnce();
+    expect(refresh).toHaveBeenCalledTimes(2);
   });
 });

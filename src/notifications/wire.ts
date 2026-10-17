@@ -22,6 +22,13 @@ import {
 const UPDATE_OWNER = "dmytropolizhai";
 const UPDATE_REPO = "stundio";
 
+/**
+ * A process that stays up overnight (desktop, a backgrounded app) gets no store tick at
+ * midnight, so today's reminders are re-planned on a clock too. A short interval rather than
+ * one timer to midnight: timers stall during suspend, and the fingerprint keeps it a no-op.
+ */
+const REMINDER_RECHECK_MS = 5 * 60_000;
+
 /** Cheap enough to compare on every store tick instead of re-scheduling unconditionally. */
 const reminderFingerprint = (ids: readonly { id: number; fireAt: Date }[]): string =>
   ids.map((r) => `${r.id}@${r.fireAt.getTime()}`).join(",");
@@ -53,8 +60,14 @@ export const wireNotifications = (store: Store): { dispose: () => void } => {
   // whether a *previous* grant means reminders can actually be scheduled.
   void hasNotificationPermission().then(syncLessonReminders);
   const unsubscribe = store.subscribe(syncLessonReminders);
+  const recheck = setInterval(syncLessonReminders, REMINDER_RECHECK_MS);
 
-  return { dispose: unsubscribe };
+  return {
+    dispose: () => {
+      unsubscribe();
+      clearInterval(recheck);
+    },
+  };
 };
 
 /**

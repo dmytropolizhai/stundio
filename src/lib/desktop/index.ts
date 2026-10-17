@@ -12,19 +12,31 @@ import { isPermissionGranted, requestPermission } from "@tauri-apps/plugin-notif
 
 export const isDesktop = (): boolean => isTauri();
 
+/** A stalled response must still settle: boot.ts shares one in-flight refresh for all callers. */
+const REQUEST_TIMEOUT_MS = 30_000;
+
 /** Restricted to the school's HTTPS origin by the shell capability. No web proxy required. */
 export const desktopPost = async (
   url: string,
   body: unknown,
   headers: Record<string, string>,
 ): Promise<{ status: number; text: string }> => {
-  const response = await nativeFetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-    connectTimeout: 15_000,
-  });
-  return { status: response.status, text: await response.text() };
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    controller.abort(new DOMException("EduPage did not respond", "TimeoutError"));
+  }, REQUEST_TIMEOUT_MS);
+  try {
+    const response = await nativeFetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+      connectTimeout: 15_000,
+      signal: controller.signal,
+    });
+    return { status: response.status, text: await response.text() };
+  } finally {
+    clearTimeout(timer);
+  }
 };
 
 /** The file chooser grants access to the selected file; no home-directory access is needed. */
@@ -79,7 +91,8 @@ export const watchDesktopResume = (
   throttleMs = 60_000,
 ): (() => void) => {
   let disposed = false;
-  let lastRun = now();
+  // -Infinity, as in watchAppResume: the first return to the window must always fire.
+  let lastRun = Number.NEGATIVE_INFINITY;
   const handle = getCurrentWindow().onFocusChanged(({ payload: focused }) => {
     if (disposed || !focused || now() - lastRun < throttleMs) return;
     lastRun = now();
