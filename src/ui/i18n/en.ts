@@ -452,6 +452,8 @@ export const en: Dict = {
     "Describe the problem. The author gets it along with the app version.",
   "settings.suggestFeatureRow": "Suggest an idea",
   "settings.suggestFeatureHint": "What to add or change in the app.",
+  "settings.donateRow": "Support Stundio",
+  "settings.donateHint": "Buy a coffee to keep the app free.",
   "settings.notifyPermissionDeniedTitle": "Notifications blocked",
   "settings.notifyExactAlarmTitle": "Reminders may be late",
   "settings.notificationsWebTitle": "Notifications in the Android app",

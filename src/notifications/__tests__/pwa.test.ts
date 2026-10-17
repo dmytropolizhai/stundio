@@ -102,6 +102,18 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(swCode).toMatch(/url\.pathname\s*===\s*["']\/sw\.js["']/);
   });
 
+  it("leaves standalone pages like /donate to the network so they never become the shell", () => {
+    const swCode = readFileSync(swPath, "utf-8");
+    const pages = swCode.match(/const STATIC_PAGES = \[([^\]]*)\];/)?.[1] ?? "";
+    expect(pages).toContain('"/donate"');
+    expect(existsSync(resolve(rootDir, "public/donate.html"))).toBe(true);
+    // The bypass must run before the navigation handler stores the response as the shell.
+    expect(swCode.indexOf("STATIC_PAGES.includes(url.pathname)")).toBeGreaterThan(-1);
+    expect(swCode.indexOf("STATIC_PAGES.includes(url.pathname)")).toBeLessThan(
+      swCode.indexOf('request.mode === "navigate"'),
+    );
+  });
+
   it("index.html references valid PWA manifest and apple-touch-icons", () => {
     const html = readFileSync(indexPath, "utf-8");
     expect(html).toContain('<link rel="manifest" href="/manifest.webmanifest"');

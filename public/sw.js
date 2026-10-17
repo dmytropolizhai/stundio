@@ -29,6 +29,13 @@ const SHELL_URL = "/";
  */
 const NAVIGATION_TIMEOUT_MS = 3000;
 
+/**
+ * Standalone HTML pages served next to the app (Cloudflare Pages serves `/donate` from
+ * `donate.html`). Left to the network: `navigate()` stores every navigation as the shell, so
+ * opening one of these through the worker would make the next offline launch boot into it.
+ */
+const STATIC_PAGES = ["/donate", "/donate.html"];
+
 // Not "/index.html": Cloudflare Pages answers it with a 308 to "/", and Safari refuses to
 // render a redirected response handed to it by a service worker.
 const PRECACHE_URLS = [
@@ -81,6 +88,8 @@ self.addEventListener("fetch", (event) => {
 
   // Never cache service worker script updates
   if (url.pathname === "/sw.js") return;
+
+  if (STATIC_PAGES.includes(url.pathname)) return;
 
   // Navigations: network-first with a timeout, falling back to the cached shell. Stored
   // under SHELL_URL whatever the query (`/?tab=day&date=…` from a notification), so the
