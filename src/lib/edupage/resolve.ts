@@ -728,29 +728,17 @@ export const listTeachers = (timetables: readonly Timetable[]): TeacherListItem[
 };
 
 /**
- * Extracts cover duties assigned to a specific teacher from the day's substitutions.
+ * Cover duties assigned to a teacher in the day's substitutions. Takes the teacher's feed key
+ * (`teacherKey` of their label — `lib/persona`'s `teacherEntry(...).feedKey`) rather than an id,
+ * so the id → name lookup stays in one place.
  */
-export const coverDuties = (
-  subs: DaySubstitutions | null,
-  teacherId: string,
-  timetables: readonly Timetable[],
-): Substitution[] => {
-  if (!subs || subs.items.length === 0) return [];
-  let teacherShort = "";
-  for (const tt of timetables) {
-    const t = tt.teachers.find((x) => x.id === teacherId);
-    if (t) {
-      teacherShort = t.short || t.name;
-      break;
-    }
-  }
-  if (!teacherShort) return [];
-  const myKey = teacherKey(teacherShort);
+export const coverDuties = (subs: DaySubstitutions | null, key: string | null): Substitution[] => {
+  if (!subs || subs.items.length === 0 || key === null || key === "") return [];
 
   return subs.items.filter((item) => {
     if (!item.teacher) return false;
-    if (teacherKey(item.teacher) !== myKey) return false;
-    if (item.teacherFrom && teacherKey(item.teacherFrom) !== myKey) return true;
+    if (teacherKey(item.teacher) !== key) return false;
+    if (item.teacherFrom && teacherKey(item.teacherFrom) !== key) return true;
     if (item.kind === "substitution" || item.kind === "added" || item.kind === "moved_in") {
       return true;
     }

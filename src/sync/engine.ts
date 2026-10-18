@@ -19,7 +19,6 @@ import {
   normalizeTimetable,
   parseDaySubstitutions,
   selectTimetables,
-  teacherKey,
   toTimetableMeta,
   type Building,
   type HttpClient,
@@ -28,7 +27,7 @@ import {
   type TimetableMeta,
 } from "@/lib/edupage";
 import type { AppCache } from "@/db";
-import { matchPersona, resolveIdentity } from "@/lib/persona";
+import { isIdentified, matchPersona, resolveIdentity, resolveSubject } from "@/lib/persona";
 import { substitutionsChanged, teacherSubstitutionsChanged, weekDates } from "@/lib/schedule";
 import { addDays, daysToRefresh, isWeekend, nextSchoolDay } from "./schoolDays.ts";
 
@@ -180,40 +179,6 @@ export const createSyncEngine = (deps: SyncDeps) => {
     }
   };
 
-  /**
-   * The display short ("A1-2") the substitution feed keys the user's class by — the bridge
-   * between `selectedClassId` (an EduPage id like "-927") and the rows in a `DaySubstitutions`.
-   * `null` when no class is picked or none of the cached timetables knows that id, in which
-   * case nothing can be reported as changed rather than everything being.
-   */
-  const selectedClassName = async (
-    classId: string | null,
-    selections: readonly { meta: TimetableMeta }[],
-  ): Promise<string | null> => {
-    if (classId === null) return null;
-    for (const selection of selections) {
-      const timetable = await cache.getTimetable(selection.meta.ttNum);
-      const short = timetable?.classes.find((c) => c.id === classId)?.short;
-      if (short !== undefined && short !== "") return short;
-    }
-    return null;
-  };
-
-  const selectedTeacherKey = async (
-    teacherId: string | null,
-    selections: readonly { meta: TimetableMeta }[],
-  ): Promise<string | null> => {
-    if (teacherId === null) return null;
-    for (const selection of selections) {
-      const timetable = await cache.getTimetable(selection.meta.ttNum);
-      const teacher = timetable?.teachers.find((t) => t.id === teacherId);
-      if (teacher !== undefined) {
-        return teacherKey(teacher.short || teacher.name);
-      }
-    }
-    return null;
-  };
-
   type RefreshScope =
     | { persona: "student"; className: string | null }
     | { persona: "teacher"; teacherKey: string | null };
@@ -289,19 +254,29 @@ export const createSyncEngine = (deps: SyncDeps) => {
         ? [...new Set([...weekDates(date), ...daysToRefresh(today)])]
         : [...new Set([date, ...daysToRefresh(today)])];
 
-    const scope: RefreshScope = await matchPersona<Promise<RefreshScope>>(
-      resolveIdentity(settings),
-      {
-        student: async ({ classId }) => ({
-          persona: "student",
-          className: await selectedClassName(classId, selections),
-        }),
-        teacher: async ({ teacherId }) => ({
-          persona: "teacher",
-          teacherKey: await selectedTeacherKey(teacherId, selections),
-        }),
-      },
-    );
+    /*
+     * Whom "changed" is judged for, by the name the substitution feed uses (`lib/persona`'s
+     * directory): the class short, or the teacher's `teacherKey` — the same key Web Push hashes.
+     * `null` when no cached timetable of this week knows the pick, in which case nothing is
+     * reported as changed rather than everything being.
+     */
+    const identity = resolveIdentity(settings);
+    const known = isIdentified(identity)
+      ? (await Promise.all(selections.map((s) => cache.getTimetable(s.meta.ttNum)))).filter(
+          (t) => t !== null,
+        )
+      : [];
+    const subject = resolveSubject(identity, known);
+    const scope = matchPersona<RefreshScope>(identity, {
+      student: () => ({
+        persona: "student",
+        className: subject?.persona === "student" ? subject.class.label : null,
+      }),
+      teacher: () => ({
+        persona: "teacher",
+        teacherKey: subject?.persona === "teacher" ? subject.teacher.feedKey : null,
+      }),
+    });
 
     const { done: refreshedDates, changed: changedDates } = await refreshSubstitutions(
       targetDates,

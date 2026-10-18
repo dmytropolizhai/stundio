@@ -52,7 +52,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   reference encoder's golden matrices), then the hand-off to the OS share sheet. Domain- and
   design-system-free: colours arrive as resolved CSS colour strings and strings arrive
   translated, from `ui/share/`. Only `native.ts` touches Capacitor.
-- **`src/ui/share/subject.ts`** — whose week a card names, resolved through `matchPersona`: a
+- **`src/ui/share/subject.ts`** — whose week a card names, resolved through `resolveSubject`: a
   student's class (+ form teacher), a teacher's own name, or the form class in the form-class
   view. Never read `settings.selectedClassId` for a share — it outlives a switch to teacher mode.
 - **`src/lib/widget/`** — the payload the Android home-screen tile renders: `payload.ts` turns
@@ -68,6 +68,15 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   `matchPersona`; `isIdentified` / `identityKey` are the gate and the memo key. Pure, settings-
   shape only. The store exposes it as `identity()`; `sync/`, `widget/` and `notifications/`
   branch through it too.
+- **`src/lib/persona/directory.ts`** — the one answer to "who is the user in EduPage's data, and
+  what is their day?". From a plain snapshot (identity, metas, timetables, substitutions,
+  building, `showMovedOnTargetDay`) it resolves the subject — class/teacher ref, display label,
+  feed key (`teacherKey(label)`), form class (`resolveSubject`, `subjectLabel`) — and plans days
+  (`planDay` / `planClassDay` / `planTeacherDay` → `{ key, resolve }`, or `dayFor` to just
+  resolve). The store memoises plans by their key (separate class/teacher maps); `sync/`,
+  `widget/`, `notifications/`, `ui/share/subject.ts` and `ui/persona` all delegate here. **Never
+  walk `timetable.classes` / `teachers` by the user's id anywhere else.** The widget's raw-id
+  label fallback ("no-data" rather than "no-class") is the explicit `fallbackToId` option.
 - **`src/ui/persona/`** — the UI side of the same split: `PERSONA_PROFILES` is the per-role
   strategy table (tabs, picker, icon, copy keys, feature flags), and `usePersona()` /
   `useIdentity()` / `useIsFormTeacher()` / `useIdentityLabel()` are what screens and hooks read.

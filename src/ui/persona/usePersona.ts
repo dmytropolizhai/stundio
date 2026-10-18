@@ -10,12 +10,12 @@ import { useAppStore } from "@/store";
 import {
   identityKey,
   isIdentified,
-  matchPersona,
   resolveIdentity,
+  resolveSubject,
+  subjectLabel,
   type Identity,
   type Persona,
 } from "@/lib/persona";
-import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
 import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
 import type { FeedbackIdentity } from "@/ui/feedback.ts";
 import { PERSONA_PROFILES, type PersonaProfile } from "./profiles.ts";
@@ -70,12 +70,11 @@ export const useIsFormTeacher = (): boolean => {
  */
 export const useIdentityLabel = (): string | undefined => {
   const identity = useIdentity();
-  const selectedClass = useSelectedClass();
-  const selectedTeacher = useSelectedTeacher();
-  return matchPersona(identity, {
-    student: () => selectedClass?.short,
-    teacher: () => selectedTeacher?.short || selectedTeacher?.name || undefined,
-  });
+  const timetables = useAppStore((s) => s.timetables);
+  return useMemo(
+    () => subjectLabel(resolveSubject(identity, Object.values(timetables))) ?? undefined,
+    [identity, timetables],
+  );
 };
 
 /** The role context every feedback report carries (`ui/feedback.ts`). */

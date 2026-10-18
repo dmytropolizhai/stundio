@@ -9,22 +9,15 @@
 // through React context, which is exactly what `createStore` + `useStore` is for.
 import { createStore } from "zustand/vanilla";
 import {
-  findTeacherFormClassId,
-  movedAwayTo,
-  resolveDayAcross,
-  resolveTeacherDayAcross,
-  selectTimetables,
   toTimetableMeta,
   type Building,
   type DaySubstitutions,
   type ISODate,
-  type DaySource,
   type ISODateTime,
   type ResolvedDay,
   type ResolvedTeacherDay,
   type Timetable,
 } from "@/lib/edupage";
-import { weekDates } from "@/lib/schedule";
 import {
   DEFAULT_SETTINGS,
   type AppCache,
@@ -34,7 +27,19 @@ import {
 } from "@/db";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
-import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
+import {
+  planClassDay,
+  planDay,
+  planTeacherDay,
+  resolveIdentity,
+  resolveSubject,
+  subjectLabel,
+  type AnyDayPlan,
+  type DayPlan,
+  type DirectorySnapshot,
+  type Identity,
+  type PersonaSubject,
+} from "@/lib/persona";
 import type { FetchForecast, WeatherForecast } from "@/lib/weather";
 
 /**
@@ -157,6 +162,11 @@ export type AppState = {
    */
   identity: () => Identity;
   /**
+   * The active role resolved against the cached timetables (`lib/persona`'s `resolveSubject`):
+   * refs, display label, feed key, form class. `null` while nothing is picked.
+   */
+  subject: () => PersonaSubject | null;
+  /**
    * Whom the active role is keyed by, by the name the substitution feed uses: the class
    * short for a student, the teacher's short (or full name) for a teacher. `null` while
    * nothing is picked or no cached timetable knows the pick yet. Web Push files a device
@@ -164,6 +174,16 @@ export type AppState = {
    */
   identityLabel: () => string | null;
 };
+
+/** The slice of state `lib/persona`'s directory resolves days from. */
+const snapshotOf = (state: AppState): DirectorySnapshot => ({
+  identity: state.identity(),
+  metas: state.metas,
+  timetables: state.timetables,
+  substitutions: state.substitutions,
+  building: state.settings.building,
+  showMovedOnTargetDay: state.settings.showMovedOnTargetDay,
+});
 
 export type StoreDeps = {
   cache: AppCache;
@@ -181,16 +201,20 @@ export const WEATHER_FORCE_TTL_MS = 5 * 60_000;
 
 /**
  * `resolvedDay` runs the whole merge, so it is memoised on everything that can change its
- * output. Without this every render of a week view would re-merge seven days.
+ * output — the key comes with the plan (`lib/persona`'s `planDay`), so it can't miss an input.
+ * Without this every render of a week view would re-merge seven days.
  */
-const createResolveMemo = () => {
-  const memo = new Map<string, ResolvedDay>();
+const createResolveMemo = <T extends ResolvedDay>() => {
+  const memo = new Map<string, T>();
   return {
-    get: (key: string) => memo.get(key),
-    set: (key: string, value: ResolvedDay) => {
+    through: (plan: DayPlan<T> | null): T | null => {
+      if (plan === null) return null;
+      const hit = memo.get(plan.key);
+      if (hit !== undefined) return hit;
       // Small bound: a week view touches ~7 entries, a month of browsing far fewer than 200.
       if (memo.size > 200) memo.clear();
-      memo.set(key, value);
+      const value = plan.resolve();
+      memo.set(plan.key, value);
       return value;
     },
     clear: () => {
@@ -206,7 +230,21 @@ export const createAppStore = ({
   weather: fetchWeather,
   now = () => new Date(),
 }: StoreDeps) => {
-  const memo = createResolveMemo();
+  // Separate maps per result type, so a teacher day never has to be cast back out of a class one.
+  const classMemo = createResolveMemo<ResolvedDay>();
+  const teacherMemo = createResolveMemo<ResolvedTeacherDay>();
+  const memo = {
+    clear: () => {
+      classMemo.clear();
+      teacherMemo.clear();
+    },
+  };
+  const runPlan = (plan: AnyDayPlan | null): ResolvedDay | null =>
+    plan === null
+      ? null
+      : plan.kind === "teacher"
+        ? teacherMemo.through(plan)
+        : classMemo.through(plan);
 
   return createStore<AppState>()((set, get) => {
     const persist = async (patch: Partial<Settings>): Promise<void> => {
@@ -438,129 +476,27 @@ export const createAppStore = ({
       },
 
       selectedClassShort: () => {
-        const state = get();
-        const id = matchPersona(state.identity(), {
-          student: (s) => s.classId,
-          teacher: () => null,
-        });
-        if (id === null) return null;
-        for (const timetable of Object.values(state.timetables)) {
-          const short = timetable.classes.find((c) => c.id === id)?.short;
-          if (short !== undefined && short !== "") return short;
-        }
-        return null;
+        const subject = get().subject();
+        return subject?.persona === "student" ? subject.class.label : null;
       },
 
       identity: () => resolveIdentity(get().settings),
 
-      identityLabel: () =>
-        matchPersona(get().identity(), {
-          student: () => get().selectedClassShort(),
-          teacher: ({ teacherId }) => {
-            if (teacherId === null) return null;
-            for (const timetable of Object.values(get().timetables)) {
-              const teacher = timetable.teachers.find((t) => t.id === teacherId);
-              const label = teacher?.short || teacher?.name;
-              if (label !== undefined && label !== "") return label;
-            }
-            return null;
-          },
-        }),
+      subject: () => resolveSubject(get().identity(), Object.values(get().timetables)),
+
+      identityLabel: () => subjectLabel(get().subject()),
 
       resolvedTeacherDay: (date, teacherId) => {
-        const state = get();
-        const id = teacherId ?? state.settings.selectedTeacherId;
-        if (id === null || id === undefined) return null;
-
-        const sources: DaySource[] = selectTimetables(
-          state.metas,
-          date,
-          state.settings.building ?? undefined,
-        ).flatMap((selection) => {
-          const timetable = state.timetables[selection.meta.ttNum];
-          return timetable === undefined ? [] : [{ timetable, stale: selection.stale }];
-        });
-        if (sources.length === 0) return null;
-
-        const subs = state.substitutions[date] ?? null;
-        const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
-        const key = `teacher|${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}`;
-        const hit = memo.get(key);
-        if (hit !== undefined) return hit as ResolvedTeacherDay;
-
-        const res = resolveTeacherDayAcross(sources, subs, id, date);
-        return memo.set(key, res) as ResolvedTeacherDay;
+        const id = teacherId ?? get().settings.selectedTeacherId;
+        if (id === null) return null;
+        return teacherMemo.through(planTeacherDay(snapshotOf(get()), date, id));
       },
 
       resolvedDay: (date, classId) => {
-        const state = get();
-        if (classId === undefined) {
-          const identity = state.identity();
-          if (identity.persona === "teacher") {
-            const { teacherId, view } = identity;
-            if (teacherId === null) return null;
-            if (view === "own") return get().resolvedTeacherDay(date, teacherId);
-            const formClassId = findTeacherFormClassId(Object.values(state.timetables), teacherId);
-            return formClassId === null
-              ? get().resolvedTeacherDay(date, teacherId)
-              : get().resolvedDay(date, formClassId);
-          }
-        }
-
-        const id = classId ?? state.settings.selectedClassId;
-        if (id === null) return null;
-
-        /*
-         * One source per building, not one overall: in automatic mode a class's lessons live in
-         * whichever building published them, and the other buildings only carry a pointer row
-         * (`resolveDayAcross`). A building the user pinned narrows this to a single source.
-         */
-        const sources: DaySource[] = selectTimetables(
-          state.metas,
-          date,
-          state.settings.building ?? undefined,
-        ).flatMap((selection) => {
-          const timetable = state.timetables[selection.meta.ttNum];
-          // Not cached yet — `sync` fetches it; until then the other buildings still resolve.
-          return timetable === undefined ? [] : [{ timetable, stale: selection.stale }];
-        });
-        if (sources.length === 0) return null;
-
-        const subs = state.substitutions[date] ?? null;
-        // A subgroup is the student's own division — never applied to a teacher's form class.
-        const subgroup = matchPersona(state.identity(), {
-          student: (s) => s.subgroup,
-          teacher: () => null,
-        });
-        const nums = sources.map((s) => s.timetable.meta.ttNum).join(",");
-        const relocateMoves = state.settings.showMovedOnTargetDay;
-
-        /* Other days of this week whose feed moves a lesson onto `date`. */
-        const sourceDays = relocateMoves
-          ? weekDates(date).filter(
-              (d) =>
-                d !== date &&
-                state.substitutions[d]?.items.some((s) => s.movedToDate === date) === true,
-            )
-          : [];
-        const movesKey = sourceDays
-          .map((d) => `${d}@${state.substitutions[d]?.fetchedAt}`)
-          .join(",");
-        const key = `${nums}|${id}|${date}|${subs?.fetchedAt ?? "none"}|${subgroup ?? ""}|${relocateMoves ? "r" : "-"}|${movesKey}`;
-        const hit = memo.get(key);
-        if (hit !== undefined) return hit;
-
-        const incomingMoves = sourceDays.flatMap((d) =>
-          movedAwayTo(
-            resolveDayAcross(sources, state.substitutions[d] ?? null, id, d, { subgroup }),
-            date,
-          ),
-        );
-
-        return memo.set(
-          key,
-          resolveDayAcross(sources, subs, id, date, { subgroup, relocateMoves, incomingMoves }),
-        );
+        const snapshot = snapshotOf(get());
+        return classId === undefined
+          ? runPlan(planDay(snapshot, date))
+          : classMemo.through(planClassDay(snapshot, date, classId));
       },
     };
   });

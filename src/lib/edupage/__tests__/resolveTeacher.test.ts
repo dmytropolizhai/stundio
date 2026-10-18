@@ -5,6 +5,7 @@ import {
   normalizeTimetable,
   parseDaySubstitutions,
   resolveTeacherDay,
+  teacherKey,
 } from "../index.ts";
 import {
   FIXTURES,
@@ -142,7 +143,7 @@ describe("resolveTeacherDay", () => {
     expect(p3?.role).toBe("own");
 
     // coverDuties helper returns the assignment
-    const duties = coverDuties(subs, geislers.id, [timetable]);
+    const duties = coverDuties(subs, teacherKey(geislers.short || geislers.name));
     expect(duties.length).toBe(1);
     expect(duties[0]?.className).toBe("A1-2");
   });
