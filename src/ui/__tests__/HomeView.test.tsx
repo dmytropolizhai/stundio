@@ -154,35 +154,40 @@ describe("HomeView", () => {
       );
     });
 
-    it("puts the day's schedule straight under the banner, with footnotes below it", async () => {
+    it("keeps the brief and glance on top, about today, and the browsed day below", async () => {
       const harness = await bootHarness({ building: "TIC" });
       renderDay(harness, "2026-09-10");
-      // Not today, so the banner gives way and the building notice is not folded into a walk.
-      expect(screen.queryByTestId("day-glance")).toBeNull();
+
+      // Browsing tomorrow pages only the schedule: the glance still answers for today.
+      const hero = screen.getByTestId("home-hero");
+      const glance = within(hero).getByTestId("day-glance");
+      expect(glance.textContent).toContain("Tagad");
 
       const schedule = screen.getByTestId("home-schedule");
+      expect(hero.compareDocumentPosition(schedule) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
       expect(within(schedule).getByRole("heading", { name: "Dienas saraksts" })).toBeDefined();
+      expect(within(schedule).getByText("Rīt")).toBeDefined();
       expect(within(schedule).getByTestId("day-summary")).toBeDefined();
       expect(
         within(schedule)
           .getAllByRole("listitem")
           .filter((li) => li.querySelector('[role="button"]')).length,
       ).toBeGreaterThan(0);
-
-      expect(
-        schedule.compareDocumentPosition(screen.getByTestId("day-building")) &
-          Node.DOCUMENT_POSITION_FOLLOWING,
-      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      // Footnotes stay inside the day block, under its list.
+      expect(within(schedule).getByTestId("day-building")).toBeDefined();
     });
 
-    it("leaves nothing between the banner and the schedule", async () => {
+    it("puts the date, its arrows and the lesson list together in the bottom block", async () => {
       const harness = await bootHarness();
       renderDay(harness);
 
-      const glance = screen.getByTestId("day-glance");
       const schedule = screen.getByTestId("home-schedule");
-      expect(glance.parentElement).toBe(schedule.parentElement);
-      expect(glance.nextElementSibling).toBe(schedule);
+      expect(within(schedule).getByTestId("day-header")).toBeDefined();
+      expect(within(schedule).getByRole("button", { name: "Izvēlēties datumu" })).toBeDefined();
+      expect(within(schedule).getByRole("button", { name: "Nākamā diena" })).toBeDefined();
+      expect(within(screen.getByTestId("home-hero")).queryByTestId("day-header")).toBeNull();
     });
 
     it("keeps the offline notice above the banner, since it qualifies what the banner says", async () => {
@@ -200,12 +205,12 @@ describe("HomeView", () => {
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
-    it("outlines the day on any date, but only calls a 'now' lesson on today", async () => {
+    it("outlines whichever day is browsed, while the brief stays on today", async () => {
       const harness = await bootHarness();
       renderDay(harness, "2026-09-10");
 
       expect(screen.getByTestId("day-summary").textContent).toMatch(/\d\d:\d\d – \d\d:\d\d/);
-      expect(screen.queryByTestId("day-glance")).toBeNull();
+      expect(screen.getByTestId("home-brief").textContent).toMatch(/^Mācības līdz \d\d:\d\d/);
     });
 
     it("opens the lesson sheet when the glance card is tapped", async () => {
@@ -237,6 +242,105 @@ describe("HomeView", () => {
 
       fireEvent.click(card);
       expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
+    });
+  });
+
+  describe("brief and weather", () => {
+    const forecast = {
+      fetchedAt: "2026-09-09T05:30:00.000Z",
+      current: {
+        time: "2026-09-09T08:45",
+        temperature: 13.6,
+        apparentTemperature: 12,
+        code: 61,
+        isDay: true,
+      },
+      hourly: Array.from({ length: 24 }, (_, h) => ({
+        time: `2026-09-09T${String(h).padStart(2, "0")}:00`,
+        temperature: 14,
+        precipitationProbability: h === 11 ? 80 : 0,
+        code: h === 11 ? 63 : 3,
+      })),
+      daily: [
+        {
+          date: "2026-09-09",
+          code: 61,
+          max: 17.2,
+          min: 9.8,
+          precipitationProbability: 80,
+          sunrise: "2026-09-09T06:50",
+          sunset: "2026-09-09T19:55",
+        },
+      ],
+    };
+
+    it("greets for the time of day and says how much of today is left", async () => {
+      const harness = await bootHarness();
+      renderDay(harness);
+
+      expect(screen.getByRole("heading", { level: 1, name: "Labrīt" })).toBeDefined();
+      const brief = screen.getByTestId("home-brief");
+      expect(brief.textContent).toMatch(/Mācības līdz \d\d:\d\d/);
+      expect(brief.textContent).toMatch(/Atlikušas stundas: \d/);
+    });
+
+    it("outlines the whole day before it starts, and calls it done after", async () => {
+      vi.setSystemTime(new Date("2026-09-09T04:00:00Z")); // 07:00 Riga
+      const harness = await bootHarness();
+      const { unmount } = renderDay(harness);
+      expect(screen.getByTestId("home-brief").textContent).toMatch(/^Mācības sākas \d\d:\d\d/);
+      unmount();
+
+      vi.setSystemTime(new Date("2026-09-09T17:00:00Z")); // 20:00 Riga
+      renderDay(harness);
+      expect(screen.getByRole("heading", { level: 1, name: "Labvakar" })).toBeDefined();
+      expect(screen.getByTestId("home-brief").textContent).toContain("Šodienai viss");
+    });
+
+    it("shows no weather until a forecast has arrived", async () => {
+      const harness = await bootHarness();
+      renderDay(harness);
+      expect(screen.queryByTestId("home-weather")).toBeNull();
+    });
+
+    it("shows Riga's weather with the day's range, and an umbrella when school hours are wet", async () => {
+      const harness = await bootHarness();
+      act(() => {
+        harness.store.setState({ weather: forecast });
+      });
+      renderDay(harness);
+
+      const weather = screen.getByTestId("home-weather");
+      expect(weather.textContent).toContain("14°");
+      expect(weather.textContent).toContain("17° / 10°");
+      expect(weather.getAttribute("aria-label")).toBe(
+        "Laikapstākļi Rīgā: 14°, lietus. Maks. 17°, min. 10°",
+      );
+      expect(screen.getByTestId("home-weather-hint").textContent).toBe("Paņem lietussargu");
+    });
+
+    it("hides the weather once it is switched off in Settings", async () => {
+      const harness = await bootHarness();
+      act(() => {
+        harness.store.setState({ weather: forecast });
+      });
+      await act(() => harness.store.getState().setWeatherEnabled(false));
+      renderDay(harness);
+
+      expect(screen.queryByTestId("home-weather")).toBeNull();
+      expect(screen.queryByTestId("home-weather-hint")).toBeNull();
+      expect(screen.getByTestId("home-brief")).toBeDefined();
+    });
+
+    it("never pages the day from a swipe on the top block", async () => {
+      const harness = await bootHarness();
+      const { onDateChange } = renderDay(harness);
+
+      const hero = screen.getByTestId("home-hero");
+      fireEvent.touchStart(hero, { touches: [{ clientX: 300, clientY: 200 }] });
+      fireEvent.touchMove(hero, { touches: [{ clientX: 150, clientY: 200 }] });
+      fireEvent.touchEnd(hero);
+      expect(onDateChange).not.toHaveBeenCalled();
     });
   });
 

@@ -6,6 +6,7 @@
 import type { Building, DaySubstitutions, ISODate, ISODateTime, Timetable } from "@/lib/edupage";
 import type { RawTimetableListEntry } from "@/lib/edupage";
 import type { Persona, TeacherView } from "@/lib/persona";
+import type { WeatherForecast } from "@/lib/weather";
 
 export type CachedTimetableList = {
   entries: RawTimetableListEntry[];
@@ -36,6 +37,8 @@ export type Settings = {
   transitDestinations: TransitDestination[];
   /** Whether the Rīgas satiksme live map is shown on the Transit tab (toggled from Settings). */
   transitMapEnabled: boolean;
+  /** Riga weather on Home. Off means it is neither shown nor fetched. */
+  weatherEnabled: boolean;
   selectedClassId: string | null;
   building: Building | null;
   /**
@@ -133,6 +136,7 @@ export const DEFAULT_SETTINGS: Settings = {
   commuteHome: "",
   transitDestinations: [],
   transitMapEnabled: true,
+  weatherEnabled: true,
   selectedClassId: null,
   building: null,
   subgroup: null,
@@ -205,6 +209,10 @@ export type AppCache = {
   putNote: (note: SubjectNote) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   listNoteSubjects: () => Promise<string[]>;
+
+  /** The last Riga forecast that arrived; `null` before the first one. */
+  getWeather: () => Promise<WeatherForecast | null>;
+  putWeather: (forecast: WeatherForecast) => Promise<void>;
 
   /** Clears user-specific data (settings and notes), retaining downloaded timetables and substitutions. */
   clearUserData: () => Promise<void>;

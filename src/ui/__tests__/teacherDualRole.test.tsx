@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { listTeachers } from "@/lib/edupage";
-import { DayTopBar } from "../screens/home-view/day-top-bar.tsx";
+import { HomeTopBar } from "../screens/home-view/home-top-bar.tsx";
 import { WeekTopBar } from "../screens/week-view/week-top-bar.tsx";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
@@ -22,18 +22,7 @@ describe("Teacher Dual Role (T8)", () => {
       void harness.store.getState().setTeacher(formTeacher!.id);
     });
 
-    wrap(
-      harness,
-      <DayTopBar
-        date={FIXTURE_DATE}
-        today={FIXTURE_DATE}
-        isToday={true}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-        onRefresh={vi.fn()}
-        onNavigate={vi.fn()}
-      />,
-    );
+    wrap(harness, <HomeTopBar nowMinutes={600} onPickClass={vi.fn()} onRefresh={vi.fn()} />);
 
     const segment = screen.getByTestId("form-teacher-segment");
     expect(segment).toBeDefined();
@@ -53,18 +42,7 @@ describe("Teacher Dual Role (T8)", () => {
       void harness.store.getState().setTeacher(nonFormTeacher!.id);
     });
 
-    wrap(
-      harness,
-      <DayTopBar
-        date={FIXTURE_DATE}
-        today={FIXTURE_DATE}
-        isToday={true}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-        onRefresh={vi.fn()}
-        onNavigate={vi.fn()}
-      />,
-    );
+    wrap(harness, <HomeTopBar nowMinutes={600} onPickClass={vi.fn()} onRefresh={vi.fn()} />);
 
     expect(screen.queryByTestId("form-teacher-segment")).toBeNull();
   });
@@ -75,18 +53,7 @@ describe("Teacher Dual Role (T8)", () => {
       void harness.store.getState().setPersona("student");
     });
 
-    wrap(
-      harness,
-      <DayTopBar
-        date={FIXTURE_DATE}
-        today={FIXTURE_DATE}
-        isToday={true}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-        onRefresh={vi.fn()}
-        onNavigate={vi.fn()}
-      />,
-    );
+    wrap(harness, <HomeTopBar nowMinutes={600} onPickClass={vi.fn()} onRefresh={vi.fn()} />);
 
     expect(screen.queryByTestId("form-teacher-segment")).toBeNull();
   });
@@ -103,18 +70,7 @@ describe("Teacher Dual Role (T8)", () => {
 
     expect(harness.store.getState().settings.teacherView).toBe("own");
 
-    wrap(
-      harness,
-      <DayTopBar
-        date={FIXTURE_DATE}
-        today={FIXTURE_DATE}
-        isToday={true}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-        onRefresh={vi.fn()}
-        onNavigate={vi.fn()}
-      />,
-    );
+    wrap(harness, <HomeTopBar nowMinutes={600} onPickClass={vi.fn()} onRefresh={vi.fn()} />);
 
     const formClassRadio = screen.getByRole("radio", { name: "Mana klase" });
     await clickAndSettle(() => {

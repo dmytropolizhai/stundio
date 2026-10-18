@@ -628,3 +628,88 @@ describe("persona and teacher mode", () => {
     expect(teacherDay?.lessons.every((l) => Array.isArray(l.classes))).toBe(true);
   });
 });
+
+describe("weather", () => {
+  const forecastAt = (fetchedAt: string, temperature = 12) => ({
+    fetchedAt,
+    current: {
+      time: "2026-09-09T11:00",
+      temperature,
+      apparentTemperature: temperature,
+      code: 2,
+      isDay: true,
+    },
+    hourly: [],
+    daily: [],
+  });
+
+  const weatherStore = (
+    fetchWeather: () => Promise<ReturnType<typeof forecastAt> | null>,
+    clock = now,
+  ) =>
+    createAppStore({
+      cache,
+      engine: createSyncEngine({ http: server.http, cache, now: clock }),
+      weather: fetchWeather,
+      now: clock,
+    });
+
+  it("fetches nothing without a weather source", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    expect(store.getState().weather).toBeNull();
+  });
+
+  it("fetches alongside a refresh, caches it, and hydrates from the cache", async () => {
+    const fetchWeather = vi.fn(() => Promise.resolve(forecastAt(now().toISOString())));
+    await weatherStore(fetchWeather).getState().refresh({ date: DATE });
+    expect(fetchWeather).toHaveBeenCalledTimes(1);
+    expect(await cache.getWeather()).toEqual(forecastAt(now().toISOString()));
+
+    const cold = makeStore();
+    await cold.getState().hydrate();
+    expect(cold.getState().weather?.current.temperature).toBe(12);
+  });
+
+  it("leaves a fresh forecast alone on resume, and refetches on a pull past a few minutes", async () => {
+    await cache.putWeather(forecastAt("2026-09-09T07:50:00.000Z"));
+    const fetchWeather = vi.fn(() => Promise.resolve(forecastAt(now().toISOString(), 15)));
+    const store = weatherStore(fetchWeather);
+    await store.getState().hydrate();
+
+    await store.getState().refresh({ date: DATE });
+    expect(fetchWeather).not.toHaveBeenCalled();
+
+    await store.getState().refresh({ date: DATE, force: true });
+    expect(fetchWeather).toHaveBeenCalledTimes(1);
+    expect(store.getState().weather?.current.temperature).toBe(15);
+  });
+
+  it("fetches nothing while weather is switched off, and catches up when it is switched on", async () => {
+    const fetchWeather = vi.fn(() => Promise.resolve(forecastAt(now().toISOString())));
+    const store = weatherStore(fetchWeather);
+    await store.getState().setWeatherEnabled(false);
+
+    await store.getState().refresh({ date: DATE, force: true });
+    expect(fetchWeather).not.toHaveBeenCalled();
+    expect((await cache.getSettings()).weatherEnabled).toBe(false);
+
+    await store.getState().setWeatherEnabled(true);
+    expect(fetchWeather).toHaveBeenCalledTimes(1);
+    expect(store.getState().weather).not.toBeNull();
+  });
+
+  it("keeps the cached forecast when a fetch fails, without touching syncStatus", async () => {
+    await cache.putWeather(forecastAt("2026-09-08T08:00:00.000Z"));
+    const store = weatherStore(() => Promise.reject(new Error("offline")));
+    await store.getState().hydrate();
+    await store.getState().refresh({ date: DATE });
+
+    expect(store.getState().weather?.fetchedAt).toBe("2026-09-08T08:00:00.000Z");
+    expect(store.getState().syncStatus).toBe("idle");
+
+    const nothing = weatherStore(() => Promise.resolve(null));
+    await nothing.getState().refresh({ date: DATE });
+    expect(nothing.getState().weather?.fetchedAt).toBe("2026-09-08T08:00:00.000Z");
+  });
+});

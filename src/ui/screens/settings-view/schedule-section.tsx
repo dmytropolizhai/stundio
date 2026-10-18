@@ -27,6 +27,7 @@ export const ScheduleSection = ({ buildings, subgroups }: ScheduleSectionProps) 
   const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
   const setShowMovedOnTargetDay = useAppStore((s) => s.setShowMovedOnTargetDay);
   const setShowTime = useAppStore((s) => s.setShowTime);
+  const setWeatherEnabled = useAppStore((s) => s.setWeatherEnabled);
   const [sheet, setSheet] = useState<"subgroup" | "building" | null>(null);
 
   const showSubgroup = profile.hasSubgroups && subgroups.length > 1;
@@ -81,6 +82,13 @@ export const ScheduleSection = ({ buildings, subgroups }: ScheduleSectionProps) 
         description={t("settings.showTimeHint")}
         checked={settings.showTime}
         onCheckedChange={(checked) => void setShowTime(checked)}
+      />
+      <SettingsRow
+        icon="cloud-sun"
+        label={t("settings.weather")}
+        description={t("settings.weatherHint")}
+        checked={settings.weatherEnabled}
+        onCheckedChange={(checked) => void setWeatherEnabled(checked)}
       />
 
       <ChoiceSheet

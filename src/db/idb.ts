@@ -15,12 +15,14 @@ import {
 } from "./types.ts";
 import { createMemoryCache } from "./memory.ts";
 import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
+import type { WeatherForecast } from "@/lib/weather";
 
 export const DB_NAME = "rvt-stunda";
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 
 const LIST_KEY = "timetableList";
 const SETTINGS_KEY = "app";
+const WEATHER_KEY = "riga";
 
 export type EdupageDB = DBSchema & {
   meta: { key: string; value: CachedTimetableList };
@@ -28,6 +30,7 @@ export type EdupageDB = DBSchema & {
   substitutions: { key: ISODate; value: DaySubstitutions };
   settings: { key: string; value: Settings };
   notes: { key: string; value: SubjectNote };
+  weather: { key: string; value: WeatherForecast };
 };
 
 export const openAppDb = (): Promise<IDBPDatabase<EdupageDB>> =>
@@ -39,6 +42,7 @@ export const openAppDb = (): Promise<IDBPDatabase<EdupageDB>> =>
       if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings");
       // User-authored, like settings: created on upgrade too, never dropped and recreated.
       if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes");
+      if (!db.objectStoreNames.contains("weather")) db.createObjectStore("weather");
     },
   });
 
@@ -90,6 +94,11 @@ export const createIdbCache = (
   },
   listNoteSubjects: async () => (await (await dbPromise).getAllKeys("notes")).map(String),
 
+  getWeather: async () => (await (await dbPromise).get("weather", WEATHER_KEY)) ?? null,
+  putWeather: async (forecast) => {
+    await (await dbPromise).put("weather", forecast, WEATHER_KEY);
+  },
+
   clearUserData: async () => {
     const db = await dbPromise;
     await Promise.all([db.clear("settings"), db.clear("notes")]);
@@ -103,6 +112,7 @@ export const createIdbCache = (
       db.clear("substitutions"),
       db.clear("settings"),
       db.clear("notes"),
+      db.clear("weather"),
     ]);
   },
 });

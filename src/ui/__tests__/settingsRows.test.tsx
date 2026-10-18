@@ -147,6 +147,19 @@ describe("Settings rows", () => {
     expect(screen.getByText(/xdg-desktop-portal-gtk/)).toBeDefined();
   });
 
+  it("switches Home's weather off and on", async () => {
+    const harness = await bootHarness();
+    renderSettings(harness);
+    await settle();
+
+    const toggle = screen.getByRole("switch", { name: "Laikapstākļi" });
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+    await clickAndSettle(() => fireEvent.click(toggle));
+    expect(harness.store.getState().settings.weatherEnabled).toBe(false);
+    await clickAndSettle(() => fireEvent.click(toggle));
+    expect(harness.store.getState().settings.weatherEnabled).toBe(true);
+  });
+
   it("describes a row and repeats the description when its sheet opens", async () => {
     const harness = await bootHarness();
     renderSettings(harness);

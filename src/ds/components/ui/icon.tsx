@@ -18,6 +18,13 @@ import {
   ChevronRight,
   Clock,
   Cloud,
+  CloudDrizzle,
+  CloudFog,
+  CloudLightning,
+  CloudMoon,
+  CloudRain,
+  CloudSnow,
+  CloudSun,
   Coffee,
   Download,
   ExternalLink,
@@ -44,6 +51,7 @@ import {
   Share2,
   SlidersHorizontal,
   Smartphone,
+  Snowflake,
   Sparkles,
   SquarePlus,
   Star,
@@ -51,6 +59,7 @@ import {
   SunMoon,
   Trash2,
   TriangleAlert,
+  Umbrella,
   UserRound,
   Users,
   Wifi,
@@ -139,6 +148,19 @@ const ICONS = {
   "sun-moon": SunMoon,
   "trash-2": Trash2,
   users: Users,
+  /*
+   * Home's weather line: one glyph per condition `lib/weather` names, plus the two pieces of
+   * advice it gives (umbrella, dress warm). `sun` / `moon` / `cloud` above cover the rest.
+   */
+  "cloud-drizzle": CloudDrizzle,
+  "cloud-fog": CloudFog,
+  "cloud-lightning": CloudLightning,
+  "cloud-moon": CloudMoon,
+  "cloud-rain": CloudRain,
+  "cloud-snow": CloudSnow,
+  "cloud-sun": CloudSun,
+  snowflake: Snowflake,
+  umbrella: Umbrella,
 } as const;
 
 export type IconName = keyof typeof ICONS;

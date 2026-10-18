@@ -26,6 +26,7 @@ export {
   weekPeriods,
   type WeekPeriod,
 } from "./week.ts";
+export { dayBrief, type DayBrief } from "./brief.ts";
 export { lessonReminders, type LessonReminder } from "./reminders.ts";
 export {
   substitutionsChanged,

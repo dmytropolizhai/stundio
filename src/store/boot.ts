@@ -21,6 +21,7 @@ import {
   wireNotificationTaps,
 } from "@/notifications";
 import { createAnalyticsClient, defaultHttp as analyticsHttp } from "@/lib/analytics";
+import { fetchForecast } from "@/lib/weather";
 import { runWidgetSync, wireWidget } from "@/widget";
 import { clearDesktopReminders } from "@/lib/desktop";
 
@@ -39,6 +40,7 @@ export const bootApp: Boot = async () => {
     cache,
     engine: createSyncEngine({ http: defaultHttp, cache }),
     analytics: createAnalyticsClient(analyticsHttp, ANALYTICS_DOMAIN),
+    weather: fetchForecast(),
   });
 
   // Paint from cache first; the network catches up underneath.
