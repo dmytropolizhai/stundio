@@ -86,12 +86,27 @@ const BootFailed = ({ onReady }: { onReady: () => void }) => (
  * at every step), then the DS's onboarding screen — a full-bleed brand flood, the wordmark,
  * and one oversized headline — hands off to the class picker. It is the only place in the app
  * that goes edge-to-edge in blue.
+ *
+ * Switching role in Settings lands here too (the new role has no pick yet). That user has
+ * already been through the tour, so it opens straight on the new role's picker.
  */
 const Onboarding = () => {
   const t = useT();
+  const persona = useAppStore((s) => s.settings.persona);
+  // Someone who already picked a class or a teacher is not new: they got here by switching
+  // role in Settings to one with no selection yet, so skip the tour and open that role's list.
+  const returning = useAppStore(
+    (s) => s.settings.selectedClassId !== null || s.settings.selectedTeacherId !== null,
+  );
   const [step, setStep] = useState<
     "language" | "intro" | "persona" | "classPicker" | "teacherPicker"
-  >("language");
+  >(() =>
+    returning
+      ? PERSONA_PROFILES[persona].picker === "teacher"
+        ? "teacherPicker"
+        : "classPicker"
+      : "language",
+  );
   const setPersona = useAppStore((s) => s.setPersona);
 
   useBackButton(
