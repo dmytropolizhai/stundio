@@ -36,3 +36,22 @@ it("opens Transit and returns home when the selected role loses the Transit tab"
   expect(screen.queryByRole("button", { name: "Transit" })).toBeNull();
   expect(screen.getByRole("button", { name: "Home" }).getAttribute("aria-current")).toBe("page");
 });
+
+it("opens the teacher list, not the language screen, when switching to a role with no pick yet", async () => {
+  const harness = await bootHarness({
+    lang: "en",
+    teacherAnnouncementDismissed: true,
+    lastSeenChangelogVersion: __APP_VERSION__,
+    iphoneInstallPromptDismissed: true,
+  });
+  vi.mocked(bootApp).mockResolvedValue({ store: harness.store });
+  await act(async () => {
+    render(<App />);
+    await Promise.resolve();
+  });
+  await clickAndSettle(() => {
+    void harness.store.getState().updateSettings({ persona: "teacher" });
+  });
+  expect(screen.getByText("Select teacher")).toBeDefined();
+  expect(screen.queryByText("Choose your language")).toBeNull();
+});
