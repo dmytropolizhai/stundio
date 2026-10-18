@@ -167,14 +167,14 @@ describe("notifyOnChanges", () => {
 
   it("respects the notifySubstitutionChanges setting", async () => {
     const store = makeStore();
-    await store.getState().setNotifySubstitutionChanges(false);
+    await store.getState().updateSettings({ notifySubstitutionChanges: false });
     notifyOnChanges(store, { changedDates: [today] } as never, true);
     expect(notifySubstitutionsChanged).not.toHaveBeenCalled();
   });
 
   it("fires cover notification when teacher has an assigned cover lesson", async () => {
     const store = makeStore();
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     await store.getState().setTeacher("-100");
 
     // Mock resolvedTeacherDay to return a day with a cover lesson
@@ -197,7 +197,7 @@ describe("notifyOnChanges", () => {
 
   it("fires regular notification when teacher has non-cover changes", async () => {
     const store = makeStore();
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     await store.getState().setTeacher("-100");
 
     const originalResolvedTeacherDay = store.getState().resolvedTeacherDay;
@@ -243,7 +243,7 @@ describe("notifyOnNewTimetable", () => {
 
   it("respects the notifyNewTimetable setting", async () => {
     const store = makeStore();
-    await store.getState().setNotifyNewTimetable(false);
+    await store.getState().updateSettings({ notifyNewTimetable: false });
     notifyOnNewTimetable(store, { newTimetableFrom: "2026-09-14" } as never, true);
     expect(notifyNewTimetable).not.toHaveBeenCalled();
   });
@@ -276,7 +276,7 @@ describe("checkForAppUpdateNotification", () => {
 
   it("respects the notifyAppUpdates setting", async () => {
     const store = makeStore();
-    await store.getState().setNotifyAppUpdates(false);
+    await store.getState().updateSettings({ notifyAppUpdates: false });
     checkForUpdate.mockResolvedValue({
       hasUpdate: true,
       currentVersion: "v0.0.1",

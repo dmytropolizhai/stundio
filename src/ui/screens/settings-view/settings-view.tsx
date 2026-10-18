@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { listBuildings, listSubgroups } from "@/lib/edupage";
 import { IconButton, TopBar } from "@/ds";
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
@@ -58,7 +58,7 @@ export const SettingsView = ({
   const subgroup = useAppStore((s) => s.settings.subgroup);
   const building = useAppStore((s) => s.settings.building);
   const mapEnabled = useAppStore((s) => s.settings.transitMapEnabled);
-  const setMapEnabled = useAppStore((s) => s.setTransitMapEnabled);
+  const setMapEnabled = useSettingSetter("transitMapEnabled");
   const hasTransit = PERSONA_PROFILES[persona].nav.personal.includes("transit");
   const identityLabel = useIdentityLabel();
   const selectedClass = useSelectedClass();

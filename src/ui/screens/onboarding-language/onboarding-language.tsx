@@ -1,4 +1,4 @@
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { Button } from "@/ds";
 import { useT, type Lang } from "@/ui/i18n";
 import { LanguageList } from "./language-list.tsx";
@@ -15,7 +15,7 @@ type OnboardingLanguageProps = {
 export const OnboardingLanguage = ({ onDone }: OnboardingLanguageProps) => {
   const t = useT();
   const lang = useAppStore((s) => s.settings.lang);
-  const setLang = useAppStore((s) => s.setLang);
+  const setLang = useSettingSetter("lang");
 
   return (
     <div className="flex min-h-0 flex-1 flex-col px-gutter pb-6">

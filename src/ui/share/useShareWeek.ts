@@ -6,7 +6,7 @@
  * the same promise the rest of the app makes (CLAUDE.md).
  */
 import { useCallback, useMemo, useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import type { ISODate } from "@/lib/edupage";
 import { identityKey as identityKeyOf } from "@/lib/persona";
 import { weekDates } from "@/lib/schedule";
@@ -46,7 +46,7 @@ export const useShareWeek = (
   const shareLang = useAppStore((s) => s.settings.shareLang);
   const shareLangSyncWithApp = useAppStore((s) => s.settings.shareLangSyncWithApp);
   const shareLangPromptShown = useAppStore((s) => s.settings.shareLangPromptShown);
-  const setShareLangPromptShown = useAppStore((s) => s.setShareLangPromptShown);
+  const setShareLangPromptShown = useSettingSetter("shareLangPromptShown");
 
   /** The share image/message travels in its own language — separate from the app's chrome. */
   const effectiveLang = shareLangSyncWithApp ? lang : shareLang;

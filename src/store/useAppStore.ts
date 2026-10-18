@@ -10,7 +10,6 @@
 import { createStore } from "zustand/vanilla";
 import {
   toTimetableMeta,
-  type Building,
   type DaySubstitutions,
   type ISODate,
   type ISODateTime,
@@ -18,13 +17,7 @@ import {
   type ResolvedTeacherDay,
   type Timetable,
 } from "@/lib/edupage";
-import {
-  DEFAULT_SETTINGS,
-  type AppCache,
-  type Settings,
-  type SubjectNote,
-  type TransitDestination,
-} from "@/db";
+import { DEFAULT_SETTINGS, type AppCache, type Settings, type SubjectNote } from "@/db";
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 import {
@@ -49,6 +42,21 @@ import type { FetchForecast, WeatherForecast } from "@/lib/weather";
  */
 export type NotificationNavigationTarget =
   { tab: "home" | "changes"; date: ISODate } | { tab: "settings" };
+
+/**
+ * Settings whose write has a side effect or keeps another field consistent. Each has a named
+ * action on the store; everything else goes through `updateSettings`.
+ */
+type RuledSettingKey =
+  | "selectedClassId" // `setClass` also resets the subgroup
+  | "selectedTeacherId" // `setTeacher` also resets the view to "own"
+  | "shareLang" // `setShareLang` also stops following the app language
+  | "weatherEnabled" // `setWeatherEnabled` also fetches the forecast
+  | "subjectColorOverrides" // `setSubjectColorOverride`, one subject at a time
+  | "favorites" // `toggleFavorite`
+  | "appOpenCount"; // `recordAppOpen`
+
+export type SettingsPatch = Partial<Omit<Settings, RuledSettingKey>>;
 
 export type AppState = {
   ready: boolean;
@@ -86,32 +94,15 @@ export type AppState = {
    * sync actually lands). `syncStatus` stays the single source of truth the UI reads.
    */
   setConnectivity: (online: boolean) => void;
+  /**
+   * Writes any plain setting — one with no rule attached. The keys that carry a rule (picking a
+   * class resets the subgroup, …) are left out of `SettingsPatch` and keep their named action.
+   */
+  updateSettings: (patch: SettingsPatch) => Promise<void>;
   setClass: (classId: string | null) => Promise<void>;
-  setBuilding: (building: Building | null) => Promise<void>;
-  setCommuteHome: (value: string) => Promise<void>;
-  setTransitDestinations: (value: TransitDestination[]) => Promise<void>;
-  setTransitMapEnabled: (value: boolean) => Promise<void>;
   setWeatherEnabled: (enabled: boolean) => Promise<void>;
-  /** `null` shows every division merged — only meaningful for the currently selected class. */
-  setSubgroup: (subgroup: string | null) => Promise<void>;
-  setPersona: (persona: Settings["persona"]) => Promise<void>;
   setTeacher: (teacherId: string | null) => Promise<void>;
-  setTeacherView: (view: Settings["teacherView"]) => Promise<void>;
-  setHighlightCoverLessons: (highlight: boolean) => Promise<void>;
   toggleFavorite: (classId: string) => Promise<void>;
-  setTheme: (theme: Settings["theme"]) => Promise<void>;
-  setLang: (lang: Settings["lang"]) => Promise<void>;
-  setMergeConsecutiveLessons: (merge: boolean) => Promise<void>;
-  setShowMovedOnTargetDay: (show: boolean) => Promise<void>;
-  setShowTime: (showTime: boolean) => Promise<void>;
-  setShowSubjectsTab: (showSubjectsTab: boolean) => Promise<void>;
-  setShowTransitTab: (showTransitTab: boolean) => Promise<void>;
-  setLessonCardStyle: (style: Settings["lessonCardStyle"]) => Promise<void>;
-  setCardRadius: (radius: Settings["cardRadius"]) => Promise<void>;
-  setCardElevation: (elevation: Settings["cardElevation"]) => Promise<void>;
-  setReduceMotion: (reduceMotion: boolean) => Promise<void>;
-  setAppAccent: (accent: Settings["appAccent"]) => Promise<void>;
-  setSubjectColorCodingEnabled: (enabled: boolean) => Promise<void>;
   /** `tone` of `null` clears the override, returning the subject to its auto-assigned tone. */
   setSubjectColorOverride: (
     subjectKey: string,
@@ -121,26 +112,10 @@ export type AppState = {
   resetCustomization: () => Promise<void>;
   /** Clears all user-specific data (settings, notes) and restores default settings, keeping timetables. */
   resetAllData: () => Promise<void>;
-  setNotifyLessonReminderMinutes: (minutes: number) => Promise<void>;
-  setNotifySubstitutionChanges: (enabled: boolean) => Promise<void>;
-  setNotifyNewTimetable: (enabled: boolean) => Promise<void>;
-  setNotifyAppUpdates: (enabled: boolean) => Promise<void>;
-  /** Not user-facing — the update-notification wiring marks a version as already announced. */
-  setLastNotifiedUpdateVersion: (version: string) => Promise<void>;
-  /** Not user-facing — the what's-new sheet marks this build's notes as read. */
-  setLastSeenChangelogVersion: (version: string) => Promise<void>;
-  setAnalyticsEnabled: (enabled: boolean) => Promise<void>;
   /** Pins the share card to `lang`, which also stops it following the app language. */
   setShareLang: (lang: Settings["shareLang"]) => Promise<void>;
-  setShareLangSyncWithApp: (sync: boolean) => Promise<void>;
-  /** Not user-facing — `useShareWeek` marks the one-time language prompt as already shown. */
-  setShareLangPromptShown: (shown: boolean) => Promise<void>;
   /** Not user-facing — `boot.ts` calls this once per launch, alongside the `app_open` event. */
   recordAppOpen: () => Promise<void>;
-  setFeedbackPromptDismissed: (dismissed: boolean) => Promise<void>;
-  setTeacherAnnouncementDismissed: (dismissed: boolean) => Promise<void>;
-  setIphoneInstallPromptDismissed: (dismissed: boolean) => Promise<void>;
-  setAndroidApkBannerDismissed: (dismissed: boolean) => Promise<void>;
   setNote: (subject: string, text: string) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   setPendingNavigation: (target: NotificationNavigationTarget) => void;
@@ -365,35 +340,14 @@ export const createAppStore = ({
       },
 
       // A subgroup label from the previous class means nothing for the new one, so it resets.
+      updateSettings: (patch) => persist(patch),
       setClass: (classId) => persist({ selectedClassId: classId, subgroup: null }),
-      setBuilding: (building) => persist({ building }),
-      setCommuteHome: (commuteHome) => persist({ commuteHome }),
-      setTransitDestinations: (transitDestinations) => persist({ transitDestinations }),
-      setTransitMapEnabled: (transitMapEnabled) => persist({ transitMapEnabled }),
       setWeatherEnabled: async (weatherEnabled) => {
         await persist({ weatherEnabled });
         // Switched back on: fetch now rather than waiting for the next open or resume.
         if (weatherEnabled) await refreshWeather(false);
       },
-      setSubgroup: (subgroup) => persist({ subgroup }),
-      setPersona: (persona) => persist({ persona }),
       setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),
-      setTeacherView: (teacherView) => persist({ teacherView }),
-      setHighlightCoverLessons: (highlightCoverLessons) => persist({ highlightCoverLessons }),
-      setTheme: (theme) => persist({ theme }),
-      setLang: (lang) => persist({ lang }),
-      setMergeConsecutiveLessons: (mergeConsecutiveLessons) => persist({ mergeConsecutiveLessons }),
-      setShowMovedOnTargetDay: (showMovedOnTargetDay) => persist({ showMovedOnTargetDay }),
-      setShowTime: (showTime) => persist({ showTime }),
-      setShowSubjectsTab: (showSubjectsTab) => persist({ showSubjectsTab }),
-      setShowTransitTab: (showTransitTab) => persist({ showTransitTab }),
-      setLessonCardStyle: (lessonCardStyle) => persist({ lessonCardStyle }),
-      setCardRadius: (cardRadius) => persist({ cardRadius }),
-      setCardElevation: (cardElevation) => persist({ cardElevation }),
-      setReduceMotion: (reduceMotion) => persist({ reduceMotion }),
-      setAppAccent: (appAccent) => persist({ appAccent }),
-      setSubjectColorCodingEnabled: (subjectColorCodingEnabled) =>
-        persist({ subjectColorCodingEnabled }),
       setSubjectColorOverride: (subjectKey, tone) => {
         const next = { ...get().settings.subjectColorOverrides };
         if (tone === null) delete next[subjectKey];
@@ -415,28 +369,8 @@ export const createAppStore = ({
         await cache.clearUserData();
         await readCache();
       },
-      setNotifyLessonReminderMinutes: (notifyLessonReminderMinutes) =>
-        persist({ notifyLessonReminderMinutes }),
-      setNotifySubstitutionChanges: (notifySubstitutionChanges) =>
-        persist({ notifySubstitutionChanges }),
-      setNotifyNewTimetable: (notifyNewTimetable) => persist({ notifyNewTimetable }),
-      setNotifyAppUpdates: (notifyAppUpdates) => persist({ notifyAppUpdates }),
-      setLastNotifiedUpdateVersion: (lastNotifiedUpdateVersion) =>
-        persist({ lastNotifiedUpdateVersion }),
-      setLastSeenChangelogVersion: (lastSeenChangelogVersion) =>
-        persist({ lastSeenChangelogVersion }),
-      setAnalyticsEnabled: (analyticsEnabled) => persist({ analyticsEnabled }),
       setShareLang: (shareLang) => persist({ shareLang, shareLangSyncWithApp: false }),
-      setShareLangSyncWithApp: (shareLangSyncWithApp) => persist({ shareLangSyncWithApp }),
-      setShareLangPromptShown: (shareLangPromptShown) => persist({ shareLangPromptShown }),
       recordAppOpen: () => persist({ appOpenCount: get().settings.appOpenCount + 1 }),
-      setFeedbackPromptDismissed: (feedbackPromptDismissed) => persist({ feedbackPromptDismissed }),
-      setTeacherAnnouncementDismissed: (teacherAnnouncementDismissed) =>
-        persist({ teacherAnnouncementDismissed }),
-      setIphoneInstallPromptDismissed: (iphoneInstallPromptDismissed) =>
-        persist({ iphoneInstallPromptDismissed }),
-      setAndroidApkBannerDismissed: (androidApkBannerDismissed) =>
-        persist({ androidApkBannerDismissed }),
       setNote: async (subject, text) => {
         const trimmed = text.trim();
         if (trimmed === "") {

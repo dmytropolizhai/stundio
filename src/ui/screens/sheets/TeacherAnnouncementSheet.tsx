@@ -1,7 +1,7 @@
 import { Button, Card, Icon } from "@/ds";
 import { Sheet } from "../../components/Sheet.tsx";
 import { useT } from "@/ui/i18n";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 
 export type TeacherAnnouncementSheetProps = {
   open: boolean;
@@ -10,7 +10,7 @@ export type TeacherAnnouncementSheetProps = {
 
 export const TeacherAnnouncementSheet = ({ open, onClose }: TeacherAnnouncementSheetProps) => {
   const t = useT();
-  const setPersona = useAppStore((s) => s.setPersona);
+  const setPersona = useSettingSetter("persona");
   const trackEvent = useAppStore((s) => s.trackEvent);
 
   const steps = [

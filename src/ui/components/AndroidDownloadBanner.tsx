@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { Button, Card, IconButton } from "@/ds";
 import { useT } from "@/ui/i18n";
 import { isNativePlatform } from "@/lib/edupage";
@@ -12,7 +12,7 @@ import { isAndroidDevice } from "../lib/platform";
 export const AndroidDownloadBanner = memo(function AndroidDownloadBanner() {
   const t = useT();
   const dismissed = useAppStore((s) => s.settings.androidApkBannerDismissed);
-  const setDismissed = useAppStore((s) => s.setAndroidApkBannerDismissed);
+  const setDismissed = useSettingSetter("androidApkBannerDismissed");
 
   if (isNativePlatform() || !isAndroidDevice() || dismissed) {
     return null;

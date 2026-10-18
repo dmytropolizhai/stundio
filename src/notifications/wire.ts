@@ -158,7 +158,7 @@ export const wireNotificationTaps = (store: Store): { dispose: () => void } => {
 
 /** One check per app open (mirrors `useUpdateCheck`), but this path can also fire a notification. */
 export const checkForAppUpdateNotification = async (store: Store): Promise<void> => {
-  const { settings, setLastNotifiedUpdateVersion } = store.getState();
+  const { settings, updateSettings } = store.getState();
   if (!settings.notifyAppUpdates) return;
 
   const result = await checkForUpdate(__APP_VERSION__, UPDATE_OWNER, UPDATE_REPO);
@@ -169,5 +169,5 @@ export const checkForAppUpdateNotification = async (store: Store): Promise<void>
     translate(settings.lang, "notification.update.title"),
     translate(settings.lang, "notification.update.body", { version: result.latestVersion }),
   );
-  await setLastNotifiedUpdateVersion(result.latestVersion);
+  await updateSettings({ lastNotifiedUpdateVersion: result.latestVersion });
 };

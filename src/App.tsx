@@ -5,7 +5,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { LazyMotion, domAnimation } from "framer-motion";
-import { AppStoreProvider, useAppStore } from "@/store";
+import { AppStoreProvider, useAppStore, useSettingSetter } from "@/store";
 import { Button, TopBar, TooltipProvider } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
 import { ClassSelector } from "./ui/screens/class-selector";
@@ -92,7 +92,7 @@ const Onboarding = () => {
   const [step, setStep] = useState<
     "language" | "intro" | "persona" | "classPicker" | "teacherPicker"
   >("language");
-  const setPersona = useAppStore((s) => s.setPersona);
+  const setPersona = useSettingSetter("persona");
 
   useBackButton(
     () => {

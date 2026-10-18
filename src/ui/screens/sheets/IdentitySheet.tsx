@@ -1,5 +1,5 @@
 import { BottomSheet, SegmentedTabs, Button, Icon } from "@/ds";
-import { useAppStore } from "@/store";
+import { useSettingSetter } from "@/store";
 import { useT } from "@/ui/i18n";
 import { PERSONAS, isIdentified, matchPersona, type Persona } from "@/lib/persona";
 import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
@@ -22,7 +22,7 @@ export const IdentitySheet = ({
   const identity = useIdentity();
   const { persona } = identity;
   const profile = PERSONA_PROFILES[persona];
-  const setPersona = useAppStore((s) => s.setPersona);
+  const setPersona = useSettingSetter("persona");
   const identityLabel = useIdentityLabel();
 
   const handlePersonaChange = (newPersona: Persona) => {

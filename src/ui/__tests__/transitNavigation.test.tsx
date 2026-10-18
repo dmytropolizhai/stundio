@@ -30,7 +30,7 @@ it("opens Transit and returns home when the selected role loses the Transit tab"
     void harness.store.getState().setTeacher(teacher?.id ?? "teacher");
   });
   await clickAndSettle(() => {
-    void harness.store.getState().setPersona("teacher");
+    void harness.store.getState().updateSettings({ persona: "teacher" });
   });
   expect(screen.queryByTitle("Rīgas satiksme live transit map")).toBeNull();
   expect(screen.queryByRole("button", { name: "Transit" })).toBeNull();

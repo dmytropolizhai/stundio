@@ -102,7 +102,10 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   without a network or browser. Refresh policy is spelled out in `engine.ts` and `MODEL.md §6`.
 - **`src/store/`** — one vanilla Zustand store behind React context (`provider.tsx` +
   `context.ts`), wired for production in `boot.ts`. It caches and selects; it never fetches or
-  parses.
+  parses. Settings are written through one `updateSettings(patch)` (React: `useSettingSetter(key)`).
+  A setting whose write has a rule — `setClass` resets the subgroup, `setShareLang` stops
+  following the app language, … — is left out of `SettingsPatch` (`RuledSettingKey`) and keeps a
+  named action. A new plain setting needs no store change; a new rule is a new `RuledSettingKey`.
 - **`src/ds/`** — the Studio design system: tokens (`ds/tokens/*.css`) plus primitives. Its
   tokens are generated copies from the Claude Design project — regenerate rather than hand-edit;
   `dark.css` and `fonts.css` are documented deliberate deviations.
