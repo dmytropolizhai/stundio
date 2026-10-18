@@ -303,6 +303,9 @@ export const en: Dict = {
   "view.options": "View options",
   "settings.showTime": "Show time",
   "settings.showTimeHint": "Shows each lesson's start and end time next to its number.",
+  "settings.weather": "Weather",
+  "settings.weatherHint":
+    "Riga's weather and a tip (umbrella, cold) on Home. Off means it is not downloaded either.",
   "settings.notifications": "Notifications",
   "settings.showSubjectsTab": "Subjects tab",
   "settings.showSubjectsTabHint": "Shows the Subjects tab in the bottom menu, next to Settings.",

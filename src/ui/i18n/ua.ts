@@ -307,6 +307,9 @@ export const ua: Dict = {
   "settings.showTime": "Показувати час",
   "settings.showTimeHint":
     "Відображає час початку та закінчення кожного уроку поруч із його номером.",
+  "settings.weather": "Погода",
+  "settings.weatherHint":
+    "Погода в Ризі та підказка (парасолька, холод) на головному екрані. Якщо вимкнути, вона й не завантажується.",
   "settings.showSubjectsTab": "Вкладка «Предмети»",
   "settings.showSubjectsTabHint":
     "Показує вкладку предметів у нижньому меню, поруч із налаштуваннями.",

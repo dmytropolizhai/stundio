@@ -103,7 +103,7 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
   const nextDate = stepSchoolDay(now.date, 1);
   const nextDay = useAppStore((s) => s.resolvedDay(nextDate));
   const tomorrow = useMemo(() => tomorrowPreview(nextDay), [nextDay]);
-  const forecast = useAppStore((s) => s.weather);
+  const forecast = useAppStore((s) => (s.settings.weatherEnabled ? s.weather : null));
   const weather = useMemo(() => {
     const outline = daySummary(today);
     const start = outline === null ? null : minutesOf(outline.start);

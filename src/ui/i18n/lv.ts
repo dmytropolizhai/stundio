@@ -312,6 +312,9 @@ export const lv = {
   "view.options": "Skata opcijas",
   "settings.showTime": "Rādīt laiku",
   "settings.showTimeHint": "Rāda katras stundas sākuma un beigu laiku pie tās numura.",
+  "settings.weather": "Laikapstākļi",
+  "settings.weatherHint":
+    "Rīgas laikapstākļi un padoms (lietussargs, auksts) sākuma ekrānā. Izslēdzot tie netiek ielādēti.",
   "settings.showSubjectsTab": "Cilne “Priekšmeti”",
   "settings.showSubjectsTabHint": "Rāda priekšmetu cilni apakšējā izvēlnē, blakus iestatījumiem.",
   "settings.notifications": "Paziņojumi",

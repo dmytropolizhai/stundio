@@ -319,6 +319,19 @@ describe("HomeView", () => {
       expect(screen.getByTestId("home-weather-hint").textContent).toBe("Paņem lietussargu");
     });
 
+    it("hides the weather once it is switched off in Settings", async () => {
+      const harness = await bootHarness();
+      act(() => {
+        harness.store.setState({ weather: forecast });
+      });
+      await act(() => harness.store.getState().setWeatherEnabled(false));
+      renderDay(harness);
+
+      expect(screen.queryByTestId("home-weather")).toBeNull();
+      expect(screen.queryByTestId("home-weather-hint")).toBeNull();
+      expect(screen.getByTestId("home-brief")).toBeDefined();
+    });
+
     it("never pages the day from a swipe on the top block", async () => {
       const harness = await bootHarness();
       const { onDateChange } = renderDay(harness);

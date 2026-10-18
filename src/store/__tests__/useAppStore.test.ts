@@ -685,6 +685,20 @@ describe("weather", () => {
     expect(store.getState().weather?.current.temperature).toBe(15);
   });
 
+  it("fetches nothing while weather is switched off, and catches up when it is switched on", async () => {
+    const fetchWeather = vi.fn(() => Promise.resolve(forecastAt(now().toISOString())));
+    const store = weatherStore(fetchWeather);
+    await store.getState().setWeatherEnabled(false);
+
+    await store.getState().refresh({ date: DATE, force: true });
+    expect(fetchWeather).not.toHaveBeenCalled();
+    expect((await cache.getSettings()).weatherEnabled).toBe(false);
+
+    await store.getState().setWeatherEnabled(true);
+    expect(fetchWeather).toHaveBeenCalledTimes(1);
+    expect(store.getState().weather).not.toBeNull();
+  });
+
   it("keeps the cached forecast when a fetch fails, without touching syncStatus", async () => {
     await cache.putWeather(forecastAt("2026-09-08T08:00:00.000Z"));
     const store = weatherStore(() => Promise.reject(new Error("offline")));

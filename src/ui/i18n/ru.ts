@@ -306,6 +306,9 @@ export const ru: Dict = {
   "view.options": "Параметры вида",
   "settings.showTime": "Показать время",
   "settings.showTimeHint": "Показывает время начала и конца каждого урока рядом с его номером.",
+  "settings.weather": "Погода",
+  "settings.weatherHint":
+    "Погода в Риге и подсказка (зонт, холод) на главном экране. Если выключить, она и не загружается.",
   "settings.notifications": "Уведомления",
   "settings.showSubjectsTab": "Вкладка «Предметы»",
   "settings.showSubjectsTabHint":

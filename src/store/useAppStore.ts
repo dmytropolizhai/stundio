@@ -86,6 +86,7 @@ export type AppState = {
   setCommuteHome: (value: string) => Promise<void>;
   setTransitDestinations: (value: TransitDestination[]) => Promise<void>;
   setTransitMapEnabled: (value: boolean) => Promise<void>;
+  setWeatherEnabled: (enabled: boolean) => Promise<void>;
   /** `null` shows every division merged — only meaningful for the currently selected class. */
   setSubgroup: (subgroup: string | null) => Promise<void>;
   setPersona: (persona: Settings["persona"]) => Promise<void>;
@@ -220,7 +221,7 @@ export const createAppStore = ({
      * never touches `syncStatus`: weather is a garnish, its failure is not the timetable's.
      */
     const refreshWeather = async (force: boolean): Promise<void> => {
-      if (fetchWeather === undefined) return;
+      if (fetchWeather === undefined || !get().settings.weatherEnabled) return;
       const current = get().weather;
       const age = current === null ? Infinity : now().getTime() - Date.parse(current.fetchedAt);
       if (age < (force ? WEATHER_FORCE_TTL_MS : WEATHER_TTL_MS)) return;
@@ -331,6 +332,11 @@ export const createAppStore = ({
       setCommuteHome: (commuteHome) => persist({ commuteHome }),
       setTransitDestinations: (transitDestinations) => persist({ transitDestinations }),
       setTransitMapEnabled: (transitMapEnabled) => persist({ transitMapEnabled }),
+      setWeatherEnabled: async (weatherEnabled) => {
+        await persist({ weatherEnabled });
+        // Switched back on: fetch now rather than waiting for the next open or resume.
+        if (weatherEnabled) await refreshWeather(false);
+      },
       setSubgroup: (subgroup) => persist({ subgroup }),
       setPersona: (persona) => persist({ persona }),
       setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),

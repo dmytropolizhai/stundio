@@ -37,6 +37,8 @@ export type Settings = {
   transitDestinations: TransitDestination[];
   /** Whether the Rīgas satiksme live map is shown on the Transit tab (toggled from Settings). */
   transitMapEnabled: boolean;
+  /** Riga weather on Home. Off means it is neither shown nor fetched. */
+  weatherEnabled: boolean;
   selectedClassId: string | null;
   building: Building | null;
   /**
@@ -134,6 +136,7 @@ export const DEFAULT_SETTINGS: Settings = {
   commuteHome: "",
   transitDestinations: [],
   transitMapEnabled: true,
+  weatherEnabled: true,
   selectedClassId: null,
   building: null,
   subgroup: null,
