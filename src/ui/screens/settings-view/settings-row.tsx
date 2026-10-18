@@ -138,7 +138,11 @@ export const SettingsRow = (props: SettingsRowProps) => {
         disabled={props.disabled}
         aria-labelledby={value === undefined ? labelId : `${labelId} ${valueId}`}
         aria-describedby={descriptionId}
-        className={cn(ROW, props.disabled === true ? "cursor-default opacity-60" : PRESSABLE, tone === "danger" ? "bg-danger/12" : "bg-transparent")}
+        className={cn(
+          ROW,
+          props.disabled === true ? "cursor-default opacity-60" : PRESSABLE,
+          tone === "danger" ? "bg-danger/12" : "bg-transparent",
+        )}
       >
         {body}
         <span aria-hidden="true" className="flex shrink-0 items-center text-muted">

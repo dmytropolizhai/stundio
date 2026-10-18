@@ -1,7 +1,7 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { LessonCard } from "@/ds/components/ui/lesson-card.tsx";
 import { BottomSheet, Button, ColorWheel, SegmentedTabs, Switch, cn, Slider } from "@/ds";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import type { Settings } from "@/db";
 import type { SubjectRef } from "@/lib/edupage";
 import { SUBJECT_TONES, SUBJECT_TONE_BG, subjectAccent, subjectToneKey } from "@/ui/theme";
@@ -187,7 +187,7 @@ const SubjectColorRow = ({
 const AppAccentRow = () => {
   const t = useT();
   const appAccent = useAppStore((s) => s.settings.appAccent);
-  const setAppAccent = useAppStore((s) => s.setAppAccent);
+  const setAppAccent = useSettingSetter("appAccent");
 
   return (
     <Row>
@@ -243,12 +243,12 @@ const FULL_WIDTH_TABS = "flex w-full [&>button]:grow [&>button]:whitespace-nowra
 export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const t = useT();
   const settings = useAppStore((s) => s.settings);
-  const setTheme = useAppStore((s) => s.setTheme);
-  const setLessonCardStyle = useAppStore((s) => s.setLessonCardStyle);
-  const setCardRadius = useAppStore((s) => s.setCardRadius);
-  const setCardElevation = useAppStore((s) => s.setCardElevation);
-  const setReduceMotion = useAppStore((s) => s.setReduceMotion);
-  const setSubjectColorCodingEnabled = useAppStore((s) => s.setSubjectColorCodingEnabled);
+  const setTheme = useSettingSetter("theme");
+  const setLessonCardStyle = useSettingSetter("lessonCardStyle");
+  const setCardRadius = useSettingSetter("cardRadius");
+  const setCardElevation = useSettingSetter("cardElevation");
+  const setReduceMotion = useSettingSetter("reduceMotion");
+  const setSubjectColorCodingEnabled = useSettingSetter("subjectColorCodingEnabled");
   const resetCustomization = useAppStore((s) => s.resetCustomization);
   const { subjects } = useSubjects();
   const { customization } = usePersona().profile;

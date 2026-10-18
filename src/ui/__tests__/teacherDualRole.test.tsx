@@ -18,7 +18,7 @@ describe("Teacher Dual Role (T8)", () => {
     expect(formTeacher).toBeDefined();
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(formTeacher!.id);
     });
 
@@ -38,7 +38,7 @@ describe("Teacher Dual Role (T8)", () => {
     expect(nonFormTeacher).toBeDefined();
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(nonFormTeacher!.id);
     });
 
@@ -50,7 +50,7 @@ describe("Teacher Dual Role (T8)", () => {
   it("does not show segmented control for student persona", async () => {
     const harness = await bootHarness();
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("student");
+      void harness.store.getState().updateSettings({ persona: "student" });
     });
 
     wrap(harness, <HomeTopBar nowMinutes={600} onPickClass={vi.fn()} onRefresh={vi.fn()} />);
@@ -64,7 +64,7 @@ describe("Teacher Dual Role (T8)", () => {
     const formTeacher = teachers.find((t) => t.formClassIds.length > 0)!;
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(formTeacher.id);
     });
 
@@ -93,7 +93,7 @@ describe("Teacher Dual Role (T8)", () => {
     const formTeacher = teachers.find((t) => t.formClassIds.length > 0)!;
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(formTeacher.id);
     });
 

@@ -8,7 +8,7 @@ import {
   openNotificationSettings,
 } from "@/notifications/localNotifications";
 import { isWebPushSupported, subscribeWebPush, unsubscribeWebPush } from "@/notifications/webPush";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useExactAlarmDenied } from "@/ui/hooks/useExactAlarmPermission.ts";
 import { useNotificationPermissionDenied } from "@/ui/hooks/useNotificationPermission.ts";
 import { useT } from "@/ui/i18n";
@@ -28,10 +28,10 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
   const notifyPermissionDenied = useNotificationPermissionDenied();
   const exactAlarmDenied = useExactAlarmDenied();
   const settings = useAppStore((s) => s.settings);
-  const setNotifyLessonReminderMinutes = useAppStore((s) => s.setNotifyLessonReminderMinutes);
-  const setNotifySubstitutionChanges = useAppStore((s) => s.setNotifySubstitutionChanges);
-  const setNotifyNewTimetable = useAppStore((s) => s.setNotifyNewTimetable);
-  const setNotifyAppUpdates = useAppStore((s) => s.setNotifyAppUpdates);
+  const setNotifyLessonReminderMinutes = useSettingSetter("notifyLessonReminderMinutes");
+  const setNotifySubstitutionChanges = useSettingSetter("notifySubstitutionChanges");
+  const setNotifyNewTimetable = useSettingSetter("notifyNewTimetable");
+  const setNotifyAppUpdates = useSettingSetter("notifyAppUpdates");
   const identityLabel = useAppStore((s) => s.identityLabel());
   const [reminderOpen, setReminderOpen] = useState(false);
 

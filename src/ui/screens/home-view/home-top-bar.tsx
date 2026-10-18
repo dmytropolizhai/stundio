@@ -8,7 +8,7 @@ import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
 import { ViewOptionsMenu } from "@/ui/components/ViewOptionsMenu.tsx";
 import { useT } from "@/ui/i18n";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useIsFormTeacher } from "@/ui/persona";
 import { greetingKey } from "./greeting.ts";
 
@@ -21,10 +21,10 @@ type HomeTopBarProps = {
 export const HomeTopBar = ({ nowMinutes, onPickClass, onRefresh }: HomeTopBarProps) => {
   const t = useT();
   const teacherView = useAppStore((s) => s.settings.teacherView);
-  const setTeacherView = useAppStore((s) => s.setTeacherView);
+  const setTeacherView = useSettingSetter("teacherView");
   const isFormTeacher = useIsFormTeacher();
   const showTime = useAppStore((s) => s.settings.showTime);
-  const setShowTime = useAppStore((s) => s.setShowTime);
+  const setShowTime = useSettingSetter("showTime");
 
   return (
     <>

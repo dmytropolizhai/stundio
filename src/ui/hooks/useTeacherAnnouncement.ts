@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { usePersona } from "@/ui/persona";
 
 export type TeacherAnnouncement = {
@@ -12,7 +12,7 @@ export const useTeacherAnnouncement = (): TeacherAnnouncement => {
   const ready = useAppStore((s) => s.ready);
   const { identified, profile } = usePersona();
   const dismissed = useAppStore((s) => s.settings.teacherAnnouncementDismissed);
-  const setDismissed = useAppStore((s) => s.setTeacherAnnouncementDismissed);
+  const setDismissed = useSettingSetter("teacherAnnouncementDismissed");
 
   const [open, setOpen] = useState(false);
   const autoOpenedRef = useRef(false);

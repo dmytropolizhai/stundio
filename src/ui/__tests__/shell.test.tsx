@@ -144,7 +144,7 @@ describe("TabBar", () => {
     );
 
     await act(async () => {
-      await harness.store.getState().setShowSubjectsTab(true);
+      await harness.store.getState().updateSettings({ showSubjectsTab: true });
     });
     expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();
     expect(personal.style.gridTemplateColumns).toBe(
@@ -246,7 +246,7 @@ describe("useCustomization", () => {
     expect(document.documentElement.classList.contains("reduce-motion")).toBe(true);
 
     await act(async () => {
-      await harness.store.getState().setCardRadius("xl");
+      await harness.store.getState().updateSettings({ cardRadius: "xl" });
     });
     expect(document.documentElement.classList.contains("radius-2xl")).toBe(false);
   });
@@ -266,13 +266,13 @@ describe("useCustomization", () => {
     expect(document.documentElement.classList.contains("accent-sky")).toBe(false);
 
     await act(async () => {
-      await harness.store.getState().setAppAccent("mint");
+      await harness.store.getState().updateSettings({ appAccent: "mint" });
     });
     expect(document.documentElement.classList.contains("accent-lilac")).toBe(false);
     expect(document.documentElement.classList.contains("accent-mint")).toBe(true);
 
     await act(async () => {
-      await harness.store.getState().setAppAccent("default");
+      await harness.store.getState().updateSettings({ appAccent: "default" });
     });
     expect(document.documentElement.classList.contains("accent-mint")).toBe(false);
   });

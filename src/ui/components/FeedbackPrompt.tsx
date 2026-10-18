@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { Button, Card, IconButton } from "@/ds";
 import { useT } from "@/ui/i18n";
 import { FeedbackSheet } from "./FeedbackSheet.tsx";
@@ -14,7 +14,7 @@ export const FeedbackPrompt = () => {
   const t = useT();
   const appOpenCount = useAppStore((s) => s.settings.appOpenCount);
   const dismissed = useAppStore((s) => s.settings.feedbackPromptDismissed);
-  const setFeedbackPromptDismissed = useAppStore((s) => s.setFeedbackPromptDismissed);
+  const setFeedbackPromptDismissed = useSettingSetter("feedbackPromptDismissed");
   const [sheetOpen, setSheetOpen] = useState(false);
 
   if (appOpenCount <= 3 || dismissed) return null;

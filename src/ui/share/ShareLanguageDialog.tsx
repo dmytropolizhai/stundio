@@ -1,5 +1,5 @@
 import { BottomSheet, Button, Card, Switch } from "@/ds";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { LANGS, LANG_NAMES, useT, type Lang } from "@/ui/i18n";
 
 /**
@@ -11,7 +11,7 @@ export const ShareLanguageDialog = ({ open, onDone }: { open: boolean; onDone: (
   const t = useT();
   const settings = useAppStore((s) => s.settings);
   const setShareLang = useAppStore((s) => s.setShareLang);
-  const setShareLangSyncWithApp = useAppStore((s) => s.setShareLangSyncWithApp);
+  const setShareLangSyncWithApp = useSettingSetter("shareLangSyncWithApp");
 
   const effectiveLang = settings.shareLangSyncWithApp ? settings.lang : settings.shareLang;
 

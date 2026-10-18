@@ -12,3 +12,20 @@ export {
   type TeacherIdentity,
   type TeacherView,
 } from "./identity.ts";
+export {
+  classEntry,
+  dayFor,
+  planClassDay,
+  planDay,
+  planTeacherDay,
+  resolveSubject,
+  subjectLabel,
+  teacherEntry,
+  type AnyDayPlan,
+  type ClassEntry,
+  type DayPlan,
+  type DirectorySnapshot,
+  type LabelOptions,
+  type PersonaSubject,
+  type TeacherEntry,
+} from "./directory.ts";

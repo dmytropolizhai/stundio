@@ -1,4 +1,4 @@
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { Button } from "@/ds";
 import { listSubgroups } from "@/lib/edupage";
 import type { ClassOption } from "@/ui/hooks/useClasses.ts";
@@ -20,7 +20,7 @@ export const SubgroupPicker = ({ cls, onDone }: SubgroupPickerProps) => {
   const t = useT();
   const timetables = useAppStore((s) => s.timetables);
   const setClass = useAppStore((s) => s.setClass);
-  const setSubgroup = useAppStore((s) => s.setSubgroup);
+  const setSubgroup = useSettingSetter("subgroup");
   const subgroups = listSubgroups(Object.values(timetables), cls.id);
 
   // `setClass` resets `subgroup` to null (store/useAppStore.ts), so the subgroup write has to

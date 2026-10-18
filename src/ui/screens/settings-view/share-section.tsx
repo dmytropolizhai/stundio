@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 import { isIosDevice, isStandalonePwa } from "@/ui/lib/platform.ts";
 import { Section } from "./settings-section.tsx";
@@ -21,7 +21,7 @@ export const ShareSection = ({
   const t = useT();
   const settings = useAppStore((s) => s.settings);
   const setShareLang = useAppStore((s) => s.setShareLang);
-  const setShareLangSyncWithApp = useAppStore((s) => s.setShareLangSyncWithApp);
+  const setShareLangSyncWithApp = useSettingSetter("shareLangSyncWithApp");
   const [languageOpen, setLanguageOpen] = useState(false);
 
   return (

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { isIosDevice, isStandalonePwa } from "../lib/platform.ts";
 
 export type IphoneInstallPrompt = {
@@ -19,7 +19,7 @@ export type IphoneInstallPrompt = {
 export const useIphoneInstallPrompt = (): IphoneInstallPrompt => {
   const ready = useAppStore((s) => s.ready);
   const dismissed = useAppStore((s) => s.settings.iphoneInstallPromptDismissed);
-  const setDismissed = useAppStore((s) => s.setIphoneInstallPromptDismissed);
+  const setDismissed = useSettingSetter("iphoneInstallPromptDismissed");
 
   const [open, setOpen] = useState(false);
   const autoOpenedRef = useRef(false);

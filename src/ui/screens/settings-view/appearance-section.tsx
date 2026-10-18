@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { cn, type IconName } from "@/ds";
 import type { Settings } from "@/db";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useSubjects } from "@/ui/hooks/useSubjects.ts";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
 import { SUBJECT_TONES, SUBJECT_TONE_BG, subjectAccent, subjectTone } from "@/ui/theme";
@@ -61,8 +61,8 @@ export const AppearanceSection = ({ onOpenCustomization }: AppearanceSectionProp
   const t = useT();
   const theme = useAppStore((s) => s.settings.theme);
   const lang = useAppStore((s) => s.settings.lang);
-  const setTheme = useAppStore((s) => s.setTheme);
-  const setLang = useAppStore((s) => s.setLang);
+  const setTheme = useSettingSetter("theme");
+  const setLang = useSettingSetter("lang");
   const [sheet, setSheet] = useState<"theme" | "language" | null>(null);
 
   const themeLabels: Record<Settings["theme"], string> = {

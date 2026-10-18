@@ -84,7 +84,7 @@ describe("widgetPayloadFor", () => {
       .find((t) => t.name === "Alksne Santa" || t.short === "Alksne Santa");
     expect(teacher).toBeDefined();
 
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     expect(widgetPayloadFor(store.getState(), NOW).state).toBe("no-class");
 
     await store.getState().setTeacher(teacher?.id ?? "");
@@ -95,7 +95,7 @@ describe("widgetPayloadFor", () => {
 
   it("renders the picked class's day in the app's language", async () => {
     const store = await readyStore();
-    await store.getState().setLang("en");
+    await store.getState().updateSettings({ lang: "en" });
 
     const payload = widgetPayloadFor(store.getState(), NOW);
 
@@ -182,15 +182,15 @@ describe("wireWidget", () => {
     expect(publish).toHaveBeenCalledTimes(1);
 
     // A setting the widget does not render must not cost a bridge crossing.
-    await store.getState().setShowTime(false);
+    await store.getState().updateSettings({ showTime: false });
     expect(publish).toHaveBeenCalledTimes(1);
 
     // Language does change every string on the tile.
-    await store.getState().setLang("en");
+    await store.getState().updateSettings({ lang: "en" });
     expect(publish).toHaveBeenCalledTimes(2);
 
     dispose();
-    await store.getState().setLang("ru");
+    await store.getState().updateSettings({ lang: "ru" });
     expect(publish).toHaveBeenCalledTimes(2);
   });
 

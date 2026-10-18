@@ -69,7 +69,7 @@ describe("FeedbackSheet", () => {
     );
     expect(teacher).toBeDefined();
     await act(async () => {
-      await harness.store.getState().setPersona("teacher");
+      await harness.store.getState().updateSettings({ persona: "teacher" });
       await harness.store.getState().setTeacher(teacher?.id ?? null);
     });
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => ({ success: true }) });

@@ -4,7 +4,6 @@
  * re-run those and hands the result to the plugin.
  */
 import { checkForUpdate } from "@/lib/version";
-import { teacherKey } from "@/lib/edupage";
 import { rigaClock, lessonReminders, teacherHasCoverDuty } from "@/lib/schedule";
 import { translate } from "@/ui/i18n";
 import type { Store } from "@/store";
@@ -92,30 +91,14 @@ export const notifyOnChanges = (
         .at(0);
   if (target === undefined) return;
 
-  const identity = store.getState().identity();
-  let isCover = false;
-  if (identity.persona === "teacher" && identity.teacherId !== null) {
-    const state = store.getState();
-    const day = state.resolvedTeacherDay(target, identity.teacherId);
-    if (day && day.lessons.some((l) => l.isCover || l.role === "cover")) {
-      isCover = true;
-    } else {
-      const subs = state.substitutions[target] ?? null;
-      if (subs) {
-        let key: string | null = null;
-        for (const tt of Object.values(state.timetables)) {
-          const t = tt.teachers.find((x) => x.id === identity.teacherId);
-          if (t) {
-            key = teacherKey(t.short || t.name);
-            break;
-          }
-        }
-        if (key && teacherHasCoverDuty(subs, key)) {
-          isCover = true;
-        }
-      }
-    }
-  }
+  const state = store.getState();
+  const subject = state.subject();
+  const isCover =
+    subject?.persona === "teacher" &&
+    (state
+      .resolvedTeacherDay(target, subject.teacher.id)
+      ?.lessons.some((l) => l.isCover || l.role === "cover") === true ||
+      teacherHasCoverDuty(state.substitutions[target] ?? null, subject.teacher.feedKey));
 
   const title = isCover
     ? translate(settings.lang, "notification.cover.title")
@@ -175,7 +158,7 @@ export const wireNotificationTaps = (store: Store): { dispose: () => void } => {
 
 /** One check per app open (mirrors `useUpdateCheck`), but this path can also fire a notification. */
 export const checkForAppUpdateNotification = async (store: Store): Promise<void> => {
-  const { settings, setLastNotifiedUpdateVersion } = store.getState();
+  const { settings, updateSettings } = store.getState();
   if (!settings.notifyAppUpdates) return;
 
   const result = await checkForUpdate(__APP_VERSION__, UPDATE_OWNER, UPDATE_REPO);
@@ -186,5 +169,5 @@ export const checkForAppUpdateNotification = async (store: Store): Promise<void>
     translate(settings.lang, "notification.update.title"),
     translate(settings.lang, "notification.update.body", { version: result.latestVersion }),
   );
-  await setLastNotifiedUpdateVersion(result.latestVersion);
+  await updateSettings({ lastNotifiedUpdateVersion: result.latestVersion });
 };
