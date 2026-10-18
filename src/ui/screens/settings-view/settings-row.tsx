@@ -28,9 +28,9 @@ export const Tile = ({ icon, tone = "default", size = "md" }: TileProps) => (
     className={cn(
       "flex shrink-0 items-center justify-center rounded-squircle",
       size === "md" ? "size-8" : "size-10",
-      tone === "default" && "bg-sunken text-strong",
-      tone === "danger" && "bg-danger text-white",
-      tone === "alert" && "bg-danger/12 text-danger",
+      tone === "default" && "text-strong",
+      tone === "danger" && "text-danger",
+      tone === "alert" && "text-danger/12",
     )}
   >
     <Icon name={icon} size={size === "md" ? 18 : 20} />
@@ -138,7 +138,7 @@ export const SettingsRow = (props: SettingsRowProps) => {
         disabled={props.disabled}
         aria-labelledby={value === undefined ? labelId : `${labelId} ${valueId}`}
         aria-describedby={descriptionId}
-        className={cn(ROW, props.disabled === true ? "cursor-default opacity-60" : PRESSABLE)}
+        className={cn(ROW, props.disabled === true ? "cursor-default opacity-60" : PRESSABLE, tone === "danger" ? "bg-danger/12" : "bg-transparent")}
       >
         {body}
         <span aria-hidden="true" className="flex shrink-0 items-center text-muted">
