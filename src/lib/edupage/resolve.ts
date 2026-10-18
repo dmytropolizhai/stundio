@@ -436,15 +436,8 @@ export const resolveDayAcross = (
   const consumed = new Set<Substitution>();
   const out: ResolvedLesson[] = [];
 
-  const hasMovedInFor = (entry: BaseEntry): boolean => {
-    const name = entry.lesson.subject?.name ?? entry.lesson.subject?.short;
-    return mine.some(
-      (s) =>
-        s.kind === "moved_in" &&
-        s.subject === (name ?? null) &&
-        (s.group === null || entry.groups.includes(s.group)),
-    );
-  };
+  // Vacated slots of same-day moves, placed on their new slot once the feed's own rows are in.
+  const vacatedMoves: ResolvedLesson[] = [];
 
   // Base lessons with their changes applied.
   for (const entry of base) {
@@ -491,14 +484,24 @@ export const resolveDayAcross = (
 
     if (movedTo !== undefined && options.relocateMoves === true) continue;
 
-    /* A same-day move ("Moved to period: 7 - 8") publishes the lesson twice: a vacated row on
-       its old slot and a `moved_in` row on the new one. Showing both lists one lesson twice, so
-       the vacated slot goes — but only when the new slot really is in the feed, or the lesson
-       would vanish from the day. */
-    const sameDayMove = applied.some(
+    /* A same-day move ("Moved to period: 7 - 8") vacates the old slot, so it never stays in the
+       day. The new slot normally arrives as its own `moved_in` row; when the feed omits it the
+       lesson is placed there from the vacated row, or it would vanish from the day. */
+    const sameDay = applied.find(
       (s) => s.kind === "moved_out" && s.movedToPeriod !== null && s.movedToDate === null,
     );
-    if (sameDayMove && hasMovedInFor(entry)) continue;
+    if (sameDay?.movedToPeriod != null) {
+      const period = sameDay.movedToPeriod;
+      vacatedMoves.push({
+        ...entry.lesson,
+        period: String(period),
+        ...timeOf(period, entry.lesson.span),
+        status: "moved",
+        changeNote,
+        original: { period: entry.lesson.period },
+      });
+      continue;
+    }
 
     out.push({
       ...entry.lesson,
@@ -536,6 +539,17 @@ export const resolveDayAcross = (
       original: s.movedFromPeriod !== null ? { period: String(s.movedFromPeriod) } : null,
       ...(lead === undefined ? {} : { building: lead.meta.building }),
     });
+  }
+
+  // The new slot normally arrives as its own `moved_in` row; EduPage words the two rows
+  // independently, so match on what the card shows rather than on the wording. Without it the
+  // lesson is placed from the vacated row — it must not vanish from the day.
+  for (const placed of vacatedMoves) {
+    const label = (l: ResolvedLesson): string => l.subject?.name ?? l.subject?.short ?? "";
+    const twin = out.some(
+      (l) => l.status === "moved" && label(l) === label(placed) && l.group === placed.group,
+    );
+    if (!twin) out.push(placed);
   }
 
   // Lessons moved here from another day whose feed may not be fetched (so no `moved_in` row).
