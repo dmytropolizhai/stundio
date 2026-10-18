@@ -24,7 +24,7 @@ describe("Teacher Day and Week Views", () => {
     const teacher = teachers[0]!;
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(teacher.id);
     });
 
@@ -41,7 +41,7 @@ describe("Teacher Day and Week Views", () => {
   it("HomeView shows empty state when teacher persona is selected but no teacher is picked", async () => {
     const harness = await bootHarness();
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(null);
     });
 
@@ -67,7 +67,7 @@ describe("Teacher Day and Week Views", () => {
     }
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(activeTeacher.id);
     });
 
@@ -88,7 +88,7 @@ describe("Teacher Day and Week Views", () => {
   it("LessonRow renders teacher cover badge and subtitle", async () => {
     const harness = await bootHarness();
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
     });
 
     const mockCoverLesson = {
@@ -153,7 +153,7 @@ describe("Teacher Day and Week Views", () => {
     }
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(activeTeacher.id);
     });
 
@@ -210,7 +210,7 @@ describe("Teacher Day and Week Views", () => {
   it("hides the subgroup row in ScheduleSection when persona is teacher", async () => {
     const harness = await bootHarness();
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
     });
 
     wrap(harness, <ScheduleSection buildings={[]} subgroups={["1", "2"]} />);

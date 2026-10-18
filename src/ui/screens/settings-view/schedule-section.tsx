@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useT } from "@/ui/i18n";
 import { usePersona } from "@/ui/persona";
 import { Section } from "./settings-section.tsx";
@@ -22,11 +22,11 @@ export const ScheduleSection = ({ buildings, subgroups }: ScheduleSectionProps) 
   const t = useT();
   const { profile } = usePersona();
   const settings = useAppStore((s) => s.settings);
-  const setBuilding = useAppStore((s) => s.setBuilding);
-  const setSubgroup = useAppStore((s) => s.setSubgroup);
-  const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
-  const setShowMovedOnTargetDay = useAppStore((s) => s.setShowMovedOnTargetDay);
-  const setShowTime = useAppStore((s) => s.setShowTime);
+  const setBuilding = useSettingSetter("building");
+  const setSubgroup = useSettingSetter("subgroup");
+  const setMergeConsecutiveLessons = useSettingSetter("mergeConsecutiveLessons");
+  const setShowMovedOnTargetDay = useSettingSetter("showMovedOnTargetDay");
+  const setShowTime = useSettingSetter("showTime");
   const setWeatherEnabled = useAppStore((s) => s.setWeatherEnabled);
   const [sheet, setSheet] = useState<"subgroup" | "building" | null>(null);
 

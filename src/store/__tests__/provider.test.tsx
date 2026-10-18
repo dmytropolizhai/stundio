@@ -7,7 +7,7 @@ import { StrictMode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { act, render, screen } from "@testing-library/react";
 import { AppStoreProvider } from "../provider.tsx";
-import { useAppStore } from "../context.ts";
+import { useAppStore, useSettingSetter } from "../context.ts";
 import { createAppStore } from "../useAppStore.ts";
 import { createMemoryCache } from "@/db";
 import { createSyncEngine } from "@/sync";
@@ -156,5 +156,38 @@ describe("AppStoreProvider when boot fails", () => {
       </AppStoreProvider>,
     );
     expect(await screen.findByText("loading")).toBeDefined();
+  });
+});
+
+describe("useSettingSetter", () => {
+  const ThemeToggle = ({ onRender }: { onRender: (setter: unknown) => void }) => {
+    const setTheme = useSettingSetter("theme");
+    const theme = useAppStore((s) => s.settings.theme);
+    onRender(setTheme);
+    return (
+      <button type="button" onClick={() => void setTheme("dark")}>
+        theme:{theme}
+      </button>
+    );
+  };
+
+  it("writes its one setting and stays the same function across renders", async () => {
+    const store = makeStore();
+    const setters: unknown[] = [];
+    render(
+      <AppStoreProvider boot={() => Promise.resolve({ store })}>
+        <ThemeToggle onRender={(setter) => setters.push(setter)} />
+      </AppStoreProvider>,
+    );
+
+    const button = await screen.findByText("theme:system");
+    act(() => {
+      button.click();
+    });
+
+    expect(await screen.findByText("theme:dark")).toBeDefined();
+    expect(store.getState().settings.theme).toBe("dark");
+    expect(setters.length).toBeGreaterThan(1);
+    expect(new Set(setters).size).toBe(1);
   });
 });

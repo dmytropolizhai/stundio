@@ -1,5 +1,5 @@
 import { Icon, cn } from "@/ds";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useSyncSummary } from "@/ui/hooks/useSyncSummary.ts";
 import { useT } from "@/ui/i18n";
 import { Section } from "./settings-section.tsx";
@@ -17,7 +17,7 @@ export const DataSection = () => {
   const { state, label } = useSyncSummary();
   const analyticsEnabled = useAppStore((s) => s.settings.analyticsEnabled);
   const refresh = useAppStore((s) => s.refresh);
-  const setAnalyticsEnabled = useAppStore((s) => s.setAnalyticsEnabled);
+  const setAnalyticsEnabled = useSettingSetter("analyticsEnabled");
   const syncing = state === "syncing";
 
   return (

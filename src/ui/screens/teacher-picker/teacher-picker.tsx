@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useTeachers, type TeacherOption } from "@/ui/hooks/useTeachers.ts";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { TeacherSearch } from "./teacher-search.tsx";
@@ -13,7 +13,7 @@ export const TeacherPicker = ({ onPicked }: TeacherPickerProps) => {
   const teachers = useTeachers();
   const selected = useAppStore((s) => s.settings.selectedTeacherId);
   const setTeacher = useAppStore((s) => s.setTeacher);
-  const setPersona = useAppStore((s) => s.setPersona);
+  const setPersona = useSettingSetter("persona");
   const refresh = useAppStore((s) => s.refresh);
 
   const [query, setQuery] = useState("");

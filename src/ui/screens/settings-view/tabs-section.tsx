@@ -1,4 +1,4 @@
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useT } from "@/ui/i18n";
 import { usePersona } from "@/ui/persona";
 import { Section } from "./settings-section.tsx";
@@ -12,8 +12,8 @@ export const TabsSection = () => {
   const t = useT();
   const { profile } = usePersona();
   const settings = useAppStore((s) => s.settings);
-  const setShowSubjectsTab = useAppStore((s) => s.setShowSubjectsTab);
-  const setShowTransitTab = useAppStore((s) => s.setShowTransitTab);
+  const setShowSubjectsTab = useSettingSetter("showSubjectsTab");
+  const setShowTransitTab = useSettingSetter("showTransitTab");
 
   const hasSubjects = profile.nav.personal.includes("subjects");
   const hasTransit = profile.nav.personal.includes("transit");

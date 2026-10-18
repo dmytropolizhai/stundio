@@ -6,7 +6,7 @@ import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
 import { DatePicker } from "@/ui/components/DatePicker.tsx";
 import { formatWeekRange, useLang, useT } from "@/ui/i18n";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useIsFormTeacher } from "@/ui/persona";
 import { ViewOptionsMenu } from "@/ui/components/ViewOptionsMenu.tsx";
 
@@ -36,10 +36,10 @@ export const WeekTopBar = ({
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const teacherView = useAppStore((s) => s.settings.teacherView);
-  const setTeacherView = useAppStore((s) => s.setTeacherView);
+  const setTeacherView = useSettingSetter("teacherView");
   const isFormTeacher = useIsFormTeacher();
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
-  const setMergeConsecutiveLessons = useAppStore((s) => s.setMergeConsecutiveLessons);
+  const setMergeConsecutiveLessons = useSettingSetter("mergeConsecutiveLessons");
 
   return (
     <>

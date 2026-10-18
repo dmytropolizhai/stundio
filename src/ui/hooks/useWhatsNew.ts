@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { entriesSince, entriesUpTo } from "@/lib/version";
 import { CHANGELOG, type ChangelogEntry } from "@/ui/i18n";
 
@@ -27,7 +27,7 @@ export const useWhatsNew = (): WhatsNew => {
   const ready = useAppStore((s) => s.ready);
   const selectedClassId = useAppStore((s) => s.settings.selectedClassId);
   const lastSeen = useAppStore((s) => s.settings.lastSeenChangelogVersion);
-  const setLastSeenChangelogVersion = useAppStore((s) => s.setLastSeenChangelogVersion);
+  const setLastSeenChangelogVersion = useSettingSetter("lastSeenChangelogVersion");
 
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState<ChangelogEntry[]>([]);

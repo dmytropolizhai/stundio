@@ -4,7 +4,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createFakeServer, type FakeServer } from "@/sync/__tests__/fakeServer.ts";
-import { createMemoryCache, type AppCache } from "@/db";
+import { DEFAULT_SETTINGS, createMemoryCache, type AppCache } from "@/db";
 import { createSyncEngine, nextSchoolDay, todayInRiga } from "@/sync";
 import { createAppStore } from "@/store";
 import type { AnalyticsClient } from "@/lib/analytics";
@@ -41,8 +41,8 @@ describe("hydrate", () => {
       { id: "rvt-main-building", label: "Campus", address: "Elsewhere" },
       { id: "custom", label: "Work", address: "Krišjāņa Valdemāra iela 1C, Rīga" },
     ];
-    await store.getState().setTransitDestinations(destinations);
-    await store.getState().setCommuteHome("My home");
+    await store.getState().updateSettings({ transitDestinations: destinations });
+    await store.getState().updateSettings({ commuteHome: "My home" });
     const put = vi.spyOn(cache, "putSettings");
     await store.getState().hydrate();
     await store.getState().hydrate();
@@ -258,8 +258,8 @@ describe("settings", () => {
   it("persists theme and language", async () => {
     const store = makeStore();
     await store.getState().hydrate();
-    await store.getState().setTheme("dark");
-    await store.getState().setLang("ru");
+    await store.getState().updateSettings({ theme: "dark" });
+    await store.getState().updateSettings({ lang: "ru" });
 
     expect(await cache.getSettings()).toMatchObject({ theme: "dark", lang: "ru" });
   });
@@ -271,8 +271,8 @@ describe("settings", () => {
     expect(store.getState().settings.appAccent).toBe("default");
     expect(store.getState().settings.subjectColorCodingEnabled).toBe(true);
 
-    await store.getState().setAppAccent("lilac");
-    await store.getState().setSubjectColorCodingEnabled(false);
+    await store.getState().updateSettings({ appAccent: "lilac" });
+    await store.getState().updateSettings({ subjectColorCodingEnabled: false });
 
     expect(store.getState().settings.appAccent).toBe("lilac");
     expect(store.getState().settings.subjectColorCodingEnabled).toBe(false);
@@ -286,10 +286,10 @@ describe("settings", () => {
     const store = makeStore();
     await store.getState().hydrate();
 
-    await store.getState().setAppAccent("mint");
-    await store.getState().setSubjectColorCodingEnabled(false);
+    await store.getState().updateSettings({ appAccent: "mint" });
+    await store.getState().updateSettings({ subjectColorCodingEnabled: false });
     await store.getState().setSubjectColorOverride("prg", "lime");
-    await store.getState().setReduceMotion(true);
+    await store.getState().updateSettings({ reduceMotion: true });
 
     await store.getState().resetCustomization();
 
@@ -304,8 +304,8 @@ describe("settings", () => {
     await store.getState().refresh({ date: DATE });
     const classId = classIdOf(store, "A1-2");
     await store.getState().setClass(classId);
-    await store.getState().setLang("en");
-    await store.getState().setTheme("dark");
+    await store.getState().updateSettings({ lang: "en" });
+    await store.getState().updateSettings({ theme: "dark" });
     await store.getState().setNote("Matemātika", "Piezīme");
 
     expect(store.getState().settings.selectedClassId).toBe(classId);
@@ -337,7 +337,7 @@ describe("settings", () => {
     expect(auto?.building).toBe("Galvenā ēka");
     expect(auto?.ttNum).toBe("1175");
 
-    await store.getState().setBuilding("TIC");
+    await store.getState().updateSettings({ building: "TIC" });
     const tic = store.getState().resolvedDay(DATE);
     expect(tic?.building).toBe("TIC");
     expect(tic?.ttNum).toBe("1174");
@@ -359,7 +359,7 @@ describe("analytics", () => {
     const analytics: AnalyticsClient = { track: vi.fn() };
     const store = makeStore(now, analytics);
     await store.getState().hydrate();
-    await store.getState().setAnalyticsEnabled(false);
+    await store.getState().updateSettings({ analyticsEnabled: false });
 
     store.getState().trackEvent("view_day");
     expect(analytics.track).not.toHaveBeenCalled();
@@ -418,7 +418,7 @@ describe("selectedClassShort", () => {
     await store.getState().setClass(classIdOf(store, "A1-2"));
     expect(store.getState().selectedClassShort()).toBe("A1-2");
 
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     expect(store.getState().selectedClassShort()).toBeNull();
   });
 });
@@ -462,7 +462,7 @@ describe("resolvedDay memoisation", () => {
     await store.getState().setClass(classIdOf(store, "DT3-2"));
 
     const merged = store.getState().resolvedDay(DATE);
-    await store.getState().setSubgroup("1");
+    await store.getState().updateSettings({ subgroup: "1" });
     const groupOne = store.getState().resolvedDay(DATE);
 
     expect(groupOne).not.toBe(merged);
@@ -470,12 +470,39 @@ describe("resolvedDay memoisation", () => {
   });
 });
 
-describe("setSubgroup", () => {
+describe("updateSettings", () => {
+  it("merges the patch into settings and persists it", async () => {
+    const store = makeStore();
+    await store.getState().hydrate();
+    await store.getState().updateSettings({ theme: "dark", showTime: true });
+
+    expect(store.getState().settings.theme).toBe("dark");
+    expect(store.getState().settings.showTime).toBe(true);
+    expect(store.getState().settings.lang).toBe(DEFAULT_SETTINGS.lang);
+
+    const restarted = makeStore();
+    await restarted.getState().hydrate();
+    expect(restarted.getState().settings.theme).toBe("dark");
+    expect(restarted.getState().settings.showTime).toBe(true);
+  });
+
+  it("refuses the settings that carry a rule, at compile time", () => {
+    const store = makeStore();
+    // @ts-expect-error — picking a class must go through `setClass`, which resets the subgroup.
+    void store.getState().updateSettings({ selectedClassId: "x" });
+    // @ts-expect-error — `setShareLang` also stops the card following the app language.
+    void store.getState().updateSettings({ shareLang: "en" });
+    // @ts-expect-error — `setWeatherEnabled` also fetches the forecast.
+    void store.getState().updateSettings({ weatherEnabled: true });
+  });
+});
+
+describe("updateSettings({ subgroup })", () => {
   it("persists and survives a restart", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });
     await store.getState().setClass(classIdOf(store, "DT3-2"));
-    await store.getState().setSubgroup("2");
+    await store.getState().updateSettings({ subgroup: "2" });
     expect(store.getState().settings.subgroup).toBe("2");
 
     const restarted = makeStore();
@@ -487,7 +514,7 @@ describe("setSubgroup", () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });
     await store.getState().setClass(classIdOf(store, "DT3-2"));
-    await store.getState().setSubgroup("1");
+    await store.getState().updateSettings({ subgroup: "1" });
 
     await store.getState().setClass(classIdOf(store, "A1-2"));
     expect(store.getState().settings.subgroup).toBeNull();
@@ -515,10 +542,10 @@ describe("persona and teacher mode", () => {
 
   it("persists persona and teacher settings", async () => {
     const store = makeStore();
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     await store.getState().setTeacher("-403");
-    await store.getState().setTeacherView("form-class");
-    await store.getState().setHighlightCoverLessons(false);
+    await store.getState().updateSettings({ teacherView: "form-class" });
+    await store.getState().updateSettings({ highlightCoverLessons: false });
 
     const s = store.getState().settings;
     expect(s.persona).toBe("teacher");
@@ -538,7 +565,7 @@ describe("persona and teacher mode", () => {
     const teacherId = teacherIdOf(store, "Alksne Santa");
     expect(teacherId).toBeTruthy();
 
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     await store.getState().setTeacher(teacherId);
 
     const day = store.getState().resolvedDay(DATE);
@@ -552,14 +579,14 @@ describe("persona and teacher mode", () => {
     await store.getState().refresh({ date: DATE });
     const teacherId = teacherIdOf(store, "Alksne Santa");
 
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     await store.getState().setTeacher(teacherId);
-    await store.getState().setTeacherView("own");
+    await store.getState().updateSettings({ teacherView: "own" });
 
     const ownDay = store.getState().resolvedDay(DATE);
     expect(ownDay?.teacherId).toBe(teacherId);
 
-    await store.getState().setTeacherView("form-class");
+    await store.getState().updateSettings({ teacherView: "form-class" });
     const formDay = store.getState().resolvedDay(DATE);
     expect(formDay?.teacherId).toBeUndefined();
     expect(formDay?.classId).toBe("-987");
@@ -572,7 +599,7 @@ describe("persona and teacher mode", () => {
     await store.getState().setClass(classIdOf(store, "A1-2"));
     expect(store.getState().resolvedDay(DATE)).not.toBeNull();
 
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     expect(store.getState().identity()).toEqual({
       persona: "teacher",
       teacherId: null,
@@ -588,14 +615,14 @@ describe("persona and teacher mode", () => {
     // leaked subgroup would be visible.
     const teacherId = teacherIdOf(store, "Abrama Ivita");
 
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     await store.getState().setTeacher(teacherId);
-    await store.getState().setTeacherView("form-class");
+    await store.getState().updateSettings({ teacherView: "form-class" });
     const before = store.getState().resolvedDay(DATE);
     expect(before?.classId).toBe("-963");
 
     // A subgroup left over from student mode — not the teacher's to apply.
-    await store.getState().setSubgroup("1");
+    await store.getState().updateSettings({ subgroup: "1" });
     const after = store.getState().resolvedDay(DATE);
     expect(after?.lessons).toHaveLength(before?.lessons.length ?? -1);
   });
@@ -606,7 +633,7 @@ describe("persona and teacher mode", () => {
     await store.getState().setClass(classIdOf(store, "A1-2"));
     expect(store.getState().identityLabel()).toBe("A1-2");
 
-    await store.getState().setPersona("teacher");
+    await store.getState().updateSettings({ persona: "teacher" });
     // The class is still stored, but it isn't this role's — nothing to name yet.
     expect(store.getState().identityLabel()).toBeNull();
 

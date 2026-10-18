@@ -10,7 +10,7 @@ import type { TransitDestination } from "@/db";
 import { selectTimetables } from "@/lib/edupage";
 import { dayProgress } from "@/lib/schedule";
 import { useNow } from "@/ui/hooks/useNow.ts";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useT } from "@/ui/i18n";
 import { LiveMapCard } from "./live-map-card.tsx";
 
@@ -38,7 +38,7 @@ type TransitTab = "destination" | "saved";
 export const TransitView = () => {
   const t = useT();
   const destinations = useAppStore((s) => s.settings.transitDestinations);
-  const setDestinations = useAppStore((s) => s.setTransitDestinations);
+  const setDestinations = useSettingSetter("transitDestinations");
   const mapEnabled = useAppStore((s) => s.settings.transitMapEnabled);
   const home = useAppStore((s) => s.settings.commuteHome);
   const pinnedBuilding = useAppStore((s) => s.settings.building);

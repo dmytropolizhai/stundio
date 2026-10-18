@@ -17,7 +17,7 @@ describe("Teacher Changes View (T7)", () => {
     const teacher = teachers[0]!;
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(teacher.id);
     });
 
@@ -32,7 +32,7 @@ describe("Teacher Changes View (T7)", () => {
     const teachers = listTeachers(Object.values(harness.store.getState().timetables));
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(teachers[0]!.id);
     });
 
@@ -84,7 +84,7 @@ describe("Teacher Changes View (T7)", () => {
     const teachers = listTeachers(Object.values(harness.store.getState().timetables));
 
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(teachers[0]!.id);
     });
 
@@ -137,7 +137,7 @@ describe("Teacher Changes View (T7)", () => {
 
     await clickAndSettle(() => {
       void harness.store.getState().setClass(studentClassId);
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(teachers[0]!.id);
     });
 
@@ -154,7 +154,7 @@ describe("Teacher Changes View (T7)", () => {
   it("shows empty state when teacher has no identity selected", async () => {
     const harness = await bootHarness();
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
       void harness.store.getState().setTeacher(null);
     });
 

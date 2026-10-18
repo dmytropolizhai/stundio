@@ -1,6 +1,6 @@
 /** Home address editing stays local until blur; only committed values reach the cache. */
 import { useState } from "react";
-import { useAppStore } from "@/store";
+import { useAppStore, useSettingSetter } from "@/store";
 import { useT } from "@/ui/i18n";
 import { Row, Section } from "./settings-section.tsx";
 
@@ -8,7 +8,7 @@ export const CommuteSection = () => {
   const t = useT();
   const home = useAppStore((s) => s.settings.commuteHome);
   const [draft, setDraft] = useState<string | null>(null);
-  const setHome = useAppStore((s) => s.setCommuteHome);
+  const setHome = useSettingSetter("commuteHome");
 
   return (
     <Section title={t("settings.commute")}>

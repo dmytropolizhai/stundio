@@ -130,11 +130,11 @@ describe("Transit", () => {
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "New campus" } });
     expect(params().get("destination")).toContain("New campus, Test School");
     await clickAndSettle(() => {
-      void harness.store.getState().setBuilding("TIC");
+      void harness.store.getState().updateSettings({ building: "TIC" });
     });
     expect(params().get("destination")).toContain("Dārzciema iela 70");
     await clickAndSettle(() => {
-      void harness.store.getState().setBuilding("New campus");
+      void harness.store.getState().updateSettings({ building: "New campus" });
     });
     expect(params().get("destination")).toContain("New campus, Test School");
   });
@@ -241,7 +241,7 @@ describe("Commute settings", () => {
     wrap(harness, <CommuteSection />);
     const input = screen.getByRole<HTMLInputElement>("textbox", { name: "Home address" });
     await clickAndSettle(() => {
-      void harness.store.getState().setCommuteHome("Updated");
+      void harness.store.getState().updateSettings({ commuteHome: "Updated" });
     });
     expect(input.value).toBe("Updated");
     fireEvent.change(input, { target: { value: "" } });
@@ -272,7 +272,7 @@ describe("Commute settings", () => {
     const harness = await setup();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
     });
     expect(screen.queryByRole("button", { name: /Rīgas satiksme map/ })).toBeNull();
   });
@@ -282,7 +282,7 @@ describe("Commute settings", () => {
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
     expect(screen.getByRole("textbox", { name: "Home address" })).toBeDefined();
     await clickAndSettle(() => {
-      void harness.store.getState().setPersona("teacher");
+      void harness.store.getState().updateSettings({ persona: "teacher" });
     });
     expect(screen.queryByRole("textbox", { name: "Home address" })).toBeNull();
   });
