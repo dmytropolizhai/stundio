@@ -34,13 +34,11 @@ export const ProfileCard = ({ persona, label, facts, onChangeIdentity }: Profile
         aria-hidden="true"
         className="flex size-14 shrink-0 items-center justify-center rounded-squircle bg-brand text-on-brand"
       >
-        <Icon name={profile.icon} size={26} />
+        {label ?? t(profile.noneSelected)}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="u-eyebrow">{t(profile.roleLabel)}</span>
-        <span className="truncate font-display text-title font-extrabold text-strong">
-          {label ?? t(profile.noneSelected)}
-        </span>
+        <span className="truncate font-display text-title font-extrabold text-strong"></span>
         {facts.length > 0 && (
           <span className="flex flex-wrap gap-1.5">
             {facts.map((fact) => (
