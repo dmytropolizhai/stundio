@@ -187,7 +187,13 @@ What the app talks to:
 * **Plausible** — anonymous usage counts (which screens get opened), with no cookies and no persistent visitor id. It's **opt-out in Settings**, and turning it off stops the pings entirely.
 * **Stundio's push Function** — only if you turn on notifications in the web app. It stores the browser-issued push subscription needed to deliver them, and nothing else; turning notifications off removes it.
 
+* **Ko-fi** — only if you choose to donate. The app's "Support Stundio" row opens [stundio.pages.dev/donate](https://stundio.pages.dev/donate) in your browser, and nothing is sent to Ko-fi until you tap through.
+
 None of this involves personal data. Stundio never asks for your name, your account, or anything that identifies you.
+
+## Support
+
+Stundio is free, ad-free and open source. If it saves you time, you can buy the author a coffee at **[stundio.pages.dev/donate](https://stundio.pages.dev/donate)** (Ko-fi), also reachable from **Settings → About → Support Stundio**. Starring the repo, reporting bugs and telling your classmates help just as much.
 
 ## License
 

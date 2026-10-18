@@ -465,6 +465,8 @@ export const ua: Dict = {
   "settings.reportIssueHint": "Опишіть проблему — автор отримає її разом із версією застосунку.",
   "settings.suggestFeatureRow": "Запропонувати ідею",
   "settings.suggestFeatureHint": "Що додати або змінити в застосунку.",
+  "settings.donateRow": "Підтримати Stundio",
+  "settings.donateHint": "Пригости кавою, щоб застосунок лишався безкоштовним.",
   "settings.notifyPermissionDeniedTitle": "Сповіщення заборонені",
   "settings.notifyExactAlarmTitle": "Нагадування можуть запізнюватися",
   "settings.notificationsWebTitle": "Сповіщення в застосунку Android",

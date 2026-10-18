@@ -465,6 +465,8 @@ export const ru: Dict = {
   "settings.reportIssueHint": "Опишите проблему — автор получит её вместе с версией приложения.",
   "settings.suggestFeatureRow": "Предложить идею",
   "settings.suggestFeatureHint": "Что добавить или поменять в приложении.",
+  "settings.donateRow": "Поддержать Stundio",
+  "settings.donateHint": "Угости кофе, чтобы приложение оставалось бесплатным.",
   "settings.notifyPermissionDeniedTitle": "Уведомления запрещены",
   "settings.notifyExactAlarmTitle": "Напоминания могут опаздывать",
   "settings.notificationsWebTitle": "Уведомления в приложении Android",

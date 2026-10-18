@@ -467,6 +467,8 @@ export const lv = {
   "settings.reportIssueHint": "Apraksti problēmu — autors to saņems kopā ar lietotnes versiju.",
   "settings.suggestFeatureRow": "Ieteikt ideju",
   "settings.suggestFeatureHint": "Ko pievienot vai mainīt lietotnē.",
+  "settings.donateRow": "Atbalstīt Stundio",
+  "settings.donateHint": "Uzsauc kafiju, lai lietotne paliek bezmaksas.",
   "settings.notifyPermissionDeniedTitle": "Paziņojumi bloķēti",
   "settings.notifyExactAlarmTitle": "Atgādinājumi var kavēties",
   "settings.notificationsWebTitle": "Paziņojumi Android lietotnē",

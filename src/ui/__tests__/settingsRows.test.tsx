@@ -271,6 +271,26 @@ describe("Settings rows", () => {
     ).toBeDefined();
   });
 
+  it("links the donate row to the web page in the app's language, outside the app", async () => {
+    const harness = await bootHarness();
+    renderSettings(harness);
+
+    const link = screen.getByRole("link", { name: "Atbalstīt Stundio" });
+    expect(link.getAttribute("href")).toBe("https://stundio.pages.dev/donate?lang=lv");
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noreferrer");
+    expect(document.getElementById(link.getAttribute("aria-describedby") ?? "")?.textContent).toBe(
+      "Uzsauc kafiju, lai lietotne paliek bezmaksas.",
+    );
+
+    await clickAndSettle(() => {
+      void harness.store.getState().setLang("en");
+    });
+    expect(screen.getByRole("link", { name: "Support Stundio" }).getAttribute("href")).toBe(
+      "https://stundio.pages.dev/donate?lang=en",
+    );
+  });
+
   it("offers a static install row on iOS when no install flow is wired", async () => {
     vi.stubGlobal("navigator", {
       userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
