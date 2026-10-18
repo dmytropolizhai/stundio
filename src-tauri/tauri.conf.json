@@ -23,7 +23,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src ipc: http://ipc.localhost https://api.web3forms.com https://plausible.io https://api.github.com; frame-src https://saraksti.lv; object-src 'none'; base-uri 'self'; form-action 'none'"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src ipc: http://ipc.localhost https://api.web3forms.com https://plausible.io https://api.github.com https://api.open-meteo.com; frame-src https://saraksti.lv; object-src 'none'; base-uri 'self'; form-action 'none'"
     }
   },
   "bundle": {

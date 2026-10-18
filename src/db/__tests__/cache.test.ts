@@ -54,6 +54,7 @@ const freshIdbCache = (): AppCache => {
       d.createObjectStore("substitutions");
       d.createObjectStore("settings");
       d.createObjectStore("notes");
+      d.createObjectStore("weather");
     },
   });
   return createIdbCache(db);
@@ -140,6 +141,26 @@ describe.each(implementations)("AppCache — %s", (_name, make) => {
   it("prunes nothing when everything is recent", async () => {
     await cache.putSubstitutions(substitutions("2026-09-09"));
     expect(await cache.pruneSubstitutions("2026-08-26")).toBe(0);
+  });
+
+  it("keeps the last forecast, and drops it on a full clear", async () => {
+    expect(await cache.getWeather()).toBeNull();
+    const forecast = {
+      fetchedAt: NOW,
+      current: {
+        time: "2026-09-09T08:00",
+        temperature: 14,
+        apparentTemperature: 13,
+        code: 2,
+        isDay: true,
+      },
+      hourly: [],
+      daily: [],
+    };
+    await cache.putWeather(forecast);
+    expect(await cache.getWeather()).toEqual(forecast);
+    await cache.clear();
+    expect(await cache.getWeather()).toBeNull();
   });
 
   it("clears every store", async () => {

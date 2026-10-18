@@ -35,6 +35,7 @@ import {
 import type { SyncEngine, SyncOutcome, SyncStatus } from "@/sync";
 import { noopAnalytics, type AnalyticsClient } from "@/lib/analytics";
 import { matchPersona, resolveIdentity, type Identity } from "@/lib/persona";
+import type { FetchForecast, WeatherForecast } from "@/lib/weather";
 
 /**
  * Where a tapped notification wants the app to go. Set by the notification-tap listener
@@ -53,6 +54,8 @@ export type AppState = {
   substitutions: Record<ISODate, DaySubstitutions>;
   /** Keyed by subject label — see `useSubjects.ts`'s `subjectKey` (`name || short`). */
   notes: Record<string, SubjectNote>;
+  /** The last Riga forecast, cached like the timetable; `null` until one has ever arrived. */
+  weather: WeatherForecast | null;
   syncStatus: SyncStatus;
   lastSyncAt: ISODateTime | null;
   lastError: string | null;
@@ -161,7 +164,19 @@ export type AppState = {
   identityLabel: () => string | null;
 };
 
-export type StoreDeps = { cache: AppCache; engine: SyncEngine; analytics?: AnalyticsClient };
+export type StoreDeps = {
+  cache: AppCache;
+  engine: SyncEngine;
+  analytics?: AnalyticsClient;
+  /** Absent in tests and anywhere weather is not wanted: nothing is fetched then. */
+  weather?: FetchForecast;
+  now?: () => Date;
+};
+
+/** A forecast younger than this is not re-fetched by a routine refresh (open, resume). */
+export const WEATHER_TTL_MS = 30 * 60_000;
+/** Even a pull-to-refresh leaves a forecast this fresh alone — the sky did not change. */
+export const WEATHER_FORCE_TTL_MS = 5 * 60_000;
 
 /**
  * `resolvedDay` runs the whole merge, so it is memoised on everything that can change its
@@ -183,7 +198,13 @@ const createResolveMemo = () => {
   };
 };
 
-export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: StoreDeps) => {
+export const createAppStore = ({
+  cache,
+  engine,
+  analytics = noopAnalytics,
+  weather: fetchWeather,
+  now = () => new Date(),
+}: StoreDeps) => {
   const memo = createResolveMemo();
 
   return createStore<AppState>()((set, get) => {
@@ -194,9 +215,28 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       await cache.putSettings(settings);
     };
 
+    /**
+     * Refreshes the forecast when it is old enough to be worth a request. Never throws and
+     * never touches `syncStatus`: weather is a garnish, its failure is not the timetable's.
+     */
+    const refreshWeather = async (force: boolean): Promise<void> => {
+      if (fetchWeather === undefined) return;
+      const current = get().weather;
+      const age = current === null ? Infinity : now().getTime() - Date.parse(current.fetchedAt);
+      if (age < (force ? WEATHER_FORCE_TTL_MS : WEATHER_TTL_MS)) return;
+      const next = await fetchWeather().catch(() => null);
+      if (next === null) return;
+      set({ weather: next });
+      await cache.putWeather(next).catch(() => {});
+    };
+
     /** Pulls everything the cache currently holds into state. */
     const readCache = async (): Promise<void> => {
-      const [settings, list] = await Promise.all([cache.getSettings(), cache.getTimetableList()]);
+      const [settings, list, weather] = await Promise.all([
+        cache.getSettings(),
+        cache.getTimetableList(),
+        cache.getWeather().catch(() => null),
+      ]);
       const metas =
         list === null ? [] : list.entries.map((e) => toTimetableMeta(e, list.fetchedAt));
 
@@ -224,7 +264,16 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       for (const note of notesList) if (note !== null) notes[note.subject] = note;
 
       memo.clear();
-      set({ settings, metas, timetables, substitutions, notes, ready: true });
+      set({
+        settings,
+        metas,
+        timetables,
+        substitutions,
+        notes,
+        // A forecast fetched since the read began is newer than the cached one; keep it.
+        weather: get().weather ?? weather,
+        ready: true,
+      });
     };
 
     return {
@@ -234,6 +283,7 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       timetables: {},
       substitutions: {},
       notes: {},
+      weather: null,
       syncStatus: "idle",
       lastSyncAt: null,
       lastError: null,
@@ -245,13 +295,14 @@ export const createAppStore = ({ cache, engine, analytics = noopAnalytics }: Sto
       refresh: async (options = {}) => {
         if (options.force === true) get().trackEvent("manual_refresh");
         set({ syncStatus: "syncing" });
+        const weather = refreshWeather(options.force === true);
         const outcome = await engine.sync({
           ...(options.date === undefined ? {} : { date: options.date }),
           ...(options.scope === undefined ? {} : { scope: options.scope }),
           ...(options.force === undefined ? {} : { force: options.force }),
           building: get().settings.building,
         });
-        await readCache();
+        await Promise.all([readCache(), weather]);
         set({
           syncStatus: outcome.status,
           // Keep the previous timestamp on a failed sync: "updated 2h ago" beats "never".

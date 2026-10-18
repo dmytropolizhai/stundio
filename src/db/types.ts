@@ -6,6 +6,7 @@
 import type { Building, DaySubstitutions, ISODate, ISODateTime, Timetable } from "@/lib/edupage";
 import type { RawTimetableListEntry } from "@/lib/edupage";
 import type { Persona, TeacherView } from "@/lib/persona";
+import type { WeatherForecast } from "@/lib/weather";
 
 export type CachedTimetableList = {
   entries: RawTimetableListEntry[];
@@ -205,6 +206,10 @@ export type AppCache = {
   putNote: (note: SubjectNote) => Promise<void>;
   deleteNote: (subject: string) => Promise<void>;
   listNoteSubjects: () => Promise<string[]>;
+
+  /** The last Riga forecast that arrived; `null` before the first one. */
+  getWeather: () => Promise<WeatherForecast | null>;
+  putWeather: (forecast: WeatherForecast) => Promise<void>;
 
   /** Clears user-specific data (settings and notes), retaining downloaded timetables and substitutions. */
   clearUserData: () => Promise<void>;

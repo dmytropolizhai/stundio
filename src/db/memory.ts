@@ -10,6 +10,7 @@ import {
   type SubjectNote,
 } from "./types.ts";
 import type { DaySubstitutions, ISODate, Timetable } from "@/lib/edupage";
+import type { WeatherForecast } from "@/lib/weather";
 
 export const createMemoryCache = (): AppCache => {
   let list: CachedTimetableList | null = null;
@@ -17,6 +18,7 @@ export const createMemoryCache = (): AppCache => {
   const timetables = new Map<string, Timetable>();
   const substitutions = new Map<ISODate, DaySubstitutions>();
   const notes = new Map<string, SubjectNote>();
+  let weather: WeatherForecast | null = null;
 
   return {
     getTimetableList: () => Promise.resolve(list),
@@ -66,6 +68,12 @@ export const createMemoryCache = (): AppCache => {
     },
     listNoteSubjects: () => Promise.resolve([...notes.keys()]),
 
+    getWeather: () => Promise.resolve(weather),
+    putWeather: (forecast) => {
+      weather = forecast;
+      return Promise.resolve();
+    },
+
     clearUserData: () => {
       settings = { ...DEFAULT_SETTINGS };
       notes.clear();
@@ -78,6 +86,7 @@ export const createMemoryCache = (): AppCache => {
       timetables.clear();
       substitutions.clear();
       notes.clear();
+      weather = null;
       return Promise.resolve();
     },
   };

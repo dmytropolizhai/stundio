@@ -1,16 +1,29 @@
 /**
- * The Home tab — the app's landing screen. Top to bottom: the date header, app-level prompts,
- * then the banner that answers "what's on now / next" (or tomorrow's preview once the day is
- * done), and straight under it the day's schedule. Notices that qualify the banner (stale,
- * offline) sit above it; footnotes about the day (building, "lessons are over", school notes)
- * sit below the schedule so nothing pushes the lesson list away from the banner.
+ * The Home tab — the app's landing screen, in two blocks.
+ *
+ * Top: about *today*, whatever day is browsed below — a greeting, the day in a sentence, Riga's
+ * weather with its one piece of advice, and the glance that answers "what's on now / next" (or
+ * tomorrow's start once today is done). Notices that qualify everything (offline) and app-level
+ * prompts sit above it.
+ *
+ * Bottom: the day browser — which day, the arrows, calendar and swipe paging that change it, the
+ * day's outline and its full lesson list, then its footnotes (building, "lessons are over",
+ * school notes). Paging moves only this block; the brief above stays on today.
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
 import { stepSchoolDay } from "@/sync";
-import { dayGlance, dayProgress, daySummary, tomorrowPreview } from "@/lib/schedule";
+import {
+  dayBrief,
+  dayGlance,
+  dayProgress,
+  daySummary,
+  minutesOf,
+  tomorrowPreview,
+} from "@/lib/schedule";
+import { weatherOutlook } from "@/lib/weather";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button } from "@/ds";
 import { buildingNotice } from "@/ui/theme";
@@ -23,7 +36,9 @@ import { InAppUpdatePrompt } from "@/ui/components/InAppUpdatePrompt.tsx";
 import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { useNow } from "@/ui/hooks/useNow.ts";
 import { useT } from "@/ui/i18n";
-import { DayTopBar } from "./day-top-bar.tsx";
+import { HomeTopBar } from "./home-top-bar.tsx";
+import { HomeBrief } from "./home-brief.tsx";
+import { DayHeader } from "./day-header.tsx";
 import { DayOfflineNotice, DayStaleNotice, DayStatus } from "./day-status.tsx";
 import { DayGlance } from "./day-glance.tsx";
 import { glanceWalk } from "./glance-walk.ts";
@@ -68,19 +83,37 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
   const refresh = useAppStore((s) => s.refresh);
 
   const day = useAppStore((s) => s.resolvedDay(date));
-
   const progress = useMemo(() => dayProgress(day, now), [day, now]);
   const summary = useMemo(() => daySummary(day), [day]);
-  const glance = useMemo(() => dayGlance(day, now), [day, now]);
-  const nextDate = stepSchoolDay(date, 1);
-  const nextDay = useAppStore((s) => s.resolvedDay(nextDate));
-  const tomorrow = useMemo(() => tomorrowPreview(nextDay), [nextDay]);
   const changedLessonsCount = useMemo(
     () => day?.lessons.filter((l) => l.status !== "normal").length ?? 0,
     [day],
   );
   const buildings = useMemo(() => (day === null ? null : buildingNotice(day)), [day]);
   const isToday = date === now.date;
+
+  // The brief is about today, not about the day being browsed.
+  const today = useAppStore((s) => s.resolvedDay(now.date));
+  const glance = useMemo(() => dayGlance(today, now), [today, now]);
+  const brief = useMemo(() => dayBrief(today, now), [today, now]);
+  const todayChanges = useMemo(
+    () => today?.lessons.filter((l) => l.status !== "normal").length ?? 0,
+    [today],
+  );
+  const nextDate = stepSchoolDay(now.date, 1);
+  const nextDay = useAppStore((s) => s.resolvedDay(nextDate));
+  const tomorrow = useMemo(() => tomorrowPreview(nextDay), [nextDay]);
+  const forecast = useAppStore((s) => s.weather);
+  const weather = useMemo(() => {
+    const outline = daySummary(today);
+    const start = outline === null ? null : minutesOf(outline.start);
+    const end = outline === null ? null : minutesOf(outline.end);
+    return weatherOutlook(forecast, now, start === null || end === null ? null : { start, end });
+  }, [forecast, today, now]);
+  /* A walk the glance already announces is not repeated under the schedule — but only on the
+     day the glance is about. */
+  const walkAnnounced =
+    isToday && glance !== null && glance.kind !== "finished" && glanceWalk(glance) !== null;
 
   const reduceMotion = useReducedMotion() ?? false;
   const touchStart = useRef<{ x: number; y: number; axis: "x" | "y" | null } | null>(null);
@@ -161,7 +194,41 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
     });
   };
 
-  const body = (): ReactNode => {
+  const refreshDay = () =>
+    void refresh({
+      date,
+      scope: "day",
+      force: true,
+    });
+
+  const pageTo = (dir: 1 | -1) => {
+    enterDir.current = dir;
+    onDateChange(stepSchoolDay(date, dir));
+  };
+
+  const top = (): ReactNode => {
+    if (!ready || !hasIdentity) return null;
+    return (
+      <HomeBrief brief={brief} weather={weather} changedCount={todayChanges}>
+        {glance !== null && glance.kind !== "finished" && today !== null && (
+          <DayGlance day={today} glance={glance} onOpenLesson={setOpen} />
+        )}
+
+        {glance?.kind === "finished" && tomorrow !== null && (
+          <DayTomorrow
+            date={nextDate}
+            preview={tomorrow}
+            onOpen={() => {
+              enterDir.current = 1;
+              onDateChange(nextDate);
+            }}
+          />
+        )}
+      </HomeBrief>
+    );
+  };
+
+  const schedule = (): ReactNode => {
     if (!ready) {
       return <DaySkeleton />;
     }
@@ -187,52 +254,26 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
     return (
       <>
         <DayStaleNotice stale={day.stale} />
-        <DayOfflineNotice syncStatus={syncStatus} />
 
-        {glance !== null && glance.kind !== "finished" && (
-          <DayGlance day={day} glance={glance} onOpenLesson={setOpen} />
-        )}
+        {summary !== null && <DaySummary summary={summary} />}
 
-        {glance?.kind === "finished" && tomorrow !== null && (
-          <DayTomorrow
-            date={nextDate}
-            preview={tomorrow}
-            onOpen={() => {
-              enterDir.current = 1;
-              onDateChange(nextDate);
-            }}
-          />
-        )}
-
-        <section aria-labelledby="home-schedule" className="mt-7" data-testid="home-schedule">
-          <h2 id="home-schedule" className="u-eyebrow">
-            {t("home.schedule")}
-          </h2>
-
-          {summary !== null && <DaySummary summary={summary} />}
-
-          <DayLessonList
-            day={day}
-            date={date}
-            now={now}
-            progress={progress}
-            showTime={showTime}
-            subjectColorOverrides={subjectColorOverrides}
-            colorCodingEnabled={colorCodingEnabled}
-            filled={filled}
-            x={x}
-            opacity={opacity}
-            dragging={dragging}
-            onOpenLesson={setOpen}
-          />
-        </section>
+        <DayLessonList
+          day={day}
+          date={date}
+          now={now}
+          progress={progress}
+          showTime={showTime}
+          subjectColorOverrides={subjectColorOverrides}
+          colorCodingEnabled={colorCodingEnabled}
+          filled={filled}
+          x={x}
+          opacity={opacity}
+          dragging={dragging}
+          onOpenLesson={setOpen}
+        />
 
         <DayStatus
-          buildings={
-            glance !== null && glance.kind !== "finished" && glanceWalk(glance) !== null
-              ? null
-              : buildings
-          }
+          buildings={walkAnnounced ? null : buildings}
           isToday={isToday}
           finished={progress.finished}
         />
@@ -254,62 +295,57 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
         refreshing={syncStatus === "syncing"}
         label={t("sync.pull")}
         releaseLabel={t("sync.release")}
-        onRefresh={() => {
-          void refresh({
-            date,
-            scope: "day",
-            force: true,
-          });
-        }}
+        onRefresh={refreshDay}
       >
-        <div
-          className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus-ring)"
-          role="group"
-          tabIndex={0}
-          aria-label={t("day.pageHint")}
-          style={{ touchAction: "pan-y" }}
-          onTouchStart={onSwipeStart}
-          onTouchMove={onSwipeMove}
-          onTouchEnd={onSwipeEnd}
-          onTouchCancel={onSwipeEnd}
-          onKeyDown={(e) => {
-            /* Arrow keys inside a child control (date picker, tabs, inputs) belong to that control. */
-            if (e.target !== e.currentTarget) return;
-            if (e.key === "ArrowRight") {
-              enterDir.current = 1;
-              onDateChange(stepSchoolDay(date, 1));
-            } else if (e.key === "ArrowLeft") {
-              enterDir.current = -1;
-              onDateChange(stepSchoolDay(date, -1));
-            }
-          }}
-        >
-          <DayTopBar
-            date={date}
-            today={now.date}
-            isToday={isToday}
-            changedLessonsCount={changedLessonsCount}
-            onOpenChanges={onOpenChanges}
-            onDateChange={onDateChange}
-            onPickClass={onPickClass}
-            onRefresh={() =>
-              void refresh({
-                date,
-                scope: "day",
-                force: true,
-              })
-            }
-            onNavigate={(dir) => {
-              enterDir.current = dir;
-            }}
-          />
+        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
+          <HomeTopBar nowMinutes={now.minutes} onPickClass={onPickClass} onRefresh={refreshDay} />
 
           <InAppUpdatePrompt />
           <AndroidDownloadBanner />
           <FeedbackPrompt />
           <NotificationBlockedNotice />
 
-          {body()}
+          {ready && hasIdentity && <DayOfflineNotice syncStatus={syncStatus} />}
+
+          {top()}
+
+          <section aria-labelledby="home-schedule" className="mt-7" data-testid="home-schedule">
+            <h2 id="home-schedule" className="u-eyebrow">
+              {t("home.schedule")}
+            </h2>
+
+            <div
+              className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-ring)"
+              role="group"
+              tabIndex={0}
+              aria-label={t("day.pageHint")}
+              style={{ touchAction: "pan-y" }}
+              onTouchStart={onSwipeStart}
+              onTouchMove={onSwipeMove}
+              onTouchEnd={onSwipeEnd}
+              onTouchCancel={onSwipeEnd}
+              onKeyDown={(e) => {
+                /* Arrow keys inside a child control (date picker, buttons) belong to that control. */
+                if (e.target !== e.currentTarget) return;
+                if (e.key === "ArrowRight") pageTo(1);
+                else if (e.key === "ArrowLeft") pageTo(-1);
+              }}
+            >
+              <DayHeader
+                date={date}
+                today={now.date}
+                isToday={isToday}
+                changedLessonsCount={changedLessonsCount}
+                onOpenChanges={onOpenChanges}
+                onDateChange={onDateChange}
+                onNavigate={(dir) => {
+                  enterDir.current = dir;
+                }}
+              />
+
+              {schedule()}
+            </div>
+          </section>
         </div>
       </PullToRefresh>
 
