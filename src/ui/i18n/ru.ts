@@ -115,6 +115,7 @@ export const ru: Dict = {
   "home.brief.changes": "Изменения: {count}",
   "home.weather.label": "Погода в Риге: {temperature}°, {condition}",
   "home.weather.range": "Макс. {max}°, мин. {min}°",
+  "home.weather.forDay": "Прогноз: {day}",
   "home.weather.clear": "ясно",
   "home.weather.partly-cloudy": "переменная облачность",
   "home.weather.cloudy": "облачно",

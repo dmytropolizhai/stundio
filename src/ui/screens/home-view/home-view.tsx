@@ -2,7 +2,8 @@
  * The Home tab — the app's landing screen, in two blocks.
  *
  * Top: about *today*, whatever day is browsed below — a greeting, the day in a sentence, Riga's
- * weather with its one piece of advice, and the glance that answers "what's on now / next" (or
+ * weather with its one piece of advice (the one exception: it follows a later browsed day, and
+ * names that day), and the glance that answers "what's on now / next" (or
  * tomorrow's start once today is done). Notices that qualify everything (offline) and app-level
  * prompts sit above it.
  *
@@ -23,7 +24,7 @@ import {
   minutesOf,
   tomorrowPreview,
 } from "@/lib/schedule";
-import { weatherOutlook } from "@/lib/weather";
+import { dayWeatherOutlook, weatherOutlook } from "@/lib/weather";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button } from "@/ds";
 import { buildingNotice } from "@/ui/theme";
@@ -104,12 +105,20 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
   const nextDay = useAppStore((s) => s.resolvedDay(nextDate));
   const tomorrow = useMemo(() => tomorrowPreview(nextDay), [nextDay]);
   const forecast = useAppStore((s) => (s.settings.weatherEnabled ? s.weather : null));
+  /* The weather follows the browsed day when the forecast reaches it, and says which day it is
+     about; a past day, or one beyond the forecast, keeps today's. */
   const weather = useMemo(() => {
-    const outline = daySummary(today);
-    const start = outline === null ? null : minutesOf(outline.start);
-    const end = outline === null ? null : minutesOf(outline.end);
-    return weatherOutlook(forecast, now, start === null || end === null ? null : { start, end });
-  }, [forecast, today, now]);
+    const window = (d: typeof day) => {
+      const outline = daySummary(d);
+      const start = outline === null ? null : minutesOf(outline.start);
+      const end = outline === null ? null : minutesOf(outline.end);
+      return start === null || end === null ? null : { start, end };
+    };
+    const ahead = date > now.date ? dayWeatherOutlook(forecast, date, window(day)) : null;
+    if (ahead !== null) return { outlook: ahead, date };
+    const current = weatherOutlook(forecast, now, window(today));
+    return current === null ? null : { outlook: current, date: null };
+  }, [forecast, today, day, date, now]);
   /* A walk the glance already announces is not repeated under the schedule — but only on the
      day the glance is about. */
   const walkAnnounced =
@@ -209,7 +218,13 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
   const top = (): ReactNode => {
     if (!ready || !hasIdentity) return null;
     return (
-      <HomeBrief brief={brief} weather={weather} changedCount={todayChanges}>
+      <HomeBrief
+        brief={brief}
+        weather={weather?.outlook ?? null}
+        weatherDate={weather?.date ?? null}
+        today={now.date}
+        changedCount={todayChanges}
+      >
         {glance !== null && glance.kind !== "finished" && today !== null && (
           <DayGlance day={today} glance={glance} onOpenLesson={setOpen} />
         )}
