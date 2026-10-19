@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api-edupage/
+Disallow: /api-push/
+
+Sitemap: https://stundio.pages.dev/sitemap.xml

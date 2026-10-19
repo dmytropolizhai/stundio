@@ -36,10 +36,60 @@
     <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152.png" />
 
-    <title>Stundio</title>
+    <!--
+      Search & link previews. The app shell renders nothing until JS boots, so the
+      title, description and the static text inside #root are what a crawler that
+      skips (or times out on) the bundle indexes. Keep "Stundio" + "RVT" in them:
+      those are the queries people type.
+    -->
+    <title>Stundio — RVT stundu saraksts un izmaiņas</title>
+    <meta
+      name="description"
+      content="Stundio — bezmaksas bezsaistes stundu saraksts Rīgas Valsts tehnikuma (RVT) audzēkņiem un skolotājiem: šodienas stundas, izmaiņas un nedēļas grafiks. Android, iPhone un tīmeklī."
+    />
+    <link rel="canonical" href="https://stundio.pages.dev/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Stundio" />
+    <meta property="og:url" content="https://stundio.pages.dev/" />
+    <meta property="og:title" content="Stundio — RVT stundu saraksts un izmaiņas" />
+    <meta
+      property="og:description"
+      content="Bezsaistes stundu saraksts un izmaiņas Rīgas Valsts tehnikumam."
+    />
+    <meta property="og:image" content="https://stundio.pages.dev/icons/icon-512.png" />
+    <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Stundio",
+        "alternateName": "Stundio — RVT stundu saraksts",
+        "url": "https://stundio.pages.dev/",
+        "description": "Bezsaistes stundu saraksts un izmaiņas Rīgas Valsts tehnikumam.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Android, iOS, Web, Linux",
+        "inLanguage": ["lv", "en", "ru", "uk"],
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- React's createRoot replaces this text on boot; it is only for crawlers. -->
+    <div id="root">
+      <main hidden>
+        <h1>Stundio — RVT stundu saraksts</h1>
+        <p>
+          Stundio ir bezmaksas bezsaistes stundu saraksta lietotne Rīgas Valsts tehnikuma (RVT)
+          audzēkņiem un skolotājiem. Tā rāda, kas notiek tagad un kas būs nākamais, stundu izmaiņas
+          un visas nedēļas grafiku — arī bez interneta.
+        </p>
+        <p>
+          Stundio is a free, offline-first timetable app for Riga State Technical School (Rīgas
+          Valsts tehnikums): today's lessons, substitutions and the week, on Android, iPhone and the
+          web.
+        </p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
 
     <!-- Cloudflare Web Analytics -->
