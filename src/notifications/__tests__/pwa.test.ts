@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { runInNewContext } from "node:vm";
 
 describe("PWA Manifest and Service Worker Specifications", () => {
   const rootDir = resolve(__dirname, "../../..");
@@ -139,6 +140,56 @@ describe("PWA Manifest and Service Worker Specifications", () => {
 
     const sitemap = readFileSync(resolve(rootDir, "public/sitemap.xml"), "utf-8");
     expect(sitemap).toContain("<loc>https://app.stundio.lv/</loc>");
+  });
+
+  describe("legacy host redirect", () => {
+    const script = (() => {
+      const html = readFileSync(indexPath, "utf-8");
+      const match = html.match(/<script>([\s\S]*?stundio\.pages\.dev[\s\S]*?)<\/script>/);
+      return match?.[1] ?? "";
+    })();
+
+    const run = (href: string, opts: { displayMode?: string; standalone?: boolean } = {}) => {
+      const url = new URL(href);
+      const replace = vi.fn();
+      runInNewContext(script, {
+        location: {
+          hostname: url.hostname,
+          pathname: url.pathname,
+          search: url.search,
+          hash: url.hash,
+          replace,
+        },
+        navigator: { standalone: opts.standalone },
+        matchMedia: (q: string) => ({
+          matches: q === `(display-mode: ${opts.displayMode ?? "browser"})`,
+        }),
+      });
+      return replace;
+    };
+
+    it("sends a browser tab on the old host to app.stundio.lv, keeping the URL", () => {
+      expect(script).not.toBe("");
+      expect(run("https://stundio.pages.dev/?tab=day#x")).toHaveBeenCalledWith(
+        "https://app.stundio.lv/?tab=day#x",
+      );
+    });
+
+    it.each(["standalone", "fullscreen", "minimal-ui", "window-controls-overlay"])(
+      "leaves an app installed from the old host alone (%s)",
+      (displayMode) => {
+        expect(run("https://stundio.pages.dev/", { displayMode })).not.toHaveBeenCalled();
+      },
+    );
+
+    it("leaves an iOS home-screen app alone", () => {
+      expect(run("https://stundio.pages.dev/", { standalone: true })).not.toHaveBeenCalled();
+    });
+
+    it("does nothing on the canonical host or a branch preview", () => {
+      expect(run("https://app.stundio.lv/")).not.toHaveBeenCalled();
+      expect(run("https://feat-x.stundio.pages.dev/")).not.toHaveBeenCalled();
+    });
   });
 
   // Browsers probe these root paths by convention — iOS the two apple-touch-icons
