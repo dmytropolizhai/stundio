@@ -122,6 +122,25 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     );
   });
 
+  // Search engines read these before any JS runs. Without real files the SPA fallback
+  // answers /robots.txt and /sitemap.xml with index.html, so Google never learns the sitemap.
+  it("ships crawlable search metadata, robots.txt and a sitemap", () => {
+    const html = readFileSync(indexPath, "utf-8");
+    expect(html).toMatch(/<title>Stundio[^<]+<\/title>/);
+    expect(html).toMatch(/<meta\s+name="description"\s+content="Stundio[^"]+"/);
+    expect(html).toContain('<link rel="canonical" href="https://app.stundio.lv/" />');
+    expect(html).toContain('<script type="application/ld+json">');
+    expect(html).toMatch(/<div id="root">[\s\S]*<h1>Stundio[\s\S]*<\/div>/);
+
+    const robots = readFileSync(resolve(rootDir, "public/robots.txt"), "utf-8");
+    expect(robots).toMatch(/^User-agent: \*$/m);
+    expect(robots).toMatch(/^Allow: \/$/m);
+    expect(robots).toContain("Sitemap: https://app.stundio.lv/sitemap.xml");
+
+    const sitemap = readFileSync(resolve(rootDir, "public/sitemap.xml"), "utf-8");
+    expect(sitemap).toContain("<loc>https://app.stundio.lv/</loc>");
+  });
+
   // Browsers probe these root paths by convention — iOS the two apple-touch-icons
   // when it captures a home-screen icon, everything else /favicon.ico. On a SPA host
   // every unknown path answers 200 with index.html, so without real files here the
