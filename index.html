@@ -2,6 +2,26 @@
 <html lang="lv">
   <head>
     <meta charset="UTF-8" />
+    <!--
+      Moves browser tabs on the old stundio.pages.dev host to app.stundio.lv. This is done here
+      rather than as a server 301 because an app installed from the old host is bound to its
+      origin: sending its window to another origin makes the browser show the out-of-scope URL
+      bar. Installed windows (any non-browser display mode, or iOS `navigator.standalone`) stay.
+    -->
+    <script>
+      (function () {
+        if (location.hostname !== "stundio.pages.dev") return;
+        var installed =
+          navigator.standalone === true ||
+          ["standalone", "fullscreen", "minimal-ui", "window-controls-overlay"].some(function (m) {
+            return matchMedia("(display-mode: " + m + ")").matches;
+          });
+        if (installed) return;
+        location.replace(
+          "https://app.stundio.lv" + location.pathname + location.search + location.hash,
+        );
+      })();
+    </script>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"

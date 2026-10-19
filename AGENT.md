@@ -121,8 +121,9 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **Search indexing** — `index.html` carries the title, description, canonical, Open Graph and
   JSON-LD, plus static text inside `#root` that `createRoot` replaces on boot; `public/robots.txt`
   and `public/sitemap.xml` are real files because the SPA fallback would otherwise answer them
-  with HTML. The canonical host is `app.stundio.lv`; `functions/_middleware.ts` 301s the old
-  `stundio.pages.dev` host there, except non-GET requests, `/api-*` and `/sw.js`; `pwa.test.ts` guards all of it.
+  with HTML. The canonical host is `app.stundio.lv`; an inline script in `index.html` sends
+  browser tabs on the old `stundio.pages.dev` there. Never a server redirect: an app installed
+  from the old host would leave its origin and show the browser's URL bar; `pwa.test.ts` guards all of it.
 - **`src/ui/screens/home-view/`** — the Home tab (formerly the Day view), in two blocks. Top, always about *today*: a greeting top bar (`home-top-bar.tsx`), then `home-brief.tsx` — the day in a sentence (`lib/schedule`'s `dayBrief`), Riga's weather with at most one hint (umbrella / snow / dress warm, `lib/weather`), and the glance banner (now / next, or tomorrow's preview once the day is over). Bottom, the day browser: `day-header.tsx` (date picker, arrows, "to today", changes button), the outline, the lesson list, then building and school notes. Swipe/arrow paging lives on the bottom block only and moves only it. The offline notice sits above the top block; a blocked-notifications notice (`NotificationBlockedNotice`) sits with the app-level prompts. The push contract (`?tab=day`, `NAVIGATE_DAY`) keeps its old wire names; the app maps them to `home`.
 - **`src/lib/weather/`** — Open-Meteo forecast for central Riga (keyless, CORS-friendly plain `fetch`; city coordinates only, never the device's location), a never-throwing parser, and `weatherOutlook` (this hour's conditions, today's range, one hint for the school hours ahead). The store fetches it alongside `refresh()` (30-min TTL, 5 min on a pull — never polled; nothing at all while `settings.weatherEnabled` is off) and caches it in the IndexedDB `weather` store.
 - **`src/ui/`** — app screens, hooks, i18n, and theme mapping. No router: five tabs plus modals,
