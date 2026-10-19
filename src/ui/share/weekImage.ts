@@ -112,14 +112,19 @@ const toCell = (
  * holds nothing longer — which is fine in the app, where the lesson is one tap from its full
  * name, and useless on an image, where there is nothing to tap. Sorted by code so a reader
  * scanning from a cell finds the line quickly.
+ *
+ * A swatch takes the colour its cells draw (`lessonAccent`, so a teacher's group colour shows
+ * here too). When a teacher's group colours split one subject's cells across several colours,
+ * no single swatch matches them all, so it falls back to the subject's own colour.
  */
 const subjectKey = (
   days: (ResolvedDay | null)[],
   theme: ShareTheme,
   subjectColorOverrides: Record<string, string>,
+  groupColorOverrides: Record<string, string>,
   subjectColorCodingEnabled: boolean,
 ): ShareLegendEntry[] => {
-  const byLabel = new Map<string, ShareLegendEntry>();
+  const byLabel = new Map<string, ShareLegendEntry & { mixed: boolean }>();
 
   for (const day of days) {
     for (const lesson of day?.lessons ?? []) {
@@ -127,17 +132,28 @@ const subjectKey = (
       const name = (lesson.subject?.name ?? lesson.subject?.short ?? "").trim();
 
       // Nothing to explain when there is no name behind the code.
-      if (name === "" || name === label || byLabel.has(label)) continue;
+      if (name === "" || name === label) continue;
 
       const tone = accentFillInk(
-        subjectAccent(lesson.subject, subjectColorOverrides, subjectColorCodingEnabled),
+        lessonAccent(lesson, subjectColorOverrides, groupColorOverrides, subjectColorCodingEnabled),
         theme,
       );
-      byLabel.set(label, { label, name, fill: tone.fill, ink: tone.ink });
+      const seen = byLabel.get(label);
+      if (seen === undefined) {
+        byLabel.set(label, { label, name, ...tone, mixed: false });
+      } else if (!seen.mixed && seen.fill !== tone.fill) {
+        const own = accentFillInk(
+          subjectAccent(lesson.subject, subjectColorOverrides, subjectColorCodingEnabled),
+          theme,
+        );
+        byLabel.set(label, { label, name: seen.name, ...own, mixed: true });
+      }
     }
   }
 
-  return [...byLabel.values()].sort((a, b) => a.label.localeCompare(b.label, "lv"));
+  return [...byLabel.values()]
+    .map(({ label, name, fill, ink }) => ({ label, name, fill, ink }))
+    .sort((a, b) => a.label.localeCompare(b.label, "lv"));
 };
 
 /**
@@ -224,7 +240,13 @@ export const buildWeekImageData = ({
       date: formatDayMonth(date, lang),
     })),
     rows,
-    legend: subjectKey(days, theme, subjectColorOverrides, subjectColorCodingEnabled),
+    legend: subjectKey(
+      days,
+      theme,
+      subjectColorOverrides,
+      groupColorOverrides,
+      subjectColorCodingEnabled,
+    ),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
     link: appLink(),

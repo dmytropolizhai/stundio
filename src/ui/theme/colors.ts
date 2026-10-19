@@ -110,11 +110,21 @@ export const subjectAccent = (
   if (!enabled) return { tone: NEUTRAL_TONE };
   const key = subjectToneKey(subject);
   if (key === "") return { tone: NEUTRAL_TONE };
-  const override = overrides[key];
-  if (override !== undefined && isHexColor(override)) {
-    return { tone: "custom", fill: override, ink: readableInk(override) };
-  }
-  return { tone: subjectTone(subject, overrides, enabled) };
+  return overrideAccent(overrides[key]) ?? { tone: subjectTone(subject, overrides, enabled) };
+};
+
+const isSubjectTone = (value: string): value is SubjectTone =>
+  (SUBJECT_TONES as readonly string[]).includes(value);
+
+/**
+ * One stored override as an accent: a `#rrggbb` pick with its computed ink, or one of the six DS
+ * tones. Anything else — no override, or a stale value that is no longer a tone — is `null`, so
+ * the caller falls back to its own default instead of rendering a tone class that doesn't exist.
+ */
+export const overrideAccent = (override: string | undefined): SubjectAccent | null => {
+  if (override === undefined) return null;
+  if (isHexColor(override)) return { tone: "custom", fill: override, ink: readableInk(override) };
+  return isSubjectTone(override) ? { tone: override } : null;
 };
 
 /**
@@ -140,11 +150,8 @@ export const lessonAccent = (
 ): SubjectAccent => {
   if (enabled) {
     for (const group of lesson.classes ?? []) {
-      const override = groupOverrides[groupToneKey(group)];
-      if (override === undefined) continue;
-      return isHexColor(override)
-        ? { tone: "custom", fill: override, ink: readableInk(override) }
-        : { tone: override as SubjectTone };
+      const accent = overrideAccent(groupOverrides[groupToneKey(group)]);
+      if (accent !== null) return accent;
     }
   }
   return subjectAccent(lesson.subject, subjectOverrides, enabled);

@@ -13,6 +13,7 @@ export {
   subjectTone,
   subjectAccent,
   lessonAccent,
+  overrideAccent,
   groupToneKey,
   subjectToneKey,
   type SubjectTone,

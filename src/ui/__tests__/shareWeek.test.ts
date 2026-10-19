@@ -216,6 +216,58 @@ describe("buildWeekImageData", () => {
       expect(row.cells[0]?.label).toBe("EPE");
     }
   });
+
+  describe("a teacher's group colours in the legend", () => {
+    const group = (short: string) => ({ id: short, short, name: short, color: "" });
+    const teacherDay = (date: string, groups: string[]) =>
+      ({
+        date,
+        weekday: "mon",
+        building: "TIC",
+        buildings: ["TIC"],
+        ttNum: "1",
+        lessons: groups.map((short, i) => ({
+          period: String(i + 1),
+          start: "08:30",
+          end: "09:50",
+          span: 1,
+          subject: { id: "s1", name: "Matemātika", short: "MAT" },
+          classes: [group(short)],
+          teachers: [],
+          rooms: [],
+          group: null,
+          status: "normal",
+          changeNote: null,
+        })),
+        notes: [],
+        stale: false,
+      }) as unknown as ResolvedDay;
+    const theme = shareTheme();
+    const build = (groups: string[], groupColorOverrides: Record<string, string>) =>
+      buildWeekImageData({
+        dates: ["2026-09-07"],
+        days: [teacherDay("2026-09-07", groups)],
+        title: "Teacher",
+        classTeacher: null,
+        theme,
+        lang: "lv",
+        t,
+        subjectColorOverrides: { mat: "sky" },
+        groupColorOverrides,
+      });
+
+    it("shows the group colour its cells draw", () => {
+      const data = build(["2DP1"], { "2dp1": "pink" });
+      expect(data.rows[0]?.cells[0]?.fill).toBe(theme.tones.pink.fill);
+      expect(data.legend[0]?.fill).toBe(theme.tones.pink.fill);
+    });
+
+    it("falls back to the subject's colour when groups split its cells", () => {
+      const data = build(["2DP1", "1DP1"], { "2dp1": "pink" });
+      expect(data.legend).toHaveLength(1);
+      expect(data.legend[0]?.fill).toBe(theme.tones.sky.fill);
+    });
+  });
 });
 
 describe("the message the image travels with", () => {

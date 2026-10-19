@@ -10,6 +10,8 @@
 import { useMemo } from "react";
 import { useAppStore } from "@/store";
 import { classWeekLessons, teacherKey } from "@/lib/edupage";
+import { teacherEntry } from "@/lib/persona";
+import { groupToneKey } from "@/ui/theme";
 import type { ClassRef, SubjectRef, TeacherRef, Timetable } from "@/lib/edupage";
 
 export type SubjectSummary = {
@@ -37,7 +39,7 @@ const weekFor = (timetables: Record<string, Timetable>, classId: string): Timeta
 export type SubjectCatalogue = {
   subjects: SubjectSummary[];
   teachers: TeacherSummary[];
-  /** The groups a teacher teaches, by class short — what the per-group colour pickers list. */
+  /** The groups a teacher teaches, once per `groupToneKey` — what the per-group pickers list. */
   groups: ClassRef[];
 };
 
@@ -46,8 +48,9 @@ const EMPTY: SubjectCatalogue = { subjects: [], teachers: [], groups: [] };
 /**
  * A teacher's own subjects and groups: everything they teach in the newest published week,
  * subjects busiest first, groups by name. Teachers have no class to scope by, so this is what
- * feeds the colour pickers for that role. The teacher is matched on their name key, and groups on
- * their short, since ids only mean something inside one timetable. A group met only through a
+ * feeds the colour pickers for that role. The teacher is matched on their feed key (resolved by
+ * the persona directory), and groups on `groupToneKey` — the same key their colour is stored
+ * under — since ids only mean something inside one timetable. A group met only through a
  * cover duty is left out: the substitution is a one-off, and a colour for it would outlive it.
  */
 const catalogueOfTeacher = (
@@ -55,9 +58,8 @@ const catalogueOfTeacher = (
   teacherId: string,
 ): SubjectCatalogue => {
   const all = Object.values(timetables);
-  const me = all.flatMap((t) => t.teachers).find((t) => t.id === teacherId);
-  if (me === undefined) return EMPTY;
-  const myKey = teacherKey(me.short || me.name);
+  const myKey = teacherEntry(all, teacherId).feedKey;
+  if (myKey === null) return EMPTY;
   const newest = all
     .map((t) => t.meta.validFrom)
     .sort()
@@ -70,12 +72,14 @@ const catalogueOfTeacher = (
     const mine = new Set(
       timetable.teachers.filter((t) => teacherKey(t.short || t.name) === myKey).map((t) => t.id),
     );
+    const classesById = new Map(timetable.classes.map((c) => [c.id, c]));
     for (const lesson of timetable.lessons) {
       if (!lesson.teacherIds.some((id) => mine.has(id))) continue;
       for (const classId of lesson.classIds) {
-        const group = timetable.classes.find((c) => c.id === classId);
-        const key = (group?.short || group?.name) ?? "";
-        if (group !== undefined && key !== "" && !groups.has(key)) groups.set(key, group);
+        const group = classesById.get(classId);
+        if (group === undefined || (group.short || group.name) === "") continue;
+        const key = groupToneKey(group);
+        if (!groups.has(key)) groups.set(key, group);
       }
       const subject = timetable.subjects.find((s) => s.id === lesson.subjectId);
       if (subject === undefined) continue;

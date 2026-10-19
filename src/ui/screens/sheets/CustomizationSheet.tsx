@@ -8,7 +8,7 @@ import {
   SUBJECT_TONES,
   SUBJECT_TONE_BG,
   groupToneKey,
-  lessonAccent,
+  overrideAccent,
   subjectAccent,
   subjectToneKey,
   type SubjectAccent,
@@ -123,7 +123,7 @@ const ColorRow = ({
   onPick: (value: SubjectColorValue | null) => void;
 }) => {
   const t = useT();
-  const isCustom = accent?.tone === "custom";
+  const custom = accent?.tone === "custom" ? accent : null;
   const [wheelOpen, setWheelOpen] = useState(false);
 
   return (
@@ -145,7 +145,7 @@ const ColorRow = ({
           <Swatch
             key={option}
             label={option}
-            pressed={!isCustom && accent?.tone === option}
+            pressed={custom === null && accent?.tone === option}
             className={SUBJECT_TONE_BG[option]}
             onClick={() => {
               setWheelOpen(false);
@@ -155,24 +155,22 @@ const ColorRow = ({
         ))}
         <Swatch
           label={t("customization.subjectColors.custom")}
-          pressed={isCustom}
+          pressed={custom !== null}
           style={{
             background:
-              accent?.tone === "custom"
-                ? accent.fill
-                : "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
+              custom?.fill ?? "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
           }}
           onClick={() => {
-            setWheelOpen((open) => !isCustom || !open);
-            if (!isCustom) onPick(DEFAULT_WHEEL_COLOR);
+            setWheelOpen((open) => custom === null || !open);
+            if (custom === null) onPick(DEFAULT_WHEEL_COLOR);
           }}
         />
       </SwatchRow>
 
-      {wheelOpen && accent?.tone === "custom" && (
+      {wheelOpen && custom !== null && (
         <div className="mt-3 mb-1">
           <ColorWheel
-            value={accent.fill}
+            value={custom.fill}
             onChange={(hex) => {
               onPick(hex);
             }}
@@ -203,22 +201,20 @@ const SubjectColorRow = ({ label, subject }: { label: string; subject: SubjectRe
 };
 
 /**
- * A teacher's group picker. The accent is read through `lessonAccent` with a subject-less lesson
- * of just this group, so the swatch shown is exactly what that group's cards will render in.
+ * A teacher's group picker. The accent is the group's own override, read through the same
+ * `overrideAccent` that `lessonAccent` applies, so the swatch shown is exactly what that group's
+ * cards will render in.
  */
 const GroupColorRow = ({ group }: { group: ClassRef }) => {
   const overrides = useAppStore((s) => s.settings.groupColorOverrides);
   const setOverride = useAppStore((s) => s.setGroupColorOverride);
   const tokenKey = groupToneKey(group);
-  const isOverridden = overrides[tokenKey] !== undefined;
 
   return (
     <ColorRow
       label={group.short || group.name}
-      accent={
-        isOverridden ? lessonAccent({ subject: null, classes: [group] }, {}, overrides) : null
-      }
-      isOverridden={isOverridden}
+      accent={overrideAccent(overrides[tokenKey])}
+      isOverridden={overrides[tokenKey] !== undefined}
       onPick={(value) => {
         void setOverride(tokenKey, value);
       }}
@@ -509,7 +505,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
                 </p>
               </Row>
               {groups.map((group) => (
-                <Row key={group.id}>
+                <Row key={groupToneKey(group)}>
                   <GroupColorRow group={group} />
                 </Row>
               ))}

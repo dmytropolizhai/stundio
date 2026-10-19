@@ -169,6 +169,12 @@ describe("lessonAccent", () => {
     });
   });
 
+  it("skips a stale group override that is no longer a tone", () => {
+    expect(lessonAccent(lesson([group("2DP1")]), { mat: "lime" }, { "2dp1": "teal" })).toEqual({
+      tone: "lime",
+    });
+  });
+
   it("ignores group overrides while colour-coding is off", () => {
     expect(lessonAccent(lesson([group("2DP1")]), {}, { "2dp1": "pink" }, false)).toEqual({
       tone: "sky",
