@@ -4,7 +4,7 @@ Stundio takes the public timetable from **Rīgas Valsts tehnikums** (`pikcrvt.ed
 
 There’s no login, no account, and no complicated setup. Pick your class and you can immediately see your lessons, substitutions, and what you have right now or next.
 
-It runs as an Android app and as an installable web app (PWA) at **[stundio.pages.dev](https://stundio.pages.dev)**, which is also how iPhone and desktop users get it.
+It runs as an Android app and as an installable web app (PWA) at **[app.stundio.lv](https://app.stundio.lv)**, which is also how iPhone and desktop users get it.
 
 A Linux desktop target with local Flatpak packaging is available for development and testing.
 See [LINUX.md](LINUX.md) for builds, installation, desktop behavior and Flathub preparation.
@@ -93,7 +93,7 @@ Stundio isn't on the Play Store, and won't be. APKs are published through [GitHu
 
 ### Option A — Download the release APK
 
-1. Open **[stundio.pages.dev/download](https://stundio.pages.dev/download)**, which redirects to the latest release APK. (The [Releases page](https://github.com/dmytropolizhai/stundio/releases) works too if you'd rather pick the file yourself.)
+1. Open **[app.stundio.lv/download](https://app.stundio.lv/download)**, which redirects to the latest release APK. (The [Releases page](https://github.com/dmytropolizhai/stundio/releases) works too if you'd rather pick the file yourself.)
 2. Open the downloaded APK on your Android phone.
 3. Android will warn you that the app comes from an unknown source. That's expected, because it isn't distributed through the Play Store.
 4. Allow installation from the app you're using to open the APK when Android asks.
@@ -144,7 +144,7 @@ You can then copy the APK to your phone and install it. Android may ask you to a
 
 There's no native iOS app, and there are no plans for one — for a non-commercial school project, an Apple Developer account and a separate native build don't make sense. iOS is served by the PWA instead, so you don't need the App Store, Xcode, or a developer account:
 
-1. Open **[stundio.pages.dev](https://stundio.pages.dev)** in **Safari** on your iPhone or iPad.
+1. Open **[app.stundio.lv](https://app.stundio.lv)** in **Safari** on your iPhone or iPad.
 2. Tap the **Share** button.
 3. Select **Add to Home Screen**.
 4. Stundio will appear on your home screen and open like an app, without the normal browser UI.
