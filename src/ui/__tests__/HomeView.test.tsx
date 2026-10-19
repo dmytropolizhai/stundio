@@ -319,6 +319,71 @@ describe("HomeView", () => {
       expect(screen.getByTestId("home-weather-hint").textContent).toBe("Paņem lietussargu");
     });
 
+    it("pages the weather with the schedule, naming the later day it is for", async () => {
+      const ahead = {
+        ...forecast,
+        hourly: [
+          ...forecast.hourly,
+          ...Array.from({ length: 24 }, (_, h) => ({
+            time: `2026-09-10T${String(h).padStart(2, "0")}:00`,
+            temperature: 6,
+            precipitationProbability: 0,
+            code: 0,
+          })),
+        ],
+        daily: [
+          ...forecast.daily,
+          {
+            date: "2026-09-10",
+            code: 0,
+            max: 9.4,
+            min: 2.1,
+            precipitationProbability: 0,
+            sunrise: "2026-09-10T06:52",
+            sunset: "2026-09-10T19:52",
+          },
+        ],
+      };
+      const harness = await bootHarness();
+      act(() => {
+        harness.store.setState({ weather: ahead });
+      });
+
+      const { unmount } = renderDay(harness, "2026-09-10");
+      const weather = screen.getByTestId("home-weather");
+      expect(screen.getByTestId("home-weather-day").textContent).toBe("Rīt");
+      expect(weather.textContent).toContain("6°");
+      expect(weather.textContent).toContain("9° / 2°");
+      expect(weather.getAttribute("aria-label")).toBe(
+        "Prognoze: Rīt. Laikapstākļi Rīgā: 6°, skaidrs. Maks. 9°, min. 2°",
+      );
+      expect(screen.queryByTestId("home-weather-hint")).toBeNull();
+      unmount();
+
+      // Beyond the forecast, or back in the past: today's weather, unlabelled.
+      for (const date of ["2026-09-11", "2026-09-08"]) {
+        const view = renderDay(harness, date);
+        expect(screen.getByTestId("home-weather").textContent).toContain("14°");
+        expect(screen.queryByTestId("home-weather-day")).toBeNull();
+        view.unmount();
+      }
+    });
+
+    it("names a later day by its weekday", async () => {
+      const harness = await bootHarness();
+      act(() => {
+        harness.store.setState({
+          weather: {
+            ...forecast,
+            daily: [{ ...forecast.daily[0]!, date: "2026-09-11" }],
+          },
+        });
+      });
+      renderDay(harness, "2026-09-11");
+      expect(screen.getByTestId("home-weather-day").textContent?.toLowerCase()).toBe("piektdiena");
+      expect(screen.getByTestId("home-weather").textContent).toContain("17°");
+    });
+
     it("hides the weather once it is switched off in Settings", async () => {
       const harness = await bootHarness();
       act(() => {

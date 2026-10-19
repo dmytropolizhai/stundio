@@ -113,6 +113,7 @@ export const en: Dict = {
   "home.brief.changes": "Changes: {count}",
   "home.weather.label": "Weather in Riga: {temperature}°, {condition}",
   "home.weather.range": "High {max}°, low {min}°",
+  "home.weather.forDay": "Forecast: {day}",
   "home.weather.clear": "clear",
   "home.weather.partly-cloudy": "partly cloudy",
   "home.weather.cloudy": "cloudy",

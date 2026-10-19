@@ -1,14 +1,16 @@
 /**
  * The top of Home, about today whatever day the schedule below is showing: how much of the
  * school day is left, Riga's weather with the one piece of advice that changes what a student
- * takes out the door, and then the glance — the lesson on now or next — or, once today is done,
+ * takes out the door (paged to a later day, the forecast for that day, labelled with it), and then the glance — the lesson on now or next — or, once today is done,
  * when the next school day starts.
  */
 import type { ReactNode } from "react";
+import type { ISODate } from "@/lib/edupage";
 import type { DayBrief } from "@/lib/schedule";
+import { addDays } from "@/sync";
 import type { WeatherCondition, WeatherHint, WeatherOutlook } from "@/lib/weather";
 import { Badge, Card, Icon, type IconName } from "@/ds";
-import { useT, type MessageKey } from "@/ui/i18n";
+import { formatWeekdayLong, useLang, useT, type MessageKey } from "@/ui/i18n";
 
 const CONDITION_ICON: Record<WeatherCondition, { day: IconName; night: IconName }> = {
   clear: { day: "sun", night: "moon" },
@@ -58,10 +60,24 @@ const BriefText = ({ brief }: { brief: DayBrief }) => {
   );
 };
 
-const WeatherTile = ({ outlook }: { outlook: WeatherOutlook }) => {
+type WeatherTileProps = {
+  outlook: WeatherOutlook;
+  /** The later day this forecast is for, or `null` for right now. */
+  date: ISODate | null;
+  today: ISODate;
+};
+
+const WeatherTile = ({ outlook, date, today }: WeatherTileProps) => {
   const t = useT();
+  const lang = useLang();
   const icons = CONDITION_ICON[outlook.condition];
   const condition = t(`home.weather.${outlook.condition}`);
+  const forDay =
+    date === null
+      ? null
+      : date === addDays(today, 1)
+        ? t("day.tomorrow")
+        : formatWeekdayLong(date, lang);
 
   return (
     <div
@@ -69,6 +85,7 @@ const WeatherTile = ({ outlook }: { outlook: WeatherOutlook }) => {
       data-testid="home-weather"
       role="group"
       aria-label={[
+        forDay === null ? null : t("home.weather.forDay", { day: forDay }),
         t("home.weather.label", { temperature: outlook.temperature, condition }),
         outlook.max !== null && outlook.min !== null
           ? t("home.weather.range", { max: outlook.max, min: outlook.min })
@@ -77,6 +94,11 @@ const WeatherTile = ({ outlook }: { outlook: WeatherOutlook }) => {
         .filter((part) => part !== null)
         .join(". ")}
     >
+      {forDay !== null && (
+        <span aria-hidden="true" className="u-eyebrow mb-1" data-testid="home-weather-day">
+          {forDay}
+        </span>
+      )}
       <span aria-hidden="true" className="flex items-center gap-1.5 text-strong">
         <Icon name={outlook.isDay ? icons.day : icons.night} size={24} className="shrink-0" />
         <span className="font-display text-display-2 leading-none tabular-nums">
@@ -96,13 +118,23 @@ const WeatherTile = ({ outlook }: { outlook: WeatherOutlook }) => {
 type HomeBriefProps = {
   brief: DayBrief | null;
   weather: WeatherOutlook | null;
+  /** The later browsed day `weather` is a forecast for; `null` when it is about right now. */
+  weatherDate: ISODate | null;
+  today: ISODate;
   /** Today's changed lessons; the schedule below carries the button to them. */
   changedCount: number;
   /** The glance card or tomorrow's preview, rendered by the screen. */
   children?: ReactNode;
 };
 
-export const HomeBrief = ({ brief, weather, changedCount, children }: HomeBriefProps) => {
+export const HomeBrief = ({
+  brief,
+  weather,
+  weatherDate,
+  today,
+  changedCount,
+  children,
+}: HomeBriefProps) => {
   const t = useT();
   const hint = weather?.hint == null ? null : HINT[weather.hint];
   const showChanges = changedCount > 0 && brief !== null && brief.kind !== "finished";
@@ -119,7 +151,7 @@ export const HomeBrief = ({ brief, weather, changedCount, children }: HomeBriefP
         <Card tone="surface" radius="xl" className="px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             {brief === null ? <span /> : <BriefText brief={brief} />}
-            {weather !== null && <WeatherTile outlook={weather} />}
+            {weather !== null && <WeatherTile outlook={weather} date={weatherDate} today={today} />}
           </div>
 
           {(hint !== null || showChanges) && (

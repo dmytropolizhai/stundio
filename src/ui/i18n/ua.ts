@@ -114,6 +114,7 @@ export const ua: Dict = {
   "home.brief.changes": "Зміни: {count}",
   "home.weather.label": "Погода в Ризі: {temperature}°, {condition}",
   "home.weather.range": "Макс. {max}°, мін. {min}°",
+  "home.weather.forDay": "Прогноз: {day}",
   "home.weather.clear": "ясно",
   "home.weather.partly-cloudy": "мінлива хмарність",
   "home.weather.cloudy": "хмарно",

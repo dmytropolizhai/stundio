@@ -3,6 +3,7 @@ import {
   fetchForecast,
   forecastUrl,
   parseForecast,
+  dayWeatherOutlook,
   weatherCondition,
   weatherOutlook,
   type WeatherForecast,
@@ -166,5 +167,49 @@ describe("weatherOutlook", () => {
     expect(
       weatherOutlook(forecast({ current: { apparent_temperature: -9 } }), at(8, 30))?.hint,
     ).toBe("cold");
+  });
+});
+
+describe("dayWeatherOutlook", () => {
+  it("is null without a forecast, or for a day it does not reach", () => {
+    expect(dayWeatherOutlook(null, "2026-10-18")).toBeNull();
+    expect(dayWeatherOutlook(forecast(), "2026-10-24")).toBeNull();
+  });
+
+  it("gives the day's condition and range, and the middle of the school day's temperature", () => {
+    const temps = Array.from({ length: 24 }, (_, h) => h);
+    expect(dayWeatherOutlook(forecast({ temps }), "2026-10-18", { start: 540, end: 900 })).toEqual({
+      temperature: 12,
+      condition: "rain",
+      isDay: true,
+      max: 11,
+      min: 3,
+      hint: null,
+    });
+    // No school day: midday.
+    expect(dayWeatherOutlook(forecast({ temps }), "2026-10-18")?.temperature).toBe(12);
+  });
+
+  it("falls back to the day's high when the hour is missing", () => {
+    const f = forecast();
+    expect(dayWeatherOutlook({ ...f, hourly: [] }, "2026-10-18")?.temperature).toBe(11);
+  });
+
+  it("reads the hint from the whole school day, not from now", () => {
+    const rain = Array.from({ length: 24 }, (_, h) => (h === 9 ? 80 : 0));
+    const codes = Array.from({ length: 24 }, (_, h) => (h === 9 ? 63 : 3));
+    const f = forecast({ rain, codes });
+    expect(dayWeatherOutlook(f, "2026-10-18", { start: 510, end: 900 })?.hint).toBe("umbrella");
+    expect(dayWeatherOutlook(f, "2026-10-18", { start: 660, end: 900 })?.hint).toBeNull();
+  });
+
+  it("calls a freezing school day cold", () => {
+    const temps = Array.from({ length: 24 }, (_, h) => (h === 8 ? -7 : 0));
+    expect(
+      dayWeatherOutlook(forecast({ temps }), "2026-10-18", { start: 480, end: 900 })?.hint,
+    ).toBe("cold");
+    expect(
+      dayWeatherOutlook(forecast({ temps }), "2026-10-18", { start: 600, end: 900 })?.hint,
+    ).toBeNull();
   });
 });

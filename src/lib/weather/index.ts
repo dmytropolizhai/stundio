@@ -10,6 +10,7 @@ export {
 } from "./forecast.ts";
 export {
   COLD_FEELS_LIKE,
+  dayWeatherOutlook,
   UMBRELLA_PROBABILITY,
   weatherCondition,
   weatherOutlook,

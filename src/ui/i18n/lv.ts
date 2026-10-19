@@ -121,6 +121,7 @@ export const lv = {
   "home.brief.changes": "Izmaiņas: {count}",
   "home.weather.label": "Laikapstākļi Rīgā: {temperature}°, {condition}",
   "home.weather.range": "Maks. {max}°, min. {min}°",
+  "home.weather.forDay": "Prognoze: {day}",
   "home.weather.clear": "skaidrs",
   "home.weather.partly-cloudy": "mainīgs mākoņu daudzums",
   "home.weather.cloudy": "apmācies",
