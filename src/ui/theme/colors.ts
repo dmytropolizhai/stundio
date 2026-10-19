@@ -10,6 +10,7 @@
 import {
   isMainBuilding,
   type Building,
+  type ClassRef,
   type ResolvedDay,
   type ResolvedLesson,
   type ResolvedStatus,
@@ -109,11 +110,51 @@ export const subjectAccent = (
   if (!enabled) return { tone: NEUTRAL_TONE };
   const key = subjectToneKey(subject);
   if (key === "") return { tone: NEUTRAL_TONE };
-  const override = overrides[key];
-  if (override !== undefined && isHexColor(override)) {
-    return { tone: "custom", fill: override, ink: readableInk(override) };
+  return overrideAccent(overrides[key]) ?? { tone: subjectTone(subject, overrides, enabled) };
+};
+
+const isSubjectTone = (value: string): value is SubjectTone =>
+  (SUBJECT_TONES as readonly string[]).includes(value);
+
+/**
+ * One stored override as an accent: a `#rrggbb` pick with its computed ink, or one of the six DS
+ * tones. Anything else — no override, or a stale value that is no longer a tone — is `null`, so
+ * the caller falls back to its own default instead of rendering a tone class that doesn't exist.
+ */
+export const overrideAccent = (override: string | undefined): SubjectAccent | null => {
+  if (override === undefined) return null;
+  if (isHexColor(override)) return { tone: "custom", fill: override, ink: readableInk(override) };
+  return isSubjectTone(override) ? { tone: override } : null;
+};
+
+/**
+ * The stable key a teaching group is overridden on: the class short ("2DP1"), like a subject's
+ * code, because it is what survives a weekly republish where ids may be renumbered.
+ */
+export const groupToneKey = (group: ClassRef): string =>
+  (group.short || group.name || group.id).trim().toLowerCase();
+
+/**
+ * A whole lesson's accent: a teacher's group override first, the subject's accent otherwise.
+ *
+ * Only a teacher's resolved lessons carry `classes` (MODEL.md's teacher join), so a student's day
+ * always falls straight through to `subjectAccent`. A lesson taught to several groups at once
+ * takes the first of them that has an override, in the order EduPage lists them — the same
+ * order `lessonHeading` prints them in, so the colour belongs to the group the card names first.
+ */
+export const lessonAccent = (
+  lesson: Pick<ResolvedLesson, "subject" | "classes">,
+  subjectOverrides: Record<string, string> = {},
+  groupOverrides: Record<string, string> = {},
+  enabled = true,
+): SubjectAccent => {
+  if (enabled) {
+    for (const group of lesson.classes ?? []) {
+      const accent = overrideAccent(groupOverrides[groupToneKey(group)]);
+      if (accent !== null) return accent;
+    }
   }
-  return { tone: subjectTone(subject, overrides, enabled) };
+  return subjectAccent(lesson.subject, subjectOverrides, enabled);
 };
 
 /*

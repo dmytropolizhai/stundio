@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { fireEvent, render, renderHook, screen, within } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { SettingsView } from "../screens/settings-view";
-import { subjectToneKey } from "@/ui/theme";
+import { groupToneKey, subjectToneKey } from "@/ui/theme";
 import { useSubjects } from "../hooks/useSubjects.ts";
 import { bootHarness, clickAndSettle, type Harness } from "./harness.tsx";
 
@@ -244,6 +244,11 @@ describe("CustomizationSheet", () => {
     expect(screen.getByText("Izvēlies klasi, lai pielāgotu priekšmetu krāsas.")).toBeDefined();
   });
 
+  it("offers a student no per-group colours — they are only ever in one group", async () => {
+    await openSheetHarness();
+    expect(screen.queryByText("Grupu krāsas")).toBeNull();
+  });
+
   it("previews a student's card the way their day list leads: subject first", async () => {
     await openSheetHarness();
     expect(screen.getByText("Piemēra priekšmets")).toBeDefined();
@@ -273,6 +278,41 @@ describe("CustomizationSheet", () => {
       await teacherHarness();
       expect(screen.getByText(/^Tie ir priekšmeti, kurus tu pasniedz\./)).toBeDefined();
       expect(screen.queryByText(/^Pieskaries krāsai/)).toBeNull();
+    });
+
+    it("lists the groups they teach and persists a group's colour", async () => {
+      const harness = await teacherHarness();
+      const { result } = renderHook(() => useSubjects(), { wrapper: wrapper(harness) });
+      const first = result.current.groups[0];
+      if (first === undefined) throw new Error("fixture teacher teaches no groups");
+      expect(screen.getByText("Grupu krāsas")).toBeDefined();
+
+      const key = groupToneKey(first);
+      const row = within(screen.getByText(first.short).closest("[data-color-row]") as HTMLElement);
+      // No override yet: the group follows its subjects, so nothing reads as selected.
+      expect(row.queryAllByRole("button", { pressed: true })).toHaveLength(0);
+
+      await clickAndSettle(() => {
+        fireEvent.click(row.getByRole("button", { name: "mint" }));
+      });
+      expect(harness.store.getState().settings.groupColorOverrides[key]).toBe("mint");
+      expect(row.getByRole("button", { name: "mint" }).getAttribute("aria-pressed")).toBe("true");
+
+      await clickAndSettle(() => {
+        fireEvent.click(row.getByRole("button", { name: "Pielāgota krāsa" }));
+      });
+      expect(harness.store.getState().settings.groupColorOverrides[key]).toMatch(/^#[0-9a-f]{6}$/i);
+
+      await clickAndSettle(() => {
+        fireEvent.click(row.getByText("Auto"));
+      });
+      expect(harness.store.getState().settings.groupColorOverrides[key]).toBeUndefined();
+    });
+
+    it("says so when they have no groups yet", async () => {
+      const harness = await bootHarness({ persona: "teacher", selectedTeacherId: null });
+      await openSheet(harness);
+      expect(screen.getByText("Tavā stundu sarakstā vēl nav nevienas grupas.")).toBeDefined();
     });
 
     it("asks them to pick themselves, not a class, when no teacher is selected", async () => {

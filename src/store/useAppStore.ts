@@ -53,6 +53,7 @@ type RuledSettingKey =
   | "shareLang" // `setShareLang` also stops following the app language
   | "weatherEnabled" // `setWeatherEnabled` also fetches the forecast
   | "subjectColorOverrides" // `setSubjectColorOverride`, one subject at a time
+  | "groupColorOverrides" // `setGroupColorOverride`, one group at a time
   | "favorites" // `toggleFavorite`
   | "appOpenCount"; // `recordAppOpen`
 
@@ -107,6 +108,11 @@ export type AppState = {
   setSubjectColorOverride: (
     subjectKey: string,
     tone: Settings["subjectColorOverrides"][string] | null,
+  ) => Promise<void>;
+  /** `tone` of `null` clears the override, returning the group's lessons to their subject colour. */
+  setGroupColorOverride: (
+    groupKey: string,
+    tone: Settings["groupColorOverrides"][string] | null,
   ) => Promise<void>;
   /** Restores every Customization sheet setting — not the rest of `Settings` — to its default. */
   resetCustomization: () => Promise<void>;
@@ -354,6 +360,12 @@ export const createAppStore = ({
         else next[subjectKey] = tone;
         return persist({ subjectColorOverrides: next });
       },
+      setGroupColorOverride: (groupKey, tone) => {
+        const next = { ...get().settings.groupColorOverrides };
+        if (tone === null) delete next[groupKey];
+        else next[groupKey] = tone;
+        return persist({ groupColorOverrides: next });
+      },
       resetCustomization: () =>
         persist({
           theme: DEFAULT_SETTINGS.theme,
@@ -364,6 +376,7 @@ export const createAppStore = ({
           appAccent: DEFAULT_SETTINGS.appAccent,
           subjectColorCodingEnabled: DEFAULT_SETTINGS.subjectColorCodingEnabled,
           subjectColorOverrides: { ...DEFAULT_SETTINGS.subjectColorOverrides },
+          groupColorOverrides: { ...DEFAULT_SETTINGS.groupColorOverrides },
         }),
       resetAllData: async () => {
         await cache.clearUserData();

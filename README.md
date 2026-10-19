@@ -74,7 +74,7 @@ Stundio isn't trying to be a replacement for EduPage.
 Phases 0 through 4, the widget track, Phase 7, Phase 8, and Phase 5 are substantially complete:
 - Core scraper, parser, offline caching, and synchronization.
 - Full UI (Day, Week, Subjects, Class Picker, Settings, Lesson Sheet, Subgroups).
-- Customization: custom color wheel, subject color overrides, and theme controls.
+- Customization: custom color wheel, subject color overrides (plus per-group colours for teachers), and theme controls.
 - Android packaging, edge-to-edge system bars, local change notifications, and background refresh via WorkManager.
 - Native Android home-screen widgets (Next Lesson 2×1, Countdown, and All-Day 4×2 list).
 - Web and iOS as a PWA on Cloudflare Pages, with an edge proxy for EduPage requests and Web Push for schedule changes.

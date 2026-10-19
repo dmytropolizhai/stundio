@@ -43,6 +43,7 @@ export const useShareWeek = (
   const trackEvent = useAppStore((s) => s.trackEvent);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const subjectColorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
+  const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
   const shareLang = useAppStore((s) => s.settings.shareLang);
   const shareLangSyncWithApp = useAppStore((s) => s.settings.shareLangSyncWithApp);
   const shareLangPromptShown = useAppStore((s) => s.settings.shareLangPromptShown);
@@ -88,6 +89,7 @@ export const useShareWeek = (
         classTeacher: subject.classTeacher,
         theme,
         subjectColorOverrides,
+        groupColorOverrides,
         subjectColorCodingEnabled,
         lang: effectiveLang,
         t: shareT,
@@ -114,6 +116,7 @@ export const useShareWeek = (
     subject,
     shareT,
     subjectColorOverrides,
+    groupColorOverrides,
     subjectColorCodingEnabled,
     trackEvent,
   ]);

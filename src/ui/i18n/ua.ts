@@ -445,6 +445,10 @@ export const ua: Dict = {
     "Це предмети, які ти викладаєш. Торкнися кольору, щоб призначити його; торкнися «Авто», щоб повернути типовий колір.",
   "customization.subjectColors.empty.teacher":
     "Вибери себе як викладача, щоб налаштувати кольори своїх предметів.",
+  "customization.groupColors": "Кольори груп",
+  "customization.groupColors.hint":
+    "Признач групі власний колір — він замінить колір предмета на уроках цієї групи. «Авто» поверне колір предмета.",
+  "customization.groupColors.empty": "У твоєму розкладі ще немає груп.",
   "customization.preview.subject": "Приклад предмета",
   "customization.reset": "Скинути налаштування",
 

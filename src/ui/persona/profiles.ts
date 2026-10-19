@@ -57,6 +57,8 @@ export type PersonaProfile = {
     subjectColorsHint: MessageKey;
     /** When there is nothing to colour yet because the role's selection is missing. */
     subjectColorsEmpty: MessageKey;
+    /** Per-group colour pickers: a teacher meets many groups, a student is only ever in one. */
+    groupColors: boolean;
   };
 };
 
@@ -79,6 +81,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
       previewLeadsWith: "subject",
       subjectColorsHint: "customization.subjectColors.hint",
       subjectColorsEmpty: "customization.subjectColors.empty",
+      groupColors: false,
     },
   },
   teacher: {
@@ -96,6 +99,7 @@ export const PERSONA_PROFILES: Record<Persona, PersonaProfile> = {
       previewLeadsWith: "group",
       subjectColorsHint: "customization.subjectColors.hint.teacher",
       subjectColorsEmpty: "customization.subjectColors.empty.teacher",
+      groupColors: true,
     },
   },
 };

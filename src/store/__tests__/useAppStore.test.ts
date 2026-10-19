@@ -289,6 +289,7 @@ describe("settings", () => {
     await store.getState().updateSettings({ appAccent: "mint" });
     await store.getState().updateSettings({ subjectColorCodingEnabled: false });
     await store.getState().setSubjectColorOverride("prg", "lime");
+    await store.getState().setGroupColorOverride("2dp1", "pink");
     await store.getState().updateSettings({ reduceMotion: true });
 
     await store.getState().resetCustomization();
@@ -296,7 +297,21 @@ describe("settings", () => {
     expect(store.getState().settings.appAccent).toBe("default");
     expect(store.getState().settings.subjectColorCodingEnabled).toBe(true);
     expect(store.getState().settings.subjectColorOverrides).toEqual({});
+    expect(store.getState().settings.groupColorOverrides).toEqual({});
     expect(store.getState().settings.reduceMotion).toBe(false);
+  });
+
+  it("sets and clears a group colour override one group at a time", async () => {
+    const store = makeStore();
+    await store.getState().setGroupColorOverride("2dp1", "pink");
+    await store.getState().setGroupColorOverride("1dp1", "#123456");
+    expect(store.getState().settings.groupColorOverrides).toEqual({
+      "2dp1": "pink",
+      "1dp1": "#123456",
+    });
+
+    await store.getState().setGroupColorOverride("2dp1", null);
+    expect(store.getState().settings.groupColorOverrides).toEqual({ "1dp1": "#123456" });
   });
 
   it("clears user data (settings and notes) on resetAllData while preserving timetables", async () => {
