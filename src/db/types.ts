@@ -88,6 +88,14 @@ export type Settings = {
    * Ignored while `subjectColorCodingEnabled` is off.
    */
   subjectColorOverrides: Record<string, SubjectColorValue>;
+  /**
+   * Teacher-only per-group accent overrides, keyed by the lowercased class short (`groupToneKey`).
+   * A group listed here wins over its lesson's subject colour, so a teacher can tell their groups
+   * apart at a glance even when they teach every one of them the same subject. Ignored while
+   * `subjectColorCodingEnabled` is off, and never consulted for a student's day — only a teacher's
+   * resolved lessons carry `classes`.
+   */
+  groupColorOverrides: Record<string, SubjectColorValue>;
   /** Minutes before a lesson to notify at; 0 turns the reminder off. */
   notifyLessonReminderMinutes: number;
   /** Notify when today's or tomorrow's substitutions change after the initial load. */
@@ -159,6 +167,7 @@ export const DEFAULT_SETTINGS: Settings = {
   appAccent: "default",
   subjectColorCodingEnabled: true,
   subjectColorOverrides: {},
+  groupColorOverrides: {},
   notifyLessonReminderMinutes: 10,
   notifySubstitutionChanges: true,
   notifyNewTimetable: true,

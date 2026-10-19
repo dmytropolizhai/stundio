@@ -4,7 +4,7 @@ import { useAppStore } from "@/store";
 import { StatusBadge } from "@/ui/components/Badge.tsx";
 import { lessonHeading } from "@/ui/components/lesson-heading.ts";
 import { useT } from "@/ui/i18n";
-import { STATUS_TREATMENT, subjectAccent } from "@/ui/theme";
+import { STATUS_TREATMENT, lessonAccent } from "@/ui/theme";
 import { ARROW } from "./subst-status.ts";
 
 type ChangesLessonCardProps = {
@@ -38,6 +38,7 @@ export const ChangesLessonCard = ({ lesson, onOpen }: ChangesLessonCardProps) =>
   const t = useT();
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
+  const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
 
   const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
   const teacher = lesson.teachers.map((item) => item.short).join(", ");
@@ -51,7 +52,12 @@ export const ChangesLessonCard = ({ lesson, onOpen }: ChangesLessonCardProps) =>
 
   const isCover = lesson.isCover === true || teacherLesson.role === "cover";
   const coverFor = teacherLesson.coverFor?.name ?? teacherLesson.coverFor?.short;
-  const accent = subjectAccent(lesson.subject, subjectColorOverrides, colorCodingEnabled);
+  const accent = lessonAccent(
+    lesson,
+    subjectColorOverrides,
+    groupColorOverrides,
+    colorCodingEnabled,
+  );
 
   const showTeacher = !isTeacherMode && (teacher !== "" || origTeacher !== "");
   const showRoom = !isTeacherMode || roomChanged;

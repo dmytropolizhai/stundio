@@ -6,10 +6,12 @@
  * full name where the DS wants a 3-letter code.
  */
 import { describe, expect, it } from "vitest";
-import type { ResolvedLesson, SubjectRef } from "@/lib/edupage";
+import type { ClassRef, ResolvedLesson, SubjectRef } from "@/lib/edupage";
 import {
   SUBJECT_TONES,
   buildingNotice,
+  groupToneKey,
+  lessonAccent,
   lessonBuilding,
   subjectAccent,
   subjectCode,
@@ -119,6 +121,58 @@ describe("subjectAccent", () => {
     const short = "ANG";
     const overrides = { [subjectToneKey(subject({ short }))]: "#ff00ff" };
     expect(subjectAccent(subject({ short }), overrides, false)).toEqual({ tone: "sky" });
+  });
+});
+
+const group = (short: string): ClassRef => ({ id: short, short, name: short, color: "" });
+
+describe("lessonAccent", () => {
+  const lesson = (classes?: ClassRef[]) => ({
+    subject: subject({ short: "MAT" }),
+    ...(classes === undefined ? {} : { classes }),
+  });
+
+  it("keys a group on its lowercased short", () => {
+    expect(groupToneKey(group("2DP1"))).toBe("2dp1");
+  });
+
+  it("is the subject's accent for a lesson with no groups (a student's day)", () => {
+    expect(lessonAccent(lesson(), {}, { "2dp1": "pink" })).toEqual(
+      subjectAccent(subject({ short: "MAT" })),
+    );
+  });
+
+  it("lets a group's override win over the subject's", () => {
+    expect(lessonAccent(lesson([group("2DP1")]), { mat: "lime" }, { "2dp1": "pink" })).toEqual({
+      tone: "pink",
+    });
+  });
+
+  it("falls back to the subject's override for a group without one", () => {
+    expect(lessonAccent(lesson([group("2DP1")]), { mat: "lime" }, { "1dp1": "pink" })).toEqual({
+      tone: "lime",
+    });
+  });
+
+  it("takes the first listed group that has an override", () => {
+    const joint = lesson([group("1DP1"), group("2DP1"), group("3DP1")]);
+    expect(lessonAccent(joint, {}, { "3dp1": "mint", "2dp1": "amber" })).toEqual({
+      tone: "amber",
+    });
+  });
+
+  it("carries a custom hex group colour through with a readable ink", () => {
+    expect(lessonAccent(lesson([group("2DP1")]), {}, { "2dp1": "#000000" })).toEqual({
+      tone: "custom",
+      fill: "#000000",
+      ink: "#ffffff",
+    });
+  });
+
+  it("ignores group overrides while colour-coding is off", () => {
+    expect(lessonAccent(lesson([group("2DP1")]), {}, { "2dp1": "pink" }, false)).toEqual({
+      tone: "sky",
+    });
   });
 });
 

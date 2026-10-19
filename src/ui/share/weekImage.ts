@@ -14,7 +14,13 @@ import {
   type ShareLegendEntry,
   type ShareLink,
 } from "@/lib/share";
-import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
+import {
+  buildingNotice,
+  lessonAccent,
+  lessonBuilding,
+  subjectCode,
+  subjectAccent,
+} from "@/ui/theme";
 import {
   formatDayMonth,
   formatWeekdayShort,
@@ -62,6 +68,8 @@ export type WeekImageInput = {
   t: Translate;
   /** Same overrides the day and week views use, so a shared card matches the app on-screen. */
   subjectColorOverrides?: Record<string, string>;
+  /** A teacher's per-group overrides — a grid cell takes its group's colour like the app does. */
+  groupColorOverrides?: Record<string, string>;
   /** Same switch the day and week views read — off collapses every cell to the neutral tone. */
   subjectColorCodingEnabled?: boolean;
 };
@@ -77,10 +85,11 @@ const toCell = (
   lesson: ResolvedLesson,
   theme: ShareTheme,
   subjectColorOverrides: Record<string, string>,
+  groupColorOverrides: Record<string, string>,
   subjectColorCodingEnabled: boolean,
 ): ShareCell => {
   const tone = accentFillInk(
-    subjectAccent(lesson.subject, subjectColorOverrides, subjectColorCodingEnabled),
+    lessonAccent(lesson, subjectColorOverrides, groupColorOverrides, subjectColorCodingEnabled),
     theme,
   );
   const detail = roomsOf(lesson);
@@ -170,6 +179,7 @@ export const buildWeekImageData = ({
   lang,
   t,
   subjectColorOverrides = {},
+  groupColorOverrides = {},
   subjectColorCodingEnabled = true,
 }: WeekImageInput): ShareImageData => {
   const first = dates[0];
@@ -193,7 +203,14 @@ export const buildWeekImageData = ({
       });
       return day === null || lesson === undefined
         ? null
-        : toCell(day, lesson, theme, subjectColorOverrides, subjectColorCodingEnabled);
+        : toCell(
+            day,
+            lesson,
+            theme,
+            subjectColorOverrides,
+            groupColorOverrides,
+            subjectColorCodingEnabled,
+          );
     }),
   }));
 

@@ -10,7 +10,7 @@
 import { useMemo } from "react";
 import { useAppStore } from "@/store";
 import { classWeekLessons, teacherKey } from "@/lib/edupage";
-import type { SubjectRef, TeacherRef, Timetable } from "@/lib/edupage";
+import type { ClassRef, SubjectRef, TeacherRef, Timetable } from "@/lib/edupage";
 
 export type SubjectSummary = {
   subject: SubjectRef;
@@ -37,22 +37,26 @@ const weekFor = (timetables: Record<string, Timetable>, classId: string): Timeta
 export type SubjectCatalogue = {
   subjects: SubjectSummary[];
   teachers: TeacherSummary[];
+  /** The groups a teacher teaches, by class short — what the per-group colour pickers list. */
+  groups: ClassRef[];
 };
 
-const EMPTY: SubjectCatalogue = { subjects: [], teachers: [] };
+const EMPTY: SubjectCatalogue = { subjects: [], teachers: [], groups: [] };
 
 /**
- * A teacher's own subjects: every subject they teach in the newest published week, busiest first.
- * Teachers have no class to scope by, so this is what feeds the colour pickers for that role.
- * The teacher is matched on their name key, since ids only mean something inside one timetable.
+ * A teacher's own subjects and groups: everything they teach in the newest published week,
+ * subjects busiest first, groups by name. Teachers have no class to scope by, so this is what
+ * feeds the colour pickers for that role. The teacher is matched on their name key, and groups on
+ * their short, since ids only mean something inside one timetable. A group met only through a
+ * cover duty is left out: the substitution is a one-off, and a colour for it would outlive it.
  */
-const subjectsOfTeacher = (
+const catalogueOfTeacher = (
   timetables: Record<string, Timetable>,
   teacherId: string,
-): SubjectSummary[] => {
+): SubjectCatalogue => {
   const all = Object.values(timetables);
   const me = all.flatMap((t) => t.teachers).find((t) => t.id === teacherId);
-  if (me === undefined) return [];
+  if (me === undefined) return EMPTY;
   const myKey = teacherKey(me.short || me.name);
   const newest = all
     .map((t) => t.meta.validFrom)
@@ -60,6 +64,7 @@ const subjectsOfTeacher = (
     .at(-1);
   const refs = new Map<string, SubjectRef>();
   const counts = new Map<string, number>();
+  const groups = new Map<string, ClassRef>();
 
   for (const timetable of all.filter((t) => t.meta.validFrom === newest)) {
     const mine = new Set(
@@ -67,6 +72,11 @@ const subjectsOfTeacher = (
     );
     for (const lesson of timetable.lessons) {
       if (!lesson.teacherIds.some((id) => mine.has(id))) continue;
+      for (const classId of lesson.classIds) {
+        const group = timetable.classes.find((c) => c.id === classId);
+        const key = (group?.short || group?.name) ?? "";
+        if (group !== undefined && key !== "" && !groups.has(key)) groups.set(key, group);
+      }
       const subject = timetable.subjects.find((s) => s.id === lesson.subjectId);
       if (subject === undefined) continue;
       const key = subject.name === "" ? subject.short : subject.name;
@@ -75,12 +85,20 @@ const subjectsOfTeacher = (
     }
   }
 
-  return [...counts.entries()]
+  const subjects = [...counts.entries()]
     .flatMap(([key, count]) => {
       const subject = refs.get(key);
       return subject === undefined ? [] : [{ subject, count, teachers: [] }];
     })
     .sort((a, b) => b.count - a.count || a.subject.short.localeCompare(b.subject.short, "lv"));
+
+  return {
+    subjects,
+    teachers: [],
+    groups: [...groups.entries()]
+      .sort(([a], [b]) => a.localeCompare(b, "lv", { numeric: true }))
+      .map(([, group]) => group),
+  };
 };
 
 export const useSubjects = (): SubjectCatalogue => {
@@ -92,9 +110,7 @@ export const useSubjects = (): SubjectCatalogue => {
 
   return useMemo(() => {
     if (persona === "teacher") {
-      return teacherId === null
-        ? EMPTY
-        : { subjects: subjectsOfTeacher(timetables, teacherId), teachers: [] };
+      return teacherId === null ? EMPTY : catalogueOfTeacher(timetables, teacherId);
     }
     if (classId === null) return EMPTY;
     const week = weekFor(timetables, classId);
@@ -161,6 +177,6 @@ export const useSubjects = (): SubjectCatalogue => {
       })
       .sort((a, b) => a.teacher.short.localeCompare(b.teacher.short, "lv"));
 
-    return { subjects, teachers };
+    return { subjects, teachers, groups: [] };
   }, [timetables, classId, subgroup, persona, teacherId]);
 };

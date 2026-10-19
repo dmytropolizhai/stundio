@@ -196,6 +196,8 @@ Still unverified on a physical device (no JDK/Android SDK here).
   - [x] **Per-subject colours & Custom Color Wheel:** users can pick from DS pastel accents or
         use an interactive SVG **Color Wheel** (`ColorWheel` component) to assign arbitrary RGB/HSV
         colors to subjects. High-contrast readable ink is dynamically computed (`readableInk()`).
+  - [x] **Per-group colours (teachers):** the same picker per taught group; a group's colour
+        wins over the subject's on that group's lessons (`lessonAccent()`).
   - [x] **Monochrome mode:** toggle subject colour-coding off entirely (falls back to a
         single neutral tone across lesson rows, WeekView cells, and rails).
   - [x] Settings UI: "Appearance" section in `CustomizationSheet` with subject swatches, tone

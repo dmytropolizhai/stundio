@@ -4,7 +4,7 @@ import { usePersona } from "@/ui/persona";
 import { dayProgress, longBreaks, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
-import { buildingNotice, lessonBuilding, subjectCode, subjectAccent } from "@/ui/theme";
+import { buildingNotice, lessonBuilding, subjectCode, lessonAccent } from "@/ui/theme";
 import { PullToRefresh } from "@/ui/components/PullToRefresh.tsx";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
@@ -52,6 +52,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
+  const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
   const syncStatus = useAppStore((s) => s.syncStatus);
   const refresh = useAppStore((s) => s.refresh);
 
@@ -147,7 +148,12 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           if (lesson === undefined) return;
 
           const building = lessonBuilding(day, lesson);
-          const accent = subjectAccent(lesson.subject, subjectColorOverrides, colorCodingEnabled);
+          const accent = lessonAccent(
+            lesson,
+            subjectColorOverrides,
+            groupColorOverrides,
+            colorCodingEnabled,
+          );
 
           const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
           const classNames = teacherLesson.classes?.map((c) => c.short || c.name).join(" + ");
@@ -180,7 +186,17 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           ...(gap !== undefined ? { breakBefore: t("week.longBreak", { min: String(gap) }) } : {}),
         };
       }),
-    [periods, days, dates, subjectColorOverrides, colorCodingEnabled, liveLesson, breaks, t],
+    [
+      periods,
+      days,
+      dates,
+      subjectColorOverrides,
+      groupColorOverrides,
+      colorCodingEnabled,
+      liveLesson,
+      breaks,
+      t,
+    ],
   );
 
   const firstDay = dates[0];

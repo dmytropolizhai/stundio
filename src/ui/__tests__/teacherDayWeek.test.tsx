@@ -136,6 +136,42 @@ describe("Teacher Day and Week Views", () => {
     expect(screen.getByText("10a · 101")).toBeDefined();
   });
 
+  it("LessonRow paints a teacher's lesson in its group's colour over the subject's", async () => {
+    const harness = await bootHarness();
+    await clickAndSettle(() => {
+      void harness.store.getState().setGroupColorOverride("10a", "#123456");
+    });
+
+    wrap(
+      harness,
+      <ul>
+        <LessonRow
+          lesson={{
+            period: "3",
+            start: "10:00",
+            end: "10:40",
+            span: 1,
+            subject: { id: "math", name: "Matemātika", short: "Mat" },
+            teachers: [],
+            rooms: [],
+            classes: [{ id: "c1", name: "10a", short: "10a" }],
+            group: null,
+            status: "normal",
+            changeNote: null,
+          }}
+          live={false}
+          showTime={false}
+          subjectColorOverrides={{ mat: "lime" }}
+          colorCodingEnabled={true}
+          filled={false}
+        />
+      </ul>,
+    );
+
+    const disc = screen.getByText("3");
+    expect(disc.style.backgroundColor).toBe("#123456");
+  });
+
   it("WeekView renders teacher schedule and overview statistics", async () => {
     const harness = await bootHarness();
     const teachers = listTeachers(Object.values(harness.store.getState().timetables));

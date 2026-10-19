@@ -12,6 +12,8 @@ export {
   subjectCode,
   subjectTone,
   subjectAccent,
+  lessonAccent,
+  groupToneKey,
   subjectToneKey,
   type SubjectTone,
   type SubjectAccent,

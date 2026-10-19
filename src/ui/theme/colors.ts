@@ -10,6 +10,7 @@
 import {
   isMainBuilding,
   type Building,
+  type ClassRef,
   type ResolvedDay,
   type ResolvedLesson,
   type ResolvedStatus,
@@ -114,6 +115,39 @@ export const subjectAccent = (
     return { tone: "custom", fill: override, ink: readableInk(override) };
   }
   return { tone: subjectTone(subject, overrides, enabled) };
+};
+
+/**
+ * The stable key a teaching group is overridden on: the class short ("2DP1"), like a subject's
+ * code, because it is what survives a weekly republish where ids may be renumbered.
+ */
+export const groupToneKey = (group: ClassRef): string =>
+  (group.short || group.name || group.id).trim().toLowerCase();
+
+/**
+ * A whole lesson's accent: a teacher's group override first, the subject's accent otherwise.
+ *
+ * Only a teacher's resolved lessons carry `classes` (MODEL.md's teacher join), so a student's day
+ * always falls straight through to `subjectAccent`. A lesson taught to several groups at once
+ * takes the first of them that has an override, in the order EduPage lists them — the same
+ * order `lessonHeading` prints them in, so the colour belongs to the group the card names first.
+ */
+export const lessonAccent = (
+  lesson: Pick<ResolvedLesson, "subject" | "classes">,
+  subjectOverrides: Record<string, string> = {},
+  groupOverrides: Record<string, string> = {},
+  enabled = true,
+): SubjectAccent => {
+  if (enabled) {
+    for (const group of lesson.classes ?? []) {
+      const override = groupOverrides[groupToneKey(group)];
+      if (override === undefined) continue;
+      return isHexColor(override)
+        ? { tone: "custom", fill: override, ink: readableInk(override) }
+        : { tone: override as SubjectTone };
+    }
+  }
+  return subjectAccent(lesson.subject, subjectOverrides, enabled);
 };
 
 /*

@@ -370,6 +370,14 @@ alongside the 6 preset pastel accents. Whenever a custom accent is chosen, high-
 text ink is dynamically calculated via `readableInk()`. Users can also toggle monochrome mode to
 turn off subject color-coding entirely (falling back to a uniform neutral tone).
 
+**Group colours (teachers):** a teacher meets many groups, often for the same subject, so the
+sheet also lists the groups they teach (`useSubjects().groups`) with the same picker. A group's
+override (`Settings.groupColorOverrides`, keyed by `groupToneKey` — the lowercased class short)
+wins over the subject's colour on that group's lessons; every render site reads a lesson's colour
+through `lessonAccent()`, which falls back to `subjectAccent()`. A lesson taught to several groups
+takes the first listed group with an override. Students never see the section, and their lessons
+carry no `classes`, so group colours can never leak into a student's day.
+
 ### Status
 
 - **Success** (`#0b8a4e`), **Warning** (`#ffb552`), **Danger** (`#d92020`), **Offline** (`#5b6070`).

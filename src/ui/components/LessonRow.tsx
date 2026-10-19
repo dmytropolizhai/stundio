@@ -1,7 +1,7 @@
 import { memo } from "react";
 import type { ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Badge, LessonCard } from "@/ds";
-import { STATUS_TREATMENT, isChanged, subjectAccent } from "@/ui/theme";
+import { STATUS_TREATMENT, isChanged, lessonAccent } from "@/ui/theme";
 import { StatusDot } from "./Badge.tsx";
 import { useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
@@ -33,6 +33,7 @@ export const LessonRow = memo(
   }: LessonRowProps) => {
     const t = useT();
     const highlightCoverLessons = useAppStore((s) => s.settings.highlightCoverLessons);
+    const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
 
     const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
     const { isTeacherMode, rooms, title: subject, subtitle } = lessonHeading(lesson);
@@ -46,7 +47,12 @@ export const LessonRow = memo(
         : t("teacher.cover");
 
     const status = live ? "now" : STATUS_TREATMENT[lesson.status];
-    const accent = subjectAccent(lesson.subject, subjectColorOverrides, colorCodingEnabled);
+    const accent = lessonAccent(
+      lesson,
+      subjectColorOverrides,
+      groupColorOverrides,
+      colorCodingEnabled,
+    );
 
     const hasNote = (lesson.noteRefs?.length ?? 0) > 0;
 

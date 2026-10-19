@@ -440,6 +440,10 @@ export const en: Dict = {
     "These are the subjects you teach. Tap a colour to reassign it; tap Auto to go back to the default.",
   "customization.subjectColors.empty.teacher":
     "Pick yourself as a teacher to customize the colours of your subjects.",
+  "customization.groupColors": "Group colours",
+  "customization.groupColors.hint":
+    "Give a group its own colour — it replaces the subject's colour on that group's lessons. Auto goes back to the subject colour.",
+  "customization.groupColors.empty": "No groups in your timetable yet.",
   "customization.preview.subject": "Sample subject",
   "customization.reset": "Reset to defaults",
 

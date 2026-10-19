@@ -445,6 +445,10 @@ export const ru: Dict = {
     "Это предметы, которые ты преподаёшь. Нажми на цвет, чтобы назначить его; нажми «Авто», чтобы вернуть цвет по умолчанию.",
   "customization.subjectColors.empty.teacher":
     "Выбери себя как преподавателя, чтобы настроить цвета своих предметов.",
+  "customization.groupColors": "Цвета групп",
+  "customization.groupColors.hint":
+    "Назначь группе свой цвет — он заменит цвет предмета на уроках этой группы. «Авто» вернёт цвет предмета.",
+  "customization.groupColors.empty": "В твоём расписании пока нет групп.",
   "customization.preview.subject": "Пример предмета",
   "customization.reset": "Сбросить настройки",
 

@@ -449,6 +449,10 @@ export const lv = {
     'Tie ir priekšmeti, kurus tu pasniedz. Pieskaries krāsai, lai to mainītu; pieskaries "Auto", lai atgrieztos pie noklusējuma.',
   "customization.subjectColors.empty.teacher":
     "Izvēlies sevi kā skolotāju, lai pielāgotu savu priekšmetu krāsas.",
+  "customization.groupColors": "Grupu krāsas",
+  "customization.groupColors.hint":
+    'Piešķir grupai savu krāsu — tā aizstāj priekšmeta krāsu šīs grupas stundās. "Auto" atgriež priekšmeta krāsu.',
+  "customization.groupColors.empty": "Tavā stundu sarakstā vēl nav nevienas grupas.",
   "customization.preview.subject": "Piemēra priekšmets",
   "customization.reset": "Atjaunot noklusējumu",
 

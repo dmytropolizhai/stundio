@@ -2,9 +2,17 @@ import { useState, type CSSProperties, type ReactNode } from "react";
 import { LessonCard } from "@/ds/components/ui/lesson-card.tsx";
 import { BottomSheet, Button, ColorWheel, SegmentedTabs, Switch, cn, Slider } from "@/ds";
 import { useAppStore, useSettingSetter } from "@/store";
-import type { Settings } from "@/db";
-import type { SubjectRef } from "@/lib/edupage";
-import { SUBJECT_TONES, SUBJECT_TONE_BG, subjectAccent, subjectToneKey } from "@/ui/theme";
+import type { Settings, SubjectColorValue } from "@/db";
+import type { ClassRef, SubjectRef } from "@/lib/edupage";
+import {
+  SUBJECT_TONES,
+  SUBJECT_TONE_BG,
+  groupToneKey,
+  lessonAccent,
+  subjectAccent,
+  subjectToneKey,
+  type SubjectAccent,
+} from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 import { usePersona } from "@/ui/persona";
 import { useSubjects } from "../../hooks/useSubjects.ts";
@@ -93,30 +101,29 @@ const ResetAction = ({
 );
 
 /**
- * One subject's accent picker: the six DS tones (their own contrast-checked ink pair), a free
- * `ColorWheel` circle for "any RGB colour" — the product decision behind this control — and a
- * reset back to the auto-assigned tone.
+ * One accent picker: the six DS tones (their own contrast-checked ink pair), a free `ColorWheel`
+ * circle for "any RGB colour" — the product decision behind this control — and a reset back to
+ * the automatic colour.
  *
- * A wheel pick trades the DS's guaranteed 4.5:1 contrast for `subjectAccent`'s computed-on-the-fly
- * ink (`ui/theme/colors.ts`): every render call site (`Card`, `LessonCard`, `WeekGrid`, the shared
- * week image) already knows how to carry that pair through, so this is the only place a custom
- * colour is actually chosen.
+ * A wheel pick trades the DS's guaranteed 4.5:1 contrast for the computed-on-the-fly ink in
+ * `ui/theme/colors.ts`: every render call site (`Card`, `LessonCard`, `WeekGrid`, the shared week
+ * image) already knows how to carry that pair through, so this is the only place a custom colour
+ * is actually chosen. `accent` is `null` when the row has no colour of its own yet — a group
+ * with no override follows its lessons' subjects, so no swatch reads as selected.
  */
-const SubjectColorRow = ({
+const ColorRow = ({
   label,
-  tokenKey,
-  subject,
+  accent,
+  isOverridden,
+  onPick,
 }: {
   label: string;
-  tokenKey: string;
-  subject: SubjectRef;
+  accent: SubjectAccent | null;
+  isOverridden: boolean;
+  onPick: (value: SubjectColorValue | null) => void;
 }) => {
   const t = useT();
-  const overrides = useAppStore((s) => s.settings.subjectColorOverrides);
-  const setOverride = useAppStore((s) => s.setSubjectColorOverride);
-  const accent = subjectAccent(subject, overrides);
-  const isCustom = accent.tone === "custom";
-  const isOverridden = overrides[tokenKey] !== undefined;
+  const isCustom = accent?.tone === "custom";
   const [wheelOpen, setWheelOpen] = useState(false);
 
   return (
@@ -127,7 +134,7 @@ const SubjectColorRow = ({
           disabled={!isOverridden}
           onClick={() => {
             setWheelOpen(false);
-            void setOverride(tokenKey, null);
+            onPick(null);
           }}
         >
           {t("customization.subjectColors.reset")}
@@ -138,11 +145,11 @@ const SubjectColorRow = ({
           <Swatch
             key={option}
             label={option}
-            pressed={!isCustom && accent.tone === option}
+            pressed={!isCustom && accent?.tone === option}
             className={SUBJECT_TONE_BG[option]}
             onClick={() => {
               setWheelOpen(false);
-              void setOverride(tokenKey, option);
+              onPick(option);
             }}
           />
         ))}
@@ -150,23 +157,24 @@ const SubjectColorRow = ({
           label={t("customization.subjectColors.custom")}
           pressed={isCustom}
           style={{
-            background: isCustom
-              ? accent.fill
-              : "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
+            background:
+              accent?.tone === "custom"
+                ? accent.fill
+                : "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
           }}
           onClick={() => {
             setWheelOpen((open) => !isCustom || !open);
-            if (!isCustom) void setOverride(tokenKey, DEFAULT_WHEEL_COLOR);
+            if (!isCustom) onPick(DEFAULT_WHEEL_COLOR);
           }}
         />
       </SwatchRow>
 
-      {wheelOpen && isCustom && (
+      {wheelOpen && accent?.tone === "custom" && (
         <div className="mt-3 mb-1">
           <ColorWheel
             value={accent.fill}
             onChange={(hex) => {
-              void setOverride(tokenKey, hex);
+              onPick(hex);
             }}
             label={t("customization.subjectColors.custom")}
             lightnessLabel={t("customization.subjectColors.lightness")}
@@ -174,6 +182,47 @@ const SubjectColorRow = ({
         </div>
       )}
     </div>
+  );
+};
+
+const SubjectColorRow = ({ label, subject }: { label: string; subject: SubjectRef }) => {
+  const overrides = useAppStore((s) => s.settings.subjectColorOverrides);
+  const setOverride = useAppStore((s) => s.setSubjectColorOverride);
+  const tokenKey = subjectToneKey(subject);
+
+  return (
+    <ColorRow
+      label={label}
+      accent={subjectAccent(subject, overrides)}
+      isOverridden={overrides[tokenKey] !== undefined}
+      onPick={(value) => {
+        void setOverride(tokenKey, value);
+      }}
+    />
+  );
+};
+
+/**
+ * A teacher's group picker. The accent is read through `lessonAccent` with a subject-less lesson
+ * of just this group, so the swatch shown is exactly what that group's cards will render in.
+ */
+const GroupColorRow = ({ group }: { group: ClassRef }) => {
+  const overrides = useAppStore((s) => s.settings.groupColorOverrides);
+  const setOverride = useAppStore((s) => s.setGroupColorOverride);
+  const tokenKey = groupToneKey(group);
+  const isOverridden = overrides[tokenKey] !== undefined;
+
+  return (
+    <ColorRow
+      label={group.short || group.name}
+      accent={
+        isOverridden ? lessonAccent({ subject: null, classes: [group] }, {}, overrides) : null
+      }
+      isOverridden={isOverridden}
+      onPick={(value) => {
+        void setOverride(tokenKey, value);
+      }}
+    />
   );
 };
 
@@ -238,7 +287,8 @@ const FULL_WIDTH_TABS = "flex w-full [&>button]:grow [&>button]:whitespace-nowra
  *
  * The role shapes the sheet through `PERSONA_PROFILES[…].customization`: a teacher's preview card
  * leads with the group and room like their day list does, and the subject-colour copy talks about
- * the subjects they teach rather than a class's.
+ * the subjects they teach rather than a class's. A teacher also gets per-group colours: several
+ * groups taking the same subject would otherwise all look alike on their day.
  */
 export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const t = useT();
@@ -250,7 +300,7 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
   const setReduceMotion = useSettingSetter("reduceMotion");
   const setSubjectColorCodingEnabled = useSettingSetter("subjectColorCodingEnabled");
   const resetCustomization = useAppStore((s) => s.resetCustomization);
-  const { subjects } = useSubjects();
+  const { subjects, groups } = useSubjects();
   const { customization } = usePersona().profile;
 
   const themes: { key: Settings["theme"]; label: string }[] = [
@@ -435,16 +485,38 @@ export const CustomizationSheet = ({ open, onClose }: { open: boolean; onClose: 
               </Row>
               {subjects.map(({ subject }) => (
                 <Row key={subject.id}>
-                  <SubjectColorRow
-                    label={subject.name || subject.short}
-                    tokenKey={subjectToneKey(subject)}
-                    subject={subject}
-                  />
+                  <SubjectColorRow label={subject.name || subject.short} subject={subject} />
                 </Row>
               ))}
             </>
           ))}
       </Section>
+
+      {/* Hidden while colour-coding is off for the same reason as the subject list above. */}
+      {customization.groupColors && settings.subjectColorCodingEnabled && (
+        <Section title={t("customization.groupColors")}>
+          {groups.length === 0 ? (
+            <Row>
+              <p className="font-text text-caption text-muted">
+                {t("customization.groupColors.empty")}
+              </p>
+            </Row>
+          ) : (
+            <>
+              <Row>
+                <p className="font-text text-caption text-muted">
+                  {t("customization.groupColors.hint")}
+                </p>
+              </Row>
+              {groups.map((group) => (
+                <Row key={group.id}>
+                  <GroupColorRow group={group} />
+                </Row>
+              ))}
+            </>
+          )}
+        </Section>
+      )}
     </BottomSheet>
   );
 };
