@@ -189,6 +189,29 @@ describe("WeekGrid merge", () => {
     expect(screen.getAllByTestId("week-cell")).toHaveLength(2);
   });
 
+  it("splits a slot shared by two groups: first on the left, sibling on the right", () => {
+    const onSelect = vi.fn();
+    const split: WeekGridPeriod<string>[] = [
+      {
+        period: 1,
+        start: "08:30",
+        end: "09:15",
+        cells: { mon: { ...lvl, sibling: mat }, tue: mat },
+      },
+    ];
+    render(<WeekGrid days={days} periods={split} onSelect={onSelect} />);
+    const pair = screen.getByTestId("week-cell-pair");
+    const [left, right] = Array.from(pair.querySelectorAll("button"));
+    expect(left?.textContent).toBe("LVL");
+    expect(right?.textContent).toBe("MAT");
+    expect(screen.getAllByTestId("week-cell")).toHaveLength(3);
+
+    right?.click();
+    expect(onSelect).toHaveBeenCalledWith(mat, "mon", 1, 1);
+    left?.click();
+    expect(onSelect).toHaveBeenLastCalledWith({ ...lvl, sibling: mat }, "mon", 1, 0);
+  });
+
   it("rings only the live lesson and marks it as current", () => {
     const live: WeekGridPeriod<string>[] = [
       { period: 1, start: "08:30", end: "09:15", cells: { mon: { ...lvl, live: true }, tue: mat } },

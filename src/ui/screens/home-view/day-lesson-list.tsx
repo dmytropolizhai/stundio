@@ -1,7 +1,7 @@
 import { Fragment, useMemo, type ReactNode } from "react";
 import { m, type MotionValue } from "framer-motion";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import { FREE_PERIOD_MIN_MINUTES, minutesOf } from "@/lib/schedule";
+import { FREE_PERIOD_MIN_MINUTES, minutesOf, pairByGroup } from "@/lib/schedule";
 import { lessonBuilding } from "@/ui/theme";
 import { LessonRow } from "@/ui/components/LessonRow.tsx";
 import { useT } from "@/ui/i18n";
@@ -45,7 +45,9 @@ export const DayLessonList = ({
     let markerDrawn = date !== now.date || progress.current !== null;
     let previousEnd: number | null = null;
 
-    day.lessons.forEach((lesson, index) => {
+    pairByGroup(day.lessons).forEach((slot, index) => {
+      const pair = Array.isArray(slot) ? (slot as readonly [ResolvedLesson, ResolvedLesson]) : null;
+      const lesson = pair === null ? (slot as ResolvedLesson) : pair[0];
       const start = minutesOf(lesson.start);
 
       if (
@@ -68,24 +70,38 @@ export const DayLessonList = ({
         });
       }
 
-      const live = progress.current === lesson;
-      const building = lessonBuilding(day, lesson);
+      const renderRow = (l: ResolvedLesson, half: boolean) => {
+        const live = progress.current === l;
+        const building = lessonBuilding(day, l);
 
-      items.push({
-        key: `${lesson.period}-${lesson.subject?.id ?? "x"}-${lesson.group ?? ""}`,
-        node: (
+        return (
           <LessonRow
-            lesson={lesson}
+            key={`${l.period}-${l.subject?.id ?? "x"}-${l.group ?? ""}`}
+            lesson={l}
             live={live}
             showTime={showTime}
             subjectColorOverrides={subjectColorOverrides}
             colorCodingEnabled={colorCodingEnabled}
             filled={filled}
+            half={half}
             {...(live && progress.progress !== null ? { progress: progress.progress } : {})}
             {...(building === undefined ? {} : { building })}
             onOpen={onOpenLesson}
           />
-        ),
+        );
+      };
+
+      items.push({
+        key: `${lesson.period}-${lesson.subject?.id ?? "x"}-${lesson.group ?? ""}`,
+        node:
+          pair === null ? (
+            renderRow(lesson, false)
+          ) : (
+            <li className="grid grid-cols-2 gap-3" data-testid="lesson-pair">
+              {renderRow(pair[0], true)}
+              {renderRow(pair[1], true)}
+            </li>
+          ),
       });
 
       const end = minutesOf(lesson.end);

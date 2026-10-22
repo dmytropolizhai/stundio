@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
-import { dayProgress, longBreaks, weekDates, weekPeriods } from "@/lib/schedule";
+import { dayProgress, longBreaks, pairByGroup, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { buildingNotice, lessonBuilding, subjectCode, lessonAccent } from "@/ui/theme";
@@ -119,7 +119,10 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
         const start = periodNum(lesson.period);
         const span = Math.max(1, lesson.span);
         for (let offset = 0; offset < span; offset += 1) {
-          map.set(`${d}|${String(start + offset)}`, { lesson, day });
+          const key = `${d}|${String(start + offset)}`;
+          // A period shared by two groups: the first lesson owns the cell, the second its right
+          // half (`|1`), so a tap on either side opens the lesson it shows.
+          map.set(map.has(key) ? `${key}|1` : key, { lesson, day });
         }
       }
     });
@@ -143,36 +146,47 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
 
           if (day === null || d === undefined) return;
 
-          const lesson = day.lessons.find((l) => l.period === period);
+          const slot = pairByGroup(day.lessons.filter((l) => l.period === period))[0];
 
-          if (lesson === undefined) return;
+          if (slot === undefined) return;
 
-          const building = lessonBuilding(day, lesson);
-          const accent = lessonAccent(
-            lesson,
-            subjectColorOverrides,
-            groupColorOverrides,
-            colorCodingEnabled,
-          );
+          const [lesson, second] = Array.isArray(slot)
+            ? (slot as readonly [ResolvedLesson, ResolvedLesson])
+            : [slot as ResolvedLesson, undefined];
 
-          const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
-          const classNames = teacherLesson.classes?.map((c) => c.short || c.name).join(" + ");
-          const subjectName = lesson.subject?.name ?? lesson.subject?.short ?? "";
-          const displayName = classNames ? `${subjectName} (${classNames})` : subjectName;
+          const toCell = (l: ResolvedLesson): WeekGridCell => {
+            const building = lessonBuilding(day, l);
+            const accent = lessonAccent(
+              l,
+              subjectColorOverrides,
+              groupColorOverrides,
+              colorCodingEnabled,
+            );
+
+            const teacherLesson = l as Partial<TeacherResolvedLesson>;
+            const classNames = teacherLesson.classes?.map((c) => c.short || c.name).join(" + ");
+            const subjectName = l.subject?.name ?? l.subject?.short ?? "";
+            const displayName = classNames ? `${subjectName} (${classNames})` : subjectName;
+
+            return {
+              // A teacher scans the week for "which group", so the cell leads with the group and
+              // the subject stays in `name` (tooltip / aria label); students keep the subject code.
+              short: classNames ? classNames : subjectCode(l.subject),
+              name: displayName,
+              tone: accent.tone,
+              cancelled: l.status === "cancelled",
+              ...(l === liveLesson ? { live: true } : {}),
+              span: l.span,
+              ...(building === undefined ? {} : { building }),
+              ...(accent.tone === "custom"
+                ? { accentColor: { fill: accent.fill, ink: accent.ink } }
+                : {}),
+            };
+          };
 
           cells[d] = {
-            // A teacher scans the week for "which group", so the cell leads with the group and
-            // the subject stays in `name` (tooltip / aria label); students keep the subject code.
-            short: classNames ? classNames : subjectCode(lesson.subject),
-            name: displayName,
-            tone: accent.tone,
-            cancelled: lesson.status === "cancelled",
-            ...(lesson === liveLesson ? { live: true } : {}),
-            span: lesson.span,
-            ...(building === undefined ? {} : { building }),
-            ...(accent.tone === "custom"
-              ? { accentColor: { fill: accent.fill, ink: accent.ink } }
-              : {}),
+            ...toCell(lesson),
+            ...(second === undefined ? {} : { sibling: toCell(second) }),
           };
         });
 
@@ -244,8 +258,9 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           }
           onSelectDay={onOpenDay}
           mergeConsecutive={mergeConsecutive}
-          onSelect={(_cell, dayKey, period) => {
-            const hit = lessonAt.get(`${dayKey}|${String(period)}`);
+          onSelect={(_cell, dayKey, period, half) => {
+            const key = `${dayKey}|${String(period)}`;
+            const hit = lessonAt.get(half === 1 ? `${key}|1` : key);
 
             if (hit !== undefined) {
               setOpen(hit);

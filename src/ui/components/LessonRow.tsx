@@ -16,6 +16,8 @@ type LessonRowProps = {
   subjectColorOverrides: Record<string, string>;
   colorCodingEnabled: boolean;
   filled: boolean;
+  /** One of two groups sharing a period: half-width card, labelled with its group. */
+  half?: boolean;
   onOpen?: (lesson: ResolvedLesson) => void;
 };
 
@@ -29,6 +31,7 @@ export const LessonRow = memo(
     subjectColorOverrides,
     colorCodingEnabled,
     filled,
+    half = false,
     onOpen,
   }: LessonRowProps) => {
     const t = useT();
@@ -36,7 +39,9 @@ export const LessonRow = memo(
     const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
 
     const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
-    const { isTeacherMode, rooms, title: subject, subtitle } = lessonHeading(lesson);
+    const { isTeacherMode, rooms, title: subject, subtitle: baseSubtitle } = lessonHeading(lesson);
+    const subtitle =
+      half && lesson.group !== null ? `${t("settings.subgroup")} ${lesson.group}` : baseSubtitle;
     const teachers = lesson.teachers.map((x) => x.short).join(", ");
 
     const isCover = lesson.isCover === true || teacherLesson.role === "cover";
@@ -56,8 +61,10 @@ export const LessonRow = memo(
 
     const hasNote = (lesson.noteRefs?.length ?? 0) > 0;
 
+    const Wrapper = half ? "div" : "li";
+
     return (
-      <li className="relative">
+      <Wrapper className={half ? "relative min-w-0" : "relative"}>
         <LessonCard
           period={lesson.period}
           start={lesson.start}
@@ -74,6 +81,7 @@ export const LessonRow = memo(
           filled={filled}
           status={status}
           timeVisible={showTime}
+          compact={half}
           badge={
             live || isCover || hasNote ? (
               <div className="flex items-center gap-1.5">
@@ -122,7 +130,7 @@ export const LessonRow = memo(
             />
           </span>
         )}
-      </li>
+      </Wrapper>
     );
   },
 );
