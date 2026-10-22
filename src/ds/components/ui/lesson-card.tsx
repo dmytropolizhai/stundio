@@ -111,6 +111,11 @@ export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> 
      * flips to `true` the digits mount fresh, so the reveal animation (`studio-time-in`) replays.
      */
     timeVisible?: boolean;
+    /**
+     * Half-width layout for two cards sharing a row (two subgroups with the same period): the
+     * period badge stacks above the text, the times are dropped and the padding tightens.
+     */
+    compact?: boolean;
   };
 
 export const LessonCard = ({
@@ -130,6 +135,7 @@ export const LessonCard = ({
   badge,
   indicator,
   timeVisible = true,
+  compact = false,
   onClick,
   style,
   ...props
@@ -146,6 +152,7 @@ export const LessonCard = ({
       {...pressable(onClick)}
       className={cn(
         lessonCardVariants({ filled, tone, cancelled, interactive }),
+        compact && "h-full grid-cols-1 gap-2.5 p-3",
         status === "now" && !filled && "inset-ring-2 inset-ring-brand",
         status !== "now" &&
           building !== undefined &&
@@ -163,7 +170,7 @@ export const LessonCard = ({
       {indicator !== undefined && <span className="absolute top-3 right-3">{indicator}</span>}
 
       <div className="flex items-center gap-3">
-        {timeVisible && (
+        {timeVisible && !compact && (
           <div className="flex min-w-11.5 flex-col items-start justify-between py-0.5">
             <span
               className={cn(

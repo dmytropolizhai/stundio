@@ -33,3 +33,4 @@ export {
   teacherSubstitutionsChanged,
   teacherHasCoverDuty,
 } from "./substitutionDiff.ts";
+export { pairByGroup, type LessonSlot } from "./groupPairs.ts";

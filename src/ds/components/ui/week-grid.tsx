@@ -25,6 +25,12 @@ export type WeekGridCell = {
    * lessons that merely happen to sit back-to-back. Defaults to 1.
    */
   span?: number;
+  /**
+   * A second lesson in the same slot — two subgroups meeting at the same time. The cell is split
+   * down the middle: this lesson on the left, the sibling on the right. The sibling's own `span`
+   * is ignored; the pair shares this cell's.
+   */
+  sibling?: WeekGridCell;
 };
 
 export type WeekGridDay<K extends string = string> = {
@@ -48,7 +54,8 @@ export type WeekGridPeriod<K extends string = string> = {
 export type WeekGridProps<K extends string = string> = {
   days: readonly WeekGridDay<K>[];
   periods: readonly WeekGridPeriod<K>[];
-  onSelect?: (cell: WeekGridCell, day: K, period: number) => void;
+  /** `half` is 1 when the right-hand lesson of a split cell was tapped. */
+  onSelect?: (cell: WeekGridCell, day: K, period: number, half?: 0 | 1) => void;
   /**
    * Makes the weekday headers tappable — a shortcut from the week overview into one day.
    *
@@ -104,7 +111,10 @@ const sameCell = (a: WeekGridCell, b: WeekGridCell): boolean =>
   (a.tone !== "custom" || a.accentColor?.fill === b.accentColor?.fill) &&
   (a.cancelled ?? false) === (b.cancelled ?? false) &&
   (a.live ?? false) === (b.live ?? false) &&
-  (a.building ?? "") === (b.building ?? "");
+  (a.building ?? "") === (b.building ?? "") &&
+  (a.sibling === undefined
+    ? b.sibling === undefined
+    : b.sibling !== undefined && sameCell(a.sibling, b.sibling));
 
 /**
  * Placement per row for one day column.
@@ -322,46 +332,62 @@ export const WeekGrid = <K extends string>({
           const { cell, span } = placement;
           const period = periods[rowIndex];
           if (period === undefined) return null;
-          return (
+          const area = {
+            gridColumn,
+            gridRow:
+              span === 1
+                ? gridRow
+                : `${String(gridRow)} / span ${String(trackOf(rowIndex + span - 1) - gridRow + 1)}`,
+          };
+          const renderCell = (c: WeekGridCell, half?: 0 | 1) => (
             <button
-              key={`${day.key}-${rowIndex}`}
+              key={half === undefined ? `${day.key}-${rowIndex}` : half}
               type="button"
               data-testid="week-cell"
-              {...(cell.live === true ? { "aria-current": "time" as const } : {})}
-              aria-label={cellLabel?.(cell, day, period.period) ?? cell.name ?? cell.short}
+              {...(c.live === true ? { "aria-current": "time" as const } : {})}
+              aria-label={cellLabel?.(c, day, period.period) ?? c.name ?? c.short}
               // Free on desktop (hover), inert on the touch device this app actually ships on —
               // tapping already opens the full lesson sheet with the name.
               title={
-                cell.building === undefined
-                  ? (cell.name ?? cell.short)
-                  : `${cell.name ?? cell.short} · ${cell.building}`
+                c.building === undefined
+                  ? (c.name ?? c.short)
+                  : `${c.name ?? c.short} · ${c.building}`
               }
               onClick={() => {
-                onSelect?.(cell, day.key, period.period);
+                onSelect?.(c, day.key, period.period, half);
               }}
               style={{
-                gridColumn,
-                gridRow:
-                  span === 1
-                    ? gridRow
-                    : `${String(gridRow)} / span ${String(trackOf(rowIndex + span - 1) - gridRow + 1)}`,
-                ...(cell.tone === "custom" && cell.accentColor !== undefined
-                  ? { backgroundColor: cell.accentColor.fill, color: cell.accentColor.ink }
+                ...(half === undefined ? area : {}),
+                ...(c.tone === "custom" && c.accentColor !== undefined
+                  ? { backgroundColor: c.accentColor.fill, color: c.accentColor.ink }
                   : {}),
               }}
               className={cn(
                 "truncate rounded-sm border-0 px-1.5",
                 "font-text text-caption font-bold",
-                cell.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[cell.tone ?? "sky"]),
-                cell.cancelled === true && "opacity-40 line-through",
-                cell.live === true
+                half !== undefined && "min-w-0",
+                c.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[c.tone ?? "sky"]),
+                c.cancelled === true && "opacity-40 line-through",
+                c.live === true
                   ? "inset-ring-2 inset-ring-brand"
-                  : cell.building !== undefined && "inset-ring-2 inset-ring-strong-border",
+                  : c.building !== undefined && "inset-ring-2 inset-ring-strong-border",
                 onSelect === undefined ? "cursor-default" : "cursor-pointer",
               )}
             >
-              {cell.short}
+              {c.short}
             </button>
+          );
+          if (cell.sibling === undefined) return renderCell(cell);
+          return (
+            <div
+              key={`${day.key}-${rowIndex}`}
+              data-testid="week-cell-pair"
+              className="grid min-w-0 grid-cols-2 gap-0.5"
+              style={area}
+            >
+              {renderCell(cell, 0)}
+              {renderCell(cell.sibling, 1)}
+            </div>
           );
         }),
       )}
