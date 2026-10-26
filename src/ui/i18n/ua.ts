@@ -187,6 +187,7 @@ export const ua: Dict = {
 
   "week.previousWeek": "Попередній тиждень",
   "week.nextWeek": "Наступний тиждень",
+  "week.pageHint": "Прогортайте ліворуч або праворуч чи використайте стрілки, щоб змінити тиждень",
   "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Огляд",
   "week.overview.lessons": "{n} уроків",

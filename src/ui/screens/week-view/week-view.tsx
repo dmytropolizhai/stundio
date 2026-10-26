@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
+import { m } from "framer-motion";
 import { useAppStore } from "@/store";
+import { addDays } from "@/sync";
 import { usePersona } from "@/ui/persona";
 import { dayProgress, longBreaks, pairByGroup, weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
@@ -10,6 +12,7 @@ import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { LessonSheet } from "@/ui/screens/lesson-sheet";
 import { useNow } from "@/ui/hooks/useNow.ts";
+import { useSwipePager } from "@/ui/hooks/useSwipePager.ts";
 import { useWeekOverview } from "@/ui/hooks/useWeekOverview.ts";
 import { useShareWeek } from "@/ui/share/useShareWeek.ts";
 import { ShareLanguageDialog } from "@/ui/share/ShareLanguageDialog.tsx";
@@ -33,9 +36,10 @@ type WeekViewProps = {
 /**
  * The whole school week at a glance: periods down, Mon–Fri across.
  *
- * Deliberately a grid rather than a swipeable pager of day lists — the point of this screen
- * is comparing days, and the DS sizes the cells for exactly that: a fixed 3-letter subject code,
- * which is the one place in the system abbreviation is allowed.
+ * Deliberately a grid rather than a pager of day lists — the point of this screen is comparing
+ * days, and the DS sizes the cells for exactly that: a fixed 3-letter subject code, which is the
+ * one place in the system abbreviation is allowed. What *does* page is the week itself: a swipe
+ * (or the arrow keys) steps to the neighbouring week, like the arrows in the header.
  */
 export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekViewProps) => {
   const t = useT();
@@ -62,6 +66,10 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   const substitutions = useAppStore((s) => s.substitutions);
 
   const dates = useMemo(() => weekDates(date), [date]);
+
+  const pager = useSwipePager(dates[0] ?? date, (dir) => {
+    onDateChange(addDays(date, dir * 7));
+  });
 
   const days = useMemo(
     () => dates.map((d) => resolvedDay(d)),
@@ -321,7 +329,19 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
             onRefresh={() => void refresh({ date, scope: "week", force: true })}
           />
 
-          {body()}
+          <div
+            className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-ring)"
+            role="group"
+            tabIndex={0}
+            aria-label={t("week.pageHint")}
+            style={{ touchAction: "pan-y" }}
+            data-testid="week-pager"
+            {...pager.gesture}
+          >
+            <m.div style={{ ...pager.slide, willChange: pager.dragging ? "transform" : "auto" }}>
+              {body()}
+            </m.div>
+          </div>
         </div>
       </PullToRefresh>
 
