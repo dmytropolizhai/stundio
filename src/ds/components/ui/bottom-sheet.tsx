@@ -11,6 +11,7 @@ export type BottomSheetProps = {
   onClose?: (() => void) | undefined;
   eyebrow?: ReactNode;
   title?: ReactNode;
+  subtitle?: ReactNode;
   children?: ReactNode;
   footer?: ReactNode;
   className?: string;
@@ -37,6 +38,7 @@ export const BottomSheet = ({
   onClose,
   eyebrow,
   title,
+  subtitle,
   children,
   footer,
   className,
@@ -118,6 +120,9 @@ export const BottomSheet = ({
               >
                 {title ?? label ?? "Details"}
               </Dialog.Title>
+              {subtitle !== undefined && (
+                <div className="mt-1 font-text text-body text-muted">{subtitle}</div>
+              )}
             </div>
             {onClose !== undefined && (
               <Dialog.Close asChild>

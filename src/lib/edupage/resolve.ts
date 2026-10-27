@@ -446,6 +446,7 @@ export const resolveDayAcross = (
 
     let status: ResolvedStatus = "normal";
     let changeNote: string | null = null;
+    let subjectRef = entry.lesson.subject;
     let teacherList = entry.lesson.teachers;
     let roomList = entry.lesson.rooms;
     const original: NonNullable<ResolvedLesson["original"]> = {};
@@ -455,6 +456,25 @@ export const resolveDayAcross = (
       status = strongerStatus(status, STATUS_FOR_KIND[s.kind] ?? "normal");
       changeNote = changeNote === null ? s.raw : `${changeNote} · ${s.raw}`;
 
+      if (s.subject !== null && (s.subjectFrom !== null || s.kind === "substitution")) {
+        const nextSubject = subjectsByLabel.get(s.subject) ?? synthSubject(s.subject);
+        const prevSubject =
+          subjectRef ??
+          (s.subjectFrom !== null
+            ? (subjectsByLabel.get(s.subjectFrom) ?? synthSubject(s.subjectFrom))
+            : null);
+        if (
+          s.subjectFrom !== null ||
+          (prevSubject !== null &&
+            prevSubject.name !== nextSubject.name &&
+            prevSubject.short !== nextSubject.short)
+        ) {
+          if (original.subject === undefined && prevSubject !== null) {
+            original.subject = prevSubject;
+          }
+          subjectRef = nextSubject;
+        }
+      }
       if (s.teacher !== null && s.kind === "substitution") {
         original.teachers = teacherList;
         teacherList = [lookupTeacher(s.teacher, teachersByKey) ?? synthTeacher(s.teacher)];
@@ -506,6 +526,7 @@ export const resolveDayAcross = (
     out.push({
       ...entry.lesson,
       ...(movedTo === undefined ? {} : { movedTo }),
+      subject: subjectRef,
       teachers: teacherList,
       rooms: roomList,
       status,
@@ -520,6 +541,13 @@ export const resolveDayAcross = (
     const start = s.periods[0];
     if (start === undefined) continue;
     const span = Math.max(1, s.periods.length);
+    const newOriginal: NonNullable<ResolvedLesson["original"]> = {};
+    if (s.subjectFrom !== null) {
+      newOriginal.subject = subjectsByLabel.get(s.subjectFrom) ?? synthSubject(s.subjectFrom);
+    }
+    if (s.movedFromPeriod !== null) {
+      newOriginal.period = String(s.movedFromPeriod);
+    }
 
     out.push({
       period: String(start),
@@ -536,7 +564,7 @@ export const resolveDayAcross = (
       // A lesson moved here from another slot/day is a move, not a brand-new lesson.
       status: s.kind === "moved_in" ? "moved" : "added",
       changeNote: s.raw,
-      original: s.movedFromPeriod !== null ? { period: String(s.movedFromPeriod) } : null,
+      original: Object.keys(newOriginal).length > 0 ? newOriginal : null,
       ...(lead === undefined ? {} : { building: lead.meta.building }),
     });
   }
@@ -546,8 +574,13 @@ export const resolveDayAcross = (
   // lesson is placed from the vacated row — it must not vanish from the day.
   for (const placed of vacatedMoves) {
     const label = (l: ResolvedLesson): string => l.subject?.name ?? l.subject?.short ?? "";
+    const origLabel = (l: ResolvedLesson): string =>
+      l.original?.subject?.name ?? l.original?.subject?.short ?? "";
     const twin = out.some(
-      (l) => l.status === "moved" && label(l) === label(placed) && l.group === placed.group,
+      (l) =>
+        l.status === "moved" &&
+        (label(l) === label(placed) || origLabel(l) === label(placed)) &&
+        l.group === placed.group,
     );
     if (!twin) out.push(placed);
   }
@@ -908,6 +941,7 @@ export const resolveTeacherDayAcross = (
 
     let status: ResolvedStatus = "normal";
     let changeNote: string | null = null;
+    let subjectRef = entry.lesson.subject;
     let roomList = entry.lesson.rooms;
     let coverFor: TeacherRef | null = null;
     const role: "own" | "cover" = "own";
@@ -917,6 +951,25 @@ export const resolveTeacherDayAcross = (
       status = strongerStatus(status, STATUS_FOR_KIND[s.kind] ?? "normal");
       changeNote = changeNote === null ? s.raw : `${changeNote} · ${s.raw}`;
 
+      if (s.subject !== null && (s.subjectFrom !== null || s.kind === "substitution")) {
+        const nextSubject = subjectsByLabel.get(s.subject) ?? synthSubject(s.subject);
+        const prevSubject =
+          subjectRef ??
+          (s.subjectFrom !== null
+            ? (subjectsByLabel.get(s.subjectFrom) ?? synthSubject(s.subjectFrom))
+            : null);
+        if (
+          s.subjectFrom !== null ||
+          (prevSubject !== null &&
+            prevSubject.name !== nextSubject.name &&
+            prevSubject.short !== nextSubject.short)
+        ) {
+          if (original.subject === undefined && prevSubject !== null) {
+            original.subject = prevSubject;
+          }
+          subjectRef = nextSubject;
+        }
+      }
       if (s.teacherFrom && teacherKey(s.teacherFrom) === myKey) {
         // Teacher is being covered by another teacher!
         original.teachers = [teacher];
@@ -937,6 +990,7 @@ export const resolveTeacherDayAcross = (
 
     out.push({
       ...entry.lesson,
+      subject: subjectRef,
       rooms: roomList,
       status,
       role,
@@ -968,6 +1022,13 @@ export const resolveTeacherDayAcross = (
     const absentColleague = s.teacherFrom
       ? (lookupTeacher(s.teacherFrom, teachersByKey) ?? synthTeacher(s.teacherFrom))
       : null;
+    const coverOriginal: NonNullable<ResolvedLesson["original"]> = {};
+    if (s.subjectFrom !== null) {
+      coverOriginal.subject = subjectsByLabel.get(s.subjectFrom) ?? synthSubject(s.subjectFrom);
+    }
+    if (s.movedFromPeriod !== null) {
+      coverOriginal.period = String(s.movedFromPeriod);
+    }
 
     out.push({
       period: String(start),
@@ -983,7 +1044,7 @@ export const resolveTeacherDayAcross = (
       coverFor: absentColleague,
       isCover: true,
       changeNote: s.raw,
-      original: s.movedFromPeriod !== null ? { period: String(s.movedFromPeriod) } : null,
+      original: Object.keys(coverOriginal).length > 0 ? coverOriginal : null,
       ...(leadBuilding === undefined ? {} : { building: leadBuilding }),
     });
   }

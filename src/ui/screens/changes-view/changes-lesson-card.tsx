@@ -49,6 +49,21 @@ export const ChangesLessonCard = ({ lesson, onOpen }: ChangesLessonCardProps) =>
   const roomChanged = origRoom !== "" && origRoom !== lesson.rooms.map((r) => r.short).join(", ");
   const heading = lessonHeading(lesson, !roomChanged);
   const isTeacherMode = heading.isTeacherMode;
+  const origSubject = heading.originalSubjectName;
+  const cardSubtitle = isTeacherMode ? (
+    origSubject !== undefined ? (
+      <span className="flex flex-col gap-0.5">
+        <span>{heading.subjectName}</span>
+        <span className="line-through opacity-75">{origSubject}</span>
+      </span>
+    ) : (
+      heading.subtitle
+    )
+  ) : origSubject !== undefined ? (
+    <span className="line-through opacity-75">{origSubject}</span>
+  ) : (
+    heading.subtitle
+  );
 
   const isCover = lesson.isCover === true || teacherLesson.role === "cover";
   const coverFor = teacherLesson.coverFor?.name ?? teacherLesson.coverFor?.short;
@@ -69,7 +84,7 @@ export const ChangesLessonCard = ({ lesson, onOpen }: ChangesLessonCardProps) =>
         start={lesson.start}
         end={lesson.end}
         subject={heading.title}
-        subtitle={heading.subtitle}
+        subtitle={cardSubtitle}
         {...(showTeacher ? { teacher: diff(origTeacher, teacher) } : {})}
         {...(showRoom && heading.rooms !== "" ? { room: diff(origRoom, heading.rooms) } : {})}
         tone={accent.tone}

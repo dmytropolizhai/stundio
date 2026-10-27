@@ -158,6 +158,13 @@ describe("parseInfo", () => {
     expect(r.subject).toBe("Preču uzskaite un dokumentēšana");
     expect(r.teacher).toBe("Lāsma Balceraite");
   });
+
+  it("classifies a subject-only arrow swap as substitution", () => {
+    const r = parseInfo("(Sports) ➔ Matemātika I", 2026);
+    expect(r.kind).toBe("substitution");
+    expect(r.subjectFrom).toBe("Sports");
+    expect(r.subject).toBe("Matemātika I");
+  });
 });
 
 describe("parseDaySubstitutions vs the Python oracle", () => {

@@ -88,9 +88,11 @@ describe("resolveDay — A1-2, which has real changes that day", () => {
     expect(cancelled.every((l) => l.changeNote !== null)).toBe(true);
   });
 
-  it("applies the teacher swap and keeps the original for a diff view", () => {
+  it("applies the teacher and subject swap and keeps the originals for a diff view", () => {
     const swapped = day.lessons.find((l) => l.status === "substituted");
     expect(swapped).toBeDefined();
+    expect(swapped?.subject?.name).toBe("Atslēdznieka darbi");
+    expect(swapped?.original?.subject?.name).toBe("Valodas, kultūras izpratne un izpausmes");
     expect(swapped?.teachers.map((t) => t.short)).toEqual(["Geislers Edgars"]);
     expect(swapped?.teachers[0]?.id).not.toMatch(/^subst:/);
     expect(swapped?.original?.teachers?.map((t) => t.short)).not.toEqual(["Geislers Edgars"]);

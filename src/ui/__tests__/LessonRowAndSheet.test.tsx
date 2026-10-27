@@ -138,4 +138,74 @@ describe("LessonRow and LessonSheet", () => {
       expect(screen.getByText(announcement)).toBeDefined();
     });
   });
+
+  describe("Subject substitution diff in LessonRow and LessonSheet", () => {
+    it("shows the new subject as title and crossed-out original subject in LessonRow", () => {
+      const lesson = createLesson({
+        status: "substituted",
+        subject: { id: "s2", name: "Atslēdznieka darbi", short: "Atsl" },
+        original: {
+          subject: {
+            id: "s1",
+            name: "Valodas, kultūras izpratne un izpausmes",
+            short: "Val",
+          },
+        },
+      });
+
+      renderWithStore(
+        <LessonRow
+          lesson={lesson}
+          live={false}
+          showTime={true}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+        />,
+      );
+
+      expect(screen.getByRole("heading", { name: "Atslēdznieka darbi" })).toBeDefined();
+      const orig = screen.getByText("Valodas, kultūras izpratne un izpausmes");
+      expect(orig.className).toContain("line-through");
+    });
+
+    it("shows the new subject as sheet title, crossed-out original subject as subtitle, and inline field diffs in LessonSheet", () => {
+      const lesson = createLesson({
+        period: "3",
+        status: "substituted",
+        subject: { id: "s2", name: "Angļu valoda", short: "Ang" },
+        teachers: [{ id: "t2", name: "Sintija Pleča", short: "Pleča S." }],
+        rooms: [{ id: "r2", name: "109", short: "109" }],
+        original: {
+          subject: {
+            id: "s1",
+            name: "Latviešu valoda I un Literatūra I",
+            short: "Lat",
+          },
+          teachers: [{ id: "t1", name: "Jānis Bērziņš", short: "Bērziņš J." }],
+          rooms: [{ id: "r1", name: "101", short: "101" }],
+          period: "10",
+        },
+      });
+
+      renderWithStore(<LessonSheet lesson={lesson} day={null} onClose={vi.fn()} />);
+
+      expect(screen.getByRole("heading", { name: "Angļu valoda" })).toBeDefined();
+      const origSubj = screen.getByTestId("lesson-original-subject");
+      expect(origSubj.textContent).toBe("Latviešu valoda I un Literatūra I");
+      expect(origSubj.className).toContain("line-through");
+
+      const origTeacher = screen.getByText("Bērziņš J.");
+      expect(origTeacher.className).toContain("line-through");
+      expect(screen.getByText(/➔ Pleča S\./)).toBeDefined();
+
+      const origRoom = screen.getByText("101");
+      expect(origRoom.className).toContain("line-through");
+      expect(screen.getByText(/➔ 109/)).toBeDefined();
+
+      const origPeriod = screen.getByText("10");
+      expect(origPeriod.className).toContain("line-through");
+      expect(screen.getByText(/➔ 3/)).toBeDefined();
+    });
+  });
 });
