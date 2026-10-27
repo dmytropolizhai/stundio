@@ -169,6 +169,8 @@ and that a failed refresh keeps the previous `lastSyncAt` so the UI still reads 
 - [x] **WeekView:** Mon–Fri **grid** (periods down, days across), tap a cell → LessonSheet, tap a
       weekday header → that day. Chose a grid over the planned horizontal pager: the point of the
       screen is comparing days, which a pager hides.
+      The *week* pages instead: a horizontal swipe (or ←/→ on the focused grid) steps to the
+      neighbouring week, same as the header arrows (`ui/hooks/useSwipePager.ts`).
 - [x] **LessonSheet:** bottom sheet — full subject name, teacher(s), room, period time, group,
       building, the `original` → current diff, and EduPage's own sentence under "from school".
 - [x] **Settings:** class + favourites, building override (only when >1 building is cached), theme,

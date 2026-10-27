@@ -187,6 +187,7 @@ export const ru: Dict = {
 
   "week.previousWeek": "Предыдущая неделя",
   "week.nextWeek": "Следующая неделя",
+  "week.pageHint": "Проведи пальцем влево или вправо, или используй стрелки, чтобы сменить неделю",
   "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Обзор",
   "week.overview.lessons": "{n} уроков",

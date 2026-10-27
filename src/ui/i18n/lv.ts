@@ -193,6 +193,7 @@ export const lv = {
 
   "week.previousWeek": "Iepriekšējā nedēļa",
   "week.nextWeek": "Nākamā nedēļa",
+  "week.pageHint": "Velc pa kreisi vai pa labi, vai izmanto bultiņu taustiņus, lai mainītu nedēļu",
   "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Pārskats",
   "week.overview.lessons": "{n} stundas",

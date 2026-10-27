@@ -5,6 +5,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { StoreContext } from "@/store";
+import { addDays } from "@/sync";
 import { WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
 import { ClassSelector } from "@/ui/screens/class-selector";
 import { WeekView } from "../screens/week-view";
@@ -189,6 +190,29 @@ describe("WeekGrid merge", () => {
     expect(screen.getAllByTestId("week-cell")).toHaveLength(2);
   });
 
+  it("splits a slot shared by two groups: first on the left, sibling on the right", () => {
+    const onSelect = vi.fn();
+    const split: WeekGridPeriod<string>[] = [
+      {
+        period: 1,
+        start: "08:30",
+        end: "09:15",
+        cells: { mon: { ...lvl, sibling: mat }, tue: mat },
+      },
+    ];
+    render(<WeekGrid days={days} periods={split} onSelect={onSelect} />);
+    const pair = screen.getByTestId("week-cell-pair");
+    const [left, right] = Array.from(pair.querySelectorAll("button"));
+    expect(left?.textContent).toBe("LVL");
+    expect(right?.textContent).toBe("MAT");
+    expect(screen.getAllByTestId("week-cell")).toHaveLength(3);
+
+    right?.click();
+    expect(onSelect).toHaveBeenCalledWith(mat, "mon", 1, 1);
+    left?.click();
+    expect(onSelect).toHaveBeenLastCalledWith({ ...lvl, sibling: mat }, "mon", 1, 0);
+  });
+
   it("rings only the live lesson and marks it as current", () => {
     const live: WeekGridPeriod<string>[] = [
       { period: 1, start: "08:30", end: "09:15", cells: { mon: { ...lvl, live: true }, tue: mat } },
@@ -271,6 +295,67 @@ describe("WeekView", () => {
     expect(weekdayHeaders()).toHaveLength(5);
     // Cells carry the short subject code — the one place the DS allows an abbreviation.
     expect(screen.getAllByTestId("week-cell").length).toBeGreaterThan(0);
+  });
+
+  describe("week paging", () => {
+    const renderWeek = async () => {
+      const harness = await bootHarness();
+      const onDateChange = vi.fn();
+      wrap(
+        harness,
+        <WeekView
+          date={FIXTURE_DATE}
+          onDateChange={onDateChange}
+          onOpenDay={vi.fn()}
+          onPickClass={vi.fn()}
+        />,
+      );
+      return { onDateChange, pager: screen.getByTestId("week-pager") };
+    };
+
+    const swipe = (el: HTMLElement, from: [number, number], to: [number, number]) => {
+      fireEvent.touchStart(el, { touches: [{ clientX: from[0], clientY: from[1] }] });
+      fireEvent.touchMove(el, { touches: [{ clientX: to[0], clientY: to[1] }] });
+      fireEvent.touchEnd(el);
+    };
+
+    it("pages to the next week on a left swipe, and back on a right swipe", async () => {
+      const { onDateChange, pager } = await renderWeek();
+
+      swipe(pager, [300, 400], [200, 400]);
+      expect(onDateChange).toHaveBeenLastCalledWith(addDays(FIXTURE_DATE, 7));
+
+      swipe(pager, [200, 400], [300, 400]);
+      expect(onDateChange).toHaveBeenLastCalledWith(addDays(FIXTURE_DATE, -7));
+    });
+
+    it("ignores a short drag and a mostly-vertical one", async () => {
+      const { onDateChange, pager } = await renderWeek();
+
+      swipe(pager, [300, 400], [280, 400]);
+      swipe(pager, [300, 400], [260, 600]);
+      expect(onDateChange).not.toHaveBeenCalled();
+    });
+
+    it("leaves touches that start at the screen edge to the OS back gesture", async () => {
+      const { onDateChange, pager } = await renderWeek();
+
+      swipe(pager, [4, 400], [150, 400]);
+      expect(onDateChange).not.toHaveBeenCalled();
+    });
+
+    it("steps a week with the arrow keys, for anyone who can't swipe", async () => {
+      const { onDateChange, pager } = await renderWeek();
+
+      fireEvent.keyDown(pager, { key: "ArrowRight" });
+      expect(onDateChange).toHaveBeenLastCalledWith(addDays(FIXTURE_DATE, 7));
+
+      fireEvent.keyDown(pager, { key: "ArrowLeft" });
+      expect(onDateChange).toHaveBeenLastCalledWith(addDays(FIXTURE_DATE, -7));
+
+      fireEvent.keyDown(pager, { key: "Enter" });
+      expect(onDateChange).toHaveBeenCalledTimes(2);
+    });
   });
 
   it("says the schedule isn't out yet for a future week with no lessons", async () => {

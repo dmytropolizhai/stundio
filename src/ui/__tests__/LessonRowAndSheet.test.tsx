@@ -1,6 +1,8 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import type { ResolvedLesson } from "@/lib/edupage";
+import { motionValue } from "framer-motion";
+import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
+import { DayLessonList } from "../screens/home-view/day-lesson-list.tsx";
 import { StoreContext } from "@/store";
 import { bootHarness, type Harness } from "./harness.tsx";
 import { LessonRow } from "../components/LessonRow.tsx";
@@ -30,6 +32,61 @@ describe("LessonRow and LessonSheet", () => {
 
   const renderWithStore = (ui: React.ReactNode) =>
     render(<StoreContext.Provider value={harness.store}>{ui}</StoreContext.Provider>);
+
+  describe("DayLessonList pairs", () => {
+    it("renders two groups of the same period side by side in one row", () => {
+      const day = {
+        date: "2026-09-09",
+        lessons: [
+          createLesson({ group: "1", subject: { id: "a", name: "Anglu", short: "An" } }),
+          createLesson({ group: "2", subject: { id: "b", name: "Vācu", short: "Vā" } }),
+        ],
+        building: "main",
+        buildings: ["main"],
+      } as unknown as ResolvedDay;
+
+      renderWithStore(
+        <DayLessonList
+          day={day}
+          date="2026-09-09"
+          now={{ date: "2026-09-10", minutes: 0 }}
+          progress={{ current: null, progress: null }}
+          showTime={true}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+          x={motionValue(0)}
+          opacity={motionValue(1)}
+          dragging={false}
+          onOpenLesson={() => undefined}
+        />,
+      );
+
+      const pair = screen.getByTestId("lesson-pair");
+      expect(pair.children).toHaveLength(2);
+      expect(pair.children[0]?.textContent).toContain("Anglu");
+      expect(pair.children[1]?.textContent).toContain("Vācu");
+    });
+  });
+
+  describe("LessonRow half", () => {
+    it("labels a half-width card with its group and drops the time column", () => {
+      renderWithStore(
+        <LessonRow
+          lesson={createLesson({ group: "2" })}
+          live={false}
+          showTime={true}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+          half
+        />,
+      );
+
+      expect(screen.getByText(/2$/, { selector: "div" })).toBeDefined();
+      expect(screen.queryByText("13:30")).toBeNull();
+    });
+  });
 
   describe("LessonRow noteRefs chip", () => {
     it("renders a quiet chip when lesson.noteRefs is non-empty", () => {

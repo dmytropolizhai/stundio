@@ -185,6 +185,7 @@ export const en: Dict = {
 
   "week.previousWeek": "Previous week",
   "week.nextWeek": "Next week",
+  "week.pageHint": "Swipe left or right, or use the arrow keys, to change week",
   "week.buildingDays": "{building}: {days}",
   "week.overview.title": "Overview",
   "week.overview.lessons": "{n} lessons",
