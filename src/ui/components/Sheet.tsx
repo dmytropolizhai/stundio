@@ -13,12 +13,14 @@ export const Sheet = ({
   open,
   onClose,
   title,
+  subtitle,
   eyebrow,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  subtitle?: ReactNode;
   eyebrow?: ReactNode;
   children: ReactNode;
 }) => (
@@ -26,6 +28,7 @@ export const Sheet = ({
     open={open}
     onClose={onClose}
     title={title}
+    {...(subtitle === undefined ? {} : { subtitle })}
     {...(eyebrow === undefined ? {} : { eyebrow })}
   >
     {children}

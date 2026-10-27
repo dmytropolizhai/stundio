@@ -202,7 +202,7 @@ Arrow glyph is `➔` (U+2794).
    always dropped; the lesson shows once, on the new slot — from the feed's `moved_in` row, or
    placed there from the vacated row when the feed omits it (so it never vanishes).
 5. Keep `cancelled` lessons visible with `status: "cancelled"` (don't drop — users want to see it).
-6. `changeNote` ← `Substitution.raw`; keep `original` teachers/rooms/period for a diff UI.
+6. `changeNote` ← `Substitution.raw`; keep `original` subject/teachers/rooms/period for a diff UI.
 
 ---
 

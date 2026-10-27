@@ -160,7 +160,12 @@ export type ResolvedLesson = {
   group: string | null;
   status: ResolvedStatus;
   changeNote: string | null; // human summary when status !== "normal" (from Substitution.raw)
-  original?: { teachers?: TeacherRef[]; rooms?: RoomRef[]; period?: string } | null;
+  original?: {
+    subject?: SubjectRef | null;
+    teachers?: TeacherRef[];
+    rooms?: RoomRef[];
+    period?: string;
+  } | null;
   /** Set on a vacated slot whose lesson moved to another day ("Moved to Piektdiena 11. 09."). */
   movedTo?: { date: ISODate; period?: string };
   /**

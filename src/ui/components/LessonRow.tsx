@@ -39,10 +39,29 @@ export const LessonRow = memo(
     const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
 
     const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
-    const { isTeacherMode, rooms, title: subject, subtitle: baseSubtitle } = lessonHeading(lesson);
+    const {
+      isTeacherMode,
+      rooms,
+      originalSubjectName,
+      title: subject,
+      subtitle: baseSubtitle,
+    } = lessonHeading(lesson);
     const subtitle =
       half && lesson.group !== null ? `${t("settings.subgroup")} ${lesson.group}` : baseSubtitle;
     const teachers = lesson.teachers.map((x) => x.short).join(", ");
+    const cardSubtitle =
+      originalSubjectName !== undefined ? (
+        subtitle !== undefined ? (
+          <span className="flex flex-col gap-0.5">
+            <span>{subtitle}</span>
+            <span className="line-through opacity-75">{originalSubjectName}</span>
+          </span>
+        ) : (
+          <span className="line-through opacity-75">{originalSubjectName}</span>
+        )
+      ) : (
+        subtitle
+      );
 
     const isCover = lesson.isCover === true || teacherLesson.role === "cover";
     const coverBadgeText = teacherLesson.coverFor?.name
@@ -70,7 +89,7 @@ export const LessonRow = memo(
           start={lesson.start}
           end={lesson.end}
           subject={subject}
-          subtitle={subtitle}
+          subtitle={cardSubtitle}
           {...(!isTeacherMode && teachers !== "" ? { teacher: teachers } : {})}
           {...(!isTeacherMode && rooms !== "" ? { room: rooms } : {})}
           {...(building === undefined ? {} : { building })}

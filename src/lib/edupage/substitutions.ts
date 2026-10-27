@@ -98,7 +98,7 @@ export const parseInfo = (info: string, year: number): ParsedInfo => {
   }
 
   // Order matters: later matches win, mirroring the probe's sequential overwrites.
-  let kind: SubstKind = "other";
+  let kind: SubstKind = out.subjectFrom !== null ? "substitution" : "other";
 
   if (/\bAtcelts\b/.test(rest)) kind = "cancelled";
 

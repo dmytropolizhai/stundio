@@ -20,6 +20,9 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
   const t = useT();
   const open = lesson !== null;
   const title = lesson?.subject?.name ?? lesson?.subject?.short ?? "";
+  const origSubject = lesson?.original?.subject?.name ?? lesson?.original?.subject?.short ?? "";
+  const origTeachers = (lesson?.original?.teachers ?? []).map((x) => x.short).join(", ");
+  const origRooms = (lesson?.original?.rooms ?? []).map((x) => x.short).join(", ");
 
   const teacherLesson = lesson as Partial<TeacherResolvedLesson> | null;
   const isTeacherMode = teacherLesson?.classes !== undefined && teacherLesson.classes.length > 0;
@@ -33,6 +36,13 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
       open={open}
       onClose={onClose}
       title={title === "" ? "—" : title}
+      subtitle={
+        origSubject !== "" && origSubject !== title ? (
+          <span data-testid="lesson-original-subject" className="line-through opacity-75">
+            {origSubject}
+          </span>
+        ) : undefined
+      }
       eyebrow={lesson === null ? undefined : formatRange(lesson.start, lesson.end)}
     >
       {lesson !== null && (
@@ -42,7 +52,11 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
           </div>
 
           <dl className="flex flex-col">
-            <LessonField label={t("lesson.period")} value={lesson.period} />
+            <LessonField
+              label={t("lesson.period")}
+              value={lesson.period}
+              was={lesson.original?.period}
+            />
             {isTeacherMode && classNames && (
               <LessonField label={t("settings.class")} value={classNames} />
             )}
@@ -50,11 +64,13 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
               <LessonField
                 label={t("lesson.teacher")}
                 value={lesson.teachers.map((x) => x.short).join(", ")}
+                was={origTeachers}
               />
             )}
             <LessonField
               label={t("lesson.room")}
               value={lesson.rooms.map((x) => x.short).join(", ")}
+              was={origRooms}
             />
             {isCover && (
               <LessonField
@@ -71,23 +87,6 @@ export const LessonSheet = ({ lesson, day, onClose }: LessonSheetProps) => {
               label={t("lesson.building")}
               value={lesson.building ?? day?.building ?? ""}
             />
-
-            {lesson.original != null && (
-              <>
-                <LessonField
-                  label={`${t("lesson.was")} · ${t("lesson.teacher")}`}
-                  value={(lesson.original.teachers ?? []).map((x) => x.short).join(", ")}
-                />
-                <LessonField
-                  label={`${t("lesson.was")} · ${t("lesson.room")}`}
-                  value={(lesson.original.rooms ?? []).map((x) => x.short).join(", ")}
-                />
-                <LessonField
-                  label={`${t("lesson.was")} · ${t("lesson.period")}`}
-                  value={lesson.original.period ?? ""}
-                />
-              </>
-            )}
           </dl>
 
           {(() => {

@@ -10,6 +10,7 @@ export type LessonHeading = {
   classNames: string | undefined;
   rooms: string;
   subjectName: string;
+  originalSubjectName: string | undefined;
   title: string;
   subtitle: string | undefined;
 };
@@ -24,6 +25,11 @@ export const lessonHeading = (lesson: ResolvedLesson, withRoom = true): LessonHe
   const classNames = teacherLesson.classes?.map((c) => c.short || c.name).join(" + ");
   const rooms = lesson.rooms.map((x) => x.short).join(", ");
   const subjectName = lesson.subject?.name ?? lesson.subject?.short ?? "—";
+  const rawOrigSubject = lesson.original?.subject?.name ?? lesson.original?.subject?.short;
+  const originalSubjectName =
+    rawOrigSubject !== undefined && rawOrigSubject !== "" && rawOrigSubject !== subjectName
+      ? rawOrigSubject
+      : undefined;
   const room = withRoom ? rooms : "";
 
   const title = isTeacherMode
@@ -37,6 +43,7 @@ export const lessonHeading = (lesson: ResolvedLesson, withRoom = true): LessonHe
     classNames,
     rooms,
     subjectName,
+    originalSubjectName,
     title,
     subtitle: isTeacherMode ? subjectName : undefined,
   };
