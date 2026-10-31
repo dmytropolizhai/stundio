@@ -131,6 +131,16 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   with the five primary tabs bundled together to guarantee instant and reliable offline navigation.
   The tab bar floats as two pills — schedule (home/week/changes) and personal (subjects/settings);
   which tab sits in which pill is `PERSONA_PROFILES[role].nav`.
+- **Wide layouts** — the phone layout is the reference; tablet and desktop only add to it.
+  `ui/hooks/useLayout.ts` resolves the window to `phone` / `tablet` (≥768 px wide) / `desktop`
+  (≥1024 px), both also needing ≥500 px of height so a phone in landscape stays on the phone
+  layout; no `matchMedia` (tests, old WebViews) means `phone`. The same queries drive the
+  `tablet:` / `desktop:` Tailwind variants (`index.css`) and the token overrides in
+  `desktop.css` (`--screen-max`, `--nav-safe`) — change all three together. On wide layouts the
+  shell swaps `TabBar` for `SideNav` (icon rail on tablet, labelled on desktop; both read
+  `ui/components/nav-items.ts`), and on desktop Home adds `home-side.tsx`: today's changes, the
+  week overview and the next school day, always about today, never the browsed day. The phone
+  branch of the shell keeps its exact markup.
 
 ## Rules
 
