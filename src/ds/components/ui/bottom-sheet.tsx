@@ -92,7 +92,8 @@ export const BottomSheet = ({
             "fixed inset-x-0 bottom-0 z-40 animate-sheet-in",
             "rounded-t-2xl bg-card px-5 pt-2.5 shadow-raised",
             "pb-[calc(--spacing(6)+var(--app-inset-bottom))]",
-            "mx-auto w-full max-w-screen",
+            // Wide layouts widen the screen column; a sheet stays readable rather than following.
+            "mx-auto w-full max-w-screen tablet:max-w-[560px]",
             "flex flex-col",
             "max-h-[calc(var(--app-viewport-height)-var(--app-inset-top)-12px)]",
             !isDragging && "transition-transform",

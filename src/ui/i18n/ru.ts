@@ -19,6 +19,7 @@ export const ru: Dict = {
   "nav.settings": "Настройки",
   "nav.group.schedule": "Расписание",
   "nav.group.personal": "Личное",
+  "nav.label": "Разделы",
 
   "onboarding.title": "Выбери свой класс",
   "onboarding.subtitle": "Расписание и замены — даже без интернета.",
@@ -99,6 +100,9 @@ export const ru: Dict = {
   "day.buildingOther": "Другой корпус: {building}",
   "day.buildingMixed": "Несколько корпусов: {buildings}",
   "home.schedule": "Расписание на день",
+  "home.side.label": "Сегодня и на этой неделе",
+  "home.side.changes": "Замены сегодня",
+  "home.side.openChanges": "Все замены",
   "home.greeting.morning": "Доброе утро",
   "home.greeting.day": "Добрый день",
   "home.greeting.evening": "Добрый вечер",

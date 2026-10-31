@@ -1,8 +1,27 @@
-/* Expand the existing layout in desktop windows without altering generated design tokens.
-   Narrow windows retain the phone layout; wide timetables get room for readable subjects. */
-@media (min-width: 720px) {
+/* Layout tokens for wider windows, without altering the generated design tokens. The phone layout
+   is the reference: nothing below applies under 768px wide (or under 500px tall, so a phone in
+   landscape stays on it). The queries match `ui/hooks/useLayout.ts` and the `tablet:` /
+   `desktop:` variants in `index.css`. */
+
+/* A desktop window narrower than the tablet layout keeps the phone layout, a little wider. */
+@media (min-width: 720px) and (max-width: 767px) {
   :root[data-platform="desktop"] {
     --screen-max: 840px;
+  }
+}
+
+/* Tablet and desktop: the nav sits in a side rail, so screens no longer end above a floating bar,
+   and the content column grows into the room the rail leaves. */
+@media (min-width: 768px) and (min-height: 500px) {
+  :root {
+    --screen-max: 720px;
+    --nav-safe: calc(var(--space-10) + var(--app-inset-bottom));
+  }
+}
+
+@media (min-width: 1024px) and (min-height: 500px) {
+  :root {
+    --screen-max: 880px;
   }
 }
 

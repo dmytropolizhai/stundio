@@ -25,6 +25,7 @@ export const lv = {
   "nav.settings": "Iestatījumi",
   "nav.group.schedule": "Grafiks",
   "nav.group.personal": "Personīgi",
+  "nav.label": "Sadaļas",
 
   "onboarding.title": "Izvēlies savu klasi",
   "onboarding.subtitle": "Stundu saraksts un izmaiņas — arī bez interneta.",
@@ -105,6 +106,9 @@ export const lv = {
   "day.buildingOther": "Cita ēka: {building}",
   "day.buildingMixed": "Vairākas ēkas: {buildings}",
   "home.schedule": "Dienas saraksts",
+  "home.side.label": "Šodien un šonedēļ",
+  "home.side.changes": "Izmaiņas šodien",
+  "home.side.openChanges": "Visas izmaiņas",
   "home.greeting.morning": "Labrīt",
   "home.greeting.day": "Labdien",
   "home.greeting.evening": "Labvakar",

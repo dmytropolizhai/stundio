@@ -8,6 +8,8 @@ import { LazyMotion, domAnimation } from "framer-motion";
 import { AppStoreProvider, useAppStore, useSettingSetter } from "@/store";
 import { Button, TopBar, TooltipProvider } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
+import { SideNav } from "./ui/components/SideNav.tsx";
+import { useLayout } from "./ui/hooks/useLayout.ts";
 import { ClassSelector } from "./ui/screens/class-selector";
 import { TeacherPicker } from "./ui/screens/teacher-picker";
 import { OnboardingLanguage } from "./ui/screens/onboarding-language";
@@ -205,6 +207,7 @@ const Shell = () => {
   const teacherAnnouncement = useTeacherAnnouncement();
   const iphoneInstall = useIphoneInstallPrompt();
   const scheduleNav = useScheduleNavigation();
+  const layout = useLayout();
   const [picking, setPicking] = useState<"class" | "teacher" | null>(null);
 
   useBackButton(
@@ -290,8 +293,8 @@ const Shell = () => {
     );
   }
 
-  return (
-    <div className="relative flex h-full flex-col overflow-hidden">
+  const screen = (
+    <>
       <ErrorBoundary
         key={tab}
         title={t("error.title")}
@@ -350,8 +353,12 @@ const Shell = () => {
           />
         )}
       </ErrorBoundary>
-      <TabBar tab={tab} onChange={setTab} />
       <RefreshToast />
+    </>
+  );
+
+  const sheets = (
+    <>
       {/*
         Outside the tab switch: the sheet auto-opens on the launch after an update, whichever
         tab happens to be showing, and must survive a tab change while it is open.
@@ -367,6 +374,26 @@ const Shell = () => {
         onClose={teacherAnnouncement.dismiss}
       />
       <IphoneInstallSheet open={iphoneInstall.open} onClose={iphoneInstall.dismiss} />
+    </>
+  );
+
+  // The phone layout is the reference and keeps its exact markup; wide windows put the nav in a
+  // rail beside the screen instead of floating it over the bottom.
+  if (layout === "phone") {
+    return (
+      <div className="relative flex h-full flex-col overflow-hidden">
+        {screen}
+        <TabBar tab={tab} onChange={setTab} />
+        {sheets}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative flex h-full overflow-hidden">
+      <SideNav tab={tab} onChange={setTab} expanded={layout === "desktop"} />
+      <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">{screen}</div>
+      {sheets}
     </div>
   );
 };
