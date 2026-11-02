@@ -19,6 +19,7 @@ export const en: Dict = {
   "nav.settings": "Settings",
   "nav.group.schedule": "Schedule",
   "nav.group.personal": "Personal",
+  "nav.label": "Sections",
 
   "onboarding.title": "Choose your class",
   "onboarding.subtitle": "Timetable and changes — even offline.",
@@ -97,6 +98,9 @@ export const en: Dict = {
   "day.buildingOther": "Different building: {building}",
   "day.buildingMixed": "Several buildings: {buildings}",
   "home.schedule": "Schedule for the day",
+  "home.side.label": "Today and this week",
+  "home.side.changes": "Changes today",
+  "home.side.openChanges": "All changes",
   "home.greeting.morning": "Good morning",
   "home.greeting.day": "Good afternoon",
   "home.greeting.evening": "Good evening",

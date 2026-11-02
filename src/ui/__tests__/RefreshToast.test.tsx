@@ -58,4 +58,10 @@ describe("RefreshToast", () => {
     expect(store.getState().syncStatus).not.toBe("idle");
     expect(screen.queryByTestId("refresh-toast")).toBeNull();
   });
+
+  it("positions itself relative to --nav-safe so it adapts across layouts", async () => {
+    await setup();
+    const container = screen.getByRole("status");
+    expect(container.style.bottom).toBe("calc(var(--nav-safe) - 8px)");
+  });
 });

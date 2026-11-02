@@ -36,7 +36,7 @@ export const RefreshToast = () => {
   return (
     <div
       className="pointer-events-none absolute inset-x-0 z-20 flex justify-center px-gutter"
-      style={{ bottom: "calc(var(--nav-height) + var(--nav-inset) + 12px)" }}
+      style={{ bottom: "calc(var(--nav-safe) - 8px)" }}
       role="status"
       aria-live="polite"
     >

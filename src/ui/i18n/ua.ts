@@ -19,6 +19,7 @@ export const ua: Dict = {
   "nav.settings": "Налаштування",
   "nav.group.schedule": "Розклад",
   "nav.group.personal": "Особисте",
+  "nav.label": "Розділи",
 
   "onboarding.title": "Оберіть свій клас",
   "onboarding.subtitle": "Ваш розклад та його зміни — працює і офлайн.",
@@ -98,6 +99,9 @@ export const ua: Dict = {
   "day.buildingOther": "Інший корпус: {building}",
   "day.buildingMixed": "Кілька корпусів: {buildings}",
   "home.schedule": "Розклад на день",
+  "home.side.label": "Сьогодні й цього тижня",
+  "home.side.changes": "Заміни сьогодні",
+  "home.side.openChanges": "Усі заміни",
   "home.greeting.morning": "Доброго ранку",
   "home.greeting.day": "Добрий день",
   "home.greeting.evening": "Добрий вечір",
