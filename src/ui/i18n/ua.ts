@@ -114,6 +114,7 @@ export const ua: Dict = {
   "home.brief.finished": "На сьогодні все",
   "home.brief.finishedDetail": "Остання пара закінчилась о {end}",
   "home.brief.free": "Сьогодні пар немає",
+  "home.brief.freeLater": "Пар не буде",
   "home.brief.freeDetail": "Час відпочити",
   "home.brief.changes": "Зміни: {count}",
   "home.weather.label": "Погода в Ризі: {temperature}°, {condition}",

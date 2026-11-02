@@ -54,7 +54,7 @@ describe("HomeView", () => {
     const harness = await bootHarness();
 
     const { unmount } = renderDay(harness, "2026-09-10");
-    expect(screen.getByText("Rīt")).toBeDefined();
+    expect(within(screen.getByTestId("day-header")).getByText("Rīt")).toBeDefined();
     unmount();
 
     const back = renderDay(harness, "2026-09-08");
@@ -205,12 +205,26 @@ describe("HomeView", () => {
       ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
-    it("outlines whichever day is browsed, while the brief stays on today", async () => {
+    it("outlines whichever day is browsed, and the brief follows a later day", async () => {
       const harness = await bootHarness();
-      renderDay(harness, "2026-09-10");
+      const tomorrow = renderDay(harness, "2026-09-10");
 
       expect(screen.getByTestId("day-summary").textContent).toMatch(/\d\d:\d\d – \d\d:\d\d/);
+      // How long tomorrow will be, named, rather than how much of today is left.
+      expect(screen.getByTestId("home-brief").textContent).toMatch(/^Mācības sākas \d\d:\d\d/);
+      expect(screen.getByTestId("home-brief").textContent).toMatch(/beigas \d\d:\d\d$/);
+      expect(screen.getByTestId("home-brief-day").textContent).toBe("Rīt");
+      tomorrow.unmount();
+
+      // A free later day says so without claiming it is today.
+      const saturday = renderDay(harness, "2026-09-12");
+      expect(screen.getByTestId("home-brief").textContent).toContain("Stundu nebūs");
+      saturday.unmount();
+
+      // The past keeps today's brief, unlabelled.
+      renderDay(harness, "2026-09-08");
       expect(screen.getByTestId("home-brief").textContent).toMatch(/^Mācības līdz \d\d:\d\d/);
+      expect(screen.queryByTestId("home-brief-day")).toBeNull();
     });
 
     it("opens the lesson sheet when the glance card is tapped", async () => {
@@ -352,6 +366,8 @@ describe("HomeView", () => {
       const { unmount } = renderDay(harness, "2026-09-10");
       const weather = screen.getByTestId("home-weather");
       expect(screen.getByTestId("home-weather-day").textContent).toBe("Rīt");
+      // The forecast already names the day the brief is about; it is not said twice.
+      expect(screen.queryByTestId("home-brief-day")).toBeNull();
       expect(weather.textContent).toContain("6°");
       expect(weather.textContent).toContain("9° / 2°");
       expect(weather.getAttribute("aria-label")).toBe(

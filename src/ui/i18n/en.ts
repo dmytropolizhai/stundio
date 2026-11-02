@@ -113,6 +113,7 @@ export const en: Dict = {
   "home.brief.finished": "That's it for today",
   "home.brief.finishedDetail": "The last lesson ended at {end}",
   "home.brief.free": "No lessons today",
+  "home.brief.freeLater": "No lessons that day",
   "home.brief.freeDetail": "Time to rest",
   "home.brief.changes": "Changes: {count}",
   "home.weather.label": "Weather in Riga: {temperature}°, {condition}",

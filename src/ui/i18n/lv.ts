@@ -121,6 +121,7 @@ export const lv = {
   "home.brief.finished": "Šodienai viss",
   "home.brief.finishedDetail": "Pēdējā stunda beidzās {end}",
   "home.brief.free": "Šodien stundu nav",
+  "home.brief.freeLater": "Stundu nebūs",
   "home.brief.freeDetail": "Laiks atpūtai",
   "home.brief.changes": "Izmaiņas: {count}",
   "home.weather.label": "Laikapstākļi Rīgā: {temperature}°, {condition}",
