@@ -69,4 +69,17 @@ describe("BottomSheet", () => {
     expect(offenders).toHaveLength(0);
     expect(VH_HEIGHT.test(sheet.className)).toBe(false);
   });
+
+  it("offsets itself by the side rail width on tablet and desktop layouts", () => {
+    render(
+      <BottomSheet open onClose={() => {}} title="Title">
+        <p>Body</p>
+      </BottomSheet>,
+    );
+
+    const sheet = screen.getByRole("dialog");
+    expect(sheet.className).toContain("tablet:left-21");
+    expect(sheet.className).toContain("tablet:max-w-[560px]");
+    expect(sheet.className).toContain("desktop:left-58");
+  });
 });

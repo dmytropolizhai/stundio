@@ -42,6 +42,22 @@ const stubLayout = (initial: Layout) => {
   };
 };
 
+/** Stubs `matchMedia` to evaluate queries with min-width and min-height against explicit window dimensions. */
+const stubViewport = (width: number, height: number) => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn((query: string) => {
+      const minWidth = Number(query.match(/\(min-width:\s*(\d+)px\)/)?.[1] ?? 0);
+      const minHeight = Number(query.match(/\(min-height:\s*(\d+)px\)/)?.[1] ?? 0);
+      return {
+        matches: width >= minWidth && height >= minHeight,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      };
+    }),
+  );
+};
+
 const ENGLISH = {
   lang: "en",
   teacherAnnouncementDismissed: true,
@@ -93,8 +109,16 @@ describe("useLayout", () => {
   });
 
   it("keeps a phone in landscape on the phone layout", () => {
-    expect(LAYOUT_QUERIES.tablet).toContain("min-height");
-    expect(LAYOUT_QUERIES.desktop).toContain("min-height");
+    // An 844×390 phone in landscape is wide enough for tablet width (>=768px),
+    // but fails the 500px height gate and stays on the phone layout.
+    stubViewport(844, 390);
+    const landscape = renderHook(() => useLayout());
+    expect(landscape.result.current).toBe("phone");
+
+    // With sufficient height, the same width qualifies for tablet.
+    stubViewport(844, 600);
+    const tablet = renderHook(() => useLayout());
+    expect(tablet.result.current).toBe("tablet");
   });
 });
 
