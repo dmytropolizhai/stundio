@@ -1,6 +1,6 @@
 /**
  * The top of Home, about today whatever day the schedule below is showing: how much of the
- * school day is left, Riga's weather with the one piece of advice that changes what a student
+ * school day is left (paged to a later day, how long that day will be, labelled with it), Riga's weather with the one piece of advice that changes what a student
  * takes out the door (paged to a later day, the forecast for that day, labelled with it), and then the glance — the lesson on now or next — or, once today is done,
  * when the next school day starts.
  */
@@ -29,7 +29,22 @@ const HINT: Record<WeatherHint, { icon: IconName; key: MessageKey }> = {
   cold: { icon: "snowflake", key: "home.weather.hint.cold" },
 };
 
-const BriefText = ({ brief }: { brief: DayBrief }) => {
+/** "Rīt" for tomorrow, else the weekday — the label a later day's brief or forecast carries. */
+const useDayLabel = (date: ISODate | null, today: ISODate): string | null => {
+  const t = useT();
+  const lang = useLang();
+  if (date === null) return null;
+  return date === addDays(today, 1) ? t("day.tomorrow") : formatWeekdayLong(date, lang);
+};
+
+type BriefTextProps = {
+  brief: DayBrief;
+  /** Shown above the brief when it is about a later day the weather does not already name. */
+  label: string | null;
+  later: boolean;
+};
+
+const BriefText = ({ brief, label, later }: BriefTextProps) => {
   const t = useT();
   let headline: string;
   let detail: string;
@@ -47,15 +62,22 @@ const BriefText = ({ brief }: { brief: DayBrief }) => {
       detail = t("home.brief.finishedDetail", { end: brief.end });
       break;
     case "free":
-      headline = t("home.brief.free");
+      headline = t(later ? "home.brief.freeLater" : "home.brief.free");
       detail = t("home.brief.freeDetail");
       break;
   }
 
   return (
-    <div className="min-w-0" data-testid="home-brief">
-      <p className="font-display text-body-lg font-bold text-strong">{headline}</p>
-      <p className="mt-0.5 font-text text-caption text-muted">{detail}</p>
+    <div className="min-w-0">
+      {label !== null && (
+        <span className="u-eyebrow mb-1 block" data-testid="home-brief-day">
+          {label}
+        </span>
+      )}
+      <div data-testid="home-brief">
+        <p className="font-display text-body-lg font-bold text-strong">{headline}</p>
+        <p className="mt-0.5 font-text text-caption text-muted">{detail}</p>
+      </div>
     </div>
   );
 };
@@ -69,15 +91,9 @@ type WeatherTileProps = {
 
 const WeatherTile = ({ outlook, date, today }: WeatherTileProps) => {
   const t = useT();
-  const lang = useLang();
   const icons = CONDITION_ICON[outlook.condition];
   const condition = t(`home.weather.${outlook.condition}`);
-  const forDay =
-    date === null
-      ? null
-      : date === addDays(today, 1)
-        ? t("day.tomorrow")
-        : formatWeekdayLong(date, lang);
+  const forDay = useDayLabel(date, today);
 
   return (
     <div
@@ -117,11 +133,13 @@ const WeatherTile = ({ outlook, date, today }: WeatherTileProps) => {
 
 type HomeBriefProps = {
   brief: DayBrief | null;
+  /** The later browsed day `brief` is about; `null` when it is about today. */
+  briefDate?: ISODate | null;
   weather: WeatherOutlook | null;
   /** The later browsed day `weather` is a forecast for; `null` when it is about right now. */
   weatherDate: ISODate | null;
   today: ISODate;
-  /** Today's changed lessons; the schedule below carries the button to them. */
+  /** The brief's day's changed lessons; the schedule below carries the button to them. */
   changedCount: number;
   /** The glance card or tomorrow's preview, rendered by the screen. */
   children?: ReactNode;
@@ -129,6 +147,7 @@ type HomeBriefProps = {
 
 export const HomeBrief = ({
   brief,
+  briefDate = null,
   weather,
   weatherDate,
   today,
@@ -136,6 +155,11 @@ export const HomeBrief = ({
   children,
 }: HomeBriefProps) => {
   const t = useT();
+  // The weather tile already names its day; the brief names its own only when they differ.
+  const briefLabel = useDayLabel(
+    briefDate !== null && (weather === null || weatherDate !== briefDate) ? briefDate : null,
+    today,
+  );
   const hint = weather?.hint == null ? null : HINT[weather.hint];
   const showChanges = changedCount > 0 && brief !== null && brief.kind !== "finished";
 
@@ -150,7 +174,11 @@ export const HomeBrief = ({
       {(brief !== null || weather !== null) && (
         <Card tone="surface" radius="xl" className="px-4 py-3">
           <div className="flex items-center justify-between gap-4">
-            {brief === null ? <span /> : <BriefText brief={brief} />}
+            {brief === null ? (
+              <span />
+            ) : (
+              <BriefText brief={brief} label={briefLabel} later={briefDate !== null} />
+            )}
             {weather !== null && <WeatherTile outlook={weather} date={weatherDate} today={today} />}
           </div>
 

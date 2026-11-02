@@ -111,6 +111,7 @@ export const ru: Dict = {
   "home.brief.finished": "На сегодня всё",
   "home.brief.finishedDetail": "Последняя пара закончилась в {end}",
   "home.brief.free": "Сегодня пар нет",
+  "home.brief.freeLater": "Пар не будет",
   "home.brief.freeDetail": "Время отдохнуть",
   "home.brief.changes": "Изменения: {count}",
   "home.weather.label": "Погода в Риге: {temperature}°, {condition}",

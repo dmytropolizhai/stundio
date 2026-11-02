@@ -2,14 +2,14 @@
  * The Home tab — the app's landing screen, in two blocks.
  *
  * Top: about *today*, whatever day is browsed below — a greeting, the day in a sentence, Riga's
- * weather with its one piece of advice (the one exception: it follows a later browsed day, and
- * names that day), and the glance that answers "what's on now / next" (or
+ * weather with its one piece of advice (the exceptions: the day in a sentence and the weather
+ * follow a later browsed day, and name that day), and the glance that answers "what's on now / next" (or
  * tomorrow's start once today is done). Notices that qualify everything (offline) and app-level
  * prompts sit above it.
  *
  * Bottom: the day browser — which day, the arrows, calendar and swipe paging that change it, the
  * day's outline and its full lesson list, then its footnotes (building, "lessons are over",
- * school notes). Paging moves only this block; the brief above stays on today.
+ * school notes). Paging moves only this block, apart from those exceptions.
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, useMotionValue, useReducedMotion } from "framer-motion";
@@ -93,13 +93,16 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
   const buildings = useMemo(() => (day === null ? null : buildingNotice(day)), [day]);
   const isToday = date === now.date;
 
-  // The brief is about today, not about the day being browsed.
+  // The glance is about today; the brief follows a later browsed day (how long it will be), and
+  // stays on today for today and the past.
   const today = useAppStore((s) => s.resolvedDay(now.date));
   const glance = useMemo(() => dayGlance(today, now), [today, now]);
-  const brief = useMemo(() => dayBrief(today, now), [today, now]);
-  const todayChanges = useMemo(
-    () => today?.lessons.filter((l) => l.status !== "normal").length ?? 0,
-    [today],
+  const briefLater = date > now.date;
+  const briefDay = briefLater ? day : today;
+  const brief = useMemo(() => dayBrief(briefDay, now), [briefDay, now]);
+  const briefChanges = useMemo(
+    () => briefDay?.lessons.filter((l) => l.status !== "normal").length ?? 0,
+    [briefDay],
   );
   const nextDate = stepSchoolDay(now.date, 1);
   const nextDay = useAppStore((s) => s.resolvedDay(nextDate));
@@ -220,10 +223,11 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
     return (
       <HomeBrief
         brief={brief}
+        briefDate={briefLater ? date : null}
         weather={weather?.outlook ?? null}
         weatherDate={weather?.date ?? null}
         today={now.date}
-        changedCount={todayChanges}
+        changedCount={briefChanges}
       >
         {glance !== null && glance.kind !== "finished" && today !== null && (
           <DayGlance day={today} glance={glance} onOpenLesson={setOpen} />
