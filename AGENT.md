@@ -12,7 +12,10 @@ Companion docs — read the relevant one before touching that area:
 - `PRODUCT.md` — who this is for and what job it must nail ("what's on now / what's next").
 - `DESIGN.md` — the Studio design system spec that `src/ds/` implements.
 - `PLAN.md` — phased roadmap and current status.
-- `README.md` — user-facing install/build instructions.
+- `README.md` — user-facing install/build instructions, official sources and the release
+  signing-certificate fingerprint (update it if the signing key is ever rotated).
+- `TRADEMARKS.md` — the code is MIT, the name/logo/icon are not; what a published fork must
+  change (name, icon, application id, `USER_AGENT`). Keep its file paths in step with the repo.
 
 ## Commands
 
