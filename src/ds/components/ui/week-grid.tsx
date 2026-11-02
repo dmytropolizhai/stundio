@@ -54,8 +54,18 @@ export type WeekGridPeriod<K extends string = string> = {
 export type WeekGridProps<K extends string = string> = {
   days: readonly WeekGridDay<K>[];
   periods: readonly WeekGridPeriod<K>[];
-  /** `half` is 1 when the right-hand lesson of a split cell was tapped. */
-  onSelect?: (cell: WeekGridCell, day: K, period: number, half?: 0 | 1) => void;
+  /**
+   * `half` is 1 when the right-hand lesson of a split cell was tapped. `end` is the end time of
+   * the last row the tapped cell covers — later than the lesson's own end when `mergeConsecutive`
+   * coalesced it with the identical lessons after it.
+   */
+  onSelect?: (
+    cell: WeekGridCell,
+    day: K,
+    period: number,
+    half: 0 | 1 | undefined,
+    end: string,
+  ) => void;
   /**
    * Makes the weekday headers tappable — a shortcut from the week overview into one day.
    *
@@ -332,6 +342,7 @@ export const WeekGrid = <K extends string>({
           const { cell, span } = placement;
           const period = periods[rowIndex];
           if (period === undefined) return null;
+          const end = periods[rowIndex + span - 1]?.end ?? period.end;
           const area = {
             gridColumn,
             gridRow:
@@ -354,7 +365,7 @@ export const WeekGrid = <K extends string>({
                   : `${c.name ?? c.short} · ${c.building}`
               }
               onClick={() => {
-                onSelect?.(c, day.key, period.period, half);
+                onSelect?.(c, day.key, period.period, half, end);
               }}
               style={{
                 ...(half === undefined ? area : {}),
