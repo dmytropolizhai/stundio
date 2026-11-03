@@ -100,6 +100,25 @@ Stundio isn't on the Play Store, and won't be. APKs are published through [GitHu
 
 Once installed, the app checks GitHub for newer releases itself and offers to install them, so you only have to do this manually the first time.
 
+Only download Stundio from **[app.stundio.lv](https://app.stundio.lv)** or this repository's [Releases page](https://github.com/dmytropolizhai/stundio/releases). An APK called "Stundio" from anywhere else — a chat, a file-sharing site, an app store — is not ours.
+
+#### Verifying your copy
+
+Every official APK is signed with the same key. Its certificate's SHA-256 fingerprint is:
+
+```
+98:20:A2:6F:6B:68:D5:CE:83:20:11:98:0A:6E:42:F1:96:B8:24:56:61:EF:D4:98:36:05:C5:73:C0:43:47:2E
+```
+
+To check a downloaded APK, run either of these and compare the SHA-256 line:
+
+```bash
+apksigner verify --print-certs stundio.apk   # from the Android SDK build-tools
+keytool -printcert -jarfile stundio.apk      # from any JDK
+```
+
+Android checks this for you on every update: it refuses to install an "update" signed with a different key over an installed Stundio. If Android ever tells you an update conflicts with the installed app, don't uninstall to get around it — that APK isn't from us.
+
 Keep in mind that the app is still young. There may be rough edges.
 
 ### Option B — Build it yourself
@@ -189,8 +208,12 @@ What the app talks to:
 
 None of this involves personal data. Stundio never asks for your name, your account, or anything that identifies you.
 
+**Stundio will never ask for your EduPage login or password.** It only reads the school's public timetable. If an app that calls itself Stundio asks you to sign in, it is a copy, not Stundio — don't enter anything, and please [report it](https://github.com/dmytropolizhai/stundio/issues).
+
 ## License
 
-Stundio is licensed under the [MIT License](LICENSE).
+Stundio's code is licensed under the [MIT License](LICENSE): you're free to fork it and build your own app from it.
+
+The Stundio name, logo and app icon are not covered by that license. A fork you publish needs its own name, icon, Android application id and User-Agent, so nobody mistakes it for Stundio. The details, and the list of official sources, are in [TRADEMARKS.md](TRADEMARKS.md).
 
 Stundio is an unofficial, non-commercial student project. It isn't affiliated with, endorsed by, or supported by Rīgas Valsts tehnikums, EduPage, or aSc.
