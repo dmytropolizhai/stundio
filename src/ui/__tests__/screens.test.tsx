@@ -180,6 +180,16 @@ describe("WeekGrid merge", () => {
     expect(merged?.style.gridRow).toBe("2 / span 3");
   });
 
+  it("reports the end of the whole merged run when a merged cell is tapped", () => {
+    const onSelect = vi.fn();
+    render(<WeekGrid days={days} periods={periods} mergeConsecutive onSelect={onSelect} />);
+    screen
+      .getAllByTestId("week-cell")
+      .find((c) => c.textContent === "LVL")
+      ?.click();
+    expect(onSelect).toHaveBeenCalledWith(lvl, "mon", 1, undefined, "10:55");
+  });
+
   it("does not merge across a gap or a different subject", () => {
     const gappy: WeekGridPeriod<string>[] = [
       { period: 1, start: "08:30", end: "09:15", cells: { mon: lvl } },
@@ -208,9 +218,9 @@ describe("WeekGrid merge", () => {
     expect(screen.getAllByTestId("week-cell")).toHaveLength(3);
 
     right?.click();
-    expect(onSelect).toHaveBeenCalledWith(mat, "mon", 1, 1);
+    expect(onSelect).toHaveBeenCalledWith(mat, "mon", 1, 1, "09:15");
     left?.click();
-    expect(onSelect).toHaveBeenLastCalledWith({ ...lvl, sibling: mat }, "mon", 1, 0);
+    expect(onSelect).toHaveBeenLastCalledWith({ ...lvl, sibling: mat }, "mon", 1, 0, "09:15");
   });
 
   it("rings only the live lesson and marks it as current", () => {

@@ -266,12 +266,14 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           }
           onSelectDay={onOpenDay}
           mergeConsecutive={mergeConsecutive}
-          onSelect={(_cell, dayKey, period, half) => {
+          onSelect={(_cell, dayKey, period, half, end) => {
             const key = `${dayKey}|${String(period)}`;
             const hit = lessonAt.get(half === 1 ? `${key}|1` : key);
 
             if (hit !== undefined) {
-              setOpen(hit);
+              // A merged cell stands for the whole run of identical lessons, so the sheet shows
+              // the run's full time ("08:30–10:10"), not just the first lesson's.
+              setOpen(end > hit.lesson.end ? { ...hit, lesson: { ...hit.lesson, end } } : hit);
             }
           }}
         />
