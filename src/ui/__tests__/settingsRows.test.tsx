@@ -147,6 +147,16 @@ describe("Settings rows", () => {
     expect(screen.getByText(/xdg-desktop-portal-gtk/)).toBeDefined();
   });
 
+  it("links the stundio.lv landing site under the credits", async () => {
+    const harness = await bootHarness();
+    renderSettings(harness);
+    await settle();
+
+    const link = screen.getByRole("link", { name: "stundio.lv" });
+    expect(link.getAttribute("href")).toBe("https://stundio.lv/");
+    expect(link.getAttribute("target")).toBe("_blank");
+  });
+
   it("switches Home's weather off and on", async () => {
     const harness = await bootHarness();
     renderSettings(harness);

@@ -8,7 +8,7 @@ import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
 import { FeedbackSheet } from "@/ui/components/FeedbackSheet.tsx";
 import { useT } from "@/ui/i18n";
 import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
-import { REPO_URL, type FeedbackType } from "@/ui/feedback.ts";
+import { REPO_URL, SITE_URL, type FeedbackType } from "@/ui/feedback.ts";
 import { ProfileCard } from "./profile-card.tsx";
 import { AppearanceSection } from "./appearance-section.tsx";
 import { ShareSection } from "./share-section.tsx";
@@ -139,6 +139,14 @@ export const SettingsView = ({
             className="font-text text-caption text-muted underline"
           >
             {t("settings.madeBy")}
+          </a>
+          <a
+            href={SITE_URL}
+            target="_blank"
+            rel="noopener"
+            className="font-text text-caption text-muted underline"
+          >
+            stundio.lv
           </a>
         </div>
       </div>

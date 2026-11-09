@@ -132,6 +132,9 @@ describe("PWA Manifest and Service Worker Specifications", () => {
     expect(html).toContain('<link rel="canonical" href="https://app.stundio.lv/" />');
     expect(html).toContain('<script type="application/ld+json">');
     expect(html).toMatch(/<div id="root">[\s\S]*<h1>Stundio[\s\S]*<\/div>/);
+    // The app links its landing site, the page that should rank for "Stundio".
+    expect(html).toMatch(/<div id="root">[\s\S]*<a href="https:\/\/stundio\.lv\/">[\s\S]*<\/div>/);
+    expect(html).toContain('"sameAs": ["https://stundio.lv/"');
 
     const robots = readFileSync(resolve(rootDir, "public/robots.txt"), "utf-8");
     expect(robots).toMatch(/^User-agent: \*$/m);

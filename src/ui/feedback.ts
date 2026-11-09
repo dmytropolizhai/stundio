@@ -36,6 +36,8 @@ const identityFields = ({ persona, label }: FeedbackIdentity): Record<string, st
   REPORTED[persona](label);
 
 export const REPO_URL = "https://github.com/dmytropolizhai/stundio";
+/** The landing site: what to install, why, FAQ. Linked from Settings so it is one tap away. */
+export const SITE_URL = "https://stundio.lv/";
 const REPORT_ISSUE_BASE = `${REPO_URL}/issues/new`;
 
 export const WEB3FORMS_ACCESS_KEY =
