@@ -60,7 +60,8 @@
       Search & link previews. The app shell renders nothing until JS boots, so the
       title, description and the static text inside #root are what a crawler that
       skips (or times out on) the bundle indexes. Keep "Stundio" + "RVT" in them:
-      those are the queries people type.
+      those are the queries people type. The link to stundio.lv (the landing site) is
+      the app's vote for it: the landing is what should rank for "Stundio".
     -->
     <title>Stundio — RVT stundu saraksts un izmaiņas</title>
     <meta
@@ -89,7 +90,14 @@
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Android, iOS, Web, Linux",
         "inLanguage": ["lv", "en", "ru", "uk"],
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "sameAs": ["https://stundio.lv/", "https://github.com/dmytropolizhai/stundio"],
+        "isPartOf": { "@type": "WebSite", "name": "Stundio", "url": "https://stundio.lv/" },
+        "author": {
+          "@type": "Person",
+          "name": "Dmytro Polizhai",
+          "url": "https://github.com/dmytropolizhai"
+        }
       }
     </script>
   </head>
@@ -107,6 +115,10 @@
           Stundio is a free, offline-first timetable app for Riga State Technical School (Rīgas
           Valsts tehnikums): today's lessons, substitutions and the week, on Android, iPhone and the
           web.
+        </p>
+        <p>
+          Par Stundio, instalēšanu un biežākie jautājumi:
+          <a href="https://stundio.lv/">stundio.lv</a>.
         </p>
       </main>
     </div>

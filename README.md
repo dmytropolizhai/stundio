@@ -6,6 +6,8 @@ There’s no login, no account, and no complicated setup. Pick your class and yo
 
 It runs as an Android app and as an installable web app (PWA) at **[app.stundio.lv](https://app.stundio.lv)**, which is also how iPhone and desktop users get it.
 
+Website: **[stundio.lv](https://stundio.lv)** — what Stundio does, how to install it on Android, iPhone and Linux, and the FAQ.
+
 A Linux desktop target with local Flatpak packaging is available for development and testing.
 See [LINUX.md](LINUX.md) for builds, installation, desktop behavior and Flathub preparation.
 It is not yet published on Flathub.
