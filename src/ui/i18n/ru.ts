@@ -413,6 +413,8 @@ export const ru: Dict = {
   "feedback.sheet.removeScreenshot": "Удалить скриншот",
   "feedback.sheet.screenshotTooLarge": "Изображение слишком большое (макс. 5 МБ)",
   "settings.madeBy": "Dmytro Polizhai сделал с ❤︎",
+  "settings.creditLinks": "Ссылки",
+  "settings.creditAuthor": "Автор",
 
   "theme.system": "Как в системе",
   "theme.light": "Светлое",

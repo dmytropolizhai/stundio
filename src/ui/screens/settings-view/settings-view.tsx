@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 import { useAppStore, useSettingSetter } from "@/store";
 import { listBuildings, listSubgroups } from "@/lib/edupage";
-import { IconButton, TopBar } from "@/ds";
+import { Icon, IconButton, TopBar, type IconName } from "@/ds";
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
 import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
 import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
 import { FeedbackSheet } from "@/ui/components/FeedbackSheet.tsx";
 import { useT } from "@/ui/i18n";
 import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
-import { REPO_URL, SITE_URL, type FeedbackType } from "@/ui/feedback.ts";
+import { AUTHOR_URL, REPO_URL, SITE_URL, type FeedbackType } from "@/ui/feedback.ts";
 import { ProfileCard } from "./profile-card.tsx";
 import { AppearanceSection } from "./appearance-section.tsx";
 import { ShareSection } from "./share-section.tsx";
@@ -47,6 +47,13 @@ export const SettingsView = ({
   onShowIphoneInstall,
 }: SettingsViewProps) => {
   const t = useT();
+  // Credits under the screen: the code, the person, the site. Names stay as written; only
+  // "Author" is chrome and gets translated.
+  const creditLinks: { href: string; icon: IconName; label: string }[] = [
+    { href: REPO_URL, icon: "code-xml", label: "GitHub" },
+    { href: AUTHOR_URL, icon: "user-round", label: t("settings.creditAuthor") },
+    { href: SITE_URL, icon: "globe", label: "stundio.lv" },
+  ];
   const [customizing, setCustomizing] = useState(false);
   const [identitySheetOpen, setIdentitySheetOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState<{ open: boolean; type: FeedbackType }>({
@@ -132,22 +139,24 @@ export const SettingsView = ({
 
         <div className="flex flex-col items-center gap-2 px-4 pt-2 pb-4 text-center">
           <p className="max-w-sm font-text text-caption text-muted">{t("settings.aboutText")}</p>
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="font-text text-caption text-muted underline"
-          >
-            {t("settings.madeBy")}
-          </a>
-          <a
-            href={SITE_URL}
-            target="_blank"
-            rel="noopener"
-            className="font-text text-caption text-muted underline"
-          >
-            stundio.lv
-          </a>
+          <p className="font-text text-caption text-muted">{t("settings.madeBy")}</p>
+          <nav aria-label={t("settings.creditLinks")}>
+            <ul className="flex flex-wrap items-center justify-center gap-x-1 gap-y-0">
+              {creditLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener"
+                    className="flex min-h-11 items-center gap-1.5 rounded-full px-3 font-text text-caption font-bold text-muted transition-colors hover:text-strong focus-visible:text-strong"
+                  >
+                    <Icon name={link.icon} size={14} />
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </div>
 

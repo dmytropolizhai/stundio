@@ -147,14 +147,21 @@ describe("Settings rows", () => {
     expect(screen.getByText(/xdg-desktop-portal-gtk/)).toBeDefined();
   });
 
-  it("links the stundio.lv landing site under the credits", async () => {
+  it("links the source, the author and the landing site under the credits", async () => {
     const harness = await bootHarness();
     renderSettings(harness);
     await settle();
 
-    const link = screen.getByRole("link", { name: "stundio.lv" });
-    expect(link.getAttribute("href")).toBe("https://stundio.lv/");
-    expect(link.getAttribute("target")).toBe("_blank");
+    expect(screen.getByText("Made with ❤︎ by Dmytro Polizhai")).toBeDefined();
+    const credits = within(screen.getByRole("navigation", { name: "Saites" }));
+    const hrefs = credits
+      .getAllByRole("link")
+      .map((link) => [link.textContent, link.getAttribute("href"), link.getAttribute("target")]);
+    expect(hrefs).toEqual([
+      ["GitHub", "https://github.com/dmytropolizhai/stundio", "_blank"],
+      ["Autors", "https://github.com/dmytropolizhai", "_blank"],
+      ["stundio.lv", "https://stundio.lv/", "_blank"],
+    ]);
   });
 
   it("switches Home's weather off and on", async () => {

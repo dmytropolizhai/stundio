@@ -25,6 +25,7 @@ import {
   CloudRain,
   CloudSnow,
   CloudSun,
+  CodeXml,
   Coffee,
   Download,
   ExternalLink,
@@ -148,6 +149,11 @@ const ICONS = {
   "sun-moon": SunMoon,
   "trash-2": Trash2,
   users: Users,
+  /*
+   * The credits under Settings: source code, author, website. Lucide 1.x dropped brand marks
+   * (no GitHub logo), so the repository link is the generic code glyph with "GitHub" beside it.
+   */
+  "code-xml": CodeXml,
   /*
    * Home's weather line: one glyph per condition `lib/weather` names, plus the two pieces of
    * advice it gives (umbrella, dress warm). `sun` / `moon` / `cloud` above cover the rest.

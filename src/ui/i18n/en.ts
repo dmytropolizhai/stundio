@@ -408,6 +408,8 @@ export const en: Dict = {
   "feedback.sheet.removeScreenshot": "Remove screenshot",
   "feedback.sheet.screenshotTooLarge": "Image is too large (max 5 MB)",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
+  "settings.creditLinks": "Links",
+  "settings.creditAuthor": "Author",
 
   "theme.system": "System",
   "theme.light": "Light",

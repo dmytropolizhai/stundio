@@ -416,6 +416,8 @@ export const lv = {
   "feedback.sheet.removeScreenshot": "Noņemt ekrānuzņēmumu",
   "feedback.sheet.screenshotTooLarge": "Attēls ir pārāk liels (maks. 5 MB)",
   "settings.madeBy": "Made with ❤︎ by Dmytro Polizhai",
+  "settings.creditLinks": "Saites",
+  "settings.creditAuthor": "Autors",
 
   "theme.system": "Kā sistēmā",
   "theme.light": "Gaišs",

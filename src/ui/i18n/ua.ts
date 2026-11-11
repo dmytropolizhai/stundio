@@ -413,6 +413,8 @@ export const ua: Dict = {
   "feedback.sheet.removeScreenshot": "Видалити скріншот",
   "feedback.sheet.screenshotTooLarge": "Зображення занадто велике (макс. 5 МБ)",
   "settings.madeBy": "Зроблено з ❤︎ Дмитром Поліжаєм",
+  "settings.creditLinks": "Посилання",
+  "settings.creditAuthor": "Автор",
 
   "theme.system": "Системна",
   "theme.light": "Світла",
