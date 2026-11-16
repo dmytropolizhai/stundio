@@ -10,6 +10,7 @@ import { bootApp } from "@/store/boot.ts";
 import { StoreContext } from "@/store";
 import { TooltipProvider } from "@/ds";
 import { HomeView } from "../screens/home-view";
+import { WeekView } from "../screens/week-view";
 import { LAYOUT_QUERIES, useLayout, type Layout } from "../hooks/useLayout.ts";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
@@ -272,5 +273,38 @@ describe("Home side column", () => {
 
     fireEvent.click(within(screen.getByTestId("home-side")).getByTestId("day-tomorrow"));
     expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
+  });
+});
+
+describe("Week grid subject names", () => {
+  const renderWeek = async () => {
+    const harness = await bootHarness();
+    render(
+      <TooltipProvider>
+        <StoreContext.Provider value={harness.store}>
+          <WeekView
+            date={FIXTURE_DATE}
+            onDateChange={vi.fn()}
+            onOpenDay={vi.fn()}
+            onPickClass={vi.fn()}
+          />
+        </StoreContext.Provider>
+      </TooltipProvider>,
+    );
+    const cell = screen.getAllByTestId("week-cell")[0] as HTMLElement;
+    return { cell, name: (cell.title.split(" · ")[0] ?? "").trim() };
+  };
+
+  it("keeps the short subject code on a phone and a tablet", async () => {
+    stubLayout("tablet");
+    const { cell, name } = await renderWeek();
+    expect(name.length).toBeGreaterThan(3);
+    expect(cell.textContent).not.toContain(name);
+  });
+
+  it("spells the whole subject name out on a desktop", async () => {
+    stubLayout("desktop");
+    const { cell, name } = await renderWeek();
+    expect(cell.textContent).toContain(name);
   });
 });
