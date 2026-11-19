@@ -11,6 +11,7 @@ import { PullToRefresh } from "@/ui/components/PullToRefresh.tsx";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { LessonSheet } from "@/ui/screens/lesson-sheet";
+import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { useNow } from "@/ui/hooks/useNow.ts";
 import { useSwipePager } from "@/ui/hooks/useSwipePager.ts";
 import { useWeekOverview } from "@/ui/hooks/useWeekOverview.ts";
@@ -44,6 +45,8 @@ type WeekViewProps = {
 export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekViewProps) => {
   const t = useT();
   const lang = useLang();
+  // Desktop cells are wide enough for the whole subject name; the 3-letter code is for phones.
+  const fullNames = useLayout() === "desktop";
   const now = useNow();
 
   const [open, setOpen] = useState<{
@@ -179,7 +182,12 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
             return {
               // A teacher scans the week for "which group", so the cell leads with the group and
               // the subject stays in `name` (tooltip / aria label); students keep the subject code.
-              short: classNames ? classNames : subjectCode(l.subject),
+              short:
+                fullNames && subjectName
+                  ? displayName
+                  : classNames
+                    ? classNames
+                    : subjectCode(l.subject),
               name: displayName,
               tone: accent.tone,
               cancelled: l.status === "cancelled",
@@ -217,6 +225,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
       colorCodingEnabled,
       liveLesson,
       breaks,
+      fullNames,
       t,
     ],
   );
