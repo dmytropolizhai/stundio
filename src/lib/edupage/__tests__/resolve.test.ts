@@ -419,6 +419,34 @@ describe("resolveDayAcross", () => {
     expect(day.lessons.filter((l) => l.status === "cancelled").length).toBeGreaterThan(0);
   });
 
+  it("ignores a stale building's lessons once a current building has the day", () => {
+    const day = resolveDayAcross(
+      [
+        { timetable: pointerDay, stale: false },
+        { timetable: annexDay, stale: true },
+      ],
+      null,
+      "c1",
+      FIXTURE_DATE,
+    );
+    // Last week's TIC lessons must not leak into a week the main building already published.
+    expect(day.lessons.map((l) => l.building)).toEqual(["Galvenā ēka"]);
+    expect(day.stale).toBe(false);
+  });
+
+  it("keeps a stale building when no current source has anything for the class", () => {
+    const day = resolveDayAcross(
+      [
+        { timetable: pointerDay, stale: false },
+        { timetable: annexDay, stale: true },
+      ],
+      null,
+      "nobody",
+      FIXTURE_DATE,
+    );
+    expect(day.lessons).toHaveLength(0);
+  });
+
   it("takes its staleness from the source that leads the day", () => {
     const day = resolveDayAcross(
       [

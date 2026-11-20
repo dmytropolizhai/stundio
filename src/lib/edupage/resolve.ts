@@ -372,8 +372,19 @@ export const resolveDayAcross = (
     entries: baseEntries(source.timetable, classId, weekday, options.weekIndex, options.subgroup),
   }));
 
-  const substantive = perSource.filter((s) => s.entries.some((e) => !isPointer(e)));
-  const contributing = (substantive.length > 0 ? substantive : perSource).filter(
+  /*
+   * A building whose newest timetable predates `date` is carrying LAST week's lessons (selection
+   * falls back to it while the new week is unpublished). Once a building that does cover `date`
+   * has this class's day, the old one is dropped — otherwise a one-off from last week (e.g.
+   * "Valsts aizsardzības mācības") leaks into the new week. With nothing current to show, the
+   * stale source stays: it is all the user has, and the day's `stale` flag says so.
+   */
+  const isStale = (s: DaySource): boolean => s.stale ?? !coversDate(s.timetable, date);
+  const hasCurrent = perSource.some((s) => !isStale(s.source) && s.entries.length > 0);
+  const live = hasCurrent ? perSource.filter((s) => !isStale(s.source)) : perSource;
+
+  const substantive = live.filter((s) => s.entries.some((e) => !isPointer(e)));
+  const contributing = (substantive.length > 0 ? substantive : live).filter(
     (s) => s.entries.length > 0,
   );
 
