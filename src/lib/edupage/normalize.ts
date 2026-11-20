@@ -188,10 +188,10 @@ export const normalizeTimetable = (tables: RawTables, meta: TimetableMeta): Norm
 export const parseTimetableLabel = (
   text: string,
 ): { building: Building; validTo: ISODate | null } => {
-  // Building = everything before the first "DD.MM.YYYY." stamp.
+  // Building = everything before the first "DD.MM.YYYY." stamp (the space is optional: "TIC16.11.2026.").
   const building =
     str(text)
-      .split(/\s+\d{1,2}\.\s*\d{1,2}\.\s*\d{4}/)[0]
+      .split(/\s*\d{1,2}\.\s*\d{1,2}\.\s*\d{4}/)[0]
       ?.trim() ?? "";
   const range = /\(\s*\d{1,2}\.\s*\d{1,2}\.\s*-\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})\s*\)/.exec(
     text,

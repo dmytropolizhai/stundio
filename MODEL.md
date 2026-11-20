@@ -128,6 +128,13 @@ So a single `tt_num` is never the whole answer when the user has not pinned a bu
    whose day is nothing but pointer rows as soon as another source has a real lesson, merges the
    rest, de-duplicates, and applies the substitution feed **once** over the merged list.
 
+A source whose timetable predates the date (`stale`: that building has not published the new week
+yet, so selection fell back to last week's) is skipped by `resolveDayAcross` as soon as a current
+source has lessons for the class. Otherwise a one-off from last week (e.g. "Valsts aizsardzības
+mācības" in TIC) leaks into the new week. With no current source, the stale one is kept.
+The building label's date may be glued to the name (`TIC16.11.2026.`); `parseTimetableLabel`
+tolerates the missing space, else the whole label becomes a phantom "building".
+
 There is no way to tell a pointer row from a genuinely teacher-less lesson ("Prakse", "Valsts
 aizsardzība") by shape alone — the discriminator is that another building really does publish
 that class's day. Hence "drop only when something else has substance"; otherwise the address row

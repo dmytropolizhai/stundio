@@ -70,6 +70,13 @@ describe("parseTimetableLabel", () => {
     });
   });
 
+  it("splits a label whose date is glued to the building name", () => {
+    expect(parseTimetableLabel("TIC16.11.2026. (16. 11. - 20. 11. 2026)")).toEqual({
+      building: "TIC",
+      validTo: "2026-11-20",
+    });
+  });
+
   it("survives a label with no range", () => {
     expect(parseTimetableLabel("TIC")).toEqual({ building: "TIC", validTo: null });
   });
