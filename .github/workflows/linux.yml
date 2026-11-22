@@ -63,3 +63,8 @@ jobs:
           bundle: Stundio.flatpak
           manifest-path: packaging/flatpak/io.github.dmytropolizhai.stundio.json
           cache-key: stundio-linux-${{ hashFiles('package-lock.json', 'src-tauri/Cargo.lock') }}
+          # A restored cache makes flatpak-builder update the GNOME SDK inside the restored state,
+          # which fails with "Invalid cross-device link" (main, 2026-11-22) as soon as the runtime
+          # publishes a new revision. A cold build always works, at the cost of a longer run.
+          restore-cache: false
+          save-cache: false
