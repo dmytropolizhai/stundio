@@ -4,6 +4,7 @@ import {
   ArrowLeftRight,
   ArrowRight,
   ArrowUpRight,
+  ListFilter,
   Bell,
   BellOff,
   Briefcase,
@@ -137,6 +138,7 @@ const ICONS = {
    */
   "alarm-clock": AlarmClock,
   "arrow-left-right": ArrowLeftRight,
+  "list-filter": ListFilter,
   bug: Bug,
   "chart-column": ChartColumn,
   layers: Layers,

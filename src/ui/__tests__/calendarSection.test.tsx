@@ -17,6 +17,12 @@ import { CalendarSection } from "../screens/settings-view/calendar-section.tsx";
 import { useCalendarExport } from "../calendar/useCalendarExport.ts";
 import { bootHarness, clickAndSettle, type Harness } from "./harness.tsx";
 
+/** Opens the target sheet from the section's "Add to calendar" row, then taps one target. */
+const pick = async (name: RegExp | string) => {
+  await clickAndSettle(() => screen.getByRole("button", { name: /Pievienot kalendāram/ }).click());
+  await clickAndSettle(() => screen.getByRole("button", { name: new RegExp(name) }).click());
+};
+
 const renderSection = (h: Harness) =>
   render(
     <StoreContext.Provider value={h.store}>
@@ -41,7 +47,7 @@ describe("CalendarSection", () => {
       ["Outlook", "outlook"],
       ["Saglabāt failu", "ics"],
     ] as const) {
-      await clickAndSettle(() => screen.getByRole("button", { name: new RegExp(name) }).click());
+      await pick(name);
       expect(route).toHaveBeenLastCalledWith(
         target,
         expect.any(Array),
@@ -57,9 +63,21 @@ describe("CalendarSection", () => {
     route.mockResolvedValue({ kind: "nothing-to-export" });
     renderSection(h);
 
-    await clickAndSettle(() => screen.getByRole("button", { name: /Google Calendar/ }).click());
+    await pick(/Google Calendar/);
     expect(route.mock.calls[0]?.[2]).toMatchObject({ changesOnly: true });
     expect(screen.getByRole("status").textContent).toContain("nav izmaiņu");
+  });
+
+  it("shows the scope on the row and the outcome there after a tap", async () => {
+    const h = await bootHarness();
+    route.mockResolvedValue({ kind: "link-opened", eventCount: 2 });
+    renderSection(h);
+    const row = () => screen.getByRole("button", { name: /Pievienot kalendāram/ });
+    expect(row().textContent).toContain("4 nedēļas · visas");
+    await clickAndSettle(() => screen.getByRole("switch").click());
+    expect(row().textContent).toContain("4 nedēļas · izmaiņas");
+    await pick(/Google Calendar/);
+    expect(row().textContent).toContain("Gatavs");
   });
 
   it("toggles the setting", async () => {
@@ -74,9 +92,9 @@ describe("CalendarSection", () => {
     let finish: (v: unknown) => void = () => undefined;
     route.mockReturnValue(new Promise((resolve) => (finish = resolve)));
     renderSection(h);
-    const google = () => screen.getByRole("button", { name: /Google Calendar/ });
-    await clickAndSettle(() => google().click());
-    await clickAndSettle(() => google().click());
+    await pick(/Google Calendar/);
+    const row = screen.getByRole("button", { name: /Pievienot kalendāram/ });
+    expect((row as HTMLButtonElement).disabled).toBe(true);
     expect(route).toHaveBeenCalledTimes(1);
     await clickAndSettle(() => finish({ kind: "link-opened", eventCount: 1 }));
   });
@@ -86,7 +104,7 @@ describe("CalendarSection", () => {
     route.mockResolvedValue({ kind: "file", via: "download", eventCount: 3 });
     const online = vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
     renderSection(h);
-    await clickAndSettle(() => screen.getByRole("button", { name: /Google Calendar/ }).click());
+    await pick(/Google Calendar/);
     online.mockRestore();
     expect(route.mock.calls[0]?.[0]).toBe("ics");
     expect(screen.getByRole("status").textContent).toContain("internets");
@@ -96,7 +114,7 @@ describe("CalendarSection", () => {
     const h = await bootHarness();
     route.mockRejectedValue(new Error("boom"));
     renderSection(h);
-    await clickAndSettle(() => screen.getByRole("button", { name: /Apple Calendar/ }).click());
+    await pick(/Apple Calendar/);
     expect(screen.getByRole("status").textContent).toContain("Neizdevās eksportēt");
   });
 });
