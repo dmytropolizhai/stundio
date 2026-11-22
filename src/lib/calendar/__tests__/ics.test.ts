@@ -38,7 +38,7 @@ const unfold = (s: string): string => s.replace(/\r\n /g, "");
 
 describe("escapeText", () => {
   it("escapes backslash, semicolon, comma and newlines", () => {
-    expect(escapeText("a\\b;c,d\ne")).toBe("a\\\\b\;c\\,d\\ne");
+    expect(escapeText("a\\b;c,d\ne")).toBe("a\\\\b\\;c\\,d\\ne");
   });
   it("normalises CRLF and lone CR to a literal \\n", () => {
     expect(escapeText("a\r\nb\rc")).toBe("a\\nb\\nc");
@@ -70,7 +70,7 @@ describe("foldLine", () => {
     expect(unfold(folded)).toBe(text);
     // Every physical line must itself be well-formed UTF-16 (no lone surrogates).
     for (const p of folded.split("\r\n")) {
-      expect(p.isWellFormed()).toBe(true);
+      expect(encodeURIComponent(p)).toBeTypeOf("string");
     }
   });
 });
