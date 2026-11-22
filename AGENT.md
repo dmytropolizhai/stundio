@@ -63,7 +63,9 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   (RFC 5545 text) → `router.ts` (delivery per target). Times are floating Europe/Riga wall-clock, never
   device-local; UIDs are stable per lesson+date (scoped by `identityKey`) and `SEQUENCE` bumps on any
   change so a re-import updates instead of duplicating. `providers.ts` builds the deeplinks; only
-  `native.ts` touches Capacitor. The UI side is `ui/calendar/useCalendarExport.ts` (one school week: this one, or the
+  `google.ts` / `googleAuth.ts` are the web-only one-tap Google path (Calendar API through the
+  `calendar.app.created` scope, events upserted by `iCalUID`; GIS popup, token held in memory;
+  needs `VITE_GOOGLE_CLIENT_ID`, see README). `native.ts` touches Capacitor. The UI side is `ui/calendar/useCalendarExport.ts` (one school week: this one, or the
   coming one from Saturday) and the Settings "Calendar" section (its `calendarName` setting renames the exported calendar; empty means "Stundio · <class>"). Offline, a Google export is downgraded to a plain
   `.ics` (Google's import page is a website) and the status line says what is left to do. The Changes
   screen carries a shortcut (`changes-export.tsx`) that shares just the changed lessons as an `.ics`.

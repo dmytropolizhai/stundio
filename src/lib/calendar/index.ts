@@ -13,3 +13,18 @@ export {
   type CalendarExportContext,
   type CalendarShareNavigator,
 } from "./router.ts";
+export {
+  GOOGLE_CALENDAR_SCOPE,
+  GoogleAuthError,
+  ensureCalendar,
+  exportToGoogleCalendar,
+  toGoogleEvent,
+  type GoogleDeps,
+  type GoogleExportResult,
+} from "./google.ts";
+export {
+  GoogleSignInCancelled,
+  googleIdentity,
+  loadGoogleIdentity,
+  requestGoogleToken,
+} from "./googleAuth.ts";

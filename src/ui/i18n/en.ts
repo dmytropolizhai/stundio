@@ -518,6 +518,12 @@ export const en: Dict = {
   "settings.calendarNameHint":
     "What the added calendar is called in your calendar app. Leave empty for the default.",
   "calendar.googleImportLink": "Open Google Calendar import (choose the saved file)",
+  "settings.calendarGoogleSignInHint":
+    "Sign in with Google — lessons appear in a separate “Stundio” calendar. No file.",
+  "calendar.status.googleDone":
+    "Added {count} lessons to the “Stundio” calendar in Google Calendar. Exporting again updates them.",
+  "calendar.status.googlePartial": "Google refused {count}.",
+  "calendar.status.googleAuth": "Google didn't allow access. Allow calendar access and try again.",
   "calendar.status.working": "Preparing calendar…",
   "calendar.status.done":
     "Exported lessons: {count}. Exporting again updates the existing entries.",

@@ -525,6 +525,13 @@ export const lv = {
   "settings.calendarNameHint":
     "Tā tavā kalendāra lietotnē sauksies pievienotā kalendāra grupa. Atstāj tukšu, lai izmantotu noklusējumu.",
   "calendar.googleImportLink": "Atvērt Google Calendar importu (izvēlies saglabāto failu)",
+  "settings.calendarGoogleSignInHint":
+    "Pieslēdzies ar Google — stundas parādīsies atsevišķā “Stundio” kalendārā. Bez faila.",
+  "calendar.status.googleDone":
+    "Pievienotas stundas: {count}. Tās ir Google Calendar kalendārā “Stundio”; atkārtots eksports tās atjaunos.",
+  "calendar.status.googlePartial": "Google noraidīja {count}.",
+  "calendar.status.googleAuth":
+    "Google neatļāva piekļuvi. Atļauj piekļuvi savam kalendāram un mēģini vēlreiz.",
   "calendar.status.working": "Gatavo kalendāru…",
   "calendar.status.done":
     "Eksportētas stundas: {count}. Atkārtots eksports atjaunos esošos ierakstus.",

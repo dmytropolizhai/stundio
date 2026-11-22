@@ -43,6 +43,8 @@ export type Settings = {
   calendarChangesOnly: boolean;
   /** Name the exported calendar carries in the user's calendar app. Empty = "Stundio · <class>". */
   calendarName: string;
+  /** The "Stundio" calendar created in the student's Google account; empty until the first sign-in export. */
+  googleCalendarId: string;
   selectedClassId: string | null;
   building: Building | null;
   /**
@@ -151,6 +153,7 @@ export const DEFAULT_SETTINGS: Settings = {
   weatherEnabled: true,
   calendarChangesOnly: false,
   calendarName: "",
+  googleCalendarId: "",
   selectedClassId: null,
   building: null,
   subgroup: null,

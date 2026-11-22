@@ -73,6 +73,8 @@ export type ExportOutcome =
       followUp?: string;
     }
   | { kind: "link-opened"; eventCount: number }
+  /** Written straight into a Google calendar through its API; `failed` lessons were refused. */
+  | { kind: "google-api"; imported: number; failed: number; calendarId: string }
   | { kind: "nothing-to-export" }
   /** The user dismissed the share sheet / save dialog; not an error. */
   | { kind: "cancelled" };

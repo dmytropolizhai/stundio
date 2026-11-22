@@ -49,7 +49,7 @@ That’s why the app is **local-first**. Your timetable is stored on your device
 * **Change notifications** — Get told when your day changes. Android delivers these locally from the app's own background refresh; the web app uses Web Push, so an installed PWA is notified even while it's closed.
 * **In-app feedback** — Report bugs or submit feature suggestions directly inside the app without third-party forms.
 * **Share your week as an image** — Turn the week view into a picture: your class, your form teacher, every lesson with its start and end time, and a note about which days are at another building. Under the grid, every subject code is spelled out in full, and it ends with a QR code so whoever you send it to can scan it and get the app. The image is drawn on your own device and passed straight to Android's share sheet, so it works offline and nothing is uploaded anywhere.
-* **Calendar export** — Add your timetable to Google Calendar, Apple Calendar, Outlook or any app that opens `.ics` files: one school week (the coming one from Saturday), with every substitution, cancellation and move marked. Re-exporting updates the same entries instead of duplicating them, and an "only changed lessons" switch keeps just the changes. Built on the device; nothing is uploaded.
+* **Calendar export** — Add your timetable to Google Calendar, Apple Calendar, Outlook or any app that opens `.ics` files: one school week (the coming one from Saturday), with every substitution, cancellation and move marked. Re-exporting updates the same entries instead of duplicating them, and an "only changed lessons" switch keeps just the changes. On the web build, Google Calendar can be added in one tap (sign in, and the lessons go into their own "Stundio" calendar); elsewhere it saves an `.ics` file. Built on the device; nothing of ours is uploaded.
 * **Transit (students)** — Open a public-transport route in Google Maps from your home address or another saved starting point to the building of your current or next lesson. Two tabs split the screen: **Destination** (pick the campus, route from home, live map) and **Saved addresses**. The embedded Rīgas Satiksme live map shows where transport is right now; the bus button at the top right of Settings switches it on or off. Addresses stay on your device, and Stundio never asks for your location.
 * **Class picker** — Save your favourite classes and switch between them whenever you need to. Your selection is stored on the device.
 * **Teacher Mode ("Choose Your Side")** — A dedicated persona for educators:
@@ -220,3 +220,21 @@ Stundio's code is licensed under the [MIT License](LICENSE): you're free to fork
 The Stundio name, logo and app icon are not covered by that license. A fork you publish needs its own name, icon, Android application id and User-Agent, so nobody mistakes it for Stundio. The details, and the list of official sources, are in [TRADEMARKS.md](TRADEMARKS.md).
 
 Stundio is an unofficial, non-commercial student project. It isn't affiliated with, endorsed by, or supported by Rīgas Valsts tehnikums, EduPage, or aSc.
+
+## Google Calendar sign-in (optional)
+
+One-tap Google export is on only when the web build is given an OAuth client id; without it the
+Google row saves an `.ics` file. A client id is a public identifier, not a secret.
+
+1. In a Google Cloud project, enable the **Google Calendar API**.
+2. Configure the OAuth consent screen and add the scope
+   `https://www.googleapis.com/auth/calendar.app.created` (the app can only create and manage
+   calendars of its own; it never sees the student's other calendars).
+3. Create an **OAuth client ID** of type *Web application* and add your site's origin
+   (for example `https://app.stundio.lv`, and `http://localhost:5173` for development) under
+   *Authorised JavaScript origins*.
+4. Build with `VITE_GOOGLE_CLIENT_ID=<client id>` (for example in the Cloudflare Pages build
+   settings).
+
+Android and the Linux desktop shell keep the file route: Google blocks its sign-in inside an
+embedded WebView.

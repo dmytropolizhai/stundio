@@ -524,6 +524,12 @@ export const ru: Dict = {
   "settings.calendarNameHint":
     "Так календарь будет называться в вашем приложении-календаре. Оставьте пустым для названия по умолчанию.",
   "calendar.googleImportLink": "Открыть импорт Google Календаря (выберите сохранённый файл)",
+  "settings.calendarGoogleSignInHint":
+    "Войдите через Google — уроки появятся в отдельном календаре «Stundio». Без файла.",
+  "calendar.status.googleDone":
+    "Добавлено уроков: {count}. Они в календаре «Stundio» в Google Календаре; повторный экспорт их обновит.",
+  "calendar.status.googlePartial": "Google отклонил: {count}.",
+  "calendar.status.googleAuth": "Google не дал доступ. Разрешите доступ к календарю и повторите.",
   "calendar.status.working": "Готовим календарь…",
   "calendar.status.done":
     "Экспортировано уроков: {count}. Повторный экспорт обновит существующие записи.",

@@ -41,12 +41,18 @@ const TARGETS: { target: CalendarTarget; icon: IconName; label: MessageKey; hint
   },
 ];
 
-const messageKey = (status: CalendarExportStatus, changesOnly: boolean): MessageKey | null => {
+const messageKey = (
+  status: CalendarExportStatus,
+  changesOnly: boolean,
+  viaGoogleApi: boolean,
+): MessageKey | null => {
   switch (status) {
     case "working":
       return "calendar.status.working";
     case "done":
-      return "calendar.status.done";
+      return viaGoogleApi ? "calendar.status.googleDone" : "calendar.status.done";
+    case "signInError":
+      return "calendar.status.googleAuth";
     case "offline":
       return "calendar.status.offline";
     case "empty":
@@ -62,13 +68,14 @@ export const CalendarSection = () => {
   const t = useT();
   const changesOnly = useAppStore((s) => s.settings.calendarChangesOnly);
   const setChangesOnly = useSettingSetter("calendarChangesOnly");
-  const { exportTo, status, eventCount, lastOutcome } = useCalendarExport();
+  const { exportTo, status, eventCount, failedCount, lastOutcome, googleSignIn, prepareGoogle } =
+    useCalendarExport();
   const [sheetOpen, setSheetOpen] = useState(false);
   const calendarName = useAppStore((s) => s.settings.calendarName);
   const setCalendarName = useSettingSetter("calendarName");
   const [nameDraft, setNameDraft] = useState<string | null>(null);
 
-  const key = messageKey(status, changesOnly);
+  const key = messageKey(status, changesOnly, lastOutcome?.kind === "google-api");
   const working = status === "working";
 
   const value =
@@ -103,7 +110,10 @@ export const CalendarSection = () => {
         description={t("settings.calendarAddHint")}
         value={value}
         disabled={working}
-        onClick={() => setSheetOpen(true)}
+        onClick={() => {
+          prepareGoogle();
+          setSheetOpen(true);
+        }}
       />
       <Row>
         <label className="block font-text text-body-sm font-semibold text-strong">
@@ -134,6 +144,9 @@ export const CalendarSection = () => {
         }
       >
         {key === null ? "" : t(key, { count: eventCount })}
+        {status === "done" && failedCount > 0
+          ? ` ${t("calendar.status.googlePartial", { count: failedCount })}`
+          : ""}
       </p>
 
       {status === "done" && lastOutcome?.kind === "file" && lastOutcome.followUp !== undefined && (
@@ -168,7 +181,13 @@ export const CalendarSection = () => {
               <Tile icon={icon} />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="font-text text-body font-bold text-strong">{t(label)}</span>
-                <span className="font-text text-caption text-muted">{t(hint)}</span>
+                <span className="font-text text-caption text-muted">
+                  {t(
+                    target === "google" && googleSignIn
+                      ? "settings.calendarGoogleSignInHint"
+                      : hint,
+                  )}
+                </span>
               </span>
               <Icon name="download" size={18} className="shrink-0 text-muted" />
             </button>
