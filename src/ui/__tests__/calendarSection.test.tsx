@@ -39,7 +39,7 @@ describe("CalendarSection", () => {
       ["Google Calendar", "google"],
       ["Apple Calendar", "apple"],
       ["Outlook", "outlook"],
-      ["Cits \\(\\.ics fails\\)", "ics"],
+      ["Saglabāt failu", "ics"],
     ] as const) {
       await clickAndSettle(() => screen.getByRole("button", { name: new RegExp(name) }).click());
       expect(route).toHaveBeenLastCalledWith(
@@ -48,7 +48,7 @@ describe("CalendarSection", () => {
         expect.objectContaining({ name: "Stundio · A1-2", changesOnly: false }),
       );
     }
-    expect(screen.getByRole("status").textContent).toBe("Eksportētas stundas: 7");
+    expect(screen.getByRole("status").textContent).toContain("Eksportētas stundas: 7");
     expect(screen.getByRole("status").getAttribute("aria-live")).toBe("polite");
   });
 
@@ -59,7 +59,7 @@ describe("CalendarSection", () => {
 
     await clickAndSettle(() => screen.getByRole("button", { name: /Google Calendar/ }).click());
     expect(route.mock.calls[0]?.[2]).toMatchObject({ changesOnly: true });
-    expect(screen.getByRole("status").textContent).toBe("Nav ko eksportēt");
+    expect(screen.getByRole("status").textContent).toContain("nav izmaiņu");
   });
 
   it("toggles the setting", async () => {
@@ -69,12 +69,24 @@ describe("CalendarSection", () => {
     expect(h.store.getState().settings.calendarChangesOnly).toBe(true);
   });
 
+  it("ignores a second tap while an export is in flight", async () => {
+    const h = await bootHarness();
+    let finish: (v: unknown) => void = () => undefined;
+    route.mockReturnValue(new Promise((resolve) => (finish = resolve)));
+    renderSection(h);
+    const google = () => screen.getByRole("button", { name: /Google Calendar/ });
+    await clickAndSettle(() => google().click());
+    await clickAndSettle(() => google().click());
+    expect(route).toHaveBeenCalledTimes(1);
+    await clickAndSettle(() => finish({ kind: "link-opened", eventCount: 1 }));
+  });
+
   it("reports a failed export", async () => {
     const h = await bootHarness();
     route.mockRejectedValue(new Error("boom"));
     renderSection(h);
     await clickAndSettle(() => screen.getByRole("button", { name: /Apple Calendar/ }).click());
-    expect(screen.getByRole("status").textContent).toBe("Neizdevās eksportēt kalendāru");
+    expect(screen.getByRole("status").textContent).toContain("Neizdevās eksportēt");
   });
 });
 

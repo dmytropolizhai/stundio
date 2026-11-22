@@ -1,5 +1,5 @@
 import type { CalendarTarget } from "@/lib/calendar";
-import type { IconName } from "@/ds";
+import { Icon, cn, type IconName } from "@/ds";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useCalendarExport } from "@/ui/calendar/useCalendarExport.ts";
 import { useT, type MessageKey } from "@/ui/i18n";
@@ -14,10 +14,10 @@ const TARGETS: { target: CalendarTarget; icon: IconName; label: MessageKey; hint
     hint: "settings.calendarGoogleHint",
   },
   {
-    target: "apple",
-    icon: "calendar-days",
-    label: "settings.calendarApple",
-    hint: "settings.calendarAppleHint",
+    target: "ics",
+    icon: "download",
+    label: "settings.calendarOther",
+    hint: "settings.calendarOtherHint",
   },
   {
     target: "outlook",
@@ -26,10 +26,10 @@ const TARGETS: { target: CalendarTarget; icon: IconName; label: MessageKey; hint
     hint: "settings.calendarOutlookHint",
   },
   {
-    target: "ics",
-    icon: "download",
-    label: "settings.calendarOther",
-    hint: "settings.calendarOtherHint",
+    target: "apple",
+    icon: "calendar-days",
+    label: "settings.calendarApple",
+    hint: "settings.calendarAppleHint",
   },
 ];
 
@@ -46,22 +46,14 @@ export const CalendarSection = () => {
       : status === "done"
         ? t("calendar.status.done", { count: eventCount })
         : status === "empty"
-          ? t("calendar.status.empty")
+          ? t(changesOnly ? "calendar.status.emptyChanges" : "calendar.status.empty")
           : status === "error"
             ? t("calendar.status.error")
             : "";
+  const working = status === "working";
 
   return (
     <Section title={t("settings.calendar")}>
-      {TARGETS.map(({ target, icon, label, hint }) => (
-        <SettingsRow
-          key={target}
-          icon={icon}
-          label={t(label)}
-          description={t(hint)}
-          onClick={() => void exportTo(target, { changesOnly })}
-        />
-      ))}
       <SettingsRow
         icon="arrow-left-right"
         label={t("settings.calendarChangesOnly")}
@@ -69,10 +61,24 @@ export const CalendarSection = () => {
         checked={changesOnly}
         onCheckedChange={(checked) => void setChangesOnly(checked)}
       />
+      {TARGETS.map(({ target, icon, label, hint }) => (
+        <SettingsRow
+          key={target}
+          icon={icon}
+          label={t(label)}
+          description={t(hint)}
+          disabled={working}
+          trailing={<Icon name="download" size={18} />}
+          onClick={() => void exportTo(target, { changesOnly })}
+        />
+      ))}
       <p
         role="status"
         aria-live="polite"
-        className="px-4 pt-1 font-text text-caption text-muted empty:hidden"
+        className={cn(
+          "px-4 pt-1 font-text text-caption empty:hidden",
+          status === "error" ? "text-danger" : "text-muted",
+        )}
       >
         {message}
       </p>

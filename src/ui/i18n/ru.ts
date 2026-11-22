@@ -497,21 +497,27 @@ export const ru: Dict = {
   "settings.shareLanguageHint":
     "На каком языке подписаны картинка недели и сообщение, которыми вы делитесь.",
   "settings.shareLangFollowApp": "Как в приложении",
-  "settings.calendar": "Календарь",
+  "settings.calendar": "Добавить в календарь",
   "settings.calendarGoogle": "Google Calendar",
-  "settings.calendarGoogleHint": "Добавьте уроки на ближайшие недели в Google Календарь.",
+  "settings.calendarGoogleHint":
+    "Уроки на ближайшие 4 недели, включая отменённые (с пометкой). Разовый экспорт.",
   "settings.calendarApple": "Apple Calendar",
-  "settings.calendarAppleHint": "Откройте расписание в календаре на iPhone, iPad или Mac.",
+  "settings.calendarAppleHint": "Уроки на ближайшие 4 недели в календаре iPhone, iPad или Mac.",
   "settings.calendarOutlook": "Outlook",
   "settings.calendarOutlookHint": "Добавьте уроки в Outlook или Microsoft 365.",
-  "settings.calendarOther": "Другое (файл .ics)",
-  "settings.calendarOtherHint": "Сохраните файл .ics, который откроет любое приложение-календарь.",
-  "settings.calendarChangesOnly": "Только изменённые уроки",
-  "settings.calendarChangesOnlyHint": "Экспортировать только замены, отмены и переносы.",
+  "settings.calendarOther": "Сохранить файл (.ics)",
+  "settings.calendarOtherHint": "Подойдёт любому приложению-календарю.",
+  "settings.calendarChangesOnly": "Только изменения",
+  "settings.calendarChangesOnlyHint":
+    "Пропускает неизменённые уроки; оставляет отменённые, перенесённые и заменённые.",
   "calendar.status.working": "Готовим календарь…",
-  "calendar.status.done": "Экспортировано уроков: {count}",
-  "calendar.status.empty": "Нечего экспортировать",
-  "calendar.status.error": "Не удалось экспортировать календарь",
+  "calendar.status.done":
+    "Экспортировано уроков: {count}. Повторный экспорт обновит существующие записи.",
+  "calendar.status.empty": "На ближайшие 4 недели нечего экспортировать.",
+  "calendar.status.emptyChanges":
+    "На ближайшие 4 недели изменений нет. Выключите «Только изменения», чтобы экспортировать всё.",
+  "calendar.status.error":
+    "Не удалось экспортировать. Повторите или выберите «Сохранить файл (.ics)».",
   "calendar.label.cancelled": "отменён",
   "calendar.label.moved": "перенесён",
   "calendar.label.substituted": "замена",

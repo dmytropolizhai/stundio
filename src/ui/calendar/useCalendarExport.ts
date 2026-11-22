@@ -5,7 +5,7 @@
  * Like sharing a week, nothing is uploaded — the events are built on the device. Dates are
  * Riga's (CLAUDE.md), never the device's.
  */
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useAppStore } from "@/store";
 import { identityKey as identityKeyOf } from "@/lib/persona";
 import { startOfWeek } from "@/lib/schedule";
@@ -40,6 +40,8 @@ export const useCalendarExport = (): {
   const [lastOutcome, setLastOutcome] = useState<Outcome | null>(null);
   const [eventCount, setEventCount] = useState(0);
 
+  const busy = useRef(false);
+
   const identity = useIdentity();
   const identityKey = useMemo(() => identityKeyOf(identity), [identity]);
   const timetables = useAppStore((s) => s.timetables);
@@ -52,6 +54,9 @@ export const useCalendarExport = (): {
 
   const exportTo = useCallback(
     async (target: CalendarTarget, opts?: { changesOnly?: boolean }): Promise<void> => {
+      // A second tap while the share sheet is open would stack a second export on top of it.
+      if (busy.current) return;
+      busy.current = true;
       setStatus("working");
       try {
         const t = (key: Parameters<typeof translate>[1]) => translate(lang, key);
@@ -95,6 +100,8 @@ export const useCalendarExport = (): {
         }
       } catch {
         setStatus("error");
+      } finally {
+        busy.current = false;
       }
     },
     [lang, resolvedDay, identityKey, subject],
