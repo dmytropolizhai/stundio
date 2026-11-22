@@ -510,8 +510,11 @@ export const ua: Dict = {
   "settings.calendarChangesOnly": "Лише зміни",
   "settings.calendarChangesOnlyHint":
     "Пропускає незмінені уроки; залишає скасовані, перенесені та замінені.",
+  "changes.exportToCalendar": "Додати зміни до календаря",
   "calendar.status.working": "Готуємо календар…",
   "calendar.status.done": "Експортовано уроків: {count}. Повторний експорт оновить наявні записи.",
+  "calendar.status.offline":
+    "Файл збережено. Для імпорту в Google потрібен інтернет — відкрийте «Імпорт» у Google Календарі, коли з’явиться мережа.",
   "calendar.status.empty": "На найближчі 4 тижні нема що експортувати.",
   "calendar.status.emptyChanges":
     "На найближчі 4 тижні змін немає. Вимкніть «Лише зміни», щоб експортувати все.",

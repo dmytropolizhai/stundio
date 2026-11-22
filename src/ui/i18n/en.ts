@@ -504,9 +504,12 @@ export const en: Dict = {
   "settings.calendarChangesOnly": "Changes only",
   "settings.calendarChangesOnlyHint":
     "Skips unchanged lessons; keeps cancelled, moved and substituted ones.",
+  "changes.exportToCalendar": "Add changes to calendar",
   "calendar.status.working": "Preparing calendar…",
   "calendar.status.done":
     "Exported lessons: {count}. Exporting again updates the existing entries.",
+  "calendar.status.offline":
+    "File saved. Google's import needs internet — open Google Calendar's “Import” once you're online.",
   "calendar.status.empty": "Nothing to export in the next 4 weeks.",
   "calendar.status.emptyChanges":
     "No changes in the next 4 weeks. Turn off “Changes only” to export everything.",

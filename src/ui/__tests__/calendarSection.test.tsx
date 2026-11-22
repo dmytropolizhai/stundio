@@ -81,6 +81,17 @@ describe("CalendarSection", () => {
     await clickAndSettle(() => finish({ kind: "link-opened", eventCount: 1 }));
   });
 
+  it("sends Google exports offline as a plain file and explains the import step", async () => {
+    const h = await bootHarness();
+    route.mockResolvedValue({ kind: "file", via: "download", eventCount: 3 });
+    const online = vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    renderSection(h);
+    await clickAndSettle(() => screen.getByRole("button", { name: /Google Calendar/ }).click());
+    online.mockRestore();
+    expect(route.mock.calls[0]?.[0]).toBe("ics");
+    expect(screen.getByRole("status").textContent).toContain("internets");
+  });
+
   it("reports a failed export", async () => {
     const h = await bootHarness();
     route.mockRejectedValue(new Error("boom"));

@@ -510,9 +510,12 @@ export const ru: Dict = {
   "settings.calendarChangesOnly": "Только изменения",
   "settings.calendarChangesOnlyHint":
     "Пропускает неизменённые уроки; оставляет отменённые, перенесённые и заменённые.",
+  "changes.exportToCalendar": "Добавить изменения в календарь",
   "calendar.status.working": "Готовим календарь…",
   "calendar.status.done":
     "Экспортировано уроков: {count}. Повторный экспорт обновит существующие записи.",
+  "calendar.status.offline":
+    "Файл сохранён. Для импорта в Google нужен интернет — откройте «Импорт» в Google Календаре, когда появится сеть.",
   "calendar.status.empty": "На ближайшие 4 недели нечего экспортировать.",
   "calendar.status.emptyChanges":
     "На ближайшие 4 недели изменений нет. Выключите «Только изменения», чтобы экспортировать всё.",

@@ -64,7 +64,9 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   device-local; UIDs are stable per lesson+date (scoped by `identityKey`) and `SEQUENCE` bumps on any
   change so a re-import updates instead of duplicating. `providers.ts` builds the deeplinks; only
   `native.ts` touches Capacitor. The UI side is `ui/calendar/useCalendarExport.ts` (this week + the next
-  three) and the Settings "Calendar" section.
+  three) and the Settings "Add to calendar" section. Offline, a Google export is downgraded to a plain
+  `.ics` (Google's import page is a website) and the status line says what is left to do. The Changes
+  screen carries a shortcut (`changes-export.tsx`) that shares just the changed lessons as an `.ics`.
 - **`src/lib/widget/`** — the payload the Android home-screen tile renders: `payload.ts` turns
   a `ResolvedDay` + `lib/schedule`'s `glanceLesson` into already-rendered strings, so the native
   side does no schedule maths at all. Only `native.ts` touches Capacitor. The store wiring

@@ -22,7 +22,7 @@ import { translate, useLang } from "@/ui/i18n";
 import { useIdentity } from "@/ui/persona";
 import { resolveShareSubject } from "@/ui/share/subject.ts";
 
-export type CalendarExportStatus = "idle" | "working" | "done" | "empty" | "error";
+export type CalendarExportStatus = "idle" | "working" | "done" | "offline" | "empty" | "error";
 
 /** This week plus the next three. */
 export const EXPORT_WEEKS = 4;
@@ -83,7 +83,11 @@ export const useCalendarExport = (): {
           return;
         }
         const name = subject === null ? "Stundio" : `Stundio · ${subject.label}`;
-        const outcome = await routeCalendarExport(target, events, {
+        // Google's import page is a website: offline it would open to a browser error after the
+        // file was already shared. Deliver the file alone and say what's left to do.
+        const offlineGoogle =
+          target === "google" && typeof navigator !== "undefined" && !navigator.onLine;
+        const outcome = await routeCalendarExport(offlineGoogle ? "ics" : target, events, {
           name,
           range,
           changesOnly: opts?.changesOnly === true,
@@ -96,7 +100,7 @@ export const useCalendarExport = (): {
           setStatus("empty");
         } else {
           setEventCount(outcome.eventCount);
-          setStatus("done");
+          setStatus(offlineGoogle ? "offline" : "done");
         }
       } catch {
         setStatus("error");

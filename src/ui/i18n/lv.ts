@@ -512,9 +512,12 @@ export const lv = {
   "settings.calendarChangesOnly": "Tikai izmaiņas",
   "settings.calendarChangesOnlyHint":
     "Izlaiž nemainītās stundas; atstāj atceltās, pārceltās un aizvietotās.",
+  "changes.exportToCalendar": "Pievienot izmaiņas kalendāram",
   "calendar.status.working": "Gatavo kalendāru…",
   "calendar.status.done":
     "Eksportētas stundas: {count}. Atkārtots eksports atjaunos esošos ierakstus.",
+  "calendar.status.offline":
+    "Fails saglabāts. Google importam vajadzīgs internets — atver Google Calendar iestatījumos “Importēt”, kad esi tiešsaistē.",
   "calendar.status.empty": "Nākamajās 4 nedēļās nav ko eksportēt.",
   "calendar.status.emptyChanges":
     "Nākamajās 4 nedēļās nav izmaiņu. Izslēdz “Tikai izmaiņas”, lai eksportētu visu.",

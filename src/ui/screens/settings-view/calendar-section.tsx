@@ -45,11 +45,13 @@ export const CalendarSection = () => {
       ? t("calendar.status.working")
       : status === "done"
         ? t("calendar.status.done", { count: eventCount })
-        : status === "empty"
-          ? t(changesOnly ? "calendar.status.emptyChanges" : "calendar.status.empty")
-          : status === "error"
-            ? t("calendar.status.error")
-            : "";
+        : status === "offline"
+          ? t("calendar.status.offline")
+          : status === "empty"
+            ? t(changesOnly ? "calendar.status.emptyChanges" : "calendar.status.empty")
+            : status === "error"
+              ? t("calendar.status.error")
+              : "";
   const working = status === "working";
 
   return (
