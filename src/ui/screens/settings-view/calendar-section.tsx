@@ -1,5 +1,5 @@
 /**
- * Settings → Add to calendar: two rows. "Changes only" is the scope switch and sits first so the
+ * Settings → Calendar: two rows. "Changes only" is the scope switch and sits first so the
  * student sees what an export will contain before choosing where it goes; "Add to calendar" opens
  * a sheet of targets. The row's value carries the scope while idle and the outcome after a tap, so
  * the feedback appears where the finger was; the line below it keeps the detail and the next step.
@@ -17,7 +17,7 @@ import { SheetDescription, SheetTitle } from "./settings-sheet.tsx";
 const TARGETS: { target: CalendarTarget; icon: IconName; label: MessageKey; hint: MessageKey }[] = [
   {
     target: "google",
-    icon: "calendar-days",
+    icon: "globe",
     label: "settings.calendarGoogle",
     hint: "settings.calendarGoogleHint",
   },
@@ -29,13 +29,13 @@ const TARGETS: { target: CalendarTarget; icon: IconName; label: MessageKey; hint
   },
   {
     target: "outlook",
-    icon: "calendar-days",
+    icon: "mail",
     label: "settings.calendarOutlook",
     hint: "settings.calendarOutlookHint",
   },
   {
     target: "apple",
-    icon: "calendar-days",
+    icon: "smartphone",
     label: "settings.calendarApple",
     hint: "settings.calendarAppleHint",
   },

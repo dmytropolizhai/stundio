@@ -497,7 +497,7 @@ export const ru: Dict = {
   "settings.shareLanguageHint":
     "На каком языке подписаны картинка недели и сообщение, которыми вы делитесь.",
   "settings.shareLangFollowApp": "Как в приложении",
-  "settings.calendar": "Добавить в календарь",
+  "settings.calendar": "Календарь",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Откроется в календаре iPhone, iPad или Mac.",

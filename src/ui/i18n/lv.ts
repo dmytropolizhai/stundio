@@ -499,7 +499,7 @@ export const lv = {
   "settings.customizationHint": "Priekšmetu krāsas, akcents, kartīšu stils un noapaļojums.",
   "settings.shareLanguageHint": "Kādā valodā parakstīts nedēļas attēls un ziņa, ar ko dalies.",
   "settings.shareLangFollowApp": "Kā lietotnē",
-  "settings.calendar": "Pievienot kalendāram",
+  "settings.calendar": "Kalendārs",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Atver iPhone, iPad vai Mac kalendārā.",

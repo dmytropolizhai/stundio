@@ -491,7 +491,7 @@ export const en: Dict = {
   "settings.customizationHint": "Subject colours, accent, card style and corner rounding.",
   "settings.shareLanguageHint": "The language of the week image and message you share.",
   "settings.shareLangFollowApp": "Same as app",
-  "settings.calendar": "Add to calendar",
+  "settings.calendar": "Calendar",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Opens in the iPhone, iPad or Mac calendar.",
