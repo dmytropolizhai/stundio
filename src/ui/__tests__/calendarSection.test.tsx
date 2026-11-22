@@ -39,7 +39,7 @@ describe("CalendarSection", () => {
       ["Google Calendar", "google"],
       ["Apple Calendar", "apple"],
       ["Outlook", "outlook"],
-      ["Cits (.ics fails)", "ics"],
+      ["Cits \\(\\.ics fails\\)", "ics"],
     ] as const) {
       await clickAndSettle(() => screen.getByRole("button", { name: new RegExp(name) }).click());
       expect(route).toHaveBeenLastCalledWith(
