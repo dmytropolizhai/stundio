@@ -513,6 +513,10 @@ export const en: Dict = {
   "calendar.value.failed": "Failed",
   "calendar.value.scopeAll": "4 weeks · all",
   "calendar.value.scopeChanges": "4 weeks · changes",
+  "settings.calendarName": "Calendar name",
+  "settings.calendarNamePlaceholder": "Stundio · class",
+  "settings.calendarNameHint":
+    "What the added calendar is called in your calendar app. Leave empty for the default.",
   "calendar.status.working": "Preparing calendar…",
   "calendar.status.done":
     "Exported lessons: {count}. Exporting again updates the existing entries.",

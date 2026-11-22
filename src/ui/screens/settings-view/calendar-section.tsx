@@ -10,7 +10,7 @@ import type { CalendarTarget } from "@/lib/calendar";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useCalendarExport, type CalendarExportStatus } from "@/ui/calendar/useCalendarExport.ts";
 import { useT, type MessageKey } from "@/ui/i18n";
-import { Section } from "./settings-section.tsx";
+import { Row, Section } from "./settings-section.tsx";
 import { SettingsRow, StatusDot, Tile } from "./settings-row.tsx";
 import { SheetDescription, SheetTitle } from "./settings-sheet.tsx";
 
@@ -64,6 +64,9 @@ export const CalendarSection = () => {
   const setChangesOnly = useSettingSetter("calendarChangesOnly");
   const { exportTo, status, eventCount } = useCalendarExport();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const calendarName = useAppStore((s) => s.settings.calendarName);
+  const setCalendarName = useSettingSetter("calendarName");
+  const [nameDraft, setNameDraft] = useState<string | null>(null);
 
   const key = messageKey(status, changesOnly);
   const working = status === "working";
@@ -102,6 +105,25 @@ export const CalendarSection = () => {
         disabled={working}
         onClick={() => setSheetOpen(true)}
       />
+      <Row>
+        <label className="block font-text text-body-sm font-semibold text-strong">
+          {t("settings.calendarName")}
+          <input
+            value={nameDraft ?? calendarName}
+            maxLength={40}
+            onChange={(event) => setNameDraft(event.target.value)}
+            onBlur={() => {
+              if (nameDraft !== null && nameDraft.trim() !== calendarName) {
+                void setCalendarName(nameDraft.trim());
+              }
+              setNameDraft(null);
+            }}
+            placeholder={t("settings.calendarNamePlaceholder")}
+            className="mt-2 min-h-12 w-full rounded-xl border border-hairline bg-app px-3 font-text text-body-sm font-normal text-strong outline-none focus:border-brand"
+          />
+        </label>
+        <p className="mt-2 font-text text-caption text-muted">{t("settings.calendarNameHint")}</p>
+      </Row>
       <p
         role="status"
         aria-live="polite"

@@ -519,6 +519,10 @@ export const ru: Dict = {
   "calendar.value.failed": "Ошибка",
   "calendar.value.scopeAll": "4 недели · все",
   "calendar.value.scopeChanges": "4 недели · изменения",
+  "settings.calendarName": "Название календаря",
+  "settings.calendarNamePlaceholder": "Stundio · класс",
+  "settings.calendarNameHint":
+    "Так календарь будет называться в вашем приложении-календаре. Оставьте пустым для названия по умолчанию.",
   "calendar.status.working": "Готовим календарь…",
   "calendar.status.done":
     "Экспортировано уроков: {count}. Повторный экспорт обновит существующие записи.",

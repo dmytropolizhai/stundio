@@ -46,6 +46,7 @@ export const useCalendarExport = (): {
   const identityKey = useMemo(() => identityKeyOf(identity), [identity]);
   const timetables = useAppStore((s) => s.timetables);
   const resolvedDay = useAppStore((s) => s.resolvedDay);
+  const customName = useAppStore((s) => s.settings.calendarName);
 
   const subject = useMemo(
     () => resolveShareSubject(identity, Object.values(timetables)),
@@ -82,7 +83,8 @@ export const useCalendarExport = (): {
           setStatus("empty");
           return;
         }
-        const name = subject === null ? "Stundio" : `Stundio · ${subject.label}`;
+        const auto = subject === null ? "Stundio" : `Stundio · ${subject.label}`;
+        const name = customName.trim() === "" ? auto : customName.trim();
         // Google's import page is a website: offline it would open to a browser error after the
         // file was already shared. Deliver the file alone and say what's left to do.
         const offlineGoogle =
@@ -108,7 +110,7 @@ export const useCalendarExport = (): {
         busy.current = false;
       }
     },
-    [lang, resolvedDay, identityKey, subject],
+    [lang, resolvedDay, identityKey, subject, customName],
   );
 
   return { exportTo, status, lastOutcome, eventCount };

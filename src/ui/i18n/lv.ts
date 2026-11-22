@@ -521,6 +521,10 @@ export const lv = {
   "calendar.value.failed": "Neizdevās",
   "calendar.value.scopeAll": "4 nedēļas · visas",
   "calendar.value.scopeChanges": "4 nedēļas · izmaiņas",
+  "settings.calendarName": "Kalendāra nosaukums",
+  "settings.calendarNamePlaceholder": "Stundio · klase",
+  "settings.calendarNameHint":
+    "Tā tavā kalendāra lietotnē sauksies pievienotā kalendāra grupa. Atstāj tukšu, lai izmantotu noklusējumu.",
   "calendar.status.working": "Gatavo kalendāru…",
   "calendar.status.done":
     "Eksportētas stundas: {count}. Atkārtots eksports atjaunos esošos ierakstus.",

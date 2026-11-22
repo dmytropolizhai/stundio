@@ -3,7 +3,7 @@
  * switch persists and is passed along, and the outcome is announced politely.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, renderHook, screen, act } from "@testing-library/react";
+import { render, renderHook, screen, act, fireEvent } from "@testing-library/react";
 import type { ReactNode } from "react";
 
 const route = vi.hoisted(() => vi.fn());
@@ -78,6 +78,33 @@ describe("CalendarSection", () => {
     expect(row().textContent).toContain("4 nedēļas · izmaiņas");
     await pick(/Google Calendar/);
     expect(row().textContent).toContain("Gatavs");
+  });
+
+  it("lets the student name the calendar and uses it for the export", async () => {
+    const h = await bootHarness();
+    route.mockResolvedValue({ kind: "link-opened", eventCount: 1 });
+    renderSection(h);
+    const input = screen.getByLabelText(/Kalendāra nosaukums/);
+    act(() => {
+      fireEvent.change(input, { target: { value: "  Skola  " } });
+      fireEvent.blur(input);
+    });
+    expect(h.store.getState().settings.calendarName).toBe("Skola");
+    await pick(/Google Calendar/);
+    expect(route.mock.calls[0]?.[2]).toMatchObject({ name: "Skola" });
+  });
+
+  it("falls back to the class name when the custom name is cleared", async () => {
+    const h = await bootHarness({ calendarName: "Skola" });
+    route.mockResolvedValue({ kind: "link-opened", eventCount: 1 });
+    renderSection(h);
+    const input = screen.getByLabelText(/Kalendāra nosaukums/);
+    act(() => {
+      fireEvent.change(input, { target: { value: "" } });
+      fireEvent.blur(input);
+    });
+    await pick(/Google Calendar/);
+    expect(route.mock.calls[0]?.[2]).toMatchObject({ name: "Stundio · A1-2" });
   });
 
   it("toggles the setting", async () => {
