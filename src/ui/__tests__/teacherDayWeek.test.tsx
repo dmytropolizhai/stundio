@@ -210,7 +210,9 @@ describe("Teacher Day and Week Views", () => {
     const resolved = harness.store.getState().resolvedTeacherDay(FIXTURE_DATE)!;
     const lesson = resolved.lessons[0]!;
     const group = lesson.classes.map((c) => c.short || c.name).join(" + ");
-    const cell = screen.getAllByRole("button").find((b) => b.textContent === group);
+    const cell = screen
+      .getAllByRole("button")
+      .find((b) => b.textContent?.endsWith(`(${group})`) === true);
     expect(cell).toBeDefined();
   });
 

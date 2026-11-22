@@ -32,18 +32,22 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       lv: [
         "Nedēļas skatā tagad redzams garā starpbrīža atdalītājs.",
         "Dienas un nedēļas skata pārslēdzēji pārvietoti uz ērto opciju izvēlni augšējā joslā.",
+        "Stundu sarakstu tagad var eksportēt uz Google Calendar, Apple Calendar, Outlook vai .ics failu — kopā ar aizvietojumiem, atcelšanām un pārcelšanām.",
       ],
       en: [
         "The Week view now shows a divider for the long break.",
         "Day and Week view toggles moved into a handy options menu in the header.",
+        "Export your timetable to Google Calendar, Apple Calendar, Outlook or an .ics file — substitutions, cancellations and moves included.",
       ],
       ru: [
         "В недельном расписании теперь отображается разделитель длинной перемены.",
         "Переключатели вида дня и недели перенесены в удобное меню параметров в заголовке.",
+        "Расписание можно экспортировать в Google Calendar, Apple Calendar, Outlook или файл .ics — вместе с заменами, отменами и переносами.",
       ],
       ua: [
         "У тижневому розкладі тепер відображається роздільник довгої перерви.",
         "Перемикачі вигляду дня й тижня перенесено до зручного меню параметрів у заголовку.",
+        "Розклад можна експортувати до Google Calendar, Apple Calendar, Outlook або файлу .ics — разом із замінами, скасуваннями та перенесеннями.",
       ],
     },
   },

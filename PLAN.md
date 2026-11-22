@@ -1,5 +1,7 @@
 # EduPage timetable app — action plan
 
+Calendar export (Google / Apple / Outlook / .ics; `lib/calendar/`, Settings → Calendar) — complete.
+
 Status: Phases 0–4, the Parallel Widget Track, Phase 7 (Web/iOS PWA on Cloudflare Pages),
 Phase 8 (Teacher Mode), and Phase 5 (Release & Distribution) are substantially complete
 (scaffold, tooling, Capacitor, scraper + parser, offline cache + sync, UI, customization & themes,

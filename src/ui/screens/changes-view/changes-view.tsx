@@ -10,6 +10,7 @@ import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { useNow } from "@/ui/hooks/useNow.ts";
 import { useT } from "@/ui/i18n";
 import { LessonSheet } from "@/ui/screens/lesson-sheet";
+import { ChangesExport } from "./changes-export.tsx";
 import { ChangesTopBar } from "./changes-top-bar.tsx";
 import { ChangesMyClass } from "./changes-my-class.tsx";
 import { ChangesAllClasses } from "./changes-all-classes.tsx";
@@ -166,6 +167,8 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
             onChange={setScope}
           />
         </div>
+
+        <ChangesExport />
 
         <m.div style={{ x, willChange: "transform" }} className="min-h-0 flex-1">
           {scope === "myClass" ? (

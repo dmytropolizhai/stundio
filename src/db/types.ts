@@ -39,6 +39,10 @@ export type Settings = {
   transitMapEnabled: boolean;
   /** Riga weather on Home. Off means it is neither shown nor fetched. */
   weatherEnabled: boolean;
+  /** Calendar export carries only the lessons that differ from the base timetable. */
+  calendarChangesOnly: boolean;
+  /** Name the exported calendar carries in the user's calendar app. Empty = "Stundio · <class>". */
+  calendarName: string;
   selectedClassId: string | null;
   building: Building | null;
   /**
@@ -145,6 +149,8 @@ export const DEFAULT_SETTINGS: Settings = {
   transitDestinations: [],
   transitMapEnabled: true,
   weatherEnabled: true,
+  calendarChangesOnly: false,
+  calendarName: "",
   selectedClassId: null,
   building: null,
   subgroup: null,

@@ -11,6 +11,7 @@ import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
 import { AUTHOR_URL, REPO_URL, SITE_URL, type FeedbackType } from "@/ui/feedback.ts";
 import { ProfileCard } from "./profile-card.tsx";
 import { AppearanceSection } from "./appearance-section.tsx";
+import { CalendarSection } from "./calendar-section.tsx";
 import { ShareSection } from "./share-section.tsx";
 import { ScheduleSection } from "./schedule-section.tsx";
 import { NotificationsSection } from "./notifications-section.tsx";
@@ -127,6 +128,8 @@ export const SettingsView = ({
           onShowTeacherAnnouncement={onShowTeacherAnnouncement}
           onShowIphoneInstall={onShowIphoneInstall}
         />
+
+        <CalendarSection />
 
         <DataSection />
 

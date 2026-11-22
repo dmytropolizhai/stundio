@@ -497,6 +497,50 @@ export const ru: Dict = {
   "settings.shareLanguageHint":
     "На каком языке подписаны картинка недели и сообщение, которыми вы делитесь.",
   "settings.shareLangFollowApp": "Как в приложении",
+  "settings.calendar": "Календарь",
+  "settings.calendarGoogle": "Google Calendar",
+  "settings.calendarApple": "Apple Calendar",
+  "settings.calendarAppleHint": "Откроется в календаре iPhone, iPad или Mac.",
+  "settings.calendarOutlook": "Outlook",
+  "settings.calendarOutlookHint": "Откроется в Outlook или Microsoft 365.",
+  "settings.calendarOther": "Сохранить файл (.ics)",
+  "settings.calendarOtherHint": "Подойдёт любому приложению-календарю.",
+  "settings.calendarChangesOnly": "Только изменения",
+  "settings.calendarChangesOnlyHint":
+    "Пропускает неизменённые уроки; оставляет отменённые, перенесённые и заменённые.",
+  "changes.exportToCalendar": "Добавить изменения в календарь",
+  "settings.calendarAdd": "Добавить в календарь",
+  "settings.calendarAddHint": "Выберите, в какой календарь отправить.",
+  "settings.calendarSheetHint":
+    "Уроки на ближайшие 4 недели, включая отменённые (с пометкой). Разовый экспорт.",
+  "settings.calendarGoogleHint": "Сохраняет файл и открывает страницу импорта Google Календаря.",
+  "calendar.value.working": "Готовим…",
+  "calendar.value.done": "Готово",
+  "calendar.value.failed": "Ошибка",
+  "calendar.value.scopeAll": "4 недели · все",
+  "calendar.value.scopeChanges": "4 недели · изменения",
+  "settings.calendarName": "Название календаря",
+  "settings.calendarNamePlaceholder": "Stundio · класс",
+  "settings.calendarNameHint":
+    "Так календарь будет называться в вашем приложении-календаре. Оставьте пустым для названия по умолчанию.",
+  "calendar.status.working": "Готовим календарь…",
+  "calendar.status.done":
+    "Экспортировано уроков: {count}. Повторный экспорт обновит существующие записи.",
+  "calendar.status.offline":
+    "Файл сохранён. Для импорта в Google нужен интернет — откройте «Импорт» в Google Календаре, когда появится сеть.",
+  "calendar.status.empty": "На ближайшие 4 недели нечего экспортировать.",
+  "calendar.status.emptyChanges":
+    "На ближайшие 4 недели изменений нет. Выключите «Только изменения», чтобы экспортировать всё.",
+  "calendar.status.error":
+    "Не удалось экспортировать. Повторите или выберите «Сохранить файл (.ics)».",
+  "calendar.label.cancelled": "отменён",
+  "calendar.label.moved": "перенесён",
+  "calendar.label.substituted": "замена",
+  "calendar.label.roomChange": "другой кабинет",
+  "calendar.label.added": "добавлен",
+  "calendar.label.teachers": "Учителя",
+  "calendar.label.group": "Группа",
+  "calendar.label.changeNote": "От школы",
   "settings.sync": "Синхронизация",
   "settings.syncHint":
     "Расписание хранится на телефоне и работает без сети. Нажмите, чтобы обновить.",

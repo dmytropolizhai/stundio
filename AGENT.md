@@ -58,6 +58,15 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 - **`src/ui/share/subject.ts`** — whose week a card names, resolved through `resolveSubject`: a
   student's class (+ form teacher), a teacher's own name, or the form class in the form-class
   view. Never read `settings.selectedClassId` for a share — it outlives a switch to teacher mode.
+- **`src/lib/calendar/`** — timetable export to Google / Apple / Outlook / any `.ics` app. Pipeline
+  `events.ts` (`ResolvedDay[]` → `CalendarEvent[]`, the only stage that reads EduPage types) → `ics.ts`
+  (RFC 5545 text) → `router.ts` (delivery per target). Times are floating Europe/Riga wall-clock, never
+  device-local; UIDs are stable per lesson+date (scoped by `identityKey`) and `SEQUENCE` bumps on any
+  change so a re-import updates instead of duplicating. `providers.ts` builds the deeplinks; only
+  `native.ts` touches Capacitor. The UI side is `ui/calendar/useCalendarExport.ts` (this week + the next
+  three) and the Settings "Calendar" section (its `calendarName` setting renames the exported calendar; empty means "Stundio · <class>"). Offline, a Google export is downgraded to a plain
+  `.ics` (Google's import page is a website) and the status line says what is left to do. The Changes
+  screen carries a shortcut (`changes-export.tsx`) that shares just the changed lessons as an `.ics`.
 - **`src/lib/widget/`** — the payload the Android home-screen tile renders: `payload.ts` turns
   a `ResolvedDay` + `lib/schedule`'s `glanceLesson` into already-rendered strings, so the native
   side does no schedule maths at all. Only `native.ts` touches Capacitor. The store wiring
@@ -149,7 +158,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
 
 These are enforced by lint, tests, or CI — breaking one breaks the build:
 
-- **Only `lib/edupage/http.ts`, `lib/analytics/http.ts`, `lib/share/native.ts`,
+- **Only `lib/edupage/http.ts`, `lib/analytics/http.ts`, `lib/share/native.ts`, `lib/calendar/native.ts`,
   `lib/network/native.ts`, `lib/widget/native.ts`, `lib/systembars/native.ts` and
   `lib/app/native.ts` may import `@capacitor/*`.** ESLint `no-restricted-imports` enforces this
   per-module; everything else stays platform-agnostic and testable. (`lib/version/installer.ts` is
