@@ -90,16 +90,38 @@ describe("routeCalendarExport", () => {
     );
   });
 
-  it("google: file then the import page, in that order", async () => {
-    const order: string[] = [];
-    const env = makeEnv({
-      download: vi.fn(() => order.push("file")),
-      openUrl: vi.fn(() => order.push("open")),
-    });
+  it("google: delivers the file and hands back the import page instead of opening it", async () => {
+    const env = makeEnv({ download: vi.fn() });
     const out = await routeCalendarExport("google", [ev(1), ev(2)], context, env);
-    expect(out).toEqual({ kind: "file", via: "download", eventCount: 2 });
-    expect(order).toEqual(["file", "open"]);
-    expect(env.openUrl).toHaveBeenCalledWith(GOOGLE_IMPORT_URL);
+    expect(out).toEqual({
+      kind: "file",
+      via: "download",
+      eventCount: 2,
+      followUp: GOOGLE_IMPORT_URL,
+    });
+    // A scripted window.open after an await is popup-blocked, so the UI shows it as a link.
+    expect(env.openUrl).not.toHaveBeenCalled();
+  });
+
+  it("google and outlook ask Android to open the file in a calendar app, ics/apple do not", async () => {
+    for (const [target, view] of [
+      ["google", true],
+      ["outlook", true],
+      ["ics", false],
+      ["apple", false],
+    ] as const) {
+      const native = vi.fn().mockResolvedValue(undefined);
+      await routeCalendarExport(target, [ev(1), ev(2)], context, makeEnv({ native }));
+      const payload = native.mock.calls[0]?.[0] as { view?: boolean };
+      expect(payload.view === true).toBe(view);
+    }
+  });
+
+  it("google: a cancelled share returns no follow-up link", async () => {
+    const env = makeEnv({ native: vi.fn().mockRejectedValue(abort()) });
+    expect(await routeCalendarExport("google", [ev(1), ev(2)], context, env)).toEqual({
+      kind: "cancelled",
+    });
   });
 
   it("google: a single event opens its deeplink and sends no file", async () => {

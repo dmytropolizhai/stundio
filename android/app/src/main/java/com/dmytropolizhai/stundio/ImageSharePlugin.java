@@ -1,5 +1,6 @@
 package com.dmytropolizhai.stundio;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
@@ -40,6 +41,10 @@ public class ImageSharePlugin extends Plugin {
         String text = call.getString("text", "");
         // Optional so the PNG card path is untouched; the calendar export sends "text/calendar".
         String mimeType = call.getString("mimeType", "image/png");
+        // Calendar apps import an .ics from ACTION_VIEW (that is how a mail attachment opens in
+        // Google Calendar); they rarely list themselves for ACTION_SEND. Optional, so PNG sharing
+        // is untouched.
+        boolean view = Boolean.TRUE.equals(call.getBoolean("view", false));
 
         try {
             File directory = new File(getContext().getCacheDir(), SHARE_DIR);
@@ -60,6 +65,23 @@ public class ImageSharePlugin extends Plugin {
                 getContext().getPackageName() + ".fileprovider",
                 file
             );
+
+            if (view) {
+                Intent open = new Intent(Intent.ACTION_VIEW);
+                open.setDataAndType(uri, mimeType);
+                open.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Intent openChooser = Intent.createChooser(open, title);
+                openChooser.addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION
+                );
+                try {
+                    getActivity().startActivity(openChooser);
+                    call.resolve();
+                    return;
+                } catch (ActivityNotFoundException ignored) {
+                    // No app opens it directly: fall back to the share sheet below.
+                }
+            }
 
             Intent send = new Intent(Intent.ACTION_SEND);
             send.setType(mimeType);

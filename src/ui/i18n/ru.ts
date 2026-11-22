@@ -523,6 +523,7 @@ export const ru: Dict = {
   "settings.calendarNamePlaceholder": "Stundio · класс",
   "settings.calendarNameHint":
     "Так календарь будет называться в вашем приложении-календаре. Оставьте пустым для названия по умолчанию.",
+  "calendar.googleImportLink": "Открыть импорт Google Календаря (выберите сохранённый файл)",
   "calendar.status.working": "Готовим календарь…",
   "calendar.status.done":
     "Экспортировано уроков: {count}. Повторный экспорт обновит существующие записи.",

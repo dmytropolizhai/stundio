@@ -517,6 +517,7 @@ export const en: Dict = {
   "settings.calendarNamePlaceholder": "Stundio · class",
   "settings.calendarNameHint":
     "What the added calendar is called in your calendar app. Leave empty for the default.",
+  "calendar.googleImportLink": "Open Google Calendar import (choose the saved file)",
   "calendar.status.working": "Preparing calendar…",
   "calendar.status.done":
     "Exported lessons: {count}. Exporting again updates the existing entries.",

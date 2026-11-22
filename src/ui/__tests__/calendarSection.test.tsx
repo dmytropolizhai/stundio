@@ -107,6 +107,22 @@ describe("CalendarSection", () => {
     expect(route.mock.calls[0]?.[2]).toMatchObject({ name: "Stundio · A1-2" });
   });
 
+  it("shows Google's import page as a link after the file went out", async () => {
+    const h = await bootHarness();
+    route.mockResolvedValue({
+      kind: "file",
+      via: "download",
+      eventCount: 4,
+      followUp: "https://calendar.google.com/calendar/u/0/r/settings/export",
+    });
+    renderSection(h);
+    expect(screen.queryByRole("link")).toBeNull();
+    await pick(/Google Calendar/);
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("href")).toContain("calendar.google.com");
+    expect(link.getAttribute("target")).toBe("_blank");
+  });
+
   it("toggles the setting", async () => {
     const h = await bootHarness();
     renderSection(h);

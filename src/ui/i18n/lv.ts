@@ -525,6 +525,7 @@ export const lv = {
   "settings.calendarNamePlaceholder": "Stundio · klase",
   "settings.calendarNameHint":
     "Tā tavā kalendāra lietotnē sauksies pievienotā kalendāra grupa. Atstāj tukšu, lai izmantotu noklusējumu.",
+  "calendar.googleImportLink": "Atvērt Google Calendar importu (izvēlies saglabāto failu)",
   "calendar.status.working": "Gatavo kalendāru…",
   "calendar.status.done":
     "Eksportētas stundas: {count}. Atkārtots eksports atjaunos esošos ierakstus.",

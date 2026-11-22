@@ -61,7 +61,17 @@ export type CalendarFile = { fileName: string; text: string; mime: "text/calenda
 
 /** What the router hands back to the UI so it can say what happened. */
 export type ExportOutcome =
-  | { kind: "file"; via: "native" | "web-share" | "download"; eventCount: number }
+  | {
+      kind: "file";
+      via: "native" | "web-share" | "download";
+      eventCount: number;
+      /**
+       * A page the student still has to open (Google's import page). Returned instead of opened
+       * here: a scripted window.open after an await is blocked as a popup, and a WebView ignores
+       * it, whereas the UI can show it as a real link.
+       */
+      followUp?: string;
+    }
   | { kind: "link-opened"; eventCount: number }
   | { kind: "nothing-to-export" }
   /** The user dismissed the share sheet / save dialog; not an error. */

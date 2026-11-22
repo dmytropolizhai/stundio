@@ -5,7 +5,8 @@
  * target is one row). Everything the platform provides is injected like `lib/share/share.ts`,
  * so the routing can be tested without a device, a browser or a network.
  *
- * Neither Google nor Outlook can bulk-import from a URL, so both get the `.ics` file and only
+ * Neither Google nor Outlook can bulk-import from a URL, so both get the `.ics` file (opened in
+ * the calendar app on Android) and only
  * a lone event is worth a deeplink. A dismissed share sheet is a normal outcome, not an error.
  */
 import { icsFileName, serializeCalendar } from "./ics.ts";
@@ -62,6 +63,8 @@ export const browserCalendarEnvironment = (): CalendarEnvironment => ({
 });
 
 type Job = {
+  /** Android: open the file in a calendar app instead of the share sheet. */
+  view?: boolean;
   events: CalendarEvent[];
   file: CalendarFile;
   title: string;
@@ -77,7 +80,12 @@ const deliverFile = async (job: Job): Promise<FileVia | null> => {
   const { file, title, env } = job;
   try {
     if (env.native !== null) {
-      await env.native({ text: file.text, fileName: file.fileName, title });
+      await env.native({
+        text: file.text,
+        fileName: file.fileName,
+        title,
+        ...(job.view === true ? { view: true } : {}),
+      });
       return "native";
     }
     const blob = new Blob([file.text], { type: `${MIME};charset=utf-8` });
@@ -102,12 +110,17 @@ const deliverFile = async (job: Job): Promise<FileVia | null> => {
   throw new Error("Calendar export is not supported here");
 };
 
-const sendFile = async (job: Job, afterwards?: string): Promise<ExportOutcome> => {
+const sendFile = async (job: Job, followUp?: string): Promise<ExportOutcome> => {
   const via = await deliverFile(job);
   if (via === null) return { kind: "cancelled" };
-  // Opened only after the file went out, so a dismissed sheet doesn't also yank the user away.
-  if (afterwards !== undefined) job.env.openUrl(afterwards);
-  return { kind: "file", via, eventCount: job.events.length };
+  // Handed back, not opened: it only matters once the file really went out (a dismissed sheet
+  // returns above), and the UI opens it from a tap, which no popup blocker or WebView refuses.
+  return {
+    kind: "file",
+    via,
+    eventCount: job.events.length,
+    ...(followUp === undefined ? {} : { followUp }),
+  };
 };
 
 const openSingle = (job: Job, build: (event: CalendarEvent) => string): ExportOutcome | null => {
@@ -123,8 +136,9 @@ type Strategy = (job: Job) => Promise<ExportOutcome>;
 const STRATEGIES: Record<CalendarTarget, Strategy> = {
   ics: (job) => sendFile(job),
   apple: (job) => sendFile(job),
-  google: async (job) => openSingle(job, googleEventUrl) ?? sendFile(job, GOOGLE_IMPORT_URL),
-  outlook: async (job) => openSingle(job, outlookEventUrl) ?? sendFile(job),
+  google: async (job) =>
+    openSingle(job, googleEventUrl) ?? sendFile({ ...job, view: true }, GOOGLE_IMPORT_URL),
+  outlook: async (job) => openSingle(job, outlookEventUrl) ?? sendFile({ ...job, view: true }),
 };
 
 export const routeCalendarExport = async (

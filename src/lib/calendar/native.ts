@@ -9,7 +9,13 @@
  */
 import { Capacitor, registerPlugin } from "@capacitor/core";
 
-export type NativeCalendarPayload = { text: string; fileName: string; title: string };
+export type NativeCalendarPayload = {
+  text: string;
+  fileName: string;
+  title: string;
+  /** Open the file in a calendar app (ACTION_VIEW) rather than offering the share sheet. */
+  view?: boolean;
+};
 
 type CalendarSharePlugin = {
   share(payload: {
@@ -18,6 +24,7 @@ type CalendarSharePlugin = {
     title: string;
     text: string;
     mimeType: string;
+    view: boolean;
   }): Promise<void>;
 };
 
@@ -40,5 +47,6 @@ export const nativeCalendarShare = ():
           title: payload.title,
           text: "",
           mimeType: "text/calendar",
+          view: payload.view === true,
         })
     : null;

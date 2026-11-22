@@ -62,7 +62,7 @@ export const CalendarSection = () => {
   const t = useT();
   const changesOnly = useAppStore((s) => s.settings.calendarChangesOnly);
   const setChangesOnly = useSettingSetter("calendarChangesOnly");
-  const { exportTo, status, eventCount } = useCalendarExport();
+  const { exportTo, status, eventCount, lastOutcome } = useCalendarExport();
   const [sheetOpen, setSheetOpen] = useState(false);
   const calendarName = useAppStore((s) => s.settings.calendarName);
   const setCalendarName = useSettingSetter("calendarName");
@@ -135,6 +135,18 @@ export const CalendarSection = () => {
       >
         {key === null ? "" : t(key, { count: eventCount })}
       </p>
+
+      {status === "done" && lastOutcome?.kind === "file" && lastOutcome.followUp !== undefined && (
+        <a
+          href={lastOutcome.followUp}
+          target="_blank"
+          rel="noreferrer"
+          className="mx-4 mb-3 inline-flex min-h-11 items-center gap-1.5 font-text text-body-sm font-bold text-strong underline underline-offset-2"
+        >
+          {t("calendar.googleImportLink")}
+          <Icon name="external-link" size={14} />
+        </a>
+      )}
 
       <BottomSheet
         open={sheetOpen}
