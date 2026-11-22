@@ -1,0 +1,104 @@
+/**
+ * "Add my timetable to a calendar" end to end: read this week and the next three out of the
+ * store, turn them into calendar events and hand them to the chosen target.
+ *
+ * Like sharing a week, nothing is uploaded — the events are built on the device. Dates are
+ * Riga's (CLAUDE.md), never the device's.
+ */
+import { useCallback, useMemo, useState } from "react";
+import { useAppStore } from "@/store";
+import { identityKey as identityKeyOf } from "@/lib/persona";
+import { startOfWeek } from "@/lib/schedule";
+import {
+  eventsForRange,
+  routeCalendarExport,
+  type CalendarLabels,
+  type CalendarTarget,
+  type ExportOutcome,
+  type ExportRange,
+} from "@/lib/calendar";
+import { addDays, todayInRiga } from "@/sync";
+import { translate, useLang } from "@/ui/i18n";
+import { useIdentity } from "@/ui/persona";
+import { resolveShareSubject } from "@/ui/share/subject.ts";
+
+export type CalendarExportStatus = "idle" | "working" | "done" | "empty" | "error";
+
+/** This week plus the next three. */
+export const EXPORT_WEEKS = 4;
+
+type Outcome = ExportOutcome | { kind: "cancelled" };
+
+export const useCalendarExport = (): {
+  exportTo: (target: CalendarTarget, opts?: { changesOnly?: boolean }) => Promise<void>;
+  status: CalendarExportStatus;
+  lastOutcome: Outcome | null;
+  eventCount: number;
+} => {
+  const lang = useLang();
+  const [status, setStatus] = useState<CalendarExportStatus>("idle");
+  const [lastOutcome, setLastOutcome] = useState<Outcome | null>(null);
+  const [eventCount, setEventCount] = useState(0);
+
+  const identity = useIdentity();
+  const identityKey = useMemo(() => identityKeyOf(identity), [identity]);
+  const timetables = useAppStore((s) => s.timetables);
+  const resolvedDay = useAppStore((s) => s.resolvedDay);
+
+  const subject = useMemo(
+    () => resolveShareSubject(identity, Object.values(timetables)),
+    [identity, timetables],
+  );
+
+  const exportTo = useCallback(
+    async (target: CalendarTarget, opts?: { changesOnly?: boolean }): Promise<void> => {
+      setStatus("working");
+      try {
+        const t = (key: Parameters<typeof translate>[1]) => translate(lang, key);
+        const labels: CalendarLabels = {
+          cancelled: t("calendar.label.cancelled"),
+          moved: t("calendar.label.moved"),
+          substituted: t("calendar.label.substituted"),
+          roomChange: t("calendar.label.roomChange"),
+          added: t("calendar.label.added"),
+          teachers: t("calendar.label.teachers"),
+          group: t("calendar.label.group"),
+          changeNote: t("calendar.label.changeNote"),
+        };
+        const monday = startOfWeek(todayInRiga());
+        const range: ExportRange = {
+          from: monday,
+          to: addDays(monday, (EXPORT_WEEKS - 1) * 7 + 4), // the last week's Friday
+        };
+        const events = eventsForRange(range, (date) => resolvedDay(date), labels, identityKey);
+        if (events.length === 0) {
+          setLastOutcome({ kind: "nothing-to-export" });
+          setEventCount(0);
+          setStatus("empty");
+          return;
+        }
+        const name = subject === null ? "Stundio" : `Stundio · ${subject.label}`;
+        const outcome = await routeCalendarExport(target, events, {
+          name,
+          range,
+          changesOnly: opts?.changesOnly === true,
+        });
+        setLastOutcome(outcome);
+        if (outcome.kind === "cancelled") {
+          setStatus("idle");
+        } else if (outcome.kind === "nothing-to-export") {
+          setEventCount(0);
+          setStatus("empty");
+        } else {
+          setEventCount(outcome.eventCount);
+          setStatus("done");
+        }
+      } catch {
+        setStatus("error");
+      }
+    },
+    [lang, resolvedDay, identityKey, subject],
+  );
+
+  return { exportTo, status, lastOutcome, eventCount };
+};

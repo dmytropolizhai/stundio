@@ -92,6 +92,24 @@ export default tseslint.config(
     },
   },
   {
+    // And for lib/calendar, where only the .ics hand-off to the OS share sheet is native.
+    files: ["src/lib/calendar/**/*.ts"],
+    ignores: ["src/lib/calendar/native.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@capacitor/*"],
+              message: "Only src/lib/calendar/native.ts may import Capacitor.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // And for lib/network, where only the connectivity read/listener is native.
     files: ["src/lib/network/**/*.ts"],
     ignores: ["src/lib/network/native.ts"],

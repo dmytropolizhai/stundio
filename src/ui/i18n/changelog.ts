@@ -26,6 +26,24 @@ export type ChangelogEntry = {
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    version: "v2.2.0",
+    date: "2026-11-22",
+    lines: {
+      lv: [
+        "Stundu sarakstu tagad var eksportēt uz Google Calendar, Apple Calendar, Outlook vai .ics failu — kopā ar aizvietojumiem, atcelšanām un pārcelšanām.",
+      ],
+      en: [
+        "Export your timetable to Google Calendar, Apple Calendar, Outlook or an .ics file — substitutions, cancellations and moves included.",
+      ],
+      ru: [
+        "Расписание можно экспортировать в Google Calendar, Apple Calendar, Outlook или файл .ics — вместе с заменами, отменами и переносами.",
+      ],
+      ua: [
+        "Розклад можна експортувати до Google Calendar, Apple Calendar, Outlook або файлу .ics — разом із замінами, скасуваннями та перенесеннями.",
+      ],
+    },
+  },
+  {
     version: "v2.1.0",
     date: "2026-10-09",
     lines: {

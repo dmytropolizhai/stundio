@@ -11,12 +11,7 @@ import type { ISODate, HHMM } from "@/lib/edupage";
 
 /** What happened to a lesson relative to the base timetable. Drives status, marker and title. */
 export type CalendarChange =
-  | "none"
-  | "cancelled"
-  | "moved"
-  | "substituted"
-  | "room_change"
-  | "added";
+  "none" | "cancelled" | "moved" | "substituted" | "room_change" | "added";
 
 export type CalendarEvent = {
   /**
@@ -68,4 +63,6 @@ export type CalendarFile = { fileName: string; text: string; mime: "text/calenda
 export type ExportOutcome =
   | { kind: "file"; via: "native" | "web-share" | "download"; eventCount: number }
   | { kind: "link-opened"; eventCount: number }
-  | { kind: "nothing-to-export" };
+  | { kind: "nothing-to-export" }
+  /** The user dismissed the share sheet / save dialog; not an error. */
+  | { kind: "cancelled" };

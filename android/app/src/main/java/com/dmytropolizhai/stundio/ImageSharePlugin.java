@@ -38,6 +38,8 @@ public class ImageSharePlugin extends Plugin {
         String fileName = call.getString("fileName", "stundio.png");
         String title = call.getString("title", "");
         String text = call.getString("text", "");
+        // Optional so the PNG card path is untouched; the calendar export sends "text/calendar".
+        String mimeType = call.getString("mimeType", "image/png");
 
         try {
             File directory = new File(getContext().getCacheDir(), SHARE_DIR);
@@ -60,7 +62,7 @@ public class ImageSharePlugin extends Plugin {
             );
 
             Intent send = new Intent(Intent.ACTION_SEND);
-            send.setType("image/png");
+            send.setType(mimeType);
             send.putExtra(Intent.EXTRA_STREAM, uri);
             // Messengers send the image, mail clients keep the line with the download link.
             send.putExtra(Intent.EXTRA_TEXT, text);
