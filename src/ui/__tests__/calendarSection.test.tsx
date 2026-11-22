@@ -73,9 +73,9 @@ describe("CalendarSection", () => {
     route.mockResolvedValue({ kind: "link-opened", eventCount: 2 });
     renderSection(h);
     const row = () => screen.getByRole("button", { name: /Pievienot kalendāram/ });
-    expect(row().textContent).toContain("4 nedēļas · visas");
+    expect(row().textContent).toContain("1 nedēļa · visas");
     await clickAndSettle(() => screen.getByRole("switch").click());
-    expect(row().textContent).toContain("4 nedēļas · izmaiņas");
+    expect(row().textContent).toContain("1 nedēļa · izmaiņas");
     await pick(/Google Calendar/);
     expect(row().textContent).toContain("Gatavs");
   });
@@ -175,7 +175,7 @@ describe("useCalendarExport", () => {
     return Wrapper;
   };
 
-  it("exports Riga's current week plus three, and treats a cancelled sheet as idle", async () => {
+  it("exports Riga's current school week only, and treats a cancelled sheet as idle", async () => {
     const h = await bootHarness();
     route.mockResolvedValue({ kind: "cancelled" });
     const { result } = renderHook(() => useCalendarExport(), { wrapper: wrap(h) });
@@ -183,9 +183,21 @@ describe("useCalendarExport", () => {
     await act(() => result.current.exportTo("ics"));
 
     const context = route.mock.calls[0]?.[2] as { range: { from: string; to: string } };
-    expect(context.range).toEqual({ from: "2026-09-07", to: "2026-10-02" });
+    expect(context.range).toEqual({ from: "2026-09-07", to: "2026-09-11" });
     expect(result.current.status).toBe("idle");
     expect(result.current.lastOutcome).toEqual({ kind: "cancelled" });
+  });
+
+  it("exports the coming week once Saturday has begun", async () => {
+    vi.setSystemTime(new Date("2026-09-12T09:00:00Z"));
+    const h = await bootHarness();
+    route.mockResolvedValue({ kind: "cancelled" });
+    const { result } = renderHook(() => useCalendarExport(), { wrapper: wrap(h) });
+    await act(async () => {
+      await result.current.exportTo("ics");
+    });
+    const context = route.mock.calls[0]?.[2] as { range: { from: string; to: string } };
+    expect(context.range).toEqual({ from: "2026-09-14", to: "2026-09-18" });
   });
 
   it("counts the events a file export carried", async () => {

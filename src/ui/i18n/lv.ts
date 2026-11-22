@@ -513,14 +513,13 @@ export const lv = {
   "changes.exportToCalendar": "Pievienot izmaiņas kalendāram",
   "settings.calendarAdd": "Pievienot kalendāram",
   "settings.calendarAddHint": "Izvēlies, uz kuru kalendāru sūtīt.",
-  "settings.calendarSheetHint":
-    "Nākamo 4 nedēļu stundas, arī atceltās (atzīmētas). Vienreizējs eksports.",
+  "settings.calendarSheetHint": "Nedēļas stundas, arī atceltās (atzīmētas). Vienreizējs eksports.",
   "settings.calendarGoogleHint": "Saglabā failu un atver Google Calendar importa lapu.",
   "calendar.value.working": "Gatavo…",
   "calendar.value.done": "Gatavs",
   "calendar.value.failed": "Neizdevās",
-  "calendar.value.scopeAll": "4 nedēļas · visas",
-  "calendar.value.scopeChanges": "4 nedēļas · izmaiņas",
+  "calendar.value.scopeAll": "1 nedēļa · visas",
+  "calendar.value.scopeChanges": "1 nedēļa · izmaiņas",
   "settings.calendarName": "Kalendāra nosaukums",
   "settings.calendarNamePlaceholder": "Stundio · klase",
   "settings.calendarNameHint":
@@ -531,9 +530,9 @@ export const lv = {
     "Eksportētas stundas: {count}. Atkārtots eksports atjaunos esošos ierakstus.",
   "calendar.status.offline":
     "Fails saglabāts. Google importam vajadzīgs internets — atver Google Calendar iestatījumos “Importēt”, kad esi tiešsaistē.",
-  "calendar.status.empty": "Nākamajās 4 nedēļās nav ko eksportēt.",
+  "calendar.status.empty": "Šajā nedēļā nav ko eksportēt.",
   "calendar.status.emptyChanges":
-    "Nākamajās 4 nedēļās nav izmaiņu. Izslēdz “Tikai izmaiņas”, lai eksportētu visu.",
+    "Šajā nedēļā nav izmaiņu. Izslēdz “Tikai izmaiņas”, lai eksportētu visu.",
   "calendar.status.error":
     "Neizdevās eksportēt. Mēģini vēlreiz vai izvēlies “Saglabāt failu (.ics)”.",
   "calendar.label.cancelled": "atcelta",

@@ -63,8 +63,8 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   (RFC 5545 text) → `router.ts` (delivery per target). Times are floating Europe/Riga wall-clock, never
   device-local; UIDs are stable per lesson+date (scoped by `identityKey`) and `SEQUENCE` bumps on any
   change so a re-import updates instead of duplicating. `providers.ts` builds the deeplinks; only
-  `native.ts` touches Capacitor. The UI side is `ui/calendar/useCalendarExport.ts` (this week + the next
-  three) and the Settings "Calendar" section (its `calendarName` setting renames the exported calendar; empty means "Stundio · <class>"). Offline, a Google export is downgraded to a plain
+  `native.ts` touches Capacitor. The UI side is `ui/calendar/useCalendarExport.ts` (one school week: this one, or the
+  coming one from Saturday) and the Settings "Calendar" section (its `calendarName` setting renames the exported calendar; empty means "Stundio · <class>"). Offline, a Google export is downgraded to a plain
   `.ics` (Google's import page is a website) and the status line says what is left to do. The Changes
   screen carries a shortcut (`changes-export.tsx`) that shares just the changed lessons as an `.ics`.
 - **`src/lib/widget/`** — the payload the Android home-screen tile renders: `payload.ts` turns

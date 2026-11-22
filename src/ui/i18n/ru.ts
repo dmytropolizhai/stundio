@@ -512,13 +512,13 @@ export const ru: Dict = {
   "settings.calendarAdd": "Добавить в календарь",
   "settings.calendarAddHint": "Выберите, в какой календарь отправить.",
   "settings.calendarSheetHint":
-    "Уроки на ближайшие 4 недели, включая отменённые (с пометкой). Разовый экспорт.",
+    "Уроки на неделю, включая отменённые (с пометкой). Разовый экспорт.",
   "settings.calendarGoogleHint": "Сохраняет файл и открывает страницу импорта Google Календаря.",
   "calendar.value.working": "Готовим…",
   "calendar.value.done": "Готово",
   "calendar.value.failed": "Ошибка",
-  "calendar.value.scopeAll": "4 недели · все",
-  "calendar.value.scopeChanges": "4 недели · изменения",
+  "calendar.value.scopeAll": "1 неделя · все",
+  "calendar.value.scopeChanges": "1 неделя · изменения",
   "settings.calendarName": "Название календаря",
   "settings.calendarNamePlaceholder": "Stundio · класс",
   "settings.calendarNameHint":
@@ -529,9 +529,9 @@ export const ru: Dict = {
     "Экспортировано уроков: {count}. Повторный экспорт обновит существующие записи.",
   "calendar.status.offline":
     "Файл сохранён. Для импорта в Google нужен интернет — откройте «Импорт» в Google Календаре, когда появится сеть.",
-  "calendar.status.empty": "На ближайшие 4 недели нечего экспортировать.",
+  "calendar.status.empty": "На эту неделю нечего экспортировать.",
   "calendar.status.emptyChanges":
-    "На ближайшие 4 недели изменений нет. Выключите «Только изменения», чтобы экспортировать всё.",
+    "На эту неделю изменений нет. Выключите «Только изменения», чтобы экспортировать всё.",
   "calendar.status.error":
     "Не удалось экспортировать. Повторите или выберите «Сохранить файл (.ics)».",
   "calendar.label.cancelled": "отменён",

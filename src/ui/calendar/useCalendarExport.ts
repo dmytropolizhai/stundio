@@ -1,5 +1,5 @@
 /**
- * "Add my timetable to a calendar" end to end: read this week and the next three out of the
+ * "Add my timetable to a calendar" end to end: read the school week out of the
  * store, turn them into calendar events and hand them to the chosen target.
  *
  * Like sharing a week, nothing is uploaded — the events are built on the device. Dates are
@@ -24,8 +24,8 @@ import { resolveShareSubject } from "@/ui/share/subject.ts";
 
 export type CalendarExportStatus = "idle" | "working" | "done" | "offline" | "empty" | "error";
 
-/** This week plus the next three. */
-export const EXPORT_WEEKS = 4;
+/** One school week: this one, or the coming one from Saturday on (the week just gone is moot). */
+export const EXPORT_WEEKS = 1;
 
 type Outcome = ExportOutcome | { kind: "cancelled" };
 
@@ -71,7 +71,10 @@ export const useCalendarExport = (): {
           group: t("calendar.label.group"),
           changeNote: t("calendar.label.changeNote"),
         };
-        const monday = startOfWeek(todayInRiga());
+        const today = todayInRiga();
+        const thisMonday = startOfWeek(today);
+        // `startOfWeek` puts Sat/Sun in the week just gone; there is nothing left in it to export.
+        const monday = today > addDays(thisMonday, 4) ? addDays(thisMonday, 7) : thisMonday;
         const range: ExportRange = {
           from: monday,
           to: addDays(monday, (EXPORT_WEEKS - 1) * 7 + 4), // the last week's Friday

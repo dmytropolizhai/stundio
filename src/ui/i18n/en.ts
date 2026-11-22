@@ -506,13 +506,13 @@ export const en: Dict = {
   "settings.calendarAdd": "Add to calendar",
   "settings.calendarAddHint": "Pick which calendar to send them to.",
   "settings.calendarSheetHint":
-    "The next 4 weeks of lessons, cancelled ones included and marked. A one-off export.",
+    "A week of lessons, cancelled ones included and marked. A one-off export.",
   "settings.calendarGoogleHint": "Saves a file, then opens Google Calendar's import page.",
   "calendar.value.working": "Preparing…",
   "calendar.value.done": "Done",
   "calendar.value.failed": "Failed",
-  "calendar.value.scopeAll": "4 weeks · all",
-  "calendar.value.scopeChanges": "4 weeks · changes",
+  "calendar.value.scopeAll": "1 week · all",
+  "calendar.value.scopeChanges": "1 week · changes",
   "settings.calendarName": "Calendar name",
   "settings.calendarNamePlaceholder": "Stundio · class",
   "settings.calendarNameHint":
@@ -523,9 +523,9 @@ export const en: Dict = {
     "Exported lessons: {count}. Exporting again updates the existing entries.",
   "calendar.status.offline":
     "File saved. Google's import needs internet — open Google Calendar's “Import” once you're online.",
-  "calendar.status.empty": "Nothing to export in the next 4 weeks.",
+  "calendar.status.empty": "Nothing to export this week.",
   "calendar.status.emptyChanges":
-    "No changes in the next 4 weeks. Turn off “Changes only” to export everything.",
+    "No changes this week. Turn off “Changes only” to export everything.",
   "calendar.status.error": "Couldn't export. Try again, or choose “Save as file (.ics)”.",
   "calendar.label.cancelled": "cancelled",
   "calendar.label.moved": "moved",
