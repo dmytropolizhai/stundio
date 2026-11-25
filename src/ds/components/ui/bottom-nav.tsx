@@ -122,7 +122,12 @@ export const BottomNav = <K extends string>({
           >
             <Icon name={item.icon} size={23} />
             {!compact && (
-              <span className={cn("text-micro font-black", !active && "font-normal")}>
+              <span
+                className={cn(
+                  "text-[10.5px] leading-none tracking-tight",
+                  active ? "font-semibold" : "font-normal",
+                )}
+              >
                 {item.label}
               </span>
             )}

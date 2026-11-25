@@ -104,13 +104,13 @@ const freeRuns = (covered: readonly boolean[]): { from: number; to: number }[] =
 
 /** `custom` has no entry — a user-picked hex is applied as an inline style instead. */
 const TONE_BG: Record<Exclude<LessonTone, "custom">, string> = {
-  amber: "bg-amber",
-  sky: "bg-sky",
-  lilac: "bg-lilac",
-  pink: "bg-pink",
-  mint: "bg-mint",
-  lime: "bg-lime",
-  brand: "bg-brand",
+  amber: "bg-amber text-amber-ink",
+  sky: "bg-sky text-sky-ink",
+  lilac: "bg-lilac text-lilac-ink",
+  pink: "bg-pink text-pink-ink",
+  mint: "bg-mint text-mint-ink",
+  lime: "bg-lime text-lime-ink",
+  brand: "bg-brand text-on-brand",
 };
 
 type Placement = { cell: WeekGridCell; span: number } | "covered";
@@ -377,7 +377,7 @@ export const WeekGrid = <K extends string>({
                 "truncate rounded-sm border-0 px-1.5",
                 "font-text text-caption font-bold",
                 half !== undefined && "min-w-0",
-                c.tone === "custom" ? "" : cn("text-ink-900", TONE_BG[c.tone ?? "sky"]),
+                c.tone === "custom" ? "" : TONE_BG[c.tone ?? "sky"],
                 c.cancelled === true && "opacity-40 line-through",
                 c.live === true
                   ? "inset-ring-2 inset-ring-brand"

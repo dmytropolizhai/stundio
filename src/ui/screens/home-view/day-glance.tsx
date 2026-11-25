@@ -59,10 +59,7 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
         ) : (
           <span className="u-eyebrow">{eyebrow}</span>
         )}
-        <span
-          className="font-data text-caption font-medium tabular-nums text-muted"
-          data-testid="glance-countdown"
-        >
+        <span className="sr-only" data-testid="glance-countdown">
           {countdown}
         </span>
       </div>

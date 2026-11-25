@@ -67,13 +67,13 @@ const lessonCardVariants = cva(
  * entry — a user-picked hex is applied as an inline style instead, alongside `accentColor`.
  */
 const RAIL: Record<Exclude<LessonTone, "custom">, string> = {
-  amber: "bg-amber",
-  sky: "bg-sky",
-  lilac: "bg-lilac",
-  pink: "bg-pink",
-  mint: "bg-mint",
-  lime: "bg-lime",
-  brand: "bg-brand",
+  amber: "bg-amber text-amber-ink",
+  sky: "bg-sky text-sky-ink",
+  lilac: "bg-lilac text-lilac-ink",
+  pink: "bg-pink text-pink-ink",
+  mint: "bg-mint text-mint-ink",
+  lime: "bg-lime text-lime-ink",
+  brand: "bg-brand text-on-brand",
 };
 
 export type LessonCardProps = Omit<ComponentPropsWithoutRef<"div">, "children"> &
@@ -192,7 +192,7 @@ export const LessonCard = ({
             className={cn(
               "flex size-10 shrink-0 items-center justify-center rounded-full",
               "font-text",
-              filled ? "bg-current/15" : cn(tone === "custom" ? "" : cn(RAIL[tone], "text-black")),
+              filled ? "bg-current/15" : cn(tone === "custom" ? "" : RAIL[tone]),
               cancelled && "line-through",
             )}
             style={
