@@ -145,7 +145,7 @@ export const BottomNav = <K extends string>({
             >
               <span
                 className={cn(
-                  "min-w-0 truncate font-text text-[13px] leading-none font-semibold tracking-tight whitespace-nowrap",
+                  "min-w-0 overflow-hidden font-text text-[13px] leading-none font-semibold tracking-tight whitespace-nowrap",
                   "transition-transform duration-(--dur-base) ease-standard",
                   active ? "translate-x-0 delay-[35ms]" : "-translate-x-1.5 duration-(--dur-fast)",
                 )}
