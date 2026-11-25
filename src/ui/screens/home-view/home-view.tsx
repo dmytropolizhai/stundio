@@ -233,6 +233,7 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
       <HomeBrief
         brief={brief}
         briefDate={briefLater ? date : null}
+        nowMinutes={now.minutes}
         weather={weather?.outlook ?? null}
         weatherDate={weather?.date ?? null}
         today={now.date}

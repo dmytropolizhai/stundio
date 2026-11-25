@@ -211,19 +211,25 @@ describe("HomeView", () => {
 
       expect(screen.getByTestId("day-summary").textContent).toMatch(/\d\d:\d\d – \d\d:\d\d/);
       // How long tomorrow will be, named, rather than how much of today is left.
-      expect(screen.getByTestId("home-brief").textContent).toMatch(/^Mācības sākas \d\d:\d\d/);
-      expect(screen.getByTestId("home-brief").textContent).toMatch(/beigas \d\d:\d\d$/);
+      const tomorrowBrief = screen.getByTestId("home-brief");
+      expect(tomorrowBrief.getAttribute("aria-label")).toMatch(/^Mācības sākas \d\d:\d\d/);
+      expect(tomorrowBrief.getAttribute("aria-label")).toMatch(/beigas \d\d:\d\d/);
+      expect(tomorrowBrief.textContent).toMatch(/^\d\d:\d\d/);
       expect(screen.getByTestId("home-brief-day").textContent).toBe("Rīt");
       tomorrow.unmount();
 
       // A free later day says so without claiming it is today.
       const saturday = renderDay(harness, "2026-09-12");
-      expect(screen.getByTestId("home-brief").textContent).toContain("Stundu nebūs");
+      const satBrief = screen.getByTestId("home-brief");
+      expect(satBrief.getAttribute("aria-label")).toContain("Stundu nebūs");
+      expect(satBrief.textContent).toBe("Brīvs");
       saturday.unmount();
 
       // The past keeps today's brief, unlabelled.
       renderDay(harness, "2026-09-08");
-      expect(screen.getByTestId("home-brief").textContent).toMatch(/^Mācības līdz \d\d:\d\d/);
+      expect(screen.getByTestId("home-brief").getAttribute("aria-label")).toMatch(
+        /^Mācības līdz \d\d:\d\d/,
+      );
       expect(screen.queryByTestId("home-brief-day")).toBeNull();
     });
 
@@ -294,21 +300,74 @@ describe("HomeView", () => {
 
       expect(screen.getByRole("heading", { level: 1, name: "Labrīt" })).toBeDefined();
       const brief = screen.getByTestId("home-brief");
-      expect(brief.textContent).toMatch(/Mācības līdz \d\d:\d\d/);
-      expect(brief.textContent).toMatch(/Atlikušas stundas: \d/);
+      expect(brief.getAttribute("aria-label")).toMatch(/Mācības līdz \d\d:\d\d/);
+      expect(brief.getAttribute("aria-label")).toMatch(/Atlikušas stundas: \d/);
     });
 
     it("outlines the whole day before it starts, and calls it done after", async () => {
       vi.setSystemTime(new Date("2026-09-09T04:00:00Z")); // 07:00 Riga
       const harness = await bootHarness();
       const { unmount } = renderDay(harness);
-      expect(screen.getByTestId("home-brief").textContent).toMatch(/^Mācības sākas \d\d:\d\d/);
+      expect(screen.getByTestId("home-brief").getAttribute("aria-label")).toMatch(
+        /^Mācības sākas \d\d:\d\d/,
+      );
       unmount();
 
       vi.setSystemTime(new Date("2026-09-09T17:00:00Z")); // 20:00 Riga
       renderDay(harness);
       expect(screen.getByRole("heading", { level: 1, name: "Labvakar" })).toBeDefined();
-      expect(screen.getByTestId("home-brief").textContent).toContain("Šodienai viss");
+      const done = screen.getByTestId("home-brief");
+      expect(done.getAttribute("aria-label")).toContain("Šodienai viss");
+      expect(done.textContent).toBe("Viss");
+      expect(done.tagName).toBe("DIV");
+    });
+
+    it("shows compact hours+ and minutes countdown, and expands/collapses on tap, Escape and timeout", async () => {
+      const harness = await bootHarness();
+      act(() => {
+        harness.store.setState({ weather: forecast });
+      });
+
+      // 08:50 Riga: several hours left in the day -> compact "N+"
+      const first = renderDay(harness);
+      const tile = screen.getByTestId("home-brief");
+      expect(tile.tagName).toBe("BUTTON");
+      expect(tile.getAttribute("aria-expanded")).toBe("false");
+      expect(tile.textContent).toMatch(/^\d+\+līdz$/);
+
+      // Tap expands to h:mm and marks weather tile inert
+      fireEvent.click(tile);
+      expect(tile.getAttribute("aria-expanded")).toBe("true");
+      expect(tile.textContent).toMatch(/^\d+:\d\dlīdz beigām$/);
+      expect(screen.getByTestId("home-weather").hasAttribute("inert")).toBe(true);
+
+      // Second tap collapses
+      fireEvent.click(tile);
+      expect(tile.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.getByTestId("home-weather").hasAttribute("inert")).toBe(false);
+
+      // Escape collapses
+      fireEvent.click(tile);
+      expect(tile.getAttribute("aria-expanded")).toBe("true");
+      fireEvent.keyDown(document, { key: "Escape" });
+      expect(tile.getAttribute("aria-expanded")).toBe("false");
+
+      // 6 s inactivity auto-collapses
+      fireEvent.click(tile);
+      expect(tile.getAttribute("aria-expanded")).toBe("true");
+      act(() => {
+        vi.advanceTimersByTime(6000);
+      });
+      expect(tile.getAttribute("aria-expanded")).toBe("false");
+      first.unmount();
+
+      // 42 minutes before first lesson (first lesson starts 08:30 -> 07:48 Riga = 04:48Z)
+      vi.setSystemTime(new Date("2026-09-09T04:48:00Z"));
+      renderDay(harness);
+      const before = screen.getByTestId("home-brief");
+      expect(before.textContent).toBe("42minlīdz");
+      fireEvent.click(before);
+      expect(before.textContent).toBe("0:42līdz sākumam");
     });
 
     it("shows no weather until a forecast has arrived", async () => {
@@ -317,7 +376,7 @@ describe("HomeView", () => {
       expect(screen.queryByTestId("home-weather")).toBeNull();
     });
 
-    it("shows Riga's weather with the day's range, and an umbrella when school hours are wet", async () => {
+    it("shows Riga's weather temperature with animated rain backdrop when school hours are wet", async () => {
       const harness = await bootHarness();
       act(() => {
         harness.store.setState({ weather: forecast });
@@ -325,12 +384,39 @@ describe("HomeView", () => {
       renderDay(harness);
 
       const weather = screen.getByTestId("home-weather");
+      expect(weather.tagName).toBe("BUTTON");
+      expect(weather.getAttribute("aria-expanded")).toBe("false");
       expect(weather.textContent).toContain("14°");
-      expect(weather.textContent).toContain("17° / 10°");
+      expect(weather.textContent).not.toContain("17° / 10°");
       expect(weather.getAttribute("aria-label")).toBe(
         "Laikapstākļi Rīgā: 14°, lietus. Maks. 17°, min. 10°",
       );
-      expect(screen.getByTestId("home-weather-hint").textContent).toBe("Paņem lietussargu");
+      expect(screen.getByTestId("weather-backdrop").getAttribute("data-precip")).toBe("rain");
+
+      // Tap expands horizontally and reveals condition + day/night temps while school tile is inert
+      fireEvent.click(weather);
+      expect(weather.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByTestId("home-tiles").style.gridTemplateColumns).toBe("0fr 2fr");
+      expect(screen.getByTestId("home-brief").hasAttribute("inert")).toBe(true);
+      expect(weather.textContent).toContain("Tagad");
+      const details = screen.getByTestId("home-weather-details");
+      expect(details.textContent).toContain("Lietus");
+      expect(details.textContent).toContain("Diena 17°");
+      expect(details.textContent).toContain("Nakts 10°");
+
+      // Second tap collapses back to equal columns
+      fireEvent.click(weather);
+      expect(weather.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.getByTestId("home-tiles").style.gridTemplateColumns).toBe("1fr 1fr");
+      expect(screen.getByTestId("home-brief").hasAttribute("inert")).toBe(false);
+
+      // 6 s inactivity auto-collapses weather tile as well
+      fireEvent.click(weather);
+      expect(weather.getAttribute("aria-expanded")).toBe("true");
+      act(() => {
+        vi.advanceTimersByTime(6000);
+      });
+      expect(weather.getAttribute("aria-expanded")).toBe("false");
     });
 
     it("pages the weather with the schedule, naming the later day it is for", async () => {
@@ -366,14 +452,12 @@ describe("HomeView", () => {
       const { unmount } = renderDay(harness, "2026-09-10");
       const weather = screen.getByTestId("home-weather");
       expect(screen.getByTestId("home-weather-day").textContent).toBe("Rīt");
-      // The forecast already names the day the brief is about; it is not said twice.
-      expect(screen.queryByTestId("home-brief-day")).toBeNull();
       expect(weather.textContent).toContain("6°");
-      expect(weather.textContent).toContain("9° / 2°");
+      expect(weather.textContent).not.toContain("9° / 2°");
       expect(weather.getAttribute("aria-label")).toBe(
         "Prognoze: Rīt. Laikapstākļi Rīgā: 6°, skaidrs. Maks. 9°, min. 2°",
       );
-      expect(screen.queryByTestId("home-weather-hint")).toBeNull();
+      expect(screen.getByTestId("weather-backdrop").getAttribute("data-precip")).toBe("none");
       unmount();
 
       // Beyond the forecast, or back in the past: today's weather, unlabelled.
@@ -400,7 +484,7 @@ describe("HomeView", () => {
       expect(screen.getByTestId("home-weather").textContent).toContain("17°");
     });
 
-    it("hides the weather once it is switched off in Settings", async () => {
+    it("hides the weather once it is switched off in Settings and makes school tile full width", async () => {
       const harness = await bootHarness();
       act(() => {
         harness.store.setState({ weather: forecast });
@@ -409,8 +493,8 @@ describe("HomeView", () => {
       renderDay(harness);
 
       expect(screen.queryByTestId("home-weather")).toBeNull();
-      expect(screen.queryByTestId("home-weather-hint")).toBeNull();
       expect(screen.getByTestId("home-brief")).toBeDefined();
+      expect(screen.getByTestId("home-tiles").style.gridTemplateColumns).toBe("1fr");
     });
 
     it("never pages the day from a swipe on the top block", async () => {

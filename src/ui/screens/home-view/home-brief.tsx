@@ -1,35 +1,27 @@
 /**
- * The top of Home, about today whatever day the schedule below is showing: how much of the
- * school day is left (paged to a later day, how long that day will be, labelled with it), Riga's weather with the one piece of advice that changes what a student
- * takes out the door (paged to a later day, the forecast for that day, labelled with it), and then the glance — the lesson on now or next — or, once today is done,
- * when the next school day starts.
+ * The top of Home: a 2-column grid of square tiles — school countdown on the left, Riga's
+ * animated weather sky on the right — followed by a single changes chip when relevant, and
+ * then the glance card (or tomorrow's preview) as `children`.
+ *
+ * Tapping either interactive tile expands it horizontally across the grid (`1fr 1fr` →
+ * `2fr 0fr` or `0fr 2fr`) while locking row height to the collapsed square so nothing below
+ * shifts.
  */
-import type { ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ISODate } from "@/lib/edupage";
-import type { DayBrief } from "@/lib/schedule";
+import { schoolCountdown, type DayBrief } from "@/lib/schedule";
+import type { WeatherOutlook } from "@/lib/weather";
 import { addDays } from "@/sync";
-import type { WeatherCondition, WeatherHint, WeatherOutlook } from "@/lib/weather";
-import { Badge, Card, Icon, type IconName } from "@/ds";
-import { formatWeekdayLong, useLang, useT, type MessageKey } from "@/ui/i18n";
+import { Badge } from "@/ds";
+import { formatWeekdayLong, useLang, useT } from "@/ui/i18n";
+import { SchoolTile } from "./school-tile.tsx";
+import { WeatherTile } from "./weather-tile.tsx";
 
-const CONDITION_ICON: Record<WeatherCondition, { day: IconName; night: IconName }> = {
-  clear: { day: "sun", night: "moon" },
-  "partly-cloudy": { day: "cloud-sun", night: "cloud-moon" },
-  cloudy: { day: "cloud", night: "cloud" },
-  fog: { day: "cloud-fog", night: "cloud-fog" },
-  drizzle: { day: "cloud-drizzle", night: "cloud-drizzle" },
-  rain: { day: "cloud-rain", night: "cloud-rain" },
-  snow: { day: "cloud-snow", night: "cloud-snow" },
-  thunderstorm: { day: "cloud-lightning", night: "cloud-lightning" },
-};
+const AUTO_COLLAPSE_MS = 6000;
 
-const HINT: Record<WeatherHint, { icon: IconName; key: MessageKey }> = {
-  umbrella: { icon: "umbrella", key: "home.weather.hint.umbrella" },
-  snow: { icon: "snowflake", key: "home.weather.hint.snow" },
-  cold: { icon: "snowflake", key: "home.weather.hint.cold" },
-};
+type ExpandedTile = "school" | "weather" | null;
 
-/** "Rīt" for tomorrow, else the weekday — the label a later day's brief or forecast carries. */
+/** "Rīt" for tomorrow, else the weekday — the label a later day's tile carries. */
 const useDayLabel = (date: ISODate | null, today: ISODate): string | null => {
   const t = useT();
   const lang = useLang();
@@ -37,104 +29,12 @@ const useDayLabel = (date: ISODate | null, today: ISODate): string | null => {
   return date === addDays(today, 1) ? t("day.tomorrow") : formatWeekdayLong(date, lang);
 };
 
-type BriefTextProps = {
-  brief: DayBrief;
-  /** Shown above the brief when it is about a later day the weather does not already name. */
-  label: string | null;
-  later: boolean;
-};
-
-const BriefText = ({ brief, label, later }: BriefTextProps) => {
-  const t = useT();
-  let headline: string;
-  let detail: string;
-  switch (brief.kind) {
-    case "ahead":
-      headline = t("home.brief.ahead", { start: brief.start });
-      detail = t("home.brief.aheadDetail", { count: brief.lessonCount, end: brief.end });
-      break;
-    case "ongoing":
-      headline = t("home.brief.ongoing", { end: brief.end });
-      detail = t("home.brief.ongoingDetail", { count: brief.remaining });
-      break;
-    case "finished":
-      headline = t("home.brief.finished");
-      detail = t("home.brief.finishedDetail", { end: brief.end });
-      break;
-    case "free":
-      headline = t(later ? "home.brief.freeLater" : "home.brief.free");
-      detail = t("home.brief.freeDetail");
-      break;
-  }
-
-  return (
-    <div className="min-w-0">
-      {label !== null && (
-        <span className="u-eyebrow mb-1 block" data-testid="home-brief-day">
-          {label}
-        </span>
-      )}
-      <div data-testid="home-brief">
-        <p className="font-display text-body-lg font-bold text-strong">{headline}</p>
-        <p className="mt-0.5 font-text text-caption text-muted">{detail}</p>
-      </div>
-    </div>
-  );
-};
-
-type WeatherTileProps = {
-  outlook: WeatherOutlook;
-  /** The later day this forecast is for, or `null` for right now. */
-  date: ISODate | null;
-  today: ISODate;
-};
-
-const WeatherTile = ({ outlook, date, today }: WeatherTileProps) => {
-  const t = useT();
-  const icons = CONDITION_ICON[outlook.condition];
-  const condition = t(`home.weather.${outlook.condition}`);
-  const forDay = useDayLabel(date, today);
-
-  return (
-    <div
-      className="flex shrink-0 flex-col items-end"
-      data-testid="home-weather"
-      role="group"
-      aria-label={[
-        forDay === null ? null : t("home.weather.forDay", { day: forDay }),
-        t("home.weather.label", { temperature: outlook.temperature, condition }),
-        outlook.max !== null && outlook.min !== null
-          ? t("home.weather.range", { max: outlook.max, min: outlook.min })
-          : null,
-      ]
-        .filter((part) => part !== null)
-        .join(". ")}
-    >
-      {forDay !== null && (
-        <span aria-hidden="true" className="u-eyebrow mb-1" data-testid="home-weather-day">
-          {forDay}
-        </span>
-      )}
-      <span aria-hidden="true" className="flex items-center gap-1.5 text-strong">
-        <Icon name={outlook.isDay ? icons.day : icons.night} size={24} className="shrink-0" />
-        <span className="font-display text-display-2 leading-none tabular-nums">
-          {`${String(outlook.temperature)}°`}
-        </span>
-      </span>
-      {outlook.max !== null && outlook.min !== null && (
-        <span
-          aria-hidden="true"
-          className="mt-1 font-data text-caption tabular-nums text-muted"
-        >{`${String(outlook.max)}° / ${String(outlook.min)}°`}</span>
-      )}
-    </div>
-  );
-};
-
 type HomeBriefProps = {
   brief: DayBrief | null;
   /** The later browsed day `brief` is about; `null` when it is about today. */
   briefDate?: ISODate | null;
+  /** Current Riga time in minutes since midnight, used for the live countdown. */
+  nowMinutes: number;
   weather: WeatherOutlook | null;
   /** The later browsed day `weather` is a forecast for; `null` when it is about right now. */
   weatherDate: ISODate | null;
@@ -148,6 +48,7 @@ type HomeBriefProps = {
 export const HomeBrief = ({
   brief,
   briefDate = null,
+  nowMinutes,
   weather,
   weatherDate,
   today,
@@ -155,15 +56,70 @@ export const HomeBrief = ({
   children,
 }: HomeBriefProps) => {
   const t = useT();
-  // The weather tile already names its day; the brief names its own only when they differ.
-  const briefLabel = useDayLabel(
-    briefDate !== null && (weather === null || weatherDate !== briefDate) ? briefDate : null,
-    today,
+  const [expandedTile, setExpandedTile] = useState<ExpandedTile>(null);
+  const schoolRef = useRef<HTMLButtonElement | null>(null);
+  const weatherRef = useRef<HTMLButtonElement | null>(null);
+
+  const countdown = useMemo(
+    () => schoolCountdown(brief, nowMinutes, briefDate !== null),
+    [brief, nowMinutes, briefDate],
   );
-  const hint = weather?.hint == null ? null : HINT[weather.hint];
+  const briefLabel = useDayLabel(briefDate, today);
+  const weatherLabel = useDayLabel(weatherDate, today);
+
+  const schoolInteractive =
+    countdown !== null && (countdown.kind === "until" || countdown.kind === "startsAt");
+  const activeExpanded: ExpandedTile =
+    expandedTile === "school" && schoolInteractive
+      ? "school"
+      : expandedTile === "weather" && weather !== null
+        ? "weather"
+        : null;
+
+  useEffect(() => {
+    if (activeExpanded === null) return;
+
+    const timer = window.setTimeout(() => {
+      setExpandedTile(null);
+    }, AUTO_COLLAPSE_MS);
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExpandedTile(null);
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target;
+      const activeEl = activeExpanded === "school" ? schoolRef.current : weatherRef.current;
+      if (target instanceof Node && activeEl !== null && !activeEl.contains(target)) {
+        setExpandedTile(null);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [activeExpanded]);
+
   const showChanges = changedCount > 0 && brief !== null && brief.kind !== "finished";
 
   if (brief === null && weather === null && children === undefined) return null;
+
+  const hasSchool = brief !== null && countdown !== null;
+  const hasWeather = weather !== null;
+  const both = hasSchool && hasWeather;
+
+  const gridTemplateColumns = !both
+    ? "1fr"
+    : activeExpanded === "school"
+      ? "2fr 0fr"
+      : activeExpanded === "weather"
+        ? "0fr 2fr"
+        : "1fr 1fr";
 
   return (
     <section aria-labelledby="home-today" className="mt-2" data-testid="home-hero">
@@ -171,38 +127,55 @@ export const HomeBrief = ({
         {t("home.today")}
       </h2>
 
-      {(brief !== null || weather !== null) && (
-        <Card tone="surface" radius="xl" className="px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            {brief === null ? (
-              <span />
-            ) : (
-              <BriefText brief={brief} label={briefLabel} later={briefDate !== null} />
+      {(hasSchool || hasWeather) && (
+        <div style={{ containerType: "inline-size" }}>
+          <div
+            data-testid="home-tiles"
+            className="grid overflow-hidden"
+            style={{
+              height: "calc((100cqw - 12px) / 2)",
+              gridTemplateColumns,
+              columnGap: both && activeExpanded === null ? "12px" : "0px",
+              transition:
+                "grid-template-columns var(--dur-slow) var(--ease-standard), column-gap var(--dur-slow) var(--ease-standard)",
+            }}
+          >
+            {hasSchool && (
+              <SchoolTile
+                brief={brief}
+                countdown={countdown}
+                dayLabel={briefLabel}
+                later={briefDate !== null}
+                expanded={activeExpanded === "school"}
+                hidden={both && activeExpanded === "weather"}
+                onToggle={() => {
+                  setExpandedTile((cur) => (cur === "school" ? null : "school"));
+                }}
+                buttonRef={schoolRef}
+              />
             )}
-            {weather !== null && <WeatherTile outlook={weather} date={weatherDate} today={today} />}
+            {hasWeather && (
+              <WeatherTile
+                outlook={weather}
+                dayLabel={weatherLabel}
+                expanded={activeExpanded === "weather"}
+                hidden={both && activeExpanded === "school"}
+                onToggle={() => {
+                  setExpandedTile((cur) => (cur === "weather" ? null : "weather"));
+                }}
+                buttonRef={weatherRef}
+              />
+            )}
           </div>
+        </div>
+      )}
 
-          {(hint !== null || showChanges) && (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {hint !== null && (
-                <Badge
-                  tone="quiet"
-                  uppercase={false}
-                  className="inline-flex items-center gap-1.5 text-fg"
-                  data-testid="home-weather-hint"
-                >
-                  <Icon name={hint.icon} size={14} className="shrink-0" />
-                  {t(hint.key)}
-                </Badge>
-              )}
-              {showChanges && (
-                <Badge tone="warning" uppercase={false} data-testid="home-brief-changes">
-                  {t("home.brief.changes", { count: changedCount })}
-                </Badge>
-              )}
-            </div>
-          )}
-        </Card>
+      {showChanges && (
+        <div className="mt-2.5 flex items-center">
+          <Badge tone="warning" uppercase={false} data-testid="home-brief-changes">
+            {t("home.brief.changes", { count: changedCount })}
+          </Badge>
+        </div>
       )}
 
       {children}

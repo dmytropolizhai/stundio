@@ -18,3 +18,11 @@ export {
   type WeatherHint,
   type WeatherOutlook,
 } from "./outlook.ts";
+export {
+  weatherScene,
+  type WeatherCelestial,
+  type WeatherClouds,
+  type WeatherPrecip,
+  type WeatherScene,
+  type WeatherSky,
+} from "./scene.ts";
