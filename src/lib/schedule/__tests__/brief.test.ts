@@ -68,6 +68,7 @@ describe("dayBrief", () => {
     expect(dayBrief(DAY, at("10:30"))).toEqual({
       kind: "ongoing",
       remaining: 2,
+      start: "08:30",
       end: "13:20",
       changedCount: 1,
     });

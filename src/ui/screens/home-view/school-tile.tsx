@@ -1,6 +1,6 @@
 /**
- * The Home header's school tile: a lamp-tinted gradient card showing the countdown to the end
- * or start of the school day (or a later day's start time, or a resting Done/Free face).
+ * The Home header's school tile: a rising lamp-tinted fluid card showing the countdown to the
+ * end or start of the school day (or a later day's start time, or a resting Done/Free face).
  *
  * Interactive faces (`until` and `startsAt`) expand horizontally on tap to reveal the exact
  * `h:mm` countdown (or the later day's summary) and collapse on a second tap, outside tap,
@@ -14,17 +14,16 @@ import {
   type SchoolCountdown,
 } from "@/lib/schedule";
 import { useT } from "@/ui/i18n";
+import { requestMotionPermissionOnce } from "./device-tilt.ts";
+import { SchoolBackdrop } from "./school-backdrop.tsx";
 
 type SchoolTone = "ongoing" | "ahead" | "resting";
 
-const SCHOOL_GRADIENT: Record<SchoolTone, string> = {
-  ongoing:
-    "linear-gradient(155deg, var(--lamp) 0%, color-mix(in oklab, var(--lamp) 84%, var(--lamp-ink)) 100%)",
-  ahead:
-    "linear-gradient(155deg, color-mix(in oklab, var(--lamp) 45%, var(--accent-sky)) 0%, color-mix(in oklab, var(--lamp) 65%, var(--accent-sky)) 100%)",
-  resting:
-    "linear-gradient(155deg, var(--surface-card) 0%, color-mix(in oklab, var(--surface-card) 88%, var(--lamp)) 100%)",
-};
+const RESTING_GRADIENT =
+  "linear-gradient(155deg, var(--surface-card) 0%, color-mix(in oklab, var(--surface-card) 88%, var(--lamp)) 100%)";
+
+const DONE_GRADIENT =
+  "linear-gradient(155deg, color-mix(in oklab, var(--surface-card) 84%, var(--lamp)) 0%, color-mix(in oklab, var(--surface-card) 78%, var(--lamp)) 100%)";
 
 const SCHOOL_TEXT: Record<SchoolTone, string> = {
   ongoing: "var(--lamp-ink)",
@@ -41,6 +40,8 @@ const toneOf = (countdown: SchoolCountdown): SchoolTone => {
 type SchoolTileProps = {
   brief: DayBrief;
   countdown: SchoolCountdown;
+  /** Fraction of the school day elapsed (`0..1`), or `null` when no school day applies. */
+  progress?: number | null;
   /** Later-day label ("Rīt" or weekday), or `null` when about today. */
   dayLabel: string | null;
   later: boolean;
@@ -54,6 +55,7 @@ type SchoolTileProps = {
 export const SchoolTile = ({
   brief,
   countdown,
+  progress = null,
   dayLabel,
   later,
   expanded,
@@ -99,7 +101,9 @@ export const SchoolTile = ({
     : sentence;
 
   const tileStyle: CSSProperties = {
-    background: SCHOOL_GRADIENT[tone],
+    ...(tone === "resting"
+      ? { background: countdown.kind === "done" ? DONE_GRADIENT : RESTING_GRADIENT }
+      : {}),
     color: SCHOOL_TEXT[tone],
     opacity: hidden ? 0 : 1,
   };
@@ -146,8 +150,15 @@ export const SchoolTile = ({
     }
   }
 
+  /* Padding lives on this inner wrapper rather than the grid item itself: a
+   * border-box item with `p-4` cannot shrink narrower than its 32 px horizontal
+   * padding, which kept the `0fr` track from collapsing past ~10% of the row. */
   const content = (
-    <div id={contentId} aria-hidden="true" className="min-w-0">
+    <div
+      id={contentId}
+      aria-hidden="true"
+      className="relative z-10 flex h-full w-full min-w-0 flex-col justify-end p-4"
+    >
       <div
         key={expanded ? "expanded" : "compact"}
         className="flex animate-scrim-in items-baseline gap-1"
@@ -183,7 +194,7 @@ export const SchoolTile = ({
         role="group"
         aria-label={ariaLabel}
         inert={hidden}
-        className="flex h-full min-w-0 flex-col justify-end overflow-hidden rounded-xl p-4 shadow-card transition-opacity duration-(--dur-slow) ease-(--ease-standard)"
+        className="relative flex h-full min-w-0 overflow-hidden rounded-xl p-0 shadow-card transition-opacity duration-(--dur-slow) ease-(--ease-standard)"
         style={tileStyle}
       >
         {content}
@@ -200,10 +211,16 @@ export const SchoolTile = ({
       aria-expanded={expanded}
       aria-controls={contentId}
       inert={hidden}
-      onClick={onToggle}
-      className="flex h-full min-w-0 cursor-pointer flex-col justify-end overflow-hidden rounded-xl border-0 p-4 text-left transition-[opacity,transform] duration-(--dur-slow) ease-(--ease-standard) active:scale-(--press-scale-tile) active:duration-(--dur-instant)"
+      onClick={() => {
+        void requestMotionPermissionOnce();
+        onToggle();
+      }}
+      className="relative flex h-full min-w-0 cursor-pointer overflow-hidden rounded-xl border-0 p-0 text-left transition-[opacity,transform] duration-(--dur-slow) ease-(--ease-standard) active:scale-(--press-scale-tile) active:duration-(--dur-instant)"
       style={tileStyle}
     >
+      {tone !== "resting" && (
+        <SchoolBackdrop tone={tone} progress={progress ?? 0} expanded={expanded} paused={hidden} />
+      )}
       {content}
     </button>
   );

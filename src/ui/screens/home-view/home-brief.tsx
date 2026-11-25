@@ -9,7 +9,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ISODate } from "@/lib/edupage";
-import { schoolCountdown, type DayBrief } from "@/lib/schedule";
+import { schoolCountdown, schoolDayProgress, type DayBrief } from "@/lib/schedule";
 import type { WeatherOutlook } from "@/lib/weather";
 import { addDays } from "@/sync";
 import { Badge } from "@/ds";
@@ -62,6 +62,10 @@ export const HomeBrief = ({
 
   const countdown = useMemo(
     () => schoolCountdown(brief, nowMinutes, briefDate !== null),
+    [brief, nowMinutes, briefDate],
+  );
+  const progress = useMemo(
+    () => schoolDayProgress(brief, nowMinutes, briefDate !== null),
     [brief, nowMinutes, briefDate],
   );
   const briefLabel = useDayLabel(briefDate, today);
@@ -144,6 +148,7 @@ export const HomeBrief = ({
               <SchoolTile
                 brief={brief}
                 countdown={countdown}
+                progress={progress}
                 dayLabel={briefLabel}
                 later={briefDate !== null}
                 expanded={activeExpanded === "school"}

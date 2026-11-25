@@ -31,6 +31,7 @@ export {
   formatCompactCountdown,
   formatFullCountdown,
   schoolCountdown,
+  schoolDayProgress,
   type SchoolCountdown,
   type UntilCountdown,
 } from "./countdown.ts";

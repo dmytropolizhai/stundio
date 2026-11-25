@@ -59,3 +59,33 @@ export const formatCompactCountdown = (
 /** Expanded face: `h:mm`, zero-padded minutes. */
 export const formatFullCountdown = (countdown: UntilCountdown): string =>
   `${String(countdown.hours)}:${String(countdown.rest).padStart(2, "0")}`;
+
+/**
+ * Fraction of the school day elapsed (`0` at or before the first bell, `1` at or after the
+ * last bell), or `null` when there is no school day to measure (`null` brief or `free` day).
+ * Drives the fluid fill level in the Home school tile.
+ */
+export const schoolDayProgress = (
+  brief: DayBrief | null,
+  nowMinutes: number,
+  laterDay: boolean,
+): number | null => {
+  if (brief === null) return null;
+  switch (brief.kind) {
+    case "ongoing": {
+      if (laterDay) return 0;
+      const startMin = minutesOf(brief.start);
+      const endMin = minutesOf(brief.end);
+      if (startMin === null || endMin === null || endMin <= startMin) {
+        return endMin !== null && nowMinutes >= endMin ? 1 : 0;
+      }
+      return Math.min(1, Math.max(0, (nowMinutes - startMin) / (endMin - startMin)));
+    }
+    case "ahead":
+      return 0;
+    case "finished":
+      return 1;
+    case "free":
+      return null;
+  }
+};

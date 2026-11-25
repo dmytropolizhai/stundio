@@ -10,7 +10,7 @@ export type DayBrief =
   /** Before the first lesson. */
   | { kind: "ahead"; lessonCount: number; start: HHMM; end: HHMM; changedCount: number }
   /** Between the first lesson's start and the last one's end. `remaining` includes the current one. */
-  | { kind: "ongoing"; remaining: number; end: HHMM; changedCount: number }
+  | { kind: "ongoing"; remaining: number; start: HHMM; end: HHMM; changedCount: number }
   | { kind: "finished"; end: HHMM }
   /** Nothing takes place: a weekend, a holiday, or every lesson cancelled. */
   | { kind: "free" };
@@ -39,6 +39,7 @@ export const dayBrief = (day: ResolvedDay | null, now: RigaClock): DayBrief | nu
   return {
     kind: "ongoing",
     remaining: windows.filter((w) => w.end > now.minutes).length,
+    start: first.lesson.start,
     end: last.lesson.end,
     changedCount,
   };
