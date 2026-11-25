@@ -50,6 +50,9 @@ export const sv: Dict = {
 
   "onboarding.language.title": "Välj språk",
   "onboarding.language.continue": "Fortsätt",
+  "onboarding.institution.title": "Välj din skola",
+  "onboarding.institution.hint":
+    "För närvarande tillgängligt endast för Rīgas Valsts tehnikums. Fler skolor kommer senare.",
 
   "onboarding.intro.skip": "Hoppa över",
   "onboarding.intro.back": "Tillbaka",
@@ -76,6 +79,9 @@ export const sv: Dict = {
   "class.loading": "Laddar klasslista…",
   "class.favorite.add": "Lägg till i favoriter",
   "class.favorite.remove": "Ta bort från favoriter",
+  "class.filter.all": "Alla",
+  "class.filter.year": "År {year}",
+  "class.search.clear": "Rensa sökning",
 
   "subgroup.title": "Vilken undergrupp i {class} går du i?",
   "subgroup.subtitle":

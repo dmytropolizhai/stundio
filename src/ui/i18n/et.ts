@@ -50,6 +50,9 @@ export const et: Dict = {
 
   "onboarding.language.title": "Vali keel",
   "onboarding.language.continue": "Jätka",
+  "onboarding.institution.title": "Vali õppeasutus",
+  "onboarding.institution.hint":
+    "Praegu on saadaval ainult Rīgas Valsts tehnikums. Rohkem asutusi lisandub hiljem.",
 
   "onboarding.intro.skip": "Jäta vahele",
   "onboarding.intro.back": "Tagasi",
@@ -75,6 +78,9 @@ export const et: Dict = {
   "class.loading": "Klasside nimekirja laadimine…",
   "class.favorite.add": "Lisa lemmikutesse",
   "class.favorite.remove": "Eemalda lemmikutest",
+  "class.filter.all": "Kõik",
+  "class.filter.year": "{year}. kursus",
+  "class.search.clear": "Tühjenda otsing",
 
   "subgroup.title": "Millises {class} alamrühmas sa oled?",
   "subgroup.subtitle": "See klass on jagatud alamrühmadeks — vali oma, et näha ainult enda tunde.",

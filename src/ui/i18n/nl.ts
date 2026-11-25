@@ -50,6 +50,9 @@ export const nl: Dict = {
 
   "onboarding.language.title": "Kies je taal",
   "onboarding.language.continue": "Doorgaan",
+  "onboarding.institution.title": "Kies je onderwijsinstelling",
+  "onboarding.institution.hint":
+    "Momenteel alleen beschikbaar voor Rīgas Valsts tehnikums. Meer instellingen volgen later.",
 
   "onboarding.intro.skip": "Overslaan",
   "onboarding.intro.back": "Terug",
@@ -76,6 +79,9 @@ export const nl: Dict = {
   "class.loading": "Klassenlijst laden…",
   "class.favorite.add": "Toevoegen aan favorieten",
   "class.favorite.remove": "Verwijderen uit favorieten",
+  "class.filter.all": "Alle",
+  "class.filter.year": "Jaar {year}",
+  "class.search.clear": "Zoekopdracht wissen",
 
   "subgroup.title": "In welke subgroep van {class} zit je?",
   "subgroup.subtitle":

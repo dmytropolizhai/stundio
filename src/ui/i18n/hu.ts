@@ -51,6 +51,9 @@ export const hu: Dict = {
 
   "onboarding.language.title": "Válaszd ki a nyelvet",
   "onboarding.language.continue": "Folytatás",
+  "onboarding.institution.title": "Válassz intézményt",
+  "onboarding.institution.hint":
+    "Jelenleg csak a Rīgas Valsts tehnikums érhető el. További intézmények később érkeznek.",
 
   "onboarding.intro.skip": "Kihagyás",
   "onboarding.intro.back": "Vissza",
@@ -77,6 +80,9 @@ export const hu: Dict = {
   "class.loading": "Osztálylista betöltése…",
   "class.favorite.add": "Hozzáadás a kedvencekhez",
   "class.favorite.remove": "Eltávolítás a kedvencekből",
+  "class.filter.all": "Összes",
+  "class.filter.year": "{year}. évf.",
+  "class.search.clear": "Keresés törlése",
 
   "subgroup.title": "Melyik {class} csoportba jársz?",
   "subgroup.subtitle":

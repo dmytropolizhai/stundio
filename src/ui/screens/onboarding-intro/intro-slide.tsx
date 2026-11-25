@@ -1,8 +1,9 @@
-import type { TouchEvent } from "react";
+import { useState, type TouchEvent } from "react";
 import { m } from "framer-motion";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useT, type Lang } from "@/ui/i18n";
 import { LanguageList } from "@/ui/screens/onboarding-language";
+import { InstitutionList, type InstitutionId } from "./institution-list.tsx";
 import type { Slide } from "./slides.ts";
 
 type IntroSlideProps = {
@@ -35,6 +36,7 @@ export const IntroSlide = ({
   const t = useT();
   const lang = useAppStore((s) => s.settings.lang);
   const setLang = useSettingSetter("lang");
+  const [institution, setInstitution] = useState<InstitutionId>("rvt");
 
   return (
     <m.div
@@ -70,6 +72,18 @@ export const IntroSlide = ({
             onSelect={(key: Lang) => {
               void setLang(key);
             }}
+          />
+        </div>
+      ) : slide.kind === "institution" ? (
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-6 py-4">
+          <h1 className="font-display text-display-2 tracking-display text-strong text-balance">
+            {t(slide.title)}
+          </h1>
+          <InstitutionList
+            label={t(slide.title)}
+            hint={t(slide.hint)}
+            selectedId={institution}
+            onSelect={setInstitution}
           />
         </div>
       ) : (

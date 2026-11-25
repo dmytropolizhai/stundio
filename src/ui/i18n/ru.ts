@@ -50,6 +50,9 @@ export const ru: Dict = {
 
   "onboarding.language.title": "Выберите язык",
   "onboarding.language.continue": "Продолжить",
+  "onboarding.institution.title": "Выберите учебное заведение",
+  "onboarding.institution.hint":
+    "Сейчас доступен только Rīgas Valsts tehnikums. Другие учебные заведения появятся позже.",
 
   "onboarding.intro.skip": "Пропустить",
   "onboarding.intro.back": "Назад",
@@ -75,6 +78,9 @@ export const ru: Dict = {
   "class.loading": "Загружаем список классов…",
   "class.favorite.add": "Добавить в избранное",
   "class.favorite.remove": "Убрать из избранного",
+  "class.filter.all": "Все",
+  "class.filter.year": "{year} курс",
+  "class.search.clear": "Очистить поиск",
 
   "subgroup.title": "В какой подгруппе {class} ты учишься?",
   "subgroup.subtitle":

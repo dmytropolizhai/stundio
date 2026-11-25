@@ -9,13 +9,20 @@ import type { MessageKey } from "@/ui/i18n";
 
 /**
  * The unified welcome sequence: language selection first (so every slide after it renders in the
- * chosen locale), followed by four live Night / Day specimens of the app. Each step carries a DS
- * token in `glow` that tints the subtle ambient refraction behind the liquid-glass stage.
+ * chosen locale), then institution selection (currently RVT), followed by four live Night / Day
+ * specimens of the app. Each step carries a DS token in `glow` that tints the subtle ambient
+ * refraction behind the liquid-glass stage.
  */
 export type Slide =
   | {
       kind: "language";
       title: MessageKey;
+      glow: string;
+    }
+  | {
+      kind: "institution";
+      title: MessageKey;
+      hint: MessageKey;
       glow: string;
     }
   | {
@@ -31,6 +38,12 @@ export const SLIDES: Slide[] = [
     kind: "language",
     title: "onboarding.language.title",
     glow: "var(--lamp)",
+  },
+  {
+    kind: "institution",
+    title: "onboarding.institution.title",
+    hint: "onboarding.institution.hint",
+    glow: "var(--accent-mint)",
   },
   {
     kind: "feature",

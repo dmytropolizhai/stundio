@@ -56,6 +56,9 @@ export const lv = {
 
   "onboarding.language.title": "Izvēlies valodu",
   "onboarding.language.continue": "Turpināt",
+  "onboarding.institution.title": "Izvēlies mācību iestādi",
+  "onboarding.institution.hint":
+    "Pašlaik pieejams tikai Rīgas Valsts tehnikums. Citas iestādes sekos.",
 
   "onboarding.intro.skip": "Izlaist",
   "onboarding.intro.back": "Atpakaļ",
@@ -81,6 +84,9 @@ export const lv = {
   "class.loading": "Ielādē klašu sarakstu…",
   "class.favorite.add": "Pievienot izlasei",
   "class.favorite.remove": "Noņemt no izlases",
+  "class.filter.all": "Visas",
+  "class.filter.year": "{year}. kurss",
+  "class.search.clear": "Notīrīt meklēšanu",
 
   "subgroup.title": "Kurā {class} pusgrupā tu esi?",
   "subgroup.subtitle":

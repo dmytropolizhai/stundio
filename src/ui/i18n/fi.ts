@@ -50,6 +50,9 @@ export const fi: Dict = {
 
   "onboarding.language.title": "Valitse kieli",
   "onboarding.language.continue": "Jatka",
+  "onboarding.institution.title": "Valitse oppilaitos",
+  "onboarding.institution.hint":
+    "Tällä hetkellä saatavilla vain Rīgas Valsts tehnikumsille. Lisää oppilaitoksia tulossa.",
 
   "onboarding.intro.skip": "Ohita",
   "onboarding.intro.back": "Takaisin",
@@ -76,6 +79,9 @@ export const fi: Dict = {
   "class.loading": "Ladataan luokkalistaa…",
   "class.favorite.add": "Lisää suosikkeihin",
   "class.favorite.remove": "Poista suosikeista",
+  "class.filter.all": "Kaikki",
+  "class.filter.year": "{year}. vuosi",
+  "class.search.clear": "Tyhjennä haku",
 
   "subgroup.title": "Mihin luokan {class} alaryhmään kuulut?",
   "subgroup.subtitle":

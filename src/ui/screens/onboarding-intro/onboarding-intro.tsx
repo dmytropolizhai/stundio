@@ -168,9 +168,11 @@ export const OnboardingIntro = ({ onDone }: OnboardingIntroProps) => {
             <Button block size="lg" iconEnd="arrow-right" onClick={advance}>
               {slide.kind === "language"
                 ? t("onboarding.language.continue")
-                : isLast
-                  ? t("onboarding.intro.start")
-                  : t("onboarding.intro.next")}
+                : slide.kind === "institution"
+                  ? t("general.continue")
+                  : isLast
+                    ? t("onboarding.intro.start")
+                    : t("onboarding.intro.next")}
             </Button>
           </div>
         </div>

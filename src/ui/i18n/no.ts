@@ -50,6 +50,9 @@ export const no: Dict = {
 
   "onboarding.language.title": "Velg språk",
   "onboarding.language.continue": "Fortsett",
+  "onboarding.institution.title": "Velg utdanningsinstitusjon",
+  "onboarding.institution.hint":
+    "For øyeblikket kun tilgjengelig for Rīgas Valsts tehnikums. Flere skoler kommer senere.",
 
   "onboarding.intro.skip": "Hopp over",
   "onboarding.intro.back": "Tilbake",
@@ -76,6 +79,9 @@ export const no: Dict = {
   "class.loading": "Laster klasseliste…",
   "class.favorite.add": "Legg til i favoritter",
   "class.favorite.remove": "Fjern fra favoritter",
+  "class.filter.all": "Alle",
+  "class.filter.year": "{year}. år",
+  "class.search.clear": "Tøm søk",
 
   "subgroup.title": "Hvilken undergruppe i {class} er du i?",
   "subgroup.subtitle":

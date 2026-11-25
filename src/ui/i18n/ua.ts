@@ -50,6 +50,9 @@ export const ua: Dict = {
 
   "onboarding.language.title": "Оберіть мову",
   "onboarding.language.continue": "Продовжити",
+  "onboarding.institution.title": "Оберіть навчальний заклад",
+  "onboarding.institution.hint":
+    "Наразі доступний лише Rīgas Valsts tehnikums. Інші заклади зʼявляться згодом.",
 
   "onboarding.intro.skip": "Пропустити",
   "onboarding.intro.back": "Назад",
@@ -75,6 +78,9 @@ export const ua: Dict = {
   "class.loading": "Завантаження списку класів…",
   "class.favorite.add": "Додати до обраного",
   "class.favorite.remove": "Видалити з обраного",
+  "class.filter.all": "Усі",
+  "class.filter.year": "{year} курс",
+  "class.search.clear": "Очистити пошук",
 
   "subgroup.title": "У якій підгрупі {class} ти навчаєшся?",
   "subgroup.subtitle": "Цей клас поділено на підгрупи — обери свою, щоб бачити лише свої уроки.",

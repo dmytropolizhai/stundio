@@ -50,6 +50,9 @@ export const sk: Dict = {
 
   "onboarding.language.title": "Vyberte jazyk",
   "onboarding.language.continue": "Pokračovať",
+  "onboarding.institution.title": "Vyberte školu",
+  "onboarding.institution.hint":
+    "Momentálne dostupné iba pre Rīgas Valsts tehnikums. Ďalšie školy pribudnú neskôr.",
 
   "onboarding.intro.skip": "Preskočiť",
   "onboarding.intro.back": "Späť",
@@ -76,6 +79,9 @@ export const sk: Dict = {
   "class.loading": "Načítava sa zoznam tried…",
   "class.favorite.add": "Pridať do obľúbených",
   "class.favorite.remove": "Odstrániť z obľúbených",
+  "class.filter.all": "Všetky",
+  "class.filter.year": "{year}. ročník",
+  "class.search.clear": "Vymazať hľadanie",
 
   "subgroup.title": "V ktorej skupine triedy {class} ste?",
   "subgroup.subtitle":

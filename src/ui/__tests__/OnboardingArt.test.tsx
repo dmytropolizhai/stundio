@@ -124,16 +124,25 @@ describe("OnboardingIntro", () => {
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Choose your language");
 
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Choose your institution");
+    expect(
+      screen.getByRole("radio", { name: /Rīgas Valsts tehnikums/ }).getAttribute("aria-checked"),
+    ).toBe("true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
       "Your timetable, in one place",
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Choose your institution");
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Choose your language");
 
     const tabs = screen.getAllByRole("tab");
-    expect(tabs).toHaveLength(5);
-    const lastTab = tabs[4];
+    expect(tabs).toHaveLength(6);
+    const lastTab = tabs[5];
     if (lastTab !== undefined) fireEvent.click(lastTab);
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
       "Notified about what matters",

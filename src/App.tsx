@@ -173,13 +173,12 @@ const Onboarding = () => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="bg-card px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-brand">
-        <h1 className="mt-5 font-display text-hero tracking-hero">{t("onboarding.title")}</h1>
-        <p className="mt-3 font-text text-body-lg text-muted">{t("onboarding.subtitle")}</p>
-      </div>
-      <div className="flex min-h-0 flex-1 flex-col pt-5">
-        <ClassSelector />
-      </div>
+      <ClassSelector
+        mode="onboarding"
+        onBack={() => {
+          setStep("persona");
+        }}
+      />
     </div>
   );
 };
@@ -269,15 +268,11 @@ const Shell = () => {
   if (picking === "class") {
     return (
       <div className="flex h-full flex-col">
-        <div className="mx-auto w-full max-w-screen px-gutter pt-(--app-inset-top)">
-          <TopBar
-            title={t("settings.class")}
-            onBack={() => {
-              setPicking(null);
-            }}
-          />
-        </div>
         <ClassSelector
+          mode="switch"
+          onBack={() => {
+            setPicking(null);
+          }}
           onPicked={() => {
             setPicking(null);
           }}

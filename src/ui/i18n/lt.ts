@@ -51,6 +51,9 @@ export const lt: Dict = {
 
   "onboarding.language.title": "Pasirinkite kalbą",
   "onboarding.language.continue": "Tęsti",
+  "onboarding.institution.title": "Pasirinkite mokymo įstaigą",
+  "onboarding.institution.hint":
+    "Šiuo metu pasiekiamas tik Rīgas Valsts tehnikums. Kitos įstaigos bus pridėtos vėliau.",
 
   "onboarding.intro.skip": "Praleisti",
   "onboarding.intro.back": "Atgal",
@@ -77,6 +80,9 @@ export const lt: Dict = {
   "class.loading": "Įkeliamas klasių sąrašas…",
   "class.favorite.add": "Pridėti prie mėgstamų",
   "class.favorite.remove": "Pašalinti iš mėgstamų",
+  "class.filter.all": "Visos",
+  "class.filter.year": "{year} kursas",
+  "class.search.clear": "Išvalyti paiešką",
 
   "subgroup.title": "Kurioje {class} pogrupėje esate?",
   "subgroup.subtitle":

@@ -674,6 +674,25 @@ from the same `1px` directional specular-rim grammar (`mask-composite: exclude`)
   times) on the left with the subject heading and quiet metadata in the center, and a recessed
   liquid-glass room capsule (`.u-schedule-room-pill`) + accessible `StatusDot` on the right edge.
 
+### Class Selector & Subgroup Picker (Liquid-Glass Matrix)
+
+Shared by first-run onboarding (`mode="onboarding"`, anchored by the top-left `mark.svg`) and the
+in-app class switcher (`mode="switch"`, anchored by a glass Back button), `ClassSelector` and
+`SubgroupPicker` extend the Night / Day liquid-glass grammar over `bg-app` with a soft top `--lamp`
+ambient wash:
+
+- **Frosted search & dynamic filters:** a `.u-schedule-glass-chip` search capsule with one-tap clear
+  sits above a horizontal strip of dynamic Year (`1`–`4`) and Building filter pills derived from the
+  cached timetable (never hard-coded). Active filter pills swap to `bg-inverse text-on-inverse`.
+- **Department-indexed glass slabs:** pinned Favorites sit in their own `.u-schedule-glass` slab
+  above department-grouped slabs (`A`, `ATK`, `AV`, `DP`, `DT`…) holding a 2-column (3-column on
+  tablet/desktop) matrix of tactile class tiles (`min-h-15`) with class code, building caption, and
+  a trailing star toggle. Selecting a tile performs a full inverse ink swap (`bg-inverse
+  text-on-inverse`).
+- **Select-then-Continue & Subgroup step:** a bottom gradient-skirt CTA (`Continue · <class>`)
+  confirms the highlighted class, either committing immediately or stepping into the matching
+  liquid-glass `SubgroupPicker` (continuous `.u-schedule-glass` list slab + glass Skip button).
+
 ### Week Grid
 
 The whole week at a glance: a `36px + n` column grid with 6px gutters, mono period start-times down

@@ -18,16 +18,33 @@ const wrap = (harness: Harness, node: React.ReactNode) =>
   render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
 
 describe("ClassPicker", () => {
-  it("lists every cached class and filters as you type", async () => {
+  it("lists every cached class grouped by department and filters as you type", async () => {
     const harness = await bootHarness();
     wrap(harness, <ClassSelector />);
 
     expect(screen.getAllByRole("button", { pressed: false }).length).toBeGreaterThan(50);
+    expect(screen.getByRole("heading", { name: "DP" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "DT" })).toBeDefined();
 
     fireEvent.change(screen.getByLabelText("Meklēt klasi…"), { target: { value: "a1-" } });
     const shown = screen.getAllByText(/^A1-/);
     expect(shown.length).toBeGreaterThan(0);
     expect(screen.queryByText("DT3-2")).toBeNull();
+
+    fireEvent.click(screen.getByLabelText("Notīrīt meklēšanu"));
+    expect(screen.getByText("DT3-2")).toBeDefined();
+  });
+
+  it("filters classes by year pills and resets via All", async () => {
+    const harness = await bootHarness();
+    wrap(harness, <ClassSelector />);
+
+    fireEvent.click(screen.getByRole("button", { name: "3. kurss" }));
+    expect(screen.getByText("DT3-2")).toBeDefined();
+    expect(screen.queryByText("A1-1")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Visas" }));
+    expect(screen.getByText("A1-1")).toBeDefined();
   });
 
   it("says so when nothing matches instead of showing an empty list", async () => {
@@ -50,26 +67,34 @@ describe("ClassPicker", () => {
     expect(refreshSpy).toHaveBeenCalled();
   });
 
-  it("remembers the pick and tells the caller, for a class with no subgroups", async () => {
+  it("selects a class then commits on Continue for a class with no subgroups", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
     wrap(harness, <ClassSelector onPicked={onPicked} />);
 
+    const continueBtn = screen.getByRole("button", { name: /Turpināt/ });
+    expect((continueBtn as HTMLButtonElement).disabled).toBe(true);
+
+    fireEvent.click(screen.getByText("A1-1"));
+    expect(onPicked).not.toHaveBeenCalled();
+    expect(harness.store.getState().settings.selectedClassId).toBeNull();
+
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("A1-1"));
+      fireEvent.click(screen.getByRole("button", { name: /Turpināt · A1-1/ }));
     });
 
     expect(onPicked).toHaveBeenCalled();
     expect(harness.store.getState().settings.selectedClassId).not.toBeNull();
   });
 
-  it("asks which subgroup before committing a divided class, and lets the user skip", async () => {
+  it("asks which subgroup after Continue for a divided class, and lets the user skip", async () => {
     const harness = await bootHarness({ selectedClassId: null });
     const onPicked = vi.fn();
     wrap(harness, <ClassSelector onPicked={onPicked} />);
 
+    fireEvent.click(screen.getByText("DT3-2"));
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("DT3-2"));
+      fireEvent.click(screen.getByRole("button", { name: /Turpināt · DT3-2/ }));
     });
 
     // Not committed yet — the app shell treats a set class as "onboarding done", so it must
@@ -95,8 +120,9 @@ describe("ClassPicker", () => {
     const onPicked = vi.fn();
     wrap(harness, <ClassSelector onPicked={onPicked} />);
 
+    fireEvent.click(screen.getByText("DT3-2"));
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("DT3-2"));
+      fireEvent.click(screen.getByRole("button", { name: /Turpināt · DT3-2/ }));
     });
     await clickAndSettle(() => {
       fireEvent.click(screen.getByText("1. pusgrupa"));
@@ -114,8 +140,9 @@ describe("ClassPicker", () => {
     const onPicked = vi.fn();
     wrap(harness, <ClassSelector onPicked={onPicked} />);
 
+    fireEvent.click(screen.getByText("DT3-2"));
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("DT3-2"));
+      fireEvent.click(screen.getByRole("button", { name: /Turpināt · DT3-2/ }));
     });
 
     expect(screen.getByText("1. pusgrupa")).toBeDefined();
@@ -149,6 +176,15 @@ describe("ClassPicker", () => {
     const harness = await bootHarness();
     wrap(harness, <ClassSelector />);
     expect(screen.getAllByText(/Galvenā ēka|TIC/).length).toBeGreaterThan(0);
+  });
+
+  it("supports switch mode with a back button", async () => {
+    const harness = await bootHarness();
+    const onBack = vi.fn();
+    wrap(harness, <ClassSelector mode="switch" onBack={onBack} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Atpakaļ" }));
+    expect(onBack).toHaveBeenCalled();
   });
 });
 

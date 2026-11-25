@@ -52,6 +52,9 @@ export const fr: Dict = {
 
   "onboarding.language.title": "Choisissez votre langue",
   "onboarding.language.continue": "Continuer",
+  "onboarding.institution.title": "Choisir votre établissement",
+  "onboarding.institution.hint":
+    "Actuellement disponible uniquement pour Rīgas Valsts tehnikums. D’autres suivront.",
 
   "onboarding.intro.skip": "Passer",
   "onboarding.intro.back": "Retour",
@@ -78,6 +81,9 @@ export const fr: Dict = {
   "class.loading": "Chargement des classes…",
   "class.favorite.add": "Ajouter aux favoris",
   "class.favorite.remove": "Retirer des favoris",
+  "class.filter.all": "Toutes",
+  "class.filter.year": "Année {year}",
+  "class.search.clear": "Effacer la recherche",
 
   "subgroup.title": "Dans quel sous-groupe de {class} êtes-vous ?",
   "subgroup.subtitle":
