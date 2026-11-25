@@ -644,28 +644,42 @@ rather than hints.
   faster on `--dur-fast`, entering with a 35ms lead-in so the label opens as the pill arrives).
   When the active tab lives inside `MoreSheet`, the More slot holds the active pill and
   `aria-current="page"`.
-- **Date dock:** on Home and Week (phone layout), a compact 44px matching frosted-glass pill
-  (`.u-nav-glass`) floats 8px above the bottom bar in the same fixed stack, holding previous/next
-  stepping, the calendar `DatePicker`, and a "Today" jump when away from today/this week.
+- **Date dock & Now dock:** on Home and Week (phone layout), the contextual slot floating 8px above
+  the bottom bar morphs between `NowDock` (52px deep grainy subject capsule with live progress
+  filament and next-subject scratch-through when a lesson is live or upcoming) and `DateDock` (44px
+  frosted-glass pill `.u-nav-glass` holding previous/next stepping, the calendar `DatePicker`, a
+  "Today" jump when away, and a countdown chip to flip back to `NowDock`).
 - **Status bar:** on phone layout, a fixed 36px read-only strip below the top safe-area inset shows
   the active class/teacher on the left and sync freshness (`role="status"`) on the right over
   `bg-app` with a soft fade-out skirt. No interactive controls live in the status bar; manual
   refresh is pull-to-refresh and identity switching lives in `MoreSheet`.
-- **Top bar:** 56px, scrolls with content, optional uppercase eyebrow above a Display-2 title, with
-  `app` and `brand` (on-blue) tones. The title is a real `<h1>`, not styled text — a screen with no
-  heading has an empty heading list.
+- **Top bar:** 56px, scrolls with content, Display-2 title, with `app` and `brand` tones. The title
+  is a real `<h1>`, not styled text — a screen with no heading has an empty heading list.
 - **Segmented tabs:** a sunken pill track (4px padding) with a 36px white pill on the selected
   segment, carrying `shadow-card` so the selection lifts out of its groove; unselected labels are
   muted bold. Exposed as a **`radiogroup` with roving tabindex**, not a tablist — the segments pick a
   value (theme, language, building) rather than swapping a panel, and arrow keys move between them.
 
-### Day Paging
+### Home Day Schedule (Liquid-Glass Slabs)
 
-The Day screen provides left/right chevron buttons flanking the date picker in the top bar (`IconButton`
-`variant="bare"` `size="sm"`), matching the Week screen's navigation pattern. Swiping left/right
-anywhere below the top bar also pages to the adjacent day, with a small same-direction slide (16px,
-`--dur-base`, `--ease-standard`); arrow keys do the same for keyboard accessibility. Jumping to an
-arbitrary date uses the date picker popover, or the Week screen.
+On the Home screen, the Day schedule uses continuous frosted-glass slabs (`.u-schedule-glass`) cut
+from the same `1px` directional specular-rim grammar (`mask-composite: exclude`) as `BottomNav` and
+`DateDock`, opening up to refract `WeatherAmbient` when the weather tile expands:
+
+- **Collapsed phone horizon strip:** because `DateDock` and `SchoolTile` already show today's date
+  and countdown on phones, `DayHeader` collapses redundant "Today" and long-date rows into a single
+  compact horizon row holding the unified time-span + lesson/free-time capsule (`.u-schedule-glass-chip`),
+  the browsed day title when away from today, and the changes shortcut — pulling lessons high into
+  the first viewport. Wide layouts keep the inline `DatePicker` and day-stepping chevrons.
+- **Continuous slabs & connectors:** consecutive lessons in the same building share one glass slab
+  divided by hairlines and linked along the left period-jewel spine by a `1px` optical thread. Free
+  periods (`DayGap`), building switches (`DayBuildingBridge`), and the between-lesson clock
+  (`DayNowMarker`) split the glass into separate slabs; the active lesson lifts out onto its
+  subject's deep grainy tone field (`.u-tone-field u-tone-field-deep`, matching the featured
+  `SubjectCard`, `DayGlance`, and `NowDock`) with a bottom `3px` progress filament.
+- **Three-zone corridor scan:** each row pairs a dusk-toned period jewel (+ optional Martian Mono
+  times) on the left with the subject heading and quiet metadata in the center, and a recessed
+  liquid-glass room capsule (`.u-schedule-room-pill`) + accessible `StatusDot` on the right edge.
 
 ### Week Grid
 
