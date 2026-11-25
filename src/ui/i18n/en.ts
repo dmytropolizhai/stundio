@@ -274,6 +274,7 @@ export const en: Dict = {
   "transit.destinations.add": "Add starting point",
   "transit.destinations.remove": "Remove {label}",
   "subjects.perWeek": "{n}× a week",
+  "subjects.stat.lessons": "Lessons a week",
   "subjects.teachers": "Teachers",
   "subjects.empty": "No subjects",
   "subjects.emptyHint": "Subjects appear once the timetable is downloaded.",

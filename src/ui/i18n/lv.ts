@@ -282,6 +282,7 @@ export const lv = {
   "transit.destinations.add": "Pievienot adresi",
   "transit.destinations.remove": "Noņemt {label}",
   "subjects.perWeek": "{n}× nedēļā",
+  "subjects.stat.lessons": "Stundas nedēļā",
   "subjects.teachers": "Skolotāji",
   "subjects.empty": "Nav priekšmetu",
   "subjects.emptyHint": "Priekšmeti parādīsies, kad būs lejupielādēts saraksts.",

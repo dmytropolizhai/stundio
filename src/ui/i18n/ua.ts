@@ -276,6 +276,7 @@ export const ua: Dict = {
   "transit.destinations.add": "Додати адресу",
   "transit.destinations.remove": "Видалити {label}",
   "subjects.perWeek": "{n}× на тиждень",
+  "subjects.stat.lessons": "Уроків на тиждень",
   "subjects.teachers": "Учителі",
   "subjects.empty": "Немає предметів",
   "subjects.emptyHint": "Предмети з'являться після завантаження розкладу.",

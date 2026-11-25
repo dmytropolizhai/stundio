@@ -276,6 +276,7 @@ export const ru: Dict = {
   "transit.destinations.add": "Добавить адрес",
   "transit.destinations.remove": "Удалить {label}",
   "subjects.perWeek": "{n}× в неделю",
+  "subjects.stat.lessons": "Уроков в неделю",
   "subjects.teachers": "Учителя",
   "subjects.empty": "Нет предметов",
   "subjects.emptyHint": "Предметы появятся после загрузки расписания.",

@@ -94,8 +94,8 @@ describe("SubjectsView", () => {
 
     const cards = screen.getAllByTestId(/^subject-/);
     expect(cards.length).toBeGreaterThan(0);
-    // "{n}× nedēļā" — the count is the headline number on each tile.
-    expect(screen.getAllByText(/×\s*nedēļā/).length).toBe(cards.length);
+    // The weekly count is the first stat on each card, under its "Stundas nedēļā" label.
+    expect(screen.getAllByText("Stundas nedēļā").length).toBe(cards.length);
   });
 
   it("prints subject names verbatim, diacritics intact", async () => {
@@ -119,9 +119,8 @@ describe("SubjectsView", () => {
     const tones = new Set(
       screen
         .getAllByTestId(/^subject-/)
-        .flatMap((card) => card.className.split(" "))
-        .filter((cls) =>
-          ["bg-amber", "bg-sky", "bg-lilac", "bg-pink", "bg-mint", "bg-lime"].includes(cls),
+        .map((card) =>
+          card.querySelector<HTMLElement>(".u-tone-field")?.style.getPropertyValue("--tone"),
         ),
     );
     expect(tones.size).toBeGreaterThan(1);
@@ -134,7 +133,9 @@ describe("SubjectsView", () => {
     const cards = screen.getAllByTestId(/^subject-/);
     expect(cards.length).toBeGreaterThan(0);
     for (const card of cards) {
-      expect(card.className.split(" ")).toContain("bg-sky");
+      expect(
+        card.querySelector<HTMLElement>(".u-tone-field")?.style.getPropertyValue("--tone"),
+      ).toBe("var(--accent-sky)");
     }
   });
 
@@ -149,6 +150,6 @@ describe("SubjectsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SubjectsView />);
 
-    expect(screen.getByText("Skolotāji")).toBeDefined();
+    expect(screen.getAllByText("Skolotāji").length).toBeGreaterThan(0);
   });
 });

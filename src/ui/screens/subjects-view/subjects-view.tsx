@@ -44,7 +44,7 @@ export const SubjectsView = () => {
 
     return (
       <>
-        <div className="mb-7 grid grid-cols-2 gap-3">
+        <div className="mb-7 grid grid-cols-1 gap-3">
           {subjects.map(({ subject, count, teachers: taughtBy }) => {
             const subjectKey = subject.name === "" ? subject.short : subject.name;
             const hasNote = (notes[subjectKey]?.text ?? "") !== "";

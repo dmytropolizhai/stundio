@@ -601,3 +601,42 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/*
+ * Subject card field (design system: "a grainy field mixed from the subject's own tone"). The
+ * caller sets `--tone` and `--tone-ink` (a subject's fill and its ink pair); the field's lights and
+ * darks are mixed only from those, `--on-deep` and `--shade`, so it can never leave the subject's
+ * colour. These are the only gradients in the system and carry no text — labels sit on flat-tone
+ * pills above them, so contrast is the tone/ink pair's, not the mix's. Indigo (`data-tone-dark`)
+ * is the one dark tone and darkens toward `--shade` instead of toward its (light) ink.
+ */
+.u-tone-field {
+  --field-dark: color-mix(in oklab, var(--tone-ink) 48%, var(--tone));
+  --field-hi: color-mix(in oklab, var(--tone) 55%, var(--on-deep));
+  position: relative;
+  isolation: isolate;
+  background-color: var(--tone);
+  background-image:
+    radial-gradient(55% 90% at 14% 55%, var(--field-dark) 0%, transparent 72%),
+    radial-gradient(45% 70% at 92% 95%, var(--field-hi) 0%, transparent 70%),
+    radial-gradient(60% 80% at 62% -10%, var(--field-dark) 0%, transparent 65%);
+}
+.u-tone-field[data-tone-dark] {
+  --field-dark: color-mix(in oklab, var(--tone) 55%, var(--shade));
+  --field-hi: color-mix(in oklab, var(--tone) 45%, var(--on-deep));
+}
+.u-tone-field::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.32;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.u-tone-field > * {
+  position: relative;
+  z-index: 1;
+}

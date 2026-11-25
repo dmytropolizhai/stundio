@@ -30,6 +30,12 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
     ? t("day.glance.left", { duration: formatDuration(glance.minutesLeft) })
     : t("day.glance.in", { duration: formatDuration(glance.minutesUntil) });
 
+  /* "5 h 11 min" → ["5", "h", "11", "min"]: digits set big in mono, units small beside them. */
+  const figure = formatDuration(live ? glance.minutesLeft : glance.minutesUntil)
+    .split(/(\d+)/)
+    .map((part) => part.trim())
+    .filter((part) => part !== "");
+
   const walkTo = glanceWalk(glance);
   const walkBuilding = walkTo === null ? undefined : lessonBuilding(day, walkTo.to);
 
@@ -54,16 +60,32 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
           <span className="u-eyebrow">{eyebrow}</span>
         )}
         <span
-          className={
-            live
-              ? "font-data text-title font-semibold tabular-nums text-lamp-text"
-              : "font-data text-body font-medium tabular-nums"
-          }
+          className="font-data text-caption font-medium tabular-nums text-muted"
           data-testid="glance-countdown"
         >
           {countdown}
         </span>
       </div>
+
+      <p
+        aria-hidden="true"
+        className={
+          live
+            ? "mt-4 font-data text-[56px] leading-[0.95] font-semibold tracking-[-0.04em] tabular-nums text-lamp-text"
+            : "mt-4 font-data text-[56px] leading-[0.95] font-semibold tracking-[-0.04em] tabular-nums text-strong"
+        }
+        data-testid="glance-figure"
+      >
+        {figure.map((part, i) =>
+          /^\d+$/.test(part) ? (
+            <span key={i}>{part}</span>
+          ) : (
+            <span key={i} className="mx-1 font-text text-body-lg font-medium text-muted">
+              {part}
+            </span>
+          ),
+        )}
+      </p>
 
       <h2 className="mt-3 font-display text-display-2 font-semibold tracking-display text-strong">
         {title}
