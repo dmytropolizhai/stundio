@@ -94,12 +94,12 @@ export type PersonaTimetableArtProps = {
  * same way `dark.css` re-points the same aliases the other way.
  */
 const LIT: CSSProperties = {
-  "--surface-card": "var(--white)",
+  "--surface-card": "var(--ink-050)",
   "--surface-sunken": "var(--ink-100)",
   "--text-body": "var(--ink-700)",
   "--text-strong": "var(--ink-900)",
   "--text-muted": "var(--ink-500)",
-  "--brand-strong": "var(--blue-600)",
+  "--brand-strong": "var(--ink-700)",
   "--border-hairline": "var(--ink-200)",
   "--border-strong": "var(--ink-300)",
 } as CSSProperties;

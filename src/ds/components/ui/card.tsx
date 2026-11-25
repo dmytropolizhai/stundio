@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef } from "react";
 import { cn, pressable } from "../../lib/utils.ts";
 
 /*
- * Cards are white, 28px, unbordered, with a blue-tinted shadow. The six subject-accent tones get
+ * Cards sit on the `surface` colour, 22px, unbordered; at night a faint rim of light lifts them. The six subject-accent tones get
  * *no* shadow — the DS is explicit that the colour is what separates a tinted card from the page,
  * and stacking a shadow under it muddies the tint. Each accent carries its own ink pair so the
  * text on it stays full-contrast.
@@ -14,7 +14,9 @@ const cardVariants = cva("transition-transform duration-(--dur-instant) ease-(--
       surface: "bg-card text-fg",
       sunken: "bg-sunken text-fg",
       brand: "bg-brand text-on-brand",
-      ink: "bg-ink-900 text-white",
+      panel: "bg-panel text-strong",
+      caution: "bg-warning text-caution-ink",
+      ink: "bg-inverse text-on-inverse",
       amber: "bg-amber text-amber-ink",
       sky: "bg-sky text-sky-ink",
       lilac: "bg-lilac text-lilac-ink",
@@ -35,7 +37,7 @@ const cardVariants = cva("transition-transform duration-(--dur-instant) ease-(--
   defaultVariants: { tone: "surface", radius: "xl", elevation: "card", interactive: false },
 });
 
-const TINTED = ["amber", "sky", "lilac", "pink", "mint", "lime", "custom"] as const;
+const TINTED = ["caution", "amber", "sky", "lilac", "pink", "mint", "lime", "custom"] as const;
 
 export type CardProps = ComponentPropsWithoutRef<"div"> &
   Pick<VariantProps<typeof cardVariants>, "tone" | "radius" | "elevation">;

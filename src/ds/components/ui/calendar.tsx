@@ -139,7 +139,7 @@ export const Calendar = ({
                 "transition-[background-color,color,box-shadow] duration-(--dur-fast) ease-standard",
                 "active:scale-(--press-scale)",
                 isSelected
-                  ? "bg-ink-900 text-white"
+                  ? "bg-inverse text-on-inverse"
                   : isToday
                     ? "text-brand-strong inset-ring-2 inset-ring-brand hover:bg-sunken"
                     : "text-fg hover:bg-sunken",

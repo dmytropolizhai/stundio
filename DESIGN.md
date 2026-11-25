@@ -293,6 +293,24 @@ components:
     padding: "36px 24px"
 ---
 
+> **Revision: Night / Day (supersedes the colour and type values below).** The design system was
+> replaced by the Claude Design "Stundio" project. Where this file's front matter and prose still
+> say electric blue, Manrope or JetBrains Mono, the values in `src/ds/tokens/*.css` win:
+>
+> - **Themes:** Night (`.dark`, the signature) and Day. Semantic aliases (`--bg-app`, `--surface-card`,
+>   `--text-strong`, …) keep their names and are re-pointed per theme; `colors.css` holds Day,
+>   `dark.css` holds Night.
+> - **One lamp:** `--lamp` (+ `lamp-ink`, `lamp-mark`, `lamp-text`, `lamp-glow`) is the lesson on now
+>   and a switch that is on — at most two lamp things per screen, never a button or heading. Only the
+>   live glance panel glows (`shadow-brand` is the glow).
+> - **Brand is ink:** selected states and primary buttons use `inverse` / `on-inverse`
+>   (`bg-inverse text-on-inverse`), never a fixed `ink-900`, which is Day-only.
+> - **Subject tones:** six dusk tones (sage, mist, lavender, rose, teal, indigo). The persisted keys
+>   did not change, so they map `amber→sage, sky→mist, lilac→lavender, pink→rose, mint→teal,
+>   lime→indigo`. Signals: `positive`, `caution` (straw, apart from lamp), `danger` + `on-danger`.
+> - **Type:** Onest for words, Martian Mono for every time and the glance countdown; sentence case.
+> - **Shape:** radii 10 / 16 / 22 / 30 (no square corners); depth is light, not lines.
+
 # Design System: Stundio
 
 ## Overview

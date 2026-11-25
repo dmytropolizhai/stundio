@@ -43,7 +43,7 @@ export const LiveMapCard = () => {
       <p className="mb-3 font-text text-body-sm text-muted">{t("transit.live.description")}</p>
       {warning && (
         <Card
-          tone="amber"
+          tone="caution"
           radius="lg"
           elevation="none"
           role="status"

@@ -1,7 +1,7 @@
 # Fonts
 
-Manrope and JetBrains Mono are installed from npm (`@fontsource/*`) and imported by
-`src/ds/tokens/fonts.css`. Nothing to do for those.
+Onest and Martian Mono (variable woff2, latin / latin-ext / cyrillic) are committed in this
+directory and declared in `src/ds/tokens/fonts.css`. Nothing to do for those.
 
 **`moho-condensed-black.otf` is missing and must be added by hand.**
 

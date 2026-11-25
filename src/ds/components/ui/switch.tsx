@@ -42,16 +42,16 @@ export const Switch = ({
       {...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy })}
       className={cn(
         "relative h-[30px] w-[50px] shrink-0 cursor-pointer rounded-pill border-0",
-        "bg-ink-200 dark:bg-ink-700",
-        "data-[state=checked]:bg-success",
+        "bg-sunken inset-ring-2 inset-ring-strong-border",
+        "data-[state=checked]:bg-lamp data-[state=checked]:inset-ring-0",
         "transition-colors duration-(--dur-fast) ease-(--ease-standard)",
         "disabled:cursor-not-allowed",
       )}
     >
       <RadixSwitch.Thumb
         className={cn(
-          "block size-6 translate-x-[3px] rounded-pill bg-white",
-          "shadow-[0_2px_6px_rgba(6,11,61,.24)]",
+          "block size-6 translate-x-[3px] rounded-pill bg-strong-border data-[state=checked]:bg-lamp-ink",
+          "shadow-[0_2px_6px_rgba(0,0,0,.24)]",
           "transition-transform duration-(--dur-fast) ease-(--ease-spring)",
           "data-[state=checked]:translate-x-[23px]",
         )}

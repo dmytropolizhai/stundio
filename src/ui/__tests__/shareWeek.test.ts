@@ -300,7 +300,7 @@ describe("shareTheme", () => {
   it("falls back to the design system's light values when no stylesheet has been applied", () => {
     const theme = shareTheme({ getPropertyValue: () => "" });
 
-    expect(theme.palette.background).toBe("#f6f7fa");
-    expect(theme.tones.sky).toEqual({ fill: "#9cc8f7", ink: "#0c3560" });
+    expect(theme.palette.background).toBe("#ebeaee");
+    expect(theme.tones.sky).toEqual({ fill: "#a9bfe6", ink: "#162a4d" });
   });
 });

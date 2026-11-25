@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Studio Design System — raw token layer. `dark.css` is authored here, the rest is verbatim. */
+/* Stundio Night / Day design system — raw token layer (generated from the Claude Design project). */
 @import "./ds/tokens/fonts.css";
 @import "./ds/tokens/colors.css";
 @import "./ds/tokens/typography.css";
@@ -238,6 +238,21 @@
   --color-on-brand-border: var(--border-on-brand);
   --color-focus: var(--focus-ring);
 
+  /* ——— Colour: Night / Day design system ——— */
+  --color-raised: var(--surface-raised);
+  --color-panel: var(--surface-panel);
+  --color-ink-soft: var(--text-body);
+  --color-lamp: var(--lamp);
+  --color-lamp-ink: var(--lamp-ink);
+  --color-lamp-mark: var(--lamp-mark);
+  --color-lamp-text: var(--lamp-text);
+  --color-lamp-glow: var(--lamp-glow);
+  --color-caution: var(--caution);
+  --color-caution-ink: var(--caution-ink);
+  --color-on-danger: var(--on-danger);
+  --color-on-deep: var(--on-deep);
+  --color-shade: var(--shade);
+
   /* ——— Colour: status ——— */
   --color-success: var(--status-success);
   --color-warning: var(--status-warning);
@@ -458,7 +473,7 @@
      * navy it is tinted with (DESIGN.md, The Blue-Shadow Rule), at the strength that reads as
      * one card lifted off the app ground.
      */
-    --share-shadow: rgba(6, 11, 61, 0.16);
+    --share-shadow: rgba(18, 20, 25, 0.16);
   }
   /*
    * Kept out of `:root` above and behind `@supports`: two declarations of the same custom

@@ -1,9 +1,9 @@
-/* Verbatim from Studio Design System — tokens/typography.css. Do not hand-edit; re-pull instead. */
+/* Stundio design system — tokens/typography.css, generated from tokens.json. Onest for words, Martian Mono for every time and the big figure. */
 :root {
   --font-wordmark: "Moho Condensed", "Archivo Narrow", "Arial Narrow", system-ui, sans-serif;
-  --font-display: "Manrope", system-ui, -apple-system, sans-serif;
-  --font-text: "Manrope", system-ui, -apple-system, sans-serif;
-  --font-data: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Onest", system-ui, -apple-system, sans-serif;
+  --font-text: "Onest", system-ui, -apple-system, sans-serif;
+  --font-data: "Martian Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* weights */
   --fw-light: 300;
@@ -11,7 +11,7 @@
   --fw-medium: 500;
   --fw-semibold: 600;
   --fw-bold: 700;
-  --fw-black: 800;
+  --fw-black: 700;
 
   /* display scale — always tight and set BIG */
   --size-hero: 56px;
@@ -23,7 +23,7 @@
   --size-title: 22px;
   --lh-title: 1.15;
 
-  /* text scale — Manrope */
+  /* text scale — Onest */
   --size-body-lg: 17px;
   --lh-body-lg: 1.45;
   --size-body: 15px;
@@ -34,10 +34,10 @@
   --lh-micro: 1.2;
 
   /* tracking */
-  --track-display: -0.025em;
+  --track-display: -0.03em;
   --track-hero: -0.035em;
   --track-body: 0em;
-  --track-label: 0.14em;
+  --track-label: 0.02em;
 
   /* data */
   --size-time: 15px;

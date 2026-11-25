@@ -1,4 +1,4 @@
-/* Verbatim from Studio Design System — tokens/spacing.css. Do not hand-edit; re-pull instead. */
+/* Stundio design system — tokens/spacing.css (4px base) */
 :root {
   /* 4px base, but the product leans on the larger steps */
   --space-0: 0px;
@@ -21,5 +21,5 @@
   --nav-inset: 16px; /* nav distance from screen edge */
   --topbar-height: 56px;
   --tap-min: 44px; /* minimum hit target */
-  --screen-max: 420px; /* phone design width */
+  --screen-max: 430px; /* phone design width */
 }

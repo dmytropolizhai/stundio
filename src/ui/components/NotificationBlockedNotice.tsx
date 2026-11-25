@@ -19,7 +19,7 @@ export const NotificationBlockedNotice = () => {
 
   return (
     <Card
-      tone="amber"
+      tone="caution"
       radius="lg"
       className="mt-3 flex flex-wrap items-center justify-between gap-3 font-text text-caption"
       data-testid="notify-blocked"

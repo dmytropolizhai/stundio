@@ -18,17 +18,17 @@ const chipVariants = cva(
       tone: {
         neutral: "bg-card text-fg shadow-hairline",
         brandTint: "bg-brand-tint text-brand-strong",
-        onBrand: "bg-white/16 text-white inset-ring-1 inset-ring-on-brand-border",
+        onBrand: "bg-on-brand/16 text-on-brand inset-ring-1 inset-ring-on-brand-border",
       },
-      selected: { true: "bg-ink-900 text-white shadow-none inset-ring-0", false: "" },
+      selected: { true: "bg-inverse text-on-inverse shadow-none inset-ring-0", false: "" },
       interactive: { true: "cursor-pointer active:scale-(--press-scale)", false: "cursor-default" },
       hasIcon: { true: "pr-3.5 pl-[11px]", false: "px-3.5" },
     },
     /* `selected` is a full override, so it has to win over whatever `tone` set. */
     compoundVariants: [
-      { selected: true, tone: "neutral", class: "bg-ink-900 text-white shadow-none" },
-      { selected: true, tone: "brandTint", class: "bg-ink-900 text-white" },
-      { selected: true, tone: "onBrand", class: "bg-ink-900 text-white inset-ring-0" },
+      { selected: true, tone: "neutral", class: "bg-inverse text-on-inverse shadow-none" },
+      { selected: true, tone: "brandTint", class: "bg-inverse text-on-inverse" },
+      { selected: true, tone: "onBrand", class: "bg-inverse text-on-inverse inset-ring-0" },
     ],
     defaultVariants: { tone: "neutral", selected: false, interactive: false, hasIcon: false },
   },

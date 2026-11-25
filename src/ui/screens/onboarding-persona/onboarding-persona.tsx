@@ -24,8 +24,7 @@ const PERSONA_STYLES: Record<
   }
 > = {
   student: {
-    panel:
-      "border-r border-white/10 bg-gradient-to-b from-[var(--blue-500)] via-[var(--blue-600)] to-[var(--blue-700)] dark:from-[var(--blue-700)] dark:via-[var(--blue-800)] dark:to-[var(--blue-900)]",
+    panel: "border-r border-white/10 bg-[#1a222c]",
     focus: "focus-visible:inset-ring-white",
     description: "text-white/80",
     decoration: (
@@ -33,13 +32,13 @@ const PERSONA_STYLES: Record<
     ),
   },
   teacher: {
-    panel: "bg-gradient-to-b from-[#0e0f14] via-[var(--ink-900)] to-black",
-    focus: "focus-visible:inset-ring-[var(--accent-amber)]",
-    description: "text-[var(--ink-300)]",
+    panel: "bg-[#0a0e13]",
+    focus: "focus-visible:inset-ring-[var(--lamp)]",
+    description: "text-[#c4c1bb]",
     decoration: (
       <>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-2.5 bg-linear-to-l from-[#ffb552]/40 via-amber-600/20 to-transparent blur-sm sm:w-4" />
-        <div className="pointer-events-none absolute -right-20 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-amber-500/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-2.5 bg-linear-to-l from-[#f2b56b]/40 via-[#f2b56b]/15 to-transparent blur-sm sm:w-4" />
+        <div className="pointer-events-none absolute -right-20 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-[#f2b56b]/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
       </>
     ),
   },

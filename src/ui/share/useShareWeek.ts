@@ -75,7 +75,7 @@ export const useShareWeek = (
     setStatus("working");
 
     try {
-      // The card is drawn with the bundled Manrope/JetBrains Mono faces; asking for them before
+      // The card is drawn with the bundled Onest/Martian Mono faces; asking for them before
       // the first `fillText` is what stops a cold open from exporting a Times New Roman week.
       // Optional because `FontFaceSet` is not everywhere — without it the export is still
       // correct, just possibly in a fallback face.

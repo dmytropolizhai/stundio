@@ -120,7 +120,7 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   named action. A new plain setting needs no store change; a new rule is a new `RuledSettingKey`.
 - **`src/ds/`** — the Studio design system: tokens (`ds/tokens/*.css`) plus primitives. Its
   tokens are generated copies from the Claude Design project — regenerate rather than hand-edit;
-  `dark.css` and `fonts.css` are documented deliberate deviations.
+  `fonts.css` is a documented deliberate deviation (self-hosted faces).
 - **`src/ui/components/lesson-heading.ts`** — what a lesson card leads with (student: subject; teacher: group · room, subject as subtitle). The day list (`LessonRow`) and the changes list (`ChangesLessonCard`) both build on it and on the DS `LessonCard`, so a lesson looks the same in both.
 - **`public/sw.js`** — the web build's service worker (never registered on Android). It
   precaches every file `vite build` emitted: the `precacheManifest` plugin in `vite.config.ts`

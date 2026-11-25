@@ -19,10 +19,10 @@ const iconButtonVariants = cva(
     variants: {
       variant: {
         light: "bg-card text-strong shadow-hairline hover:bg-sunken",
-        solid: "bg-ink-900 text-white hover:bg-ink-700",
+        solid: "bg-inverse text-on-inverse hover:bg-brand-strong",
         brand: "bg-brand text-on-brand shadow-card hover:bg-ink-700 dark:hover:bg-ink-200",
         glass:
-          "bg-glass text-white backdrop-blur-(--blur-glass) inset-ring-1 inset-ring-on-brand-border",
+          "bg-glass text-on-brand backdrop-blur-(--blur-glass) inset-ring-1 inset-ring-on-brand-border",
         bare: "bg-transparent text-fg hover:bg-sunken",
       },
       size: { sm: "size-9", md: "size-11", lg: "size-13" },

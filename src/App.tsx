@@ -168,7 +168,7 @@ const Onboarding = () => {
           <h1 className="mt-5 font-display text-hero tracking-hero">
             {t("onboarding.teacher.title")}
           </h1>
-          <p className="mt-3 font-text text-body-lg text-white/72">
+          <p className="mt-3 font-text text-body-lg text-muted">
             {t("onboarding.teacher.subtitle")}
           </p>
         </div>
@@ -183,7 +183,7 @@ const Onboarding = () => {
     <div className="flex h-full flex-col">
       <div className="bg-card px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-brand">
         <h1 className="mt-5 font-display text-hero tracking-hero">{t("onboarding.title")}</h1>
-        <p className="mt-3 font-text text-body-lg text-white/72">{t("onboarding.subtitle")}</p>
+        <p className="mt-3 font-text text-body-lg text-muted">{t("onboarding.subtitle")}</p>
       </div>
       <div className="flex min-h-0 flex-1 flex-col pt-5">
         <ClassSelector />

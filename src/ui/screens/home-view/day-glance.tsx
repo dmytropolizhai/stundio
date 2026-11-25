@@ -6,7 +6,7 @@
  */
 import type { DayGlance as Glance } from "@/lib/schedule";
 import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import { Card, Icon } from "@/ds";
+import { Badge, Card, Icon } from "@/ds";
 import { lessonBuilding } from "@/ui/theme";
 import { formatDuration, useT } from "@/ui/i18n";
 import { glanceWalk } from "./glance-walk.ts";
@@ -35,9 +35,10 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
 
   return (
     <Card
-      tone={live ? "brand" : "surface"}
-      radius="xl"
-      className="mt-3"
+      tone={live ? "panel" : "surface"}
+      radius="2xl"
+      elevation={live ? "raised" : "card"}
+      className={live ? "mt-3 p-5 shadow-brand" : "mt-3 p-5"}
       data-testid="day-glance"
       aria-label={t("day.glance.open", { title, countdown })}
       onClick={() => {
@@ -45,23 +46,29 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
       }}
     >
       <div className="flex items-baseline justify-between gap-3">
+        {live ? (
+          <Badge tone="lamp" uppercase={false}>
+            {eyebrow}
+          </Badge>
+        ) : (
+          <span className="u-eyebrow">{eyebrow}</span>
+        )}
         <span
-          className={live ? "u-eyebrow opacity-80" : "u-eyebrow"}
-          style={live ? { color: "inherit" } : undefined}
-        >
-          {eyebrow}
-        </span>
-        <span
-          className="font-data text-caption font-bold tabular-nums"
+          className={
+            live
+              ? "font-data text-title font-semibold tabular-nums text-lamp-text"
+              : "font-data text-body font-medium tabular-nums"
+          }
           data-testid="glance-countdown"
         >
           {countdown}
         </span>
       </div>
 
-      {/* The global h2 colour is text-strong, which is near-black on the brand card. */}
-      <h2 className="mt-1 font-display text-display-2 tracking-display text-current">{title}</h2>
-      {subtitle !== undefined && <p className="font-text text-caption opacity-80">{subtitle}</p>}
+      <h2 className="mt-3 font-display text-display-2 font-semibold tracking-display text-strong">
+        {title}
+      </h2>
+      {subtitle !== undefined && <p className="font-text text-caption text-muted">{subtitle}</p>}
 
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-text text-body font-bold">
         {!isTeacherMode && rooms !== "" && (
@@ -79,26 +86,23 @@ export const DayGlance = ({ day, glance, onOpenLesson }: DayGlanceProps) => {
       </div>
 
       {live && (
-        <span
-          aria-hidden="true"
-          className="mt-3 block h-1 overflow-hidden rounded-pill bg-on-brand/25"
-        >
+        <span aria-hidden="true" className="mt-4 block h-1 overflow-hidden rounded-pill bg-sunken">
           <span
-            className="block h-full rounded-pill bg-on-brand"
+            className="block h-full rounded-pill bg-lamp-mark"
             style={{ width: `${String(Math.round(glance.progress * 100))}%` }}
           />
         </span>
       )}
 
       {live && glance.following !== null && (
-        <p className="mt-3 font-text text-caption opacity-90" data-testid="glance-following">
+        <p className="mt-3 font-text text-caption text-muted" data-testid="glance-following">
           {t("day.glance.following")}: {lessonHeading(glance.following).title}
         </p>
       )}
 
       {walkTo !== null && walkBuilding !== undefined && (
         <p
-          className="mt-3 flex items-center gap-2 font-text text-caption font-bold"
+          className="mt-3 flex items-center gap-2 font-text text-caption font-medium text-caution"
           data-testid="glance-walk"
         >
           <Icon name="triangle-alert" size={16} className="shrink-0" />

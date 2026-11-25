@@ -4,8 +4,8 @@ import { cn } from "../../lib/utils.ts";
 
 /*
  * Status colour is reserved in this system: `success` / `warning` / `danger` mean sync and lesson
- * state, never decoration. `warning` carries the amber ink pair rather than white, because the DS
- * amber is too light to hold white text at 4.5:1.
+ * state, never decoration. `warning` (straw caution) carries its own dark ink, kept apart from `lamp` amber, which
+ * means only "on now" and is never a status.
  */
 const badgeVariants = cva(
   "inline-flex h-[22px] items-center rounded-pill px-[9px] font-text text-micro font-bold",
@@ -13,10 +13,11 @@ const badgeVariants = cva(
     variants: {
       tone: {
         brand: "bg-brand text-on-brand",
-        ink: "bg-ink-900 text-white",
-        success: "bg-success text-white",
-        warning: "bg-warning text-amber-ink",
-        danger: "bg-danger text-white",
+        ink: "bg-inverse text-on-inverse",
+        lamp: "bg-lamp text-lamp-ink",
+        success: "bg-success text-on-inverse",
+        warning: "bg-warning text-caution-ink",
+        danger: "bg-danger text-on-danger",
         quiet: "bg-sunken text-muted",
       },
       uppercase: { true: "tracking-label uppercase", false: "tracking-normal normal-case" },

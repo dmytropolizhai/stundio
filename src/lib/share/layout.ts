@@ -47,8 +47,8 @@ export type ShareImageLayout = { width: number; height: number; ops: ShareOp[] }
 
 /* The two bundled families (`ds/tokens/fonts.css`); the fallbacks are what a browser without
  * them — a desktop dev build — lands on. */
-const DISPLAY = '"Manrope", system-ui, -apple-system, sans-serif';
-const DATA = '"JetBrains Mono", ui-monospace, SFMono-Regular, monospace';
+const DISPLAY = '"Onest", system-ui, -apple-system, sans-serif';
+const DATA = '"Martian Mono", ui-monospace, SFMono-Regular, monospace';
 
 /* The type scale, verbatim from DESIGN.md. */
 const HERO = `800 56px ${DISPLAY}`;
@@ -108,7 +108,7 @@ const QR_QUIET = 4;
  * Character-budget truncation rather than `measureText`.
  *
  * Text metrics depend on which faces the WebView actually resolved, so a measured layout can
- * differ between the emulator and a phone that failed to load Manrope. A budget cannot: the card
+ * differ between the emulator and a phone that failed to load Onest. A budget cannot: the card
  * is laid out identically everywhere, and the one string long enough to need this (a room list)
  * is monospaced anyway.
  */
@@ -475,7 +475,7 @@ export const layoutShareImage = (data: ShareImageData, palette: SharePalette): S
 
     for (const note of data.notes) {
       const text = clip(note, 40);
-      // Caption-sized Manrope averages a shade over 6px a character; the pill hugs that rather
+      // Caption-sized Onest averages a shade over 6px a character; the pill hugs that rather
       // than trailing dead space on the longer of two notes.
       const width = Math.min(text.length * 6.4 + NOTE_PAD * 2, CONTENT_W);
 

@@ -13,26 +13,26 @@ import { SUBJECT_TONES, type SubjectAccent, type SubjectTone } from "@/ui/theme"
 export type ToneColors = { fill: string; ink: string };
 export type ShareTheme = { palette: SharePalette; tones: Record<SubjectTone, ToneColors> };
 
-/** `ds/tokens/colors.css`, light values — the DS's own defaults. */
+/** `ds/tokens/colors.css`, light values — the Night / Day design system's own defaults. */
 const FALLBACK_SURFACE: Record<keyof SharePalette, string> = {
-  background: "#f6f7fa",
-  surface: "#ffffff",
-  sunken: "#edeff4",
-  hairline: "#dde1ea",
-  strongBorder: "#b9bfce",
-  text: "#2a2d36",
-  strong: "#0b0c10",
-  muted: "#5b6070",
-  shadow: "rgba(6, 11, 61, 0.16)",
+  background: "#ebeaee",
+  surface: "#f8f8fa",
+  sunken: "#e0dfe5",
+  hairline: "#d3d2da",
+  strongBorder: "#7c7f8b",
+  text: "#2e3038",
+  strong: "#121419",
+  muted: "#5d606b",
+  shadow: "rgba(18, 20, 25, 0.16)",
 };
 
 const FALLBACK_TONES: Record<SubjectTone, ToneColors> = {
-  amber: { fill: "#ffb552", ink: "#5a3703" },
-  sky: { fill: "#9cc8f7", ink: "#0c3560" },
-  lilac: { fill: "#b79cff", ink: "#2c1470" },
-  pink: { fill: "#ffa3e0", ink: "#611349" },
-  mint: { fill: "#9fe3c0", ink: "#0b4a32" },
-  lime: { fill: "#d7f53c", ink: "#2e3a00" },
+  amber: { fill: "#b3cfa1", ink: "#1f3415" },
+  sky: { fill: "#a9bfe6", ink: "#162a4d" },
+  lilac: { fill: "#c3b4ea", ink: "#2b1e52" },
+  pink: { fill: "#eeaeb8", ink: "#4f1621" },
+  mint: { fill: "#8fd0c8", ink: "#0f3733" },
+  lime: { fill: "#5a5fb0", ink: "#f3f2ff" },
 };
 
 const VARS: Record<keyof SharePalette, string> = {

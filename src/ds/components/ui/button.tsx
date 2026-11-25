@@ -21,12 +21,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-brand text-on-brand shadow-card hover:bg-ink-700 dark:hover:bg-ink-200",
-        inverse: "bg-brand text-on-brand shadow-card hover:bg-ink-700 dark:hover:bg-ink-200",
+        primary: "bg-brand text-on-brand shadow-card hover:bg-brand-strong",
+        inverse: "bg-brand text-on-brand shadow-card hover:bg-brand-strong",
         outline: "bg-transparent text-strong inset-ring-2 inset-ring-strong hover:bg-sunken",
         ghost: "bg-transparent text-strong hover:bg-sunken",
-        onBrand: "bg-white text-strong hover:bg-ink-050",
-        danger: "bg-danger text-white shadow-card hover:opacity-90 active:opacity-100",
+        onBrand: "bg-on-brand text-brand hover:opacity-90",
+        danger: "bg-danger text-on-danger shadow-card hover:opacity-90 active:opacity-100",
       },
       size: {
         sm: "h-9 gap-1.5 px-4 text-caption",

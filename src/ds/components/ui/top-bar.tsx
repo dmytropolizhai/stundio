@@ -30,7 +30,7 @@ export const TopBar = ({
     <header
       className={cn(
         "flex min-h-topbar items-center gap-3 py-1",
-        onBrand ? "text-white" : "text-strong",
+        onBrand ? "text-on-brand" : "text-strong",
         className,
       )}
       {...props}
@@ -48,7 +48,7 @@ export const TopBar = ({
           <div
             className={cn(
               "font-text text-micro font-bold tracking-label uppercase",
-              onBrand ? "text-white/72" : "text-muted",
+              onBrand ? "text-on-brand/72" : "text-muted",
             )}
           >
             {eyebrow}

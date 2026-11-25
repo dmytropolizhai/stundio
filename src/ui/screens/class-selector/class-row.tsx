@@ -45,7 +45,7 @@ export const ClassRow = ({
         label={isFavorite ? t("class.favorite.remove") : t("class.favorite.add")}
         aria-pressed={isFavorite}
         onClick={() => onToggleFavorite(cls.id)}
-        className={isFavorite ? "text-warning" : "text-ink-300"}
+        className={isFavorite ? "text-caution" : "text-ink-300"}
       />
     </li>
   );

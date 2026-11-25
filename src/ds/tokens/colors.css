@@ -1,73 +1,92 @@
-/* Verbatim from Studio Design System — tokens/colors.css. Do not hand-edit; re-pull instead. */
+/*
+ * Stundio "Night / Day" design system — tokens/colors.css, generated from the Claude Design
+ * project's tokens.json. Regenerate rather than hand-edit.
+ *
+ * Two themes. `:root` is Day; `dark.css` re-points the semantic aliases for Night. The aliases keep
+ * the names the app was already built on (`--bg-app`, `--surface-card`, `--text-strong`, …) so every
+ * component re-themes without a rewrite; the new design's own names (`--lamp`, `--panel`, …) sit
+ * beside them.
+ *
+ * The six subject tones keep their legacy KEYS (`amber`, `sky`, `lilac`, `pink`, `mint`, `lime`)
+ * because those strings are persisted in user settings (`subjectColorOverrides`, `appAccent`); only
+ * their VALUES moved to the design's dusk tones, identical in both themes:
+ *   amber → sage, sky → mist, lilac → lavender, pink → rose, mint → teal, lime → indigo.
+ */
 :root {
-  /* ——— Base palette: Studio Electric blue ——— */
-  --blue-050: #edf0ff;
-  --blue-100: #d8deff;
-  --blue-200: #adb9ff;
-  --blue-300: #7a8aff;
-  --blue-400: #4a5cff;
-  --blue-500: #1e3aff; /* primary — "Studio Electric" */
-  --blue-600: #1730d6;
-  --blue-700: #0f1fa0;
-  --blue-800: #0a1568;
-  --blue-900: #060b3d; /* deep navy ink */
-
-  /* ——— Neutrals ——— */
+  /* ——— Day ink ramp (the Night ramp is not a ramp: see dark.css) ——— */
   --white: #ffffff;
-  --ink-050: #f6f7fa;
-  --ink-100: #edeff4;
-  --ink-200: #dde1ea;
-  --ink-300: #b9bfce;
-  --ink-400: #868c9e;
-  --ink-500: #5b6070;
-  --ink-700: #2a2d36;
-  --ink-900: #0b0c10;
+  --ink-050: #f8f8fa;
+  --ink-100: #e0dfe5;
+  --ink-200: #d3d2da;
+  --ink-300: #b6b5c0;
+  --ink-400: #7c7f8b;
+  --ink-500: #5d606b;
+  --ink-700: #2e3038;
+  --ink-900: #121419;
 
-  /* ——— Subject accents (timetable colour coding) ——— */
-  --accent-amber: #ffb552;
-  --accent-amber-ink: #5a3703;
-  --accent-sky: #9cc8f7;
-  --accent-sky-ink: #0c3560;
-  --accent-lilac: #b79cff;
-  --accent-lilac-ink: #2c1470;
-  --accent-pink: #ffa3e0;
-  --accent-pink-ink: #611349;
-  --accent-mint: #9fe3c0;
-  --accent-mint-ink: #0b4a32;
-  --accent-lime: #d7f53c;
-  --accent-lime-ink: #2e3a00;
+  /* ——— Lamp: the one light — the lesson on now ——— */
+  --lamp: #f2b56b;
+  --lamp-ink: #2a1700;
+  --lamp-mark: #b5680f; /* thin marks on a surface, deepened in Day to keep 3:1 */
+  --lamp-text: #9a5208; /* lamp-coloured words */
+  --lamp-glow: rgba(181, 104, 15, 0.2);
 
-  /* ——— Semantic status ——— */
-  --status-success: #0b8a4e;
-  --status-warning: #ffb552;
-  --status-danger: #d92020;
-  --status-offline: #5b6070;
+  /* ——— Subject tones (same in both themes), each with its own ink ——— */
+  --accent-amber: #b3cfa1; /* sage */
+  --accent-amber-ink: #1f3415;
+  --accent-sky: #a9bfe6; /* mist */
+  --accent-sky-ink: #162a4d;
+  --accent-lilac: #c3b4ea; /* lavender */
+  --accent-lilac-ink: #2b1e52;
+  --accent-pink: #eeaeb8; /* rose */
+  --accent-pink-ink: #4f1621;
+  --accent-mint: #8fd0c8; /* teal */
+  --accent-mint-ink: #0f3733;
+  --accent-lime: #5a5fb0; /* indigo — the one dark tone */
+  --accent-lime-ink: #f3f2ff;
 
-  /* ——— Semantic aliases (use these in product code) ——— */
-  --brand: var(--ink-900);
-  --brand-strong: var(--ink-700);
-  --brand-deep: var(--ink-900);
-  --brand-tint: var(--ink-050);
+  /* Text and darkening ink for the full-colour subject field. Same in both themes. */
+  --on-deep: #f6f4f0;
+  --shade: #05070a;
 
-  --bg-app: var(--ink-050);
-  --bg-hero: var(--blue-500);
-  --bg-inverse: var(--ink-900);
-  --surface-card: var(--white);
-  --surface-sunken: var(--ink-100);
-  --surface-overlay: rgba(11, 12, 16, 0.56);
-  --surface-glass: rgba(255, 255, 255, 0.14);
+  /* ——— Signals ——— */
+  --status-success: #1d7a49;
+  --status-warning: #e6cf7a; /* caution as a FILL; text uses --caution */
+  --status-danger: #c0352a;
+  --status-offline: #5d606b;
+  --caution: #7a6200;
+  --caution-ink: #2b2300;
+  --on-danger: #ffffff;
 
-  --text-body: var(--ink-700);
-  --text-strong: var(--ink-900);
-  --text-muted: var(--ink-500);
-  --text-on-brand: var(--white);
-  --text-on-inverse: var(--white);
-  --text-link: var(--blue-600);
-  --text-link-hover: var(--blue-700);
+  /* ——— Surfaces (Day) ——— */
+  --bg-app: #ebeaee;
+  --surface-card: #f8f8fa;
+  --surface-raised: #ffffff;
+  --surface-sunken: #e0dfe5;
+  --surface-panel: #dedce6;
+  --surface-overlay: rgba(18, 20, 25, 0.36);
+  --surface-glass: rgba(248, 248, 250, 0.78);
+  --bg-inverse: #121419;
 
-  --border-hairline: var(--ink-200);
-  --border-strong: var(--ink-300);
-  --border-on-brand: rgba(255, 255, 255, 0.28);
+  /* ——— Ink (Day) ——— */
+  --text-strong: #121419;
+  --text-body: #2e3038;
+  --text-muted: #5d606b;
+  --text-on-inverse: #f6f4f0;
+  --text-link: #121419;
+  --text-link-hover: #2e3038;
 
-  --focus-ring: var(--blue-400);
+  /* ——— Brand is ink: the selected state and the primary button ——— */
+  --brand: #121419;
+  --brand-strong: #2e3038;
+  --brand-deep: #121419;
+  --brand-tint: #dedce6;
+  --text-on-brand: #f6f4f0;
+  --bg-hero: #121419;
+
+  /* ——— Lines ——— */
+  --border-hairline: #d3d2da;
+  --border-strong: #7c7f8b;
+  --border-on-brand: rgba(246, 244, 240, 0.28);
+  --focus-ring: #121419;
 }
