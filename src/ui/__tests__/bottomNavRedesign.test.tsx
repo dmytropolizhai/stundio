@@ -280,10 +280,15 @@ describe("DateDock", () => {
     const harness = await bootHarness({ lang: "en" });
     wrap(harness, <DockHost mode="day" />);
 
+    const trigger = screen.getByRole("button", { name: "Choose a date" });
+    expect(trigger.textContent).toMatch(/Wed/i);
+    expect(trigger.textContent).toContain("9");
     expect(screen.queryByTestId("dock-today")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Next day" }));
     expect(screen.getByTestId("current-date").textContent).toBe("2026-09-10");
+    expect(trigger.textContent).toMatch(/Thu/i);
+    expect(trigger.textContent).toContain("10");
     expect(screen.getByTestId("dock-today")).toBeDefined();
 
     fireEvent.click(screen.getByTestId("dock-today"));

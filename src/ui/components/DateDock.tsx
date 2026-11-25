@@ -6,7 +6,7 @@
  */
 import { useEffect, useState } from "react";
 import { IconButton } from "@/ds";
-import { formatWeekRange, useLang, useT } from "@/ui/i18n";
+import { formatShortDate, formatWeekRange, useLang, useT } from "@/ui/i18n";
 import type { ScheduleNavigation } from "@/ui/hooks/useScheduleNavigation.ts";
 import { DatePicker } from "./DatePicker.tsx";
 
@@ -49,6 +49,7 @@ export const DateDock = ({ mode, nav }: DateDockProps) => {
 
   const isDay = mode === "day";
   const showToday = isDay ? !nav.isToday : !nav.isThisWeek;
+  const dayTitle = formatShortDate(nav.date, lang);
   const weekTitle =
     nav.firstDay !== undefined && nav.lastDay !== undefined
       ? formatWeekRange(nav.firstDay, nav.lastDay, lang)
@@ -74,7 +75,7 @@ export const DateDock = ({ mode, nav }: DateDockProps) => {
           open={calendarOpen}
           onOpenChange={setCalendarOpen}
           onSelect={nav.setDate}
-          title={isDay ? undefined : weekTitle}
+          title={isDay ? dayTitle : weekTitle}
           iconSize={16}
           className="min-h-9 max-w-full px-2 font-text text-caption font-bold text-strong"
         />

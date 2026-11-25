@@ -51,6 +51,7 @@ export {
   formatLongDate,
   formatRange,
   formatReleaseDate,
+  formatShortDate,
   formatWeekdayLong,
   formatWeekdayShort,
   formatWeekRange,

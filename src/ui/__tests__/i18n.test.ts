@@ -4,7 +4,13 @@
  */
 import { describe, expect, it } from "vitest";
 import { DICTS, LANGS, translate } from "@/ui/i18n";
-import { formatDuration, formatLongDate, formatRange, formatWeekdayShort } from "@/ui/i18n";
+import {
+  formatDuration,
+  formatLongDate,
+  formatRange,
+  formatShortDate,
+  formatWeekdayShort,
+} from "@/ui/i18n";
 
 const keys = Object.keys(DICTS.lv);
 
@@ -47,6 +53,9 @@ describe("formatting", () => {
   it("names the weekday in the chosen language", () => {
     expect(formatLongDate("2026-09-09", "lv").toLowerCase()).toContain("trešdien");
     expect(formatLongDate("2026-09-09", "en").toLowerCase()).toContain("wednesday");
+    expect(formatShortDate("2026-09-09", "lv").toLowerCase()).toContain("trešd");
+    expect(formatShortDate("2026-09-09", "en").toLowerCase()).toContain("wed");
+    expect(formatShortDate("2026-09-09", "en")).toContain("9");
     expect(formatWeekdayShort("2026-09-09", "ru")).not.toBe("");
   });
 

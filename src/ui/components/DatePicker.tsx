@@ -37,7 +37,9 @@ export const DatePicker = ({
             className,
           )}
         >
-          <span className="truncate">{title ?? dayTitle(date, today, t, lang)}</span>
+          <span className="truncate first-letter:uppercase">
+            {title ?? dayTitle(date, today, t, lang)}
+          </span>
 
           <Icon
             name="chevron-down"

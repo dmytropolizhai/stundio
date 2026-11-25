@@ -24,6 +24,10 @@ const fmt = (lang: Lang, options: Intl.DateTimeFormatOptions) =>
 export const formatLongDate = (date: ISODate, lang: Lang): string =>
   fmt(lang, { weekday: "long", day: "numeric", month: "long" }).format(toDate(date));
 
+/** "trešd., 9. sept." — compact weekday + date for the phone `DateDock`. */
+export const formatShortDate = (date: ISODate, lang: Lang): string =>
+  fmt(lang, { weekday: "short", day: "numeric", month: "short" }).format(toDate(date));
+
 /** "Tr" — the WeekView pager tabs. */
 export const formatWeekdayShort = (date: ISODate, lang: Lang): string =>
   fmt(lang, { weekday: "short" }).format(toDate(date));
