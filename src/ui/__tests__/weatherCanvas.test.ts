@@ -1,5 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { createElement } from "react";
+import { render } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { weatherScene, type WeatherCondition, type WeatherHint } from "@/lib/weather";
+import { WeatherBackdrop } from "../screens/home-view/weather-backdrop.tsx";
 import {
   createWeatherCanvasState,
   renderWeatherFrame,
@@ -112,5 +115,73 @@ describe("weather-canvas", () => {
       180,
     );
     expect(storm.bolt).not.toBeNull();
+  });
+
+  it("keeps cloud and fog proportions unstretched on a 2:1 full-row stage", () => {
+    const cloudy = weatherScene({ condition: "cloudy", isDay: true, hint: null });
+    const square = createWeatherCanvasState(cloudy, 180, 180);
+    const wide = createWeatherCanvasState(cloudy, 360, 180);
+
+    expect(wide.clouds.length).toBeGreaterThan(square.clouds.length);
+    const maxSquareW = Math.max(...square.clouds.map((c) => c.w));
+    const maxWideW = Math.max(...wide.clouds.map((c) => c.w));
+    expect(maxWideW).toBeCloseTo(maxSquareW, 1);
+
+    const fog = weatherScene({ condition: "fog", isDay: true, hint: null });
+    const squareFog = createWeatherCanvasState(fog, 180, 180);
+    const wideFog = createWeatherCanvasState(fog, 360, 180);
+    expect(wideFog.fog.length).toBeGreaterThan(squareFog.fog.length);
+    expect(Math.max(...wideFog.fog.map((f) => f.w))).toBeCloseTo(
+      Math.max(...squareFog.fog.map((f) => f.w)),
+      1,
+    );
+
+    const { ctx, clearRect } = makeMockContext();
+    renderWeatherFrame(ctx, wide, 5.24, false);
+    renderWeatherFrame(ctx, wideFog, 5.24, false);
+    expect(clearRect).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("WeatherBackdrop", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("anchors the canvas stage at full row width and preserves animation time across pause toggles", () => {
+    const { ctx } = makeMockContext();
+    (ctx as unknown as { setTransform: ReturnType<typeof vi.fn> }).setTransform = vi.fn();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(ctx);
+
+    const rafCallbacks: FrameRequestCallback[] = [];
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      rafCallbacks.push(cb);
+      return rafCallbacks.length;
+    });
+    vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
+
+    const scene = weatherScene({ condition: "cloudy", isDay: true, hint: null });
+    const { getByTestId, rerender } = render(
+      createElement(WeatherBackdrop, { scene, paused: false }),
+    );
+
+    const stage = getByTestId("weather-backdrop-stage");
+    expect(stage.className).toContain("w-[100cqw]");
+    expect(stage.className).toContain("right-0");
+
+    // Advance two frames
+    rafCallbacks.shift()?.(1000);
+    rafCallbacks.shift()?.(1050);
+    const setTransform = (ctx as unknown as { setTransform: ReturnType<typeof vi.fn> })
+      .setTransform;
+    expect(setTransform).toHaveBeenCalledTimes(1);
+
+    // Pause (school tile expanded) then resume — canvas state is not recreated
+    rerender(createElement(WeatherBackdrop, { scene, paused: true }));
+    expect(getByTestId("weather-backdrop").getAttribute("data-paused")).toBe("true");
+
+    rerender(createElement(WeatherBackdrop, { scene, paused: false }));
+    expect(getByTestId("weather-backdrop").getAttribute("data-paused")).toBe("false");
+    expect(setTransform).toHaveBeenCalledTimes(1);
   });
 });

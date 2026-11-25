@@ -3,9 +3,11 @@
  *
  * The CSS gradient paints synchronously on first render; the `<canvas>` layers celestial
  * bodies, soft drifting clouds/mist, frost glints, multi-depth precipitation, and storm
- * flashes. The animation loop pauses immediately when `document.hidden`, when `paused` is
- * true (e.g. while the school tile is expanded), or under reduced motion (which draws a
- * single still frame).
+ * flashes. The canvas lives inside a right-anchored `100cqw` stage matching the full
+ * expanded tile row width, so expanding or collapsing the tile clips and reveals a
+ * continuous sky without resizing, stretching, or resetting the animation clock. The
+ * animation loop pauses immediately when `document.hidden`, when `paused` is true (e.g.
+ * while the school tile is expanded), or under reduced motion (single still frame).
  */
 import { useEffect, useRef, useState } from "react";
 import type { WeatherScene, WeatherSky } from "@/lib/weather";
@@ -108,69 +110,110 @@ export const WeatherBackdrop = ({ scene, paused = false }: WeatherBackdropProps)
   const reducedMotion = usePrefersReducedMotion();
   const isPaused = paused || pageHidden;
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const stateRef = useRef<WeatherCanvasState | null>(null);
+  const sizeRef = useRef<{ w: number; h: number; dpr: number; scene: WeatherScene } | null>(null);
+  const elapsedSRef = useRef(0);
+  const reducedMotionRef = useRef(reducedMotion);
+  reducedMotionRef.current = reducedMotion;
 
   useEffect(() => {
-    const container = containerRef.current;
+    const stage = stageRef.current;
     const canvas = canvasRef.current;
-    if (container === null || canvas === null) return;
+    if (stage === null || canvas === null) return;
 
-    let ctx: CanvasRenderingContext2D | null = null;
-    try {
-      ctx = canvas.getContext("2d");
-    } catch {
-      return;
+    let ctx = ctxRef.current;
+    if (ctx === null) {
+      try {
+        ctx = canvas.getContext("2d");
+      } catch {
+        return;
+      }
+      if (ctx === null) return;
+      ctxRef.current = ctx;
     }
-    if (ctx === null) return;
 
-    let state: WeatherCanvasState | null = null;
-    let rafId: number | null = null;
-    let startMs: number | null = null;
-
-    const resize = () => {
-      const rect = container.getBoundingClientRect();
+    const syncSize = () => {
+      const rect = stage.getBoundingClientRect();
       const w = Math.max(1, Math.round(rect.width));
       const h = Math.max(1, Math.round(rect.height));
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const prev = sizeRef.current;
+      if (
+        prev !== null &&
+        prev.w === w &&
+        prev.h === h &&
+        prev.dpr === dpr &&
+        prev.scene === scene
+      ) {
+        return;
+      }
+      sizeRef.current = { w, h, dpr, scene };
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      state = createWeatherCanvasState(scene, w, h);
-      renderWeatherFrame(ctx, state, STATIC_FRAME_TIME_S, reducedMotion);
+      stateRef.current = createWeatherCanvasState(scene, w, h);
+      const frameTime = reducedMotionRef.current
+        ? STATIC_FRAME_TIME_S
+        : STATIC_FRAME_TIME_S + elapsedSRef.current;
+      renderWeatherFrame(ctx, stateRef.current, frameTime, reducedMotionRef.current);
     };
 
-    resize();
+    syncSize();
 
     const ro =
       typeof ResizeObserver === "function"
         ? new ResizeObserver(() => {
-            resize();
+            syncSize();
           })
         : null;
-    ro?.observe(container);
+    ro?.observe(stage);
 
-    if (!isPaused && !reducedMotion) {
-      const tick = (nowMs: number) => {
-        if (startMs === null) startMs = nowMs;
-        const elapsedS = (nowMs - startMs) / 1000;
-        if (state !== null) {
-          renderWeatherFrame(ctx, state, STATIC_FRAME_TIME_S + elapsedS, false);
-        }
-        rafId = window.requestAnimationFrame(tick);
-      };
-      rafId = window.requestAnimationFrame(tick);
+    return () => {
+      ro?.disconnect();
+    };
+  }, [scene]);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      if (ctxRef.current !== null && stateRef.current !== null) {
+        renderWeatherFrame(ctxRef.current, stateRef.current, STATIC_FRAME_TIME_S, true);
+      }
+      return;
     }
+
+    if (isPaused) return;
+
+    let rafId: number | null = null;
+    let lastMs: number | null = null;
+
+    const tick = (nowMs: number) => {
+      if (lastMs !== null) {
+        elapsedSRef.current += Math.min(0.1, Math.max(0, (nowMs - lastMs) / 1000));
+      }
+      lastMs = nowMs;
+      if (ctxRef.current !== null && stateRef.current !== null) {
+        renderWeatherFrame(
+          ctxRef.current,
+          stateRef.current,
+          STATIC_FRAME_TIME_S + elapsedSRef.current,
+          false,
+        );
+      }
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    rafId = window.requestAnimationFrame(tick);
 
     return () => {
       if (rafId !== null) window.cancelAnimationFrame(rafId);
-      ro?.disconnect();
     };
-  }, [scene, isPaused, reducedMotion]);
+  }, [isPaused, reducedMotion]);
 
   return (
     <div
-      ref={containerRef}
       aria-hidden="true"
       data-testid="weather-backdrop"
       data-sky={scene.sky}
@@ -179,7 +222,13 @@ export const WeatherBackdrop = ({ scene, paused = false }: WeatherBackdropProps)
       className="weather-backdrop pointer-events-none absolute inset-0 overflow-hidden"
       style={{ background: WEATHER_SKY_GRADIENT[scene.sky] }}
     >
-      <canvas ref={canvasRef} className="block h-full w-full" />
+      <div
+        ref={stageRef}
+        data-testid="weather-backdrop-stage"
+        className="absolute top-0 right-0 h-full w-[100cqw] min-w-full"
+      >
+        <canvas ref={canvasRef} className="block h-full w-full" />
+      </div>
     </div>
   );
 };

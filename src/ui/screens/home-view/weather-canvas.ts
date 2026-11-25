@@ -341,13 +341,14 @@ const buildFrostSprite = (seed: number): HTMLCanvasElement | null => {
 };
 
 const buildLightningBolt = (w: number, h: number, rand: () => number): LightningBolt => {
+  const unit = Math.min(w, h);
   const main: BoltPoint[] = [];
-  let x = w * 0.72;
+  let x = w - unit * 0.28;
   let y = h * 0.04;
   main.push({ x, y });
   const steps = 6;
   for (let i = 1; i <= steps; i++) {
-    x += (rand() - 0.58) * w * 0.14;
+    x += (rand() - 0.58) * unit * 0.14;
     y += (h * 0.44) / steps;
     main.push({ x, y });
   }
@@ -358,11 +359,11 @@ const buildLightningBolt = (w: number, h: number, rand: () => number): Lightning
     if (origin === undefined) continue;
     const dir = idx === 2 ? -1 : 1;
     const b1: BoltPoint = {
-      x: origin.x + dir * w * (0.05 + rand() * 0.04),
+      x: origin.x + dir * unit * (0.05 + rand() * 0.04),
       y: origin.y + h * (0.06 + rand() * 0.04),
     };
     const b2: BoltPoint = {
-      x: b1.x + dir * w * (0.04 + rand() * 0.04),
+      x: b1.x + dir * unit * (0.04 + rand() * 0.04),
       y: b1.y + h * (0.05 + rand() * 0.03),
     };
     branches.push([origin, b1, b2]);
@@ -379,9 +380,11 @@ export const createWeatherCanvasState = (
 ): WeatherCanvasState => {
   const w = Math.max(1, width);
   const h = Math.max(1, height);
+  const unit = Math.min(w, h);
+  const widthRatio = Math.min(2, Math.max(1, w / unit));
   const seed = seedForScene(scene);
   const rand = mulberry32(seed);
-  const areaScale = Math.min(1.6, Math.max(0.75, (w * h) / (170 * 170)));
+  const areaScale = Math.min(2.2, Math.max(0.75, (w * h) / (170 * 170)));
 
   const stars: Star[] = [];
   if (scene.celestial === "moon") {
@@ -411,16 +414,17 @@ export const createWeatherCanvasState = (
       if (sprite !== null) cloudSprites.push(sprite);
     }
 
-    const count = scene.clouds === "few" ? 3 : 6;
+    const baseCount = scene.clouds === "few" ? 3 : 6;
+    const count = Math.round(baseCount * widthRatio);
     for (let i = 0; i < count; i++) {
       const depth = i / Math.max(1, count - 1);
-      const cw = w * (scene.clouds === "few" ? 0.58 + depth * 0.24 : 0.78 + depth * 0.36);
+      const cw = unit * (scene.clouds === "few" ? 0.58 + depth * 0.24 : 0.78 + depth * 0.36);
       const ch = cw * (stratus ? 0.5 : 0.56);
       clouds.push({
         x: (i / count) * (w + cw) - cw * 0.5 + rand() * 22,
         y:
           scene.clouds === "few"
-            ? h * (0.08 + i * 0.15 + rand() * 0.05)
+            ? h * (0.08 + (i % 3) * 0.15 + rand() * 0.05)
             : h * (-0.06 + (i % 3) * 0.16 + rand() * 0.06),
         w: cw,
         h: ch,
@@ -439,18 +443,20 @@ export const createWeatherCanvasState = (
       const sprite = buildFogSprite(seed + s * 53, isDay);
       if (sprite !== null) fogSprites.push(sprite);
     }
-    for (let i = 0; i < 4; i++) {
-      const fw = w * (1.3 + i * 0.15);
-      const fh = h * (0.34 + i * 0.05);
+    const count = Math.round(4 * widthRatio);
+    for (let i = 0; i < count; i++) {
+      const band = i % 4;
+      const fw = unit * (1.3 + band * 0.15);
+      const fh = h * (0.34 + band * 0.05);
       fog.push({
-        x: i * w * 0.35 - w * 0.2,
-        y: h * (0.08 + i * 0.2),
+        x: (i / count) * (w + fw * 0.4) - fw * 0.2,
+        y: h * (0.08 + band * 0.2),
         w: fw,
         h: fh,
-        speed: (i % 2 === 0 ? 1 : -1) * (3.5 + i * 1.8),
-        amp: 4 + i * 2.5,
+        speed: (i % 2 === 0 ? 1 : -1) * (3.5 + band * 1.8),
+        amp: 4 + band * 2.5,
         phase: rand() * Math.PI * 2,
-        alpha: 0.52 + i * 0.1,
+        alpha: 0.52 + band * 0.1,
         spriteIdx: i % Math.max(1, fogSprites.length),
       });
     }
@@ -595,9 +601,9 @@ const drawHorizonAtmosphere = (
 };
 
 const drawSun = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number, cold: boolean) => {
-  const cx = w * 0.84;
-  const cy = h * 0.16;
   const unit = Math.min(w, h);
+  const cx = w - unit * 0.16;
+  const cy = h * 0.16;
   const pulse = 1 + Math.sin(t * 0.7) * 0.045;
 
   // Broad Mie atmospheric scattering bloom pouring from upper-right
@@ -655,7 +661,7 @@ const drawSun = (ctx: CanvasRenderingContext2D, w: number, h: number, t: number,
 
   // Delicate optical lens-flare bokeh along diagonal axis
   if (!cold) {
-    const flareX = w * 0.56;
+    const flareX = cx - unit * 0.28;
     const flareY = h * 0.44;
     const flareR = unit * 0.085;
     const flare = ctx.createRadialGradient(flareX, flareY, flareR * 0.4, flareX, flareY, flareR);
@@ -737,9 +743,9 @@ const drawMoonAndStars = (
   }
 
   // Lunar atmospheric scattering halo
-  const cx = w * 0.78;
-  const cy = h * 0.22;
   const unit = Math.min(w, h);
+  const cx = w - unit * 0.22;
+  const cy = h * 0.22;
   const haloR = unit * 0.58 * (1 + Math.sin(t * 0.5) * 0.03);
   const halo = ctx.createRadialGradient(cx, cy, unit * 0.06, cx, cy, haloR);
   halo.addColorStop(0, "rgba(224, 236, 255, 0.34)");
@@ -839,9 +845,10 @@ const drawFrost = (ctx: CanvasRenderingContext2D, state: WeatherCanvasState, t: 
   const { width: w, height: h, frostSprite, iceDust } = state;
 
   if (frostSprite !== null) {
+    const frostSize = Math.min(w, Math.round(h * 1.15));
     ctx.save();
     ctx.globalAlpha = 0.85;
-    ctx.drawImage(frostSprite, 0, 0, w, h);
+    ctx.drawImage(frostSprite, w - frostSize, 0, frostSize, h);
     ctx.restore();
   }
 
@@ -975,11 +982,13 @@ const drawStormFlash = (
   const { width: w, height: h, bolt } = state;
 
   // Sheet-lightning sky bloom
+  const unit = Math.min(w, h);
+  const flashX = w - unit * 0.28;
   const glow = ctx.createRadialGradient(
-    w * 0.72,
+    flashX,
     h * 0.14,
     0,
-    w * 0.72,
+    flashX,
     h * 0.24,
     Math.max(w, h) * 0.95,
   );

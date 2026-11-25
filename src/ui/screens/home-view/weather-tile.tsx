@@ -79,13 +79,27 @@ export const WeatherTile = ({
     >
       <WeatherBackdrop scene={scene} paused={hidden} />
 
-      {(dayLabel !== null || expanded) && (
+      {dayLabel !== null ? (
         <span
           aria-hidden="true"
-          data-testid={dayLabel !== null ? "home-weather-day" : undefined}
+          data-testid="home-weather-day"
           className="relative z-10 mb-auto font-text text-micro font-bold uppercase tracking-label"
         >
-          {dayLabel ?? t("home.weather.now")}
+          {dayLabel}
+        </span>
+      ) : (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none relative z-10 mb-auto font-text text-micro font-bold uppercase tracking-label"
+          style={{
+            opacity: expanded ? 1 : 0,
+            transform: expanded ? "translateY(0)" : "translateY(4px)",
+            transition: expanded
+              ? "opacity var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.45), transform var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.45)"
+              : "opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard)",
+          }}
+        >
+          {t("home.weather.now")}
         </span>
       )}
 
@@ -98,16 +112,24 @@ export const WeatherTile = ({
           {`${String(outlook.temperature)}°`}
         </span>
 
-        {expanded && (
-          <div data-testid="home-weather-details" className="min-w-0 animate-scrim-in text-right">
-            <p className="font-text text-body font-bold leading-tight">{capitalize(condition)}</p>
-            {hasRange && (
-              <p className="mt-1 font-data text-caption leading-tight tabular-nums">
-                {`${t("home.weather.dayTemp", { temp: outlook.max! })} · ${t("home.weather.nightTemp", { temp: outlook.min! })}`}
-              </p>
-            )}
-          </div>
-        )}
+        <div
+          data-testid="home-weather-details"
+          className="pointer-events-none absolute right-0 bottom-0 max-w-[calc(100cqw-128px)] text-right"
+          style={{
+            opacity: expanded ? 1 : 0,
+            transform: expanded ? "translateX(0)" : "translateX(10px)",
+            transition: expanded
+              ? "opacity var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.5), transform var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.5)"
+              : "opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard)",
+          }}
+        >
+          <p className="font-text text-body font-bold leading-tight">{capitalize(condition)}</p>
+          {hasRange && (
+            <p className="mt-1 font-data text-caption leading-tight tabular-nums">
+              {`${t("home.weather.dayTemp", { temp: outlook.max! })} · ${t("home.weather.nightTemp", { temp: outlook.min! })}`}
+            </p>
+          )}
+        </div>
       </div>
     </button>
   );
