@@ -33,6 +33,10 @@ export type DayGlance =
       kind: "upcoming";
       lesson: ResolvedLesson;
       minutesUntil: number;
+      /** The lesson that just ended before this break, or null before the first lesson of the day. */
+      previous: ResolvedLesson | null;
+      /** 0–1 through the break between `previous` and `lesson`, or null before the first lesson. */
+      breakProgress: number | null;
       /** True when this lesson is in another building than the previous one (a mid-day walk). */
       hop: boolean;
       /** The building to leave, when `hop` is true. */
@@ -66,19 +70,38 @@ export const dayGlance = (day: ResolvedDay | null, now: RigaClock): DayGlance | 
   if (progress.next !== null && progress.minutesUntilNext !== null) {
     const next = progress.next;
     const index = windows.findIndex((w) => w.lesson === next);
-    const previous = windows[index - 1]?.lesson ?? null;
+    const nextWindow = windows[index];
+    const prevWindow = windows[index - 1];
+    const previous = prevWindow?.lesson ?? null;
+    const breakDuration =
+      prevWindow !== undefined && nextWindow !== undefined ? nextWindow.start - prevWindow.end : 0;
+    const breakProgress =
+      prevWindow !== undefined && breakDuration > 0
+        ? Math.min(1, Math.max(0, (now.minutes - prevWindow.end) / breakDuration))
+        : null;
     const from = previous === null ? null : buildingOf(day, previous);
     const hop = from !== null && from !== buildingOf(day, next);
     return {
       kind: "upcoming",
       lesson: next,
       minutesUntil: progress.minutesUntilNext,
+      previous,
+      breakProgress,
       hop,
       from: hop ? from : null,
     };
   }
 
   return progress.finished ? { kind: "finished" } : null;
+};
+
+export type LongestBreak = {
+  /** Length of the longest single break between lessons, in minutes. */
+  minutes: number;
+  /** When the break begins (end of the preceding lesson). */
+  start: HHMM;
+  /** When the break ends (start of the following lesson). */
+  end: HHMM;
 };
 
 export type DaySummary = {
@@ -89,6 +112,8 @@ export type DaySummary = {
   lessonCount: number;
   /** Total length of the free periods in between (gaps of `FREE_PERIOD_MIN_MINUTES` or more). */
   freeMinutes: number;
+  /** Longest single break between two consecutive lessons, or `null` when none exists. */
+  longestBreak: LongestBreak | null;
 };
 
 /** The day in one line. `null` when nothing takes place. */
@@ -100,11 +125,19 @@ export const daySummary = (day: ResolvedDay | null): DaySummary | null => {
   if (first === undefined || last === undefined) return null;
 
   let freeMinutes = 0;
+  let longestBreak: LongestBreak | null = null;
   let previousEnd = first.end;
+  let previousEndTime = first.lesson.end;
   for (const w of windows.slice(1)) {
     const gap = w.start - previousEnd;
     if (gap >= FREE_PERIOD_MIN_MINUTES) freeMinutes += gap;
-    previousEnd = Math.max(previousEnd, w.end);
+    if (gap > 0 && (longestBreak === null || gap > longestBreak.minutes)) {
+      longestBreak = { minutes: gap, start: previousEndTime, end: w.lesson.start };
+    }
+    if (w.end > previousEnd) {
+      previousEnd = w.end;
+      previousEndTime = w.lesson.end;
+    }
   }
 
   return {
@@ -112,6 +145,7 @@ export const daySummary = (day: ResolvedDay | null): DaySummary | null => {
     end: last.lesson.end,
     lessonCount: windows.length,
     freeMinutes,
+    longestBreak,
   };
 };
 

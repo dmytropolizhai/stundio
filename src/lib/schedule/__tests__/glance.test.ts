@@ -73,7 +73,14 @@ describe("dayGlance", () => {
 
   it("counts down to the next lesson during a break, without a hop inside one building", () => {
     const g = dayGlance(day(lessons), at("09:12"));
-    expect(g).toMatchObject({ kind: "upcoming", minutesUntil: 8, hop: false, from: null });
+    expect(g).toMatchObject({
+      kind: "upcoming",
+      minutesUntil: 8,
+      previous: lessons[0],
+      breakProgress: 0.2,
+      hop: false,
+      from: null,
+    });
   });
 
   it("names the building to leave when the next lesson is elsewhere", () => {
@@ -116,7 +123,7 @@ describe("dayGlance", () => {
 });
 
 describe("daySummary", () => {
-  it("gives first start, last end, lesson count and the free periods in between", () => {
+  it("gives first start, last end, lesson count, free periods and the longest single break", () => {
     const s = daySummary(
       day([
         MAIN("1", "08:30", "09:10"),
@@ -125,15 +132,36 @@ describe("daySummary", () => {
         MAIN("5", "12:30", "13:10"),
       ]),
     );
-    expect(s).toEqual({ start: "08:30", end: "13:10", lessonCount: 4, freeMinutes: 100 });
+    expect(s).toEqual({
+      start: "08:30",
+      end: "13:10",
+      lessonCount: 4,
+      freeMinutes: 100,
+      longestBreak: { minutes: 100, start: "10:00", end: "11:40" },
+    });
   });
 
-  it("does not count ordinary breaks as free time", () => {
+  it("picks the longest break among several and keeps the earliest on a tie", () => {
+    const s = daySummary(
+      day([
+        MAIN("1", "08:30", "09:10"),
+        MAIN("2", "09:15", "09:55"), // 5 min
+        MAIN("3", "10:25", "11:05"), // 30 min (first longest)
+        MAIN("4", "11:15", "11:55"), // 10 min
+        MAIN("5", "12:25", "13:05"), // 30 min (tie)
+      ]),
+    );
+    expect(s?.longestBreak).toEqual({ minutes: 30, start: "09:55", end: "10:25" });
+    expect(s?.freeMinutes).toBe(60);
+  });
+
+  it("does not count ordinary breaks as free time, but still reports the longest break", () => {
     const s = daySummary(day([MAIN("1", "08:30", "09:10"), MAIN("2", "09:20", "10:00")]));
     expect(s?.freeMinutes).toBe(0);
+    expect(s?.longestBreak).toEqual({ minutes: 10, start: "09:10", end: "09:20" });
   });
 
-  it("ignores cancelled lessons at the edges and counts the gap they leave", () => {
+  it("ignores cancelled lessons at the edges and returns null longestBreak for one lesson", () => {
     const s = daySummary(
       day([
         MAIN("1", "08:30", "09:10", { status: "cancelled" }),
@@ -141,7 +169,13 @@ describe("daySummary", () => {
         MAIN("3", "10:10", "10:50", { status: "cancelled" }),
       ]),
     );
-    expect(s).toEqual({ start: "09:20", end: "10:00", lessonCount: 1, freeMinutes: 0 });
+    expect(s).toEqual({
+      start: "09:20",
+      end: "10:00",
+      lessonCount: 1,
+      freeMinutes: 0,
+      longestBreak: null,
+    });
   });
 
   it("is null with no lessons that take place", () => {

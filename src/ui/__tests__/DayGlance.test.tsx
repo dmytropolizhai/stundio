@@ -1,10 +1,11 @@
 /**
- * The glance card's building walk, which the fixture day (one building) never reaches: the
- * warning has to name the building to go to, and from where when the student is mid-break.
+ * The glance card's live subject field, scratch-out reveal of the next lesson, matching gradient
+ * glow, and building-walk warnings (which the single-building fixture day never reaches).
  */
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
+import type { SubjectColorValue } from "@/db";
 import type { ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { dayGlance } from "@/lib/schedule";
 import { DayGlance } from "../screens/home-view/day-glance.tsx";
@@ -37,8 +38,16 @@ const DAY: ResolvedDay = {
   stale: false,
 };
 
-const renderGlance = async (minutes: number) => {
+const renderGlance = async (
+  minutes: number,
+  overrides?: { subjectColorOverrides?: Record<string, SubjectColorValue> },
+) => {
   const harness = await bootHarness();
+  if (overrides?.subjectColorOverrides !== undefined) {
+    for (const [key, tone] of Object.entries(overrides.subjectColorOverrides)) {
+      await harness.store.getState().setSubjectColorOverride(key, tone);
+    }
+  }
   const glance = dayGlance(DAY, { date: DAY.date, minutes });
   if (glance === null || glance.kind === "finished") throw new Error("no glance");
   render(
@@ -55,9 +64,65 @@ describe("DayGlance", () => {
     expect(screen.getByTestId("glance-following").textContent).toContain("Subject 2");
   });
 
-  it("names where to walk from during the break", async () => {
-    await renderGlance(9 * 60 + 12);
+  it("names where to walk from during the break and scratches the next lesson over the previous one", async () => {
+    await renderGlance(9 * 60 + 14, {
+      subjectColorOverrides: { s1: "amber", s2: "pink" },
+    });
     expect(screen.getByTestId("glance-walk").textContent).toBe("Pāreja no Galvenā ēka uz TIC");
     expect(screen.getByTestId("glance-room").textContent).toBe("214");
+    expect(screen.getByTestId("glance-glow")).toBeDefined();
+    expect(screen.getByTestId("glance-glow-next").style.getPropertyValue("--next-tone")).toBe(
+      "var(--accent-pink)",
+    );
+    const scratch = screen.getByTestId("glance-scratch-layer");
+    expect(scratch.style.getPropertyValue("--tone")).toBe("var(--accent-pink)");
+    expect(scratch.style.maskImage).toMatch(/^url\("data:image\/svg\+xml,/);
+  });
+
+  it("renders without live glow or scratch layer before the first lesson of the day", async () => {
+    await renderGlance(8 * 60 + 15);
+    expect(screen.queryByTestId("glance-glow")).toBeNull();
+    expect(screen.queryByTestId("glance-scratch-layer")).toBeNull();
+  });
+
+  it("uses the deep subject field, matching gradient glow, and scratches in the next lesson with progress", async () => {
+    await renderGlance(8 * 60 + 55, {
+      subjectColorOverrides: { s1: "amber", s2: "pink" },
+    });
+
+    const card = screen.getByTestId("day-glance");
+    expect(card.className).toContain("u-tone-field-deep");
+    expect(card.style.getPropertyValue("--tone")).toBe("var(--accent-amber)");
+    expect(card.style.getPropertyValue("--next-tone")).toBe("var(--accent-pink)");
+
+    const glow = screen.getByTestId("glance-glow");
+    expect(glow.style.getPropertyValue("--tone")).toBe("var(--accent-amber)");
+    const glowNext = screen.getByTestId("glance-glow-next");
+    expect(glowNext.style.getPropertyValue("--next-tone")).toBe("var(--accent-pink)");
+    expect(Number(glowNext.style.getPropertyValue("--scratch"))).toBeGreaterThan(0.5);
+
+    const scratchLayer = screen.getByTestId("glance-scratch-layer");
+    expect(scratchLayer.className).toContain("u-tone-field-deep");
+    expect(scratchLayer.style.getPropertyValue("--tone")).toBe("var(--accent-pink)");
+    expect(scratchLayer.style.maskImage).toMatch(/^url\("data:image\/svg\+xml,/);
+  });
+
+  it("omits the scratch layer at progress 0 and on the last lesson of the day", async () => {
+    await renderGlance(8 * 60 + 30, {
+      subjectColorOverrides: { s1: "mint", s2: "lilac" },
+    });
+    expect(screen.queryByTestId("glance-scratch-layer")).toBeNull();
+    expect(screen.queryByTestId("glance-glow-next")).toBeNull();
+  });
+
+  it("omits the scratch layer on the final lesson when there is no following lesson", async () => {
+    await renderGlance(9 * 60 + 45, {
+      subjectColorOverrides: { s2: "#162040" },
+    });
+    const card = screen.getByTestId("day-glance");
+    expect(card.hasAttribute("data-tone-dark")).toBe(true);
+    expect(card.style.getPropertyValue("--tone")).toBe("#162040");
+    expect(screen.queryByTestId("glance-scratch-layer")).toBeNull();
+    expect(screen.queryByTestId("glance-glow-next")).toBeNull();
   });
 });

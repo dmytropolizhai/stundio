@@ -16,6 +16,7 @@ export {
   FREE_PERIOD_MIN_MINUTES,
   type DayGlance,
   type DaySummary,
+  type LongestBreak,
   type TomorrowPreview,
 } from "./glance.ts";
 export {
