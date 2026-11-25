@@ -52,6 +52,7 @@ export const ru: Dict = {
   "onboarding.language.continue": "Продолжить",
 
   "onboarding.intro.skip": "Пропустить",
+  "onboarding.intro.back": "Назад",
   "onboarding.intro.next": "Далее",
   "onboarding.intro.start": "Начать",
   "onboarding.intro.progress": "Шаг знакомства",

@@ -54,7 +54,27 @@ export type Settings = {
   /** Class ids the user pinned; notifications in Phase 4 key off these. */
   favorites: string[];
   theme: "system" | "light" | "dark";
-  lang: "lv" | "en" | "ru" | "ua";
+  lang:
+    | "lv"
+    | "en"
+    | "ua"
+    | "ru"
+    | "lt"
+    | "et"
+    | "pl"
+    | "de"
+    | "fr"
+    | "es"
+    | "it"
+    | "pt"
+    | "nl"
+    | "sv"
+    | "fi"
+    | "no"
+    | "da"
+    | "cs"
+    | "sk"
+    | "hu";
   /** Week view: collapse a run of consecutive identical lessons into one tall block. */
   mergeConsecutiveLessons: boolean;
   /** Show a lesson moved to another day on the day it moved to, not the day it left. */
@@ -119,7 +139,27 @@ export type Settings = {
   /** Anonymous usage analytics (Plausible). No cookies, no persistent id — opt-out, not opt-in. */
   analyticsEnabled: boolean;
   /** Language for the shareable week image/message; ignored while `shareLangSyncWithApp` is on. */
-  shareLang: "lv" | "en" | "ru" | "ua";
+  shareLang:
+    | "lv"
+    | "en"
+    | "ua"
+    | "ru"
+    | "lt"
+    | "et"
+    | "pl"
+    | "de"
+    | "fr"
+    | "es"
+    | "it"
+    | "pt"
+    | "nl"
+    | "sv"
+    | "fi"
+    | "no"
+    | "da"
+    | "cs"
+    | "sk"
+    | "hu";
   /** Keep the share image/message language matched to `lang` — the default. */
   shareLangSyncWithApp: boolean;
   /** Whether the one-time "which language to share in" prompt has already been shown. */

@@ -562,6 +562,34 @@
     --schedule-tint-mix: 26%;
     --schedule-tint-base: rgba(255, 255, 255, 0.56);
     --schedule-caustic-mix: 16%;
+
+    /* Night / Day tactile button surfaces (Day). */
+    --btn-primary-bg: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--bg-inverse) 92%, white) 0%,
+      var(--bg-inverse) 100%
+    );
+    --btn-primary-bg-hover: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--bg-inverse) 86%, white) 0%,
+      color-mix(in oklab, var(--bg-inverse) 94%, white) 100%
+    );
+    --btn-primary-shadow:
+      0 8px 20px -8px rgba(18, 20, 25, 0.34), 0 2px 6px -2px rgba(18, 20, 25, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    --btn-outline-bg: rgba(255, 255, 255, 0.56);
+    --btn-outline-bg-hover: rgba(255, 255, 255, 0.86);
+    --btn-outline-shadow:
+      0 4px 12px -6px rgba(18, 20, 25, 0.12), inset 0 0 0 1px rgba(18, 20, 25, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.84);
+    --btn-ghost-hover: rgba(18, 20, 25, 0.065);
+    --btn-danger-bg: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--status-danger) 90%, white) 0%,
+      var(--status-danger) 100%
+    );
+    --btn-danger-shadow:
+      0 8px 20px -8px rgba(192, 53, 42, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.24);
   }
 
   /*
@@ -687,6 +715,26 @@
     --schedule-tint-mix: 20%;
     --schedule-tint-base: rgba(18, 24, 33, 0.66);
     --schedule-caustic-mix: 18%;
+
+    /* Night / Day tactile button surfaces (Night). */
+    --btn-primary-bg: linear-gradient(180deg, #f6f3ed 0%, var(--bg-inverse) 100%);
+    --btn-primary-bg-hover: linear-gradient(180deg, #ffffff 0%, #f2eee7 100%);
+    --btn-primary-shadow:
+      0 10px 26px -10px rgba(0, 0, 0, 0.72), 0 2px 6px -1px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    --btn-outline-bg: rgba(255, 255, 255, 0.05);
+    --btn-outline-bg-hover: rgba(255, 255, 255, 0.1);
+    --btn-outline-shadow:
+      0 6px 16px -8px rgba(0, 0, 0, 0.52), inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    --btn-ghost-hover: rgba(255, 255, 255, 0.08);
+    --btn-danger-bg: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--status-danger) 88%, white) 0%,
+      var(--status-danger) 100%
+    );
+    --btn-danger-shadow:
+      0 10px 24px -10px rgba(0, 0, 0, 0.64), inset 0 1px 0 rgba(255, 255, 255, 0.34);
   }
 
   :root.dark[data-weather-ambient="true"] {
@@ -1126,4 +1174,49 @@
     color-mix(in oklab, var(--row-tone) 44%, transparent) 0%,
     transparent 70%
   );
+}
+
+/*
+ * Night / Day tactile button surfaces (`src/ds/components/ui/button.tsx`).
+ * Keeps The Neutral Button Rule (brand is ink, never lamp or blue) while lifting every button
+ * out of flat legacy fills with top-lit specular rims and optical glass variants.
+ */
+.u-btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--text-on-inverse);
+  box-shadow: var(--btn-primary-shadow);
+}
+.u-btn-primary:hover {
+  background: var(--btn-primary-bg-hover);
+}
+.u-btn-outline {
+  background: var(--btn-outline-bg);
+  color: var(--text-strong);
+  box-shadow: var(--btn-outline-shadow);
+}
+.u-btn-outline:hover {
+  background: var(--btn-outline-bg-hover);
+}
+.u-btn-ghost {
+  background: transparent;
+  color: var(--text-strong);
+}
+.u-btn-ghost:hover {
+  background: var(--btn-ghost-hover);
+}
+.u-btn-on-brand {
+  background: var(--text-on-brand);
+  color: var(--brand);
+  box-shadow: var(--btn-outline-shadow);
+}
+.u-btn-on-brand:hover {
+  opacity: 0.92;
+}
+.u-btn-danger {
+  background: var(--btn-danger-bg);
+  color: var(--on-danger);
+  box-shadow: var(--btn-danger-shadow);
+}
+.u-btn-danger:hover {
+  opacity: 0.92;
 }

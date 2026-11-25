@@ -52,6 +52,7 @@ export const ua: Dict = {
   "onboarding.language.continue": "Продовжити",
 
   "onboarding.intro.skip": "Пропустити",
+  "onboarding.intro.back": "Назад",
   "onboarding.intro.next": "Далі",
   "onboarding.intro.start": "Розпочати",
   "onboarding.intro.progress": "Крок вступу",

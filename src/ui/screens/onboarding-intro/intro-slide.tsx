@@ -1,6 +1,8 @@
 import type { TouchEvent } from "react";
 import { m } from "framer-motion";
-import { useT } from "@/ui/i18n";
+import { useAppStore, useSettingSetter } from "@/store";
+import { useT, type Lang } from "@/ui/i18n";
+import { LanguageList } from "@/ui/screens/onboarding-language";
 import type { Slide } from "./slides.ts";
 
 type IntroSlideProps = {
@@ -31,7 +33,8 @@ export const IntroSlide = ({
   onGoBack,
 }: IntroSlideProps) => {
   const t = useT();
-  const Art = slide.art;
+  const lang = useAppStore((s) => s.settings.lang);
+  const setLang = useSettingSetter("lang");
 
   return (
     <m.div
@@ -39,7 +42,7 @@ export const IntroSlide = ({
       role="group"
       tabIndex={0}
       aria-label={t("onboarding.intro.progress")}
-      initial={{ opacity: 0, x: reduceMotion ? 0 : enterDir * 16 }}
+      initial={{ opacity: 0, x: reduceMotion ? 0 : enterDir * 20 }}
       animate={{ opacity: 1, x: dragging ? dragX : 0 }}
       transition={{
         duration: dragging ? 0 : reduceMotion ? 0.001 : 0.24,
@@ -54,13 +57,35 @@ export const IntroSlide = ({
         if (e.key === "ArrowRight") onAdvance();
         else if (e.key === "ArrowLeft") onGoBack();
       }}
-      className="flex min-h-0 flex-1 flex-col items-center justify-center gap-6 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+      className="flex min-h-0 flex-1 flex-col justify-between gap-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
     >
-      <Art />
-      <div className="flex flex-col gap-2">
-        <h1 className="font-display text-title tracking-display text-strong">{t(slide.title)}</h1>
-        <p className="max-w-70 font-text text-body text-muted">{t(slide.body)}</p>
-      </div>
+      {slide.kind === "language" ? (
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-6 py-4">
+          <h1 className="font-display text-display-2 tracking-display text-strong text-balance">
+            {t(slide.title)}
+          </h1>
+          <LanguageList
+            label={t(slide.title)}
+            selectedLang={lang}
+            onSelect={(key: Lang) => {
+              void setLang(key);
+            }}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="flex min-h-0 flex-1 items-center justify-center py-4">
+            <slide.art />
+          </div>
+
+          <div className="flex flex-col gap-2 text-left">
+            <h1 className="font-display text-display-2 tracking-display text-strong text-balance">
+              {t(slide.title)}
+            </h1>
+            <p className="max-w-[34ch] font-text text-body text-muted">{t(slide.body)}</p>
+          </div>
+        </>
+      )}
     </m.div>
   );
 };

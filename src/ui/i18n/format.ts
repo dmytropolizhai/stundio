@@ -8,7 +8,28 @@ import type { HHMM, ISODate } from "@/lib/edupage";
 
 export type Lang = Settings["lang"];
 
-const LOCALE: Record<Lang, string> = { lv: "lv-LV", en: "en-GB", ru: "ru-RU", ua: "ua-UA" };
+const LOCALE: Record<Lang, string> = {
+  lv: "lv-LV",
+  en: "en-GB",
+  ua: "uk-UA",
+  ru: "ru-RU",
+  lt: "lt-LT",
+  et: "et-EE",
+  pl: "pl-PL",
+  de: "de-DE",
+  fr: "fr-FR",
+  es: "es-ES",
+  it: "it-IT",
+  pt: "pt-PT",
+  nl: "nl-NL",
+  sv: "sv-SE",
+  fi: "fi-FI",
+  no: "nb-NO",
+  da: "da-DK",
+  cs: "cs-CZ",
+  sk: "sk-SK",
+  hu: "hu-HU",
+};
 
 /** BCP-47 tag for a `Lang` — for callers (the calendar popover) that hand a locale to `Intl`
  * themselves rather than going through one of this file's formatters. */

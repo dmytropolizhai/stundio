@@ -19,7 +19,6 @@ import { useNow } from "./ui/hooks/useNow.ts";
 import { LessonSheet } from "./ui/screens/lesson-sheet";
 import { ClassSelector } from "./ui/screens/class-selector";
 import { TeacherPicker } from "./ui/screens/teacher-picker";
-import { OnboardingLanguage } from "./ui/screens/onboarding-language";
 import { OnboardingIntro } from "./ui/screens/onboarding-intro";
 import { OnboardingPersona } from "./ui/screens/onboarding-persona";
 import { HomeView } from "./ui/screens/home-view";
@@ -107,14 +106,12 @@ const Onboarding = () => {
   const returning = useAppStore(
     (s) => s.settings.selectedClassId !== null || s.settings.selectedTeacherId !== null,
   );
-  const [step, setStep] = useState<
-    "language" | "intro" | "persona" | "classPicker" | "teacherPicker"
-  >(() =>
+  const [step, setStep] = useState<"intro" | "persona" | "classPicker" | "teacherPicker">(() =>
     returning
       ? PERSONA_PROFILES[persona].picker === "teacher"
         ? "teacherPicker"
         : "classPicker"
-      : "language",
+      : "intro",
   );
   const setPersona = useSettingSetter("persona");
 
@@ -128,22 +125,10 @@ const Onboarding = () => {
         setStep("intro");
         return true;
       }
-      if (step === "intro") {
-        setStep("language");
-        return true;
-      }
       return false;
     },
     { priority: 10 },
   );
-
-  if (step === "language") {
-    return (
-      <div className="flex h-full flex-col">
-        <OnboardingLanguage onDone={() => setStep("intro")} />
-      </div>
-    );
-  }
 
   if (step === "intro") {
     return (

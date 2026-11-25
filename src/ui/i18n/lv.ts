@@ -58,6 +58,7 @@ export const lv = {
   "onboarding.language.continue": "Turpināt",
 
   "onboarding.intro.skip": "Izlaist",
+  "onboarding.intro.back": "Atpakaļ",
   "onboarding.intro.next": "Tālāk",
   "onboarding.intro.start": "Sākt",
   "onboarding.intro.progress": "Iepazīšanās solis",

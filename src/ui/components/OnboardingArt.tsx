@@ -1,28 +1,21 @@
+/**
+ * The four live Night / Day specimens of the welcome tour — one per promise the tour makes.
+ *
+ * Every slide renders real app components (`DayGlassLesson`, `SyncStatus`, and the liquid-glass
+ * `.u-schedule-glass` grammar) rather than static screenshots or legacy flat cards, so what a
+ * student sees during onboarding is identical to the Home screen they land on a minute later.
+ *
+ * Every panel is `aria-hidden="true"` and mounts zero interactive controls: the slide's own title
+ * and body carry the message, and reading a fabricated timetable aloud would be noise.
+ *
+ * Sample lesson strings stay in Latvian across all locales — subject, teacher, and room text are
+ * school-written data, which Stundio never translates (`AGENT.md`).
+ */
 import { m, useReducedMotion } from "framer-motion";
 import type { ResolvedLesson } from "@/lib/edupage";
-import { SyncStatus } from "@/ds";
-import { LessonRow } from "./LessonRow.tsx";
+import { Icon, SyncStatus } from "@/ds";
+import { DayGlassLesson } from "@/ui/screens/home-view";
 import { useT } from "@/ui/i18n";
-import dayScreen from "../../assets/onboarding/day-view.png";
-import weekScreen from "../../assets/onboarding/week-view.png";
-import subjectsScreen from "../../assets/onboarding/subjects-view.png";
-import settingsScreen from "../../assets/onboarding/settings-view.png";
-
-/**
- * The four illustrations of the intro tour — one per promise the tour makes.
- *
- * Each is the real thing rather than a picture of it: slides 2 and 3 mount the same `LessonRow`
- * the Day screen mounts, so a sample lesson can never drift from the card a student meets a
- * minute later, and slide 3's pill is the DS `SyncStatus` the header uses. Only slide 1 is
- * genuinely a picture — four exported screens are the one thing the tour can't render live,
- * since the student has no class selected yet.
- *
- * Every panel is `aria-hidden`: the slide's own title and body already say what the picture
- * shows, and reading a fabricated timetable aloud would be noise, not information.
- *
- * The sample lesson text is Latvian and stays Latvian in every locale — subject, teacher and
- * room strings are school-written data, which this app never translates (CLAUDE.md).
- */
 
 const lesson = (l: Omit<ResolvedLesson, "span" | "group" | "changeNote">): ResolvedLesson => ({
   span: 1,
@@ -43,71 +36,109 @@ const room = (short: string): ResolvedLesson["rooms"][number] => ({
   short,
 });
 
-const SampleDay = ({ lessons }: { lessons: ResolvedLesson[] }) => (
-  <ul className="m-0 flex w-full list-none flex-col gap-2.5 p-0 text-left">
-    {lessons.map((l) => (
-      <LessonRow
-        key={l.period}
-        lesson={l}
-        live={false}
-        showTime
-        subjectColorOverrides={{}}
-        colorCodingEnabled
-        filled={false}
-      />
-    ))}
-  </ul>
-);
-
-/* ------------------------------------------------------------------ *
- * 1 — the timetable, in one place
- * ------------------------------------------------------------------ */
-
-/**
- * Back-to-front: the two outer screens sit furthest back and smallest, so the Day view — the tab
- * the app opens on — reads as the front of the deck.
- */
-const SCREENS = [
-  { id: "settings", src: settingsScreen, x: -96, rotate: -15, scale: 0.86 },
-  { id: "subjects", src: subjectsScreen, x: 96, rotate: 15, scale: 0.86 },
-  { id: "week-left", src: weekScreen, x: -44, rotate: -6.5, scale: 0.93 },
-  { id: "week-right", src: weekScreen, x: 44, rotate: 6.5, scale: 0.93 },
-  { id: "day", src: dayScreen, x: 0, rotate: 0, scale: 1 },
-];
-
-export const AppScreensArt = () => {
-  const reduceMotion = useReducedMotion() ?? false;
+const GlassSlab = ({ lessons, liveIndex }: { lessons: ResolvedLesson[]; liveIndex?: number }) => {
+  const normalLessons = lessons.filter((_, i) => i !== liveIndex);
+  const liveLesson = liveIndex !== undefined ? lessons[liveIndex] : undefined;
 
   return (
-    <div aria-hidden="true" className="relative h-48 w-full">
-      {SCREENS.map((screen, i) => (
-        <div key={screen.id} className="absolute inset-0 flex items-center justify-center">
-          <m.img
-            src={screen.src}
-            alt=""
-            initial={{ opacity: 0, x: 0, rotate: 0, scale: screen.scale, y: 10 }}
-            animate={{
-              opacity: 1,
-              x: screen.x,
-              rotate: screen.rotate,
-              scale: screen.scale,
-              y: 0,
-            }}
-            transition={{
-              duration: reduceMotion ? 0.001 : 0.44,
-              delay: reduceMotion ? 0 : i * 0.07,
-              ease: [0.2, 0.8, 0.2, 1],
-            }}
-            className="h-48 w-auto drop-shadow-[0_10px_22px_rgba(15,23,42,0.22)]"
+    <div className="flex w-full flex-col gap-2.5 text-left">
+      {liveLesson !== undefined && (
+        <ul className="m-0 list-none p-0">
+          <DayGlassLesson
+            lesson={liveLesson}
+            live
+            progress={0.62}
+            showTime
+            subjectColorOverrides={{}}
+            colorCodingEnabled
+            filled={false}
           />
-        </div>
-      ))}
+        </ul>
+      )}
+      {normalLessons.length > 0 && (
+        <ul className="u-schedule-glass m-0 flex w-full list-none flex-col divide-y divide-(--schedule-divider) overflow-hidden rounded-xl p-0">
+          {normalLessons.map((l, idx) => (
+            <DayGlassLesson
+              key={l.period}
+              lesson={l}
+              live={false}
+              showTime
+              subjectColorOverrides={{}}
+              colorCodingEnabled
+              filled={false}
+              connectTop={idx > 0}
+              connectBottom={idx < normalLessons.length - 1}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
 
 /* ------------------------------------------------------------------ *
- * 2 — changes are visible at a glance
+ * 1 — the timetable, in one place (live Night / Day Home specimen)
+ * ------------------------------------------------------------------ */
+
+const HOME_PREVIEW_LESSONS = [
+  lesson({
+    period: "5",
+    start: "10:10",
+    end: "10:50",
+    subject: subject("Programmatūras koda rakstīšana"),
+    teachers: [teacher("Malickis Vadims")],
+    rooms: [room("131a")],
+    status: "normal",
+  }),
+  lesson({
+    period: "6",
+    start: "10:55",
+    end: "11:35",
+    subject: subject("Matemātika I"),
+    teachers: [teacher("Drozda Lolita")],
+    rooms: [room("511")],
+    status: "normal",
+  }),
+];
+
+/**
+ * Miniature Home brief strip (lamp countdown chip + day-span capsule) floating above a live
+ * deep-tone lesson and the next liquid-glass row.
+ */
+export const AppScreensArt = () => {
+  const reduceMotion = useReducedMotion() ?? false;
+
+  return (
+    <m.div
+      aria-hidden="true"
+      data-testid="home-preview-art"
+      initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduceMotion ? 0.001 : 0.34, ease: [0.2, 0.8, 0.2, 1] }}
+      className="flex w-full max-w-[340px] flex-col gap-2.5"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="u-schedule-glass-live flex items-center gap-2 rounded-pill px-3.5 py-1.5">
+          <span
+            aria-hidden="true"
+            className="size-2 shrink-0 rounded-full bg-lamp shadow-[0_0_8px_var(--lamp-glow)]"
+          />
+          <span className="u-data text-[12px] font-bold text-lamp-text">18 min</span>
+        </div>
+
+        <div className="u-schedule-glass-chip flex items-center gap-1.5 rounded-pill px-3 py-1.5 text-muted">
+          <Icon name="clock" size={13} className="shrink-0 opacity-75" />
+          <span className="u-data text-[12px] font-medium text-fg">08:30 – 14:35</span>
+        </div>
+      </div>
+
+      <GlassSlab lessons={HOME_PREVIEW_LESSONS} liveIndex={0} />
+    </m.div>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * 2 — changes show up right away
  * ------------------------------------------------------------------ */
 
 const CHANGED_LESSONS = [
@@ -131,15 +162,15 @@ const CHANGED_LESSONS = [
   }),
 ];
 
-/** A substituted lesson wearing its corner dot, above a cancelled one struck through. */
+/** A substituted lesson wearing its status dot, above a cancelled one struck through in place. */
 export const ChangesArt = () => (
-  <div aria-hidden="true" className="w-full max-w-80">
-    <SampleDay lessons={CHANGED_LESSONS} />
+  <div aria-hidden="true" className="w-full max-w-[340px]">
+    <GlassSlab lessons={CHANGED_LESSONS} />
   </div>
 );
 
 /* ------------------------------------------------------------------ *
- * 3 — it works offline
+ * 3 — works offline too
  * ------------------------------------------------------------------ */
 
 const OFFLINE_LESSONS = [
@@ -164,14 +195,14 @@ const OFFLINE_LESSONS = [
 ];
 
 /**
- * The offline pill over a day that is rendering anyway — the whole point of the cache. The list
- * fades out at the bottom rather than ending, so it reads as "and the rest of the day, too".
+ * The offline pill over a liquid-glass schedule slab rendering anyway — the whole point of the
+ * cache. The bottom fades out rather than stopping abruptly, reading as "the rest of your day".
  */
 export const OfflineArt = () => {
   const t = useT();
 
   return (
-    <div aria-hidden="true" className="flex w-full max-w-80 flex-col items-center gap-3">
+    <div aria-hidden="true" className="flex w-full max-w-[340px] flex-col items-center gap-3">
       <SyncStatus state="offline" label={t("sync.offline")} />
       <div
         className="w-full"
@@ -180,7 +211,7 @@ export const OfflineArt = () => {
           WebkitMaskImage: "linear-gradient(to bottom, black 58%, transparent 100%)",
         }}
       >
-        <SampleDay lessons={OFFLINE_LESSONS} />
+        <GlassSlab lessons={OFFLINE_LESSONS} />
       </div>
     </div>
   );
@@ -191,40 +222,47 @@ export const OfflineArt = () => {
  * ------------------------------------------------------------------ */
 
 /**
- * A mock of the OS notification the app actually posts, down to its wording: the title is the
- * same `notification.lessonReminder.title` message `notifications/` schedules, so the tour
- * promises the exact string the student will see on their lock screen.
+ * A lock-screen notification card wearing Stundio's liquid-glass surface and the exact
+ * `notification.lessonReminder.title` message `notifications/` schedules.
  */
 export const NotificationArt = () => {
   const t = useT();
   const reduceMotion = useReducedMotion() ?? false;
 
   return (
-    <m.div
-      aria-hidden="true"
-      initial={{ opacity: 0, y: reduceMotion ? 0 : -18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: reduceMotion ? 0.001 : 0.36, ease: [0.2, 0.8, 0.2, 1] }}
-      className="flex w-full max-w-80 gap-3 rounded-xl bg-card p-4 text-left shadow-card"
-    >
-      <img src="/favicon.png" alt="" className="size-9 shrink-0 rounded-lg" />
+    <div aria-hidden="true" className="relative w-full max-w-[340px] pb-3">
+      {/* Recessed trailing card edge giving subtle lock-screen stack depth. */}
+      <div
+        aria-hidden="true"
+        className="u-schedule-glass-chip pointer-events-none absolute inset-x-4 bottom-0 h-8 rounded-b-xl opacity-55"
+      />
 
-      <div className="flex min-w-0 flex-col gap-1">
-        <div className="flex items-center gap-1.5 font-text text-micro tracking-label text-muted uppercase">
-          <span>{t("app.title")}</span>
-          <span aria-hidden="true">·</span>
-          <span className="tabular-nums">10:00</span>
+      <m.div
+        initial={{ opacity: 0, y: reduceMotion ? 0 : -14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reduceMotion ? 0.001 : 0.34, ease: [0.2, 0.8, 0.2, 1] }}
+        className="u-schedule-glass relative z-10 flex w-full gap-3.5 rounded-xl p-4 text-left"
+      >
+        <img src="/favicon.png" alt="" className="size-10 shrink-0 rounded-sm shadow-card" />
+
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-text text-micro tracking-label text-muted uppercase">
+              {t("app.title")}
+            </span>
+            <span className="u-data text-[12px] text-muted">10:00</span>
+          </div>
+
+          <span className="font-display text-body leading-snug font-bold tracking-display text-strong">
+            {t("notification.lessonReminder.title", {
+              subject: "Programmas izstrādes process",
+              minutes: 10,
+            })}
+          </span>
+
+          <span className="font-text text-caption text-muted">244 D(30)P · Montvida Monta</span>
         </div>
-
-        <span className="font-display text-body font-bold tracking-display text-strong">
-          {t("notification.lessonReminder.title", {
-            subject: "Programmas izstrādes process",
-            minutes: 10,
-          })}
-        </span>
-
-        <span className="font-text text-caption text-muted">244 D(30)P · Montvida Monta</span>
-      </div>
-    </m.div>
+      </m.div>
+    </div>
   );
 };

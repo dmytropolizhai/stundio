@@ -1,64 +1,49 @@
 /**
- * The intro tour's four illustrations.
+ * The intro tour's four live Night / Day specimens and welcome flow controls.
  *
- * What makes these worth testing is that three of them are not pictures: they mount the same
- * `LessonRow` the Day screen mounts, the same DS pill the header mounts, and the same reminder
- * message `notifications/` schedules. So the assertions here are about that fidelity — plus the
- * two rules every panel has to keep: no tap affordance on a sample lesson, and no screen-reader
- * noise from a fabricated timetable.
+ * All four panels mount real app components (`DayGlassLesson`, `SyncStatus`, and the exact
+ * `notification.lessonReminder.title` copy `notifications/` schedules) rather than static images.
+ * The assertions verify that fidelity plus the two invariants every panel must keep: no tap
+ * affordance on a sample lesson, and no screen-reader noise from a fabricated timetable.
  */
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
+import { Button } from "@/ds";
 import {
   AppScreensArt,
   ChangesArt,
   NotificationArt,
   OfflineArt,
 } from "../components/OnboardingArt.tsx";
+import { OnboardingIntro } from "../screens/onboarding-intro";
+import { OnboardingLanguage } from "../screens/onboarding-language";
 import { bootHarness, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
   render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
 
 describe("AppScreensArt", () => {
-  it("fans out every exported screen with the Day view in front", async () => {
+  it("renders a live Night/Day Home specimen with a lifted active lesson and next row", async () => {
     const harness = await bootHarness();
-    const { container } = wrap(harness, <AppScreensArt />);
+    wrap(harness, <AppScreensArt />);
 
-    const sources = [...container.querySelectorAll("img")].map((img) => img.getAttribute("src"));
-
-    expect(sources.some((src) => src?.includes("settings-view"))).toBe(true);
-    expect(sources.some((src) => src?.includes("subjects-view"))).toBe(true);
-    expect(sources.some((src) => src?.includes("week-view"))).toBe(true);
-
-    /* Last in DOM order is the top of the deck, and the Day view is the tab the app opens on. */
-    expect(sources.at(-1)).toContain("day-view");
+    expect(screen.getByTestId("home-preview-art")).toBeDefined();
+    expect(screen.getByTestId("lesson-5").getAttribute("data-live")).toBe("true");
+    expect(screen.getByTestId("status-now")).toBeDefined();
+    expect(screen.getByTestId("lesson-6")).toBeDefined();
   });
 
-  /*
-   * The fan mirrors the Week view on both sides, so two slots share one image file. Keying the
-   * slots on `src` therefore collides, and React reconciles the pair as one element — the guard
-   * is the warning, not the render, which limps along either way.
-   */
-  it("keys each slot in the fan separately, even where one screen appears twice", async () => {
+  it("is a specimen, not interactive lessons you can open", async () => {
     const harness = await bootHarness();
-    const warn = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    wrap(harness, <AppScreensArt />);
 
-    const { container } = wrap(harness, <AppScreensArt />);
-
-    const week = [...container.querySelectorAll("img")].filter((img) =>
-      img.getAttribute("src")?.includes("week-view"),
-    );
-    expect(week).toHaveLength(2);
-    expect(warn).not.toHaveBeenCalled();
-
-    warn.mockRestore();
+    expect(screen.queryAllByRole("button", { hidden: true })).toHaveLength(0);
   });
 });
 
 describe("ChangesArt", () => {
-  it("marks the substituted and the cancelled lesson the way the Day screen does", async () => {
+  it("marks the substituted and the cancelled lesson the way the Home screen does", async () => {
     const harness = await bootHarness();
     wrap(harness, <ChangesArt />);
 
@@ -108,7 +93,7 @@ describe("NotificationArt", () => {
     const harness = await bootHarness({ lang: "ru" });
     wrap(harness, <NotificationArt />);
 
-    /* The message is translated; the subject inside it — school-written — is not (CLAUDE.md). */
+    /* The message is translated; the subject inside it — school-written — is not (AGENT.md). */
     expect(screen.getByText("Programmas izstrādes process через 10 мин")).toBeDefined();
     expect(screen.getByText("244 D(30)P · Montvida Monta")).toBeDefined();
   });
@@ -123,5 +108,90 @@ describe("every panel", () => {
       expect(container.firstElementChild?.getAttribute("aria-hidden")).toBe("true");
       unmount();
     }
+  });
+});
+
+describe("OnboardingIntro", () => {
+  it("starts on language selection, steps forward/back, jumps via tabs, and finishes on the last slide", async () => {
+    const harness = await bootHarness({ lang: "lv" });
+    const onDone = vi.fn();
+    wrap(harness, <OnboardingIntro onDone={onDone} />);
+
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Izvēlies valodu");
+    expect(screen.queryByRole("button", { name: "Atpakaļ" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("radio", { name: /English/ }));
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Choose your language");
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
+      "Your timetable, in one place",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Choose your language");
+
+    const tabs = screen.getAllByRole("tab");
+    expect(tabs).toHaveLength(5);
+    const lastTab = tabs[4];
+    if (lastTab !== undefined) fireEvent.click(lastTab);
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
+      "Notified about what matters",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Get started" }));
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+
+  it("lets the user skip immediately from any step", async () => {
+    const harness = await bootHarness({ lang: "en" });
+    const onDone = vi.fn();
+    wrap(harness, <OnboardingIntro onDone={onDone} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("OnboardingLanguage", () => {
+  it("renders all languages in a radio group with Ukrainian above Russian, switches locale, and advances on continue", async () => {
+    const harness = await bootHarness({ lang: "lv" });
+    const onDone = vi.fn();
+    wrap(harness, <OnboardingLanguage onDone={onDone} />);
+
+    const radios = screen.getAllByRole("radio");
+    expect(radios).toHaveLength(20);
+    const uaIndex = radios.findIndex((r) => /Українська/.test(r.textContent ?? ""));
+    const ruIndex = radios.findIndex((r) => /Русский/.test(r.textContent ?? ""));
+    expect(uaIndex).toBeGreaterThanOrEqual(0);
+    expect(ruIndex).toBeGreaterThan(uaIndex);
+    expect(screen.getByRole("radio", { name: /Latviešu/ }).getAttribute("aria-checked")).toBe(
+      "true",
+    );
+
+    fireEvent.click(screen.getByRole("radio", { name: /English/ }));
+    expect(harness.store.getState().settings.lang).toBe("en");
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("DS Button", () => {
+  it("supports the Night/Day variants including glass and icons", () => {
+    const { rerender } = render(
+      <Button variant="glass" size="sm" icon="arrow-left">
+        Back
+      </Button>,
+    );
+    const btn = screen.getByRole("button", { name: "Back" });
+    expect(btn.className).toContain("u-nav-glass");
+
+    rerender(
+      <Button variant="primary" size="lg" block iconEnd="arrow-right">
+        Continue
+      </Button>,
+    );
+    expect(screen.getByRole("button", { name: "Continue" }).className).toContain("u-btn-primary");
   });
 });

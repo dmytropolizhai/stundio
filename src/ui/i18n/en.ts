@@ -52,6 +52,7 @@ export const en: Dict = {
   "onboarding.language.continue": "Continue",
 
   "onboarding.intro.skip": "Skip",
+  "onboarding.intro.back": "Back",
   "onboarding.intro.next": "Next",
   "onboarding.intro.start": "Get started",
   "onboarding.intro.progress": "Intro step",

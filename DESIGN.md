@@ -564,15 +564,8 @@ rather than hints.
 
 - **Shape:** always a pill (`999px`). Three heights: 36 / 44 / 54px (`sm` / `md` / `lg`). Set in
   semibold body (`font-semibold`).
-- **Primary:** near-black fill (`--brand`), white text (`--text-on-brand`), `shadow-card` beneath it —
-  neutral by design, no brand glow. In dark mode, `--brand` flips to light ink (`--ink-100`) and
-  `--text-on-brand` flips to dark ink (`--ink-900`), maintaining prominent contrast on dark ground.
-  `inverse` is the identical treatment kept as its own name for callers on a light hero.
-- **Variants:** `outline` (transparent with a 2px inset ring), `ghost` (transparent, near-black
-  text, sunken tint on hover), `onBrand` (white fill, near-black text, for a callsite on the blue
-  hero), `danger` (red fill `--status-danger`, white text, `shadow-card`, reserved for destructive
-  actions in confirmation sheets and danger zones). None of the variants carry the brand blue any
-  more — see The Neutral Button Rule.
+- **Primary:** Night / Day tactile ink fill (`.u-btn-primary`, subtle top-lit gradient over `--bg-inverse` with `--text-on-inverse`, directional top specular highlight, and grounded shadow) — neutral by design, no brand glow or lamp fill. `inverse` shares the identical treatment for callers on a light hero.
+- **Variants:** `outline` (`.u-btn-outline` — frosted translucent fill with a 1px hairline + top highlight), `glass` (`.u-nav-glass` — liquid-glass pill with directional specular rim for floating chrome such as the welcome tour's Skip/Back controls), `ghost` (`.u-btn-ghost` — transparent, tinting softly on hover), `onBrand` (`.u-btn-on-brand` — light fill with ink text), `danger` (`.u-btn-danger` — `--status-danger` with `--on-danger` text and top highlight, reserved for destructive actions). None of the variants carry the brand blue or lamp fill — see The Neutral Button Rule.
 - **Press:** transform only — `scale(0.97)` over 90ms on `--ease-out`. Colour does not change on
   press. Hover tints exist for desktop previews but the device has no hover.
 - **Disabled:** 38% opacity, pointer events off.
