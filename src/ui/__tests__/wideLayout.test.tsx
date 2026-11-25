@@ -124,12 +124,14 @@ describe("useLayout", () => {
 });
 
 describe("app shell", () => {
-  it("keeps the floating tab bar, and no rail, on a phone", async () => {
+  it("keeps the floating tab bar, status bar and date dock, and no rail, on a phone", async () => {
     stubLayout("phone");
     await renderApp(await bootHarness(ENGLISH));
 
     expect(screen.queryByTestId("side-nav")).toBeNull();
-    expect(screen.getByRole("navigation", { name: "Schedule" })).toBeDefined();
+    expect(screen.getByRole("navigation", { name: "Sections" })).toBeDefined();
+    expect(screen.getByTestId("status-bar")).toBeDefined();
+    expect(screen.getByTestId("date-dock")).toBeDefined();
   });
 
   it("puts an icon-only rail on a tablet, named for assistive tech", async () => {
@@ -137,7 +139,8 @@ describe("app shell", () => {
     await renderApp(await bootHarness(ENGLISH));
 
     const rail = screen.getByTestId("side-nav");
-    expect(screen.queryByRole("navigation", { name: "Schedule" })).toBeNull();
+    expect(screen.queryByTestId("status-bar")).toBeNull();
+    expect(screen.queryByTestId("date-dock")).toBeNull();
     const week = within(rail).getByRole("button", { name: "Week" });
     expect(week.textContent).toBe("");
     expect(within(rail).queryByText("Personal")).toBeNull();
@@ -185,7 +188,9 @@ describe("app shell", () => {
       window.resize("phone");
     });
     expect(screen.queryByTestId("side-nav")).toBeNull();
-    expect(screen.getByRole("navigation", { name: "Schedule" })).toBeDefined();
+    expect(screen.getByRole("navigation", { name: "Sections" })).toBeDefined();
+    expect(screen.getByTestId("status-bar")).toBeDefined();
+    expect(screen.getByTestId("date-dock")).toBeDefined();
   });
 });
 

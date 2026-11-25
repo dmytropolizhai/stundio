@@ -8,6 +8,8 @@ import { LazyMotion, domAnimation } from "framer-motion";
 import { AppStoreProvider, useAppStore, useSettingSetter } from "@/store";
 import { Button, TopBar, TooltipProvider } from "@/ds";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
+import { DateDock } from "./ui/components/DateDock.tsx";
+import { StatusBar } from "./ui/components/StatusBar.tsx";
 import { SideNav } from "./ui/components/SideNav.tsx";
 import { useLayout } from "./ui/hooks/useLayout.ts";
 import { ClassSelector } from "./ui/screens/class-selector";
@@ -256,7 +258,7 @@ const Shell = () => {
   if (picking === "class") {
     return (
       <div className="flex h-full flex-col">
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
+        <div className="mx-auto w-full max-w-screen px-gutter pt-(--app-inset-top)">
           <TopBar
             title={t("settings.class")}
             onBack={() => {
@@ -276,7 +278,7 @@ const Shell = () => {
   if (picking === "teacher") {
     return (
       <div className="flex h-full flex-col">
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top">
+        <div className="mx-auto w-full max-w-screen px-gutter pt-(--app-inset-top)">
           <TopBar
             title={t("onboarding.teacher.title")}
             onBack={() => {
@@ -377,13 +379,33 @@ const Shell = () => {
     </>
   );
 
-  // The phone layout is the reference and keeps its exact markup; wide windows put the nav in a
-  // rail beside the screen instead of floating it over the bottom.
+  // The phone layout is the reference: fixed read-only status strip at the top, and one fixed
+  // bottom stack holding the date dock (Home and Week only) above the single-surface nav bar.
+  // Wide windows put the nav in a rail beside the screen instead.
   if (layout === "phone") {
+    const dockMode = tab === "home" ? "day" : tab === "week" ? "week" : null;
     return (
-      <div className="relative flex h-full flex-col overflow-hidden">
+      <div
+        className="relative flex h-full flex-col overflow-hidden"
+        data-dock={dockMode !== null ? "true" : undefined}
+      >
+        <StatusBar />
         {screen}
-        <TabBar tab={tab} onChange={setTab} />
+        <div
+          className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-nav-inset pb-[calc(var(--space-5)+var(--app-inset-bottom))]"
+          style={{ transform: "translateZ(0)" }}
+        >
+          <div className="flex w-full max-w-screen flex-col gap-2">
+            {dockMode !== null && <DateDock mode={dockMode} nav={scheduleNav} />}
+            <TabBar
+              tab={tab}
+              onChange={setTab}
+              onPickIdentity={() => {
+                setPicking(profile.picker);
+              }}
+            />
+          </div>
+        </div>
         {sheets}
       </div>
     );

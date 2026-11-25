@@ -30,6 +30,7 @@ import {
   CodeXml,
   Coffee,
   Download,
+  Ellipsis,
   ExternalLink,
   Globe,
   GraduationCap,
@@ -98,6 +99,7 @@ const ICONS = {
   cloud: Cloud,
   coffee: Coffee,
   download: Download,
+  ellipsis: Ellipsis,
   "external-link": ExternalLink,
   globe: Globe,
   "graduation-cap": GraduationCap,
@@ -177,8 +179,10 @@ export type IconName = keyof typeof ICONS;
 
 export type IconProps = {
   name: IconName;
-  /** DS sizes: 14 inline in metadata, 18 in list rows, 20 default, 22 in the bottom nav. */
+  /** DS sizes: 14 inline in metadata, 18 in list rows, 20 default, 22–24 in the bottom nav. */
   size?: number;
+  /** Stroke weight override (defaults to the DS's 2px stroke). */
+  strokeWidth?: number;
   className?: string;
 };
 
@@ -188,11 +192,16 @@ export type IconProps = {
  * built from strokes plus decorative sub-paths (a calendar's day grid, a cap's tassel), not solid
  * shapes. `fill="currentColor"` fills every one of those sub-paths in the same colour as the
  * stroke, so the decorative strokes vanish into the fill and every icon collapses into a blob.
- * The active tab's pill plus its colour swap is the signal; don't reach for fill again.
+ * The active tab's pill plus its colour/weight swap is the signal; don't reach for fill again.
  */
-export const Icon = ({ name, size = 20, className }: IconProps) => {
+export const Icon = ({ name, size = 20, strokeWidth = 2, className }: IconProps) => {
   const Glyph = ICONS[name];
   return (
-    <Glyph size={size} strokeWidth={2} aria-hidden="true" className={cn("shrink-0", className)} />
+    <Glyph
+      size={size}
+      strokeWidth={strokeWidth}
+      aria-hidden="true"
+      className={cn("shrink-0", className)}
+    />
   );
 };

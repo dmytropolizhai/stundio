@@ -72,27 +72,24 @@ afterEach(() => {
 });
 
 describe("TabBar", () => {
-  it("shows every tab and reports taps", async () => {
+  it("shows primary tabs plus More and reports taps", async () => {
     const harness = await bootHarness();
     const onChange = vi.fn();
     wrap(harness, <TabBar tab="home" onChange={onChange} />);
 
-    /*
-     * Every tab is a bare icon — the design system's nav slides an inverse-fill pill beneath the
-     * selected one rather than growing a label into view. Each tab's name still reaches assistive
-     * tech via `aria-label`, which is what these queries rely on.
-     */
     expect(screen.getByRole("button", { name: "Sākums" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Nedēļa" })).toBeDefined();
-    expect(screen.getByRole("button", { name: "Izmaiņas" })).toBeDefined();
-    expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();
+    expect(screen.getByRole("button", { name: /^Izmaiņas/ })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Vairāk" })).toBeDefined();
 
-    fireEvent.click(screen.getByRole("button", { name: "Izmaiņas" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Izmaiņas/ }));
     expect(onChange).toHaveBeenCalledWith("changes");
 
+    fireEvent.click(screen.getByRole("button", { name: "Vairāk" }));
     fireEvent.click(screen.getByRole("button", { name: "Transports" }));
     expect(onChange).toHaveBeenCalledWith("transit");
 
+    fireEvent.click(screen.getByRole("button", { name: "Vairāk" }));
     fireEvent.click(screen.getByRole("button", { name: "Iestatījumi" }));
     expect(onChange).toHaveBeenCalledWith("settings");
   });
@@ -105,72 +102,62 @@ describe("TabBar", () => {
     );
   });
 
-  it("splits the tabs into a schedule pill and a personal pill", async () => {
+  it("renders one navigation landmark with primary schedule tabs and a More slot", async () => {
     const harness = await bootHarness();
     wrap(harness, <TabBar tab="home" onChange={vi.fn()} />);
 
-    const schedule = screen.getByRole("navigation", { name: "Grafiks" });
-    const personal = screen.getByRole("navigation", { name: "Personīgi" });
-    const names = (nav: HTMLElement) =>
-      within(nav)
-        .getAllByRole("button")
-        .map((button) => button.getAttribute("aria-label"));
-    expect(names(schedule)).toEqual(["Sākums", "Nedēļa", "Izmaiņas"]);
-    expect(names(personal)).toEqual(["Priekšmeti", "Transports", "Iestatījumi"]);
-    // The personal pill is icon-only: its names reach assistive tech, not the screen.
-    expect(within(schedule).getByText("Sākums")).toBeDefined();
-    expect(within(personal).queryByText("Iestatījumi")).toBeNull();
+    const nav = screen.getByRole("navigation", { name: "Sadaļas" });
+    const buttons = within(nav).getAllByRole("button");
+    expect(buttons).toHaveLength(4);
+    expect(within(nav).getByText("Sākums")).toBeDefined();
+    expect(within(nav).getByText("Nedēļa")).toBeDefined();
+    expect(within(nav).getByText("Izmaiņas")).toBeDefined();
+    expect(within(nav).getByText("Vairāk")).toBeDefined();
   });
 
-  it("gives a teacher a personal pill with settings alone", async () => {
+  it("gives a teacher a direct Settings slot with no More button", async () => {
     const harness = await bootHarness({ persona: "teacher" });
     wrap(harness, <TabBar tab="settings" onChange={vi.fn()} />);
 
-    const personal = screen.getByRole("navigation", { name: "Personīgi" });
-    expect(within(personal).getAllByRole("button")).toHaveLength(1);
-    expect(screen.queryByRole("button", { name: "Priekšmeti" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Transports" })).toBeNull();
+    const nav = screen.getByRole("navigation", { name: "Sadaļas" });
+    expect(within(nav).getAllByRole("button")).toHaveLength(4);
+    expect(screen.queryByRole("button", { name: "Vairāk" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Iestatījumi" }).getAttribute("aria-current")).toBe(
+      "page",
+    );
   });
 
-  it("collapses the Subjects slot while it is switched off, and grows it back", async () => {
+  it("omits Subjects from More while switched off, and restores it when turned back on", async () => {
     const harness = await bootHarness({ showSubjectsTab: false });
-    wrap(harness, <TabBar tab="settings" onChange={vi.fn()} />);
-    const personal = screen.getByRole("navigation", { name: "Personīgi" });
+    wrap(harness, <TabBar tab="home" onChange={vi.fn()} />);
 
-    // Still in the DOM — a zero-width column, so switching it on can animate — but out of reach.
+    fireEvent.click(screen.getByRole("button", { name: "Vairāk" }));
     expect(screen.queryByRole("button", { name: "Priekšmeti" })).toBeNull();
-    expect(personal.style.gridTemplateColumns).toBe(
-      "0px calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px)",
-    );
+    expect(screen.getByRole("button", { name: "Iestatījumi" })).toBeDefined();
 
     await act(async () => {
       await harness.store.getState().updateSettings({ showSubjectsTab: true });
     });
     expect(screen.getByRole("button", { name: "Priekšmeti" })).toBeDefined();
-    expect(personal.style.gridTemplateColumns).toBe(
-      "calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px) calc(var(--nav-height) - 12px)",
-    );
   });
 
-  it("hides one pill's selection while the other pill holds the active tab", async () => {
+  it("marks More active when the current tab lives inside the More sheet", async () => {
     const harness = await bootHarness();
     const { rerender } = wrap(harness, <TabBar tab="week" onChange={vi.fn()} />);
-    const pill = (name: string) =>
-      screen.getByRole("navigation", { name }).querySelector("[aria-hidden]");
 
-    expect(pill("Grafiks")?.className).not.toContain("opacity-0");
-    expect(pill("Personīgi")?.className).toContain("opacity-0");
+    expect(screen.getByTestId("bottom-nav-pill").style.transform).toBe(
+      `translateX(${(1 / 1.9) * 100}%)`,
+    );
 
     rerender(
       <StoreContext.Provider value={harness.store}>
         <TabBar tab="settings" onChange={vi.fn()} />
       </StoreContext.Provider>,
     );
-    expect(pill("Grafiks")?.className).toContain("opacity-0");
-    // Faded out in place — on the week slot it left, so coming back slides from there.
-    expect((pill("Grafiks") as HTMLElement).style.transform).toBe("translateX(calc(1 * 100%))");
-    expect(screen.queryAllByRole("button", { current: "page" })).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "Iestatījumi" }).getAttribute("aria-current")).toBe(
+    expect(screen.getByTestId("bottom-nav-pill").style.transform).toBe(
+      `translateX(${(3 / 1.9) * 100}%)`,
+    );
+    expect(screen.getByRole("button", { name: "Vairāk" }).getAttribute("aria-current")).toBe(
       "page",
     );
   });

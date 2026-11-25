@@ -11,6 +11,8 @@ export const DatePicker = ({
   onOpenChange,
   onSelect,
   title,
+  iconSize = 22,
+  className,
 }: {
   date: ISODate;
   today: ISODate;
@@ -18,6 +20,8 @@ export const DatePicker = ({
   onOpenChange: (open: boolean) => void;
   onSelect: (date: ISODate) => void;
   title?: React.ReactNode;
+  iconSize?: number;
+  className?: string;
 }) => {
   const t = useT();
   const lang = useLang();
@@ -28,13 +32,16 @@ export const DatePicker = ({
         <button
           type="button"
           aria-label={t("day.openCalendar")}
-          className="inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)"
+          className={cn(
+            "inline-flex cursor-pointer items-center gap-1 rounded-md text-left active:scale-(--press-scale)",
+            className,
+          )}
         >
-          <span>{title ?? dayTitle(date, today, t, lang)}</span>
+          <span className="truncate">{title ?? dayTitle(date, today, t, lang)}</span>
 
           <Icon
             name="chevron-down"
-            size={22}
+            size={iconSize}
             className={cn(
               "text-muted transition-transform duration-(--dur-fast) ease-standard",
               open && "rotate-180",

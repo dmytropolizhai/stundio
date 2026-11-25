@@ -1,12 +1,14 @@
 /**
- * The top of the Home screen: a greeting for the time of day, and the screen-wide actions —
- * whose schedule this is, sync state, view options — plus a form teacher's own / form-class
- * switch, which changes everything below it, brief and schedule alike.
+ * The top of the Home screen: a greeting for the time of day, view options, and a form teacher's
+ * own / form-class switch. On phones, class identity and sync freshness live in the fixed
+ * `StatusBar` (with class switching in `MoreSheet`); wide layouts keep `ClassBadge` and
+ * `SyncBadge` here.
  */
 import { SegmentedTabs, TopBar } from "@/ds";
 import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
 import { ViewOptionsMenu } from "@/ui/components/ViewOptionsMenu.tsx";
+import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { useT } from "@/ui/i18n";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useIsFormTeacher } from "@/ui/persona";
@@ -20,6 +22,7 @@ type HomeTopBarProps = {
 
 export const HomeTopBar = ({ nowMinutes, onPickClass, onRefresh }: HomeTopBarProps) => {
   const t = useT();
+  const wide = useLayout() !== "phone";
   const teacherView = useAppStore((s) => s.settings.teacherView);
   const setTeacherView = useSettingSetter("teacherView");
   const isFormTeacher = useIsFormTeacher();
@@ -32,8 +35,12 @@ export const HomeTopBar = ({ nowMinutes, onPickClass, onRefresh }: HomeTopBarPro
         title={t(greetingKey(nowMinutes))}
         actions={
           <>
-            <ClassBadge onClick={onPickClass} />
-            <SyncBadge onRetry={onRefresh} />
+            {wide && (
+              <>
+                <ClassBadge onClick={onPickClass} />
+                <SyncBadge onRetry={onRefresh} />
+              </>
+            )}
             <ViewOptionsMenu
               options={[
                 {

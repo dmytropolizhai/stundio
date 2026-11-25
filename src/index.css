@@ -301,7 +301,7 @@
   --spacing-nav-inset: var(--nav-inset);
   --spacing-topbar: var(--topbar-height);
   --spacing-tap: var(--tap-min);
-  --spacing-safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --spacing-safe-top: var(--safe-top);
   --spacing-safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
 
   /*
@@ -461,6 +461,8 @@
      * fallback for engines that do not know it.
      */
     --app-viewport-height: 100vh;
+    --status-bar-height: 36px;
+    --safe-top: calc(var(--app-inset-top) + var(--status-bar-height));
     --nav-safe: calc(
       var(--nav-height) + var(--nav-inset) + 20px +
         var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))
@@ -474,6 +476,45 @@
      * one card lifted off the app ground.
      */
     --share-shadow: rgba(18, 20, 25, 0.16);
+
+    /*
+     * Floating glass chrome (`BottomNav` and `DateDock`). Translucent frosted glass with a
+     * directional specular rim catching light on the top-left and bottom-right capsule curves,
+     * paired with a tonal inner glass lens behind the active slot.
+     */
+    --nav-glass-bg: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.76) 0%,
+      rgba(242, 243, 247, 0.64) 100%
+    );
+    --nav-glass-rim: linear-gradient(
+      148deg,
+      rgba(255, 255, 255, 0.96) 0%,
+      rgba(18, 20, 25, 0.12) 32%,
+      rgba(18, 20, 25, 0.08) 60%,
+      rgba(255, 255, 255, 0.88) 100%
+    );
+    --nav-glass-shadow:
+      0 14px 36px -10px rgba(18, 20, 25, 0.18), 0 2px 10px -2px rgba(18, 20, 25, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    --nav-pill-bg: linear-gradient(180deg, rgba(18, 20, 25, 0.1) 0%, rgba(18, 20, 25, 0.065) 100%);
+    --nav-pill-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.65), inset 0 0 0 1px rgba(18, 20, 25, 0.06);
+    --nav-icon-active: var(--text-strong);
+    --nav-icon-idle: rgba(18, 20, 25, 0.52);
+    --nav-icon-hover: rgba(18, 20, 25, 0.82);
+  }
+
+  /*
+   * On Home and Week (phone layout), `DateDock` (44px) sits 8px above the bottom bar in the same
+   * fixed stack. Growing `--nav-safe` here clears both the dock and the bar in one place, while
+   * tabs without a dock keep the shorter clearance so there is no dead space.
+   */
+  [data-dock="true"] {
+    --nav-safe: calc(
+      var(--nav-height) + 44px + 8px + var(--nav-inset) + 20px +
+        var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))
+    );
   }
   /*
    * Kept out of `:root` above and behind `@supports`: two declarations of the same custom
@@ -490,6 +531,30 @@
     color-scheme: dark;
     /* Navy is invisible on a dark ground; the system drops to plain black there. */
     --share-shadow: rgba(0, 0, 0, 0.5);
+
+    --nav-glass-bg: linear-gradient(180deg, rgba(34, 45, 58, 0.54) 0%, rgba(18, 24, 33, 0.62) 100%);
+    --nav-glass-rim: linear-gradient(
+      148deg,
+      rgba(255, 255, 255, 0.44) 0%,
+      rgba(255, 255, 255, 0.14) 28%,
+      rgba(255, 255, 255, 0.06) 54%,
+      rgba(255, 255, 255, 0.16) 78%,
+      rgba(255, 255, 255, 0.36) 100%
+    );
+    --nav-glass-shadow:
+      0 18px 42px -10px rgba(0, 0, 0, 0.72), 0 4px 14px -2px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --nav-pill-bg: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.11) 100%
+    );
+    --nav-pill-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+      0 2px 10px -2px rgba(0, 0, 0, 0.28);
+    --nav-icon-active: var(--text-strong);
+    --nav-icon-idle: rgba(241, 238, 232, 0.62);
+    --nav-icon-hover: rgba(241, 238, 232, 0.9);
   }
 
   body {
@@ -664,4 +729,42 @@
 }
 .u-tone-field-deep[data-tone-dark] {
   --deep-base: color-mix(in oklab, var(--tone) 45%, var(--shade));
+}
+
+/*
+ * Liquid-glass floating chrome (`BottomNav` and `DateDock`).
+ * `::before` renders a 1px directional specular rim via CSS mask-composite so the glass edge
+ * catches light along the top-left and bottom-right capsule curves without shifting box geometry.
+ */
+.u-nav-glass {
+  position: relative;
+  isolation: isolate;
+  background: var(--nav-glass-bg);
+  backdrop-filter: blur(var(--blur-glass)) saturate(165%);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(165%);
+  box-shadow: var(--nav-glass-shadow);
+}
+
+.u-nav-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--nav-glass-rim);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.u-nav-pill {
+  background: var(--nav-pill-bg);
+  box-shadow: var(--nav-pill-shadow);
 }

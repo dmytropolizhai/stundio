@@ -5,6 +5,7 @@ import type { ISODate } from "@/lib/edupage";
 import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
 import { DatePicker } from "@/ui/components/DatePicker.tsx";
+import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { formatWeekRange, useLang, useT } from "@/ui/i18n";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useIsFormTeacher } from "@/ui/persona";
@@ -33,6 +34,7 @@ export const WeekTopBar = ({
 }: WeekTopBarProps) => {
   const t = useT();
   const lang = useLang();
+  const wide = useLayout() !== "phone";
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const teacherView = useAppStore((s) => s.settings.teacherView);
@@ -41,50 +43,59 @@ export const WeekTopBar = ({
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
   const setMergeConsecutiveLessons = useSettingSetter("mergeConsecutiveLessons");
 
+  const weekRangeTitle =
+    firstDay !== undefined && lastDay !== undefined
+      ? formatWeekRange(firstDay, lastDay, lang)
+      : t("nav.week");
+
   return (
     <>
       <TopBar
         className="desktop-week-header"
         title={
-          <div className="flex items-center gap-0.5">
-            <IconButton
-              icon="chevron-left"
-              label={t("week.previousWeek")}
-              variant="bare"
-              size="sm"
-              onClick={() => {
-                onDateChange(addDays(date, -7));
-              }}
-            />
+          wide ? (
+            <div className="flex items-center gap-0.5">
+              <IconButton
+                icon="chevron-left"
+                label={t("week.previousWeek")}
+                variant="bare"
+                size="sm"
+                onClick={() => {
+                  onDateChange(addDays(date, -7));
+                }}
+              />
 
-            <DatePicker
-              date={date}
-              today={today}
-              open={calendarOpen}
-              onOpenChange={setCalendarOpen}
-              onSelect={onDateChange}
-              title={
-                firstDay !== undefined && lastDay !== undefined
-                  ? formatWeekRange(firstDay, lastDay, lang)
-                  : t("nav.week")
-              }
-            />
+              <DatePicker
+                date={date}
+                today={today}
+                open={calendarOpen}
+                onOpenChange={setCalendarOpen}
+                onSelect={onDateChange}
+                title={weekRangeTitle}
+              />
 
-            <IconButton
-              icon="chevron-right"
-              label={t("week.nextWeek")}
-              variant="bare"
-              size="sm"
-              onClick={() => {
-                onDateChange(addDays(date, 7));
-              }}
-            />
-          </div>
+              <IconButton
+                icon="chevron-right"
+                label={t("week.nextWeek")}
+                variant="bare"
+                size="sm"
+                onClick={() => {
+                  onDateChange(addDays(date, 7));
+                }}
+              />
+            </div>
+          ) : (
+            weekRangeTitle
+          )
         }
         actions={
           <>
-            <ClassBadge onClick={onPickClass} />
-            <SyncBadge onRetry={onRefresh} />
+            {wide && (
+              <>
+                <ClassBadge onClick={onPickClass} />
+                <SyncBadge onRetry={onRefresh} />
+              </>
+            )}
             <ViewOptionsMenu
               options={[
                 {
@@ -118,7 +129,7 @@ export const WeekTopBar = ({
         </div>
       )}
 
-      {!isThisWeek && (
+      {wide && !isThisWeek && (
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <Button
             variant="ghost"

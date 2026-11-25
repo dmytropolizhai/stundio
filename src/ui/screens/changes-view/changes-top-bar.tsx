@@ -5,6 +5,7 @@ import type { ISODate } from "@/lib/edupage";
 import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
 import { DatePicker } from "@/ui/components/DatePicker.tsx";
+import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { useT } from "@/ui/i18n";
 
 type ChangesTopBarProps = {
@@ -27,6 +28,7 @@ export const ChangesTopBar = ({
   onNavigate,
 }: ChangesTopBarProps) => {
   const t = useT();
+  const wide = useLayout() !== "phone";
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   return (
@@ -66,10 +68,12 @@ export const ChangesTopBar = ({
           </div>
         }
         actions={
-          <>
-            <ClassBadge onClick={onPickClass} />
-            <SyncBadge onRetry={onRefresh} />
-          </>
+          wide ? (
+            <>
+              <ClassBadge onClick={onPickClass} />
+              <SyncBadge onRetry={onRefresh} />
+            </>
+          ) : undefined
         }
       />
 

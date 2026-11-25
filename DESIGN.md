@@ -502,9 +502,7 @@ phone the bar is pure noise. Safe-area insets are read at the root as
 WebView. There are no desktop breakpoints: this is a phone design that centres, not a responsive
 grid that reflows.
 
-**The One Fixed Thing Rule.** Exactly one element is fixed to the viewport: the bottom nav (its two
-pills share one fixed row).
-Everything else scrolls, including the header.
+**The Fixed Chrome Rule (amends the former One Fixed Thing Rule).** On phone layouts, two fixed layers frame the viewport: the thin read-only **status bar** at the top (class or teacher name + sync freshness, no interactive controls) and the **bottom stack** (the compact date dock on Home and Week, sitting 8px above the single-surface bottom nav bar). Everything else scrolls, including each screen's own header. On wide layouts (tablet and desktop), `SideNav` replaces the bottom stack and neither the status bar nor the date dock mounts.
 
 ## Elevation & Depth
 
@@ -629,22 +627,30 @@ rather than hints.
 
 ### Navigation
 
-- **Bottom nav:** a floating near-black pill, 64px tall, inset 16px from the screen edges, above the
-  safe-area inset. Inactive items are icon-only at 62% white and share the remaining width equally.
-- **Two pills, one row:** the nav is split into two pills that float separately, 12px apart, each
-  on its own nav shadow. The left **schedule** pill holds the three views of the timetable (Home,
-  Week, Changes) — the ones opened many times a day — and stretches, labels and all. The right
-  **personal** pill holds what is about you (Subjects, Settings) and is icon-only: each slot is a
-  52px circle and the pill hugs them (a teacher's, Settings alone, is a single 64px circle). Only
-  one tab in the row is active: the other pill's selection fill fades out where it stood, and
-  slides on from there when you come back.
-- **Optional Subjects tab:** a student can switch the Subjects tab off in Settings → Menu. Its slot
-  collapses to a zero-width column instead of unmounting, so switching it back on animates the
-  column open (`--dur-base`, standard easing) and the right-anchored personal pill visibly grows
-  out from the right edge while the icon fades and scales in. Settings stays, it is the way back.
-- **Active state:** a **fill swap, not an indicator** — the active tab becomes a white pill that
-  *grows* to include its text label while the others shrink. This growth is one of the places the
-  spring easing is permitted.
+- **Bottom nav:** a single floating frosted-glass capsule (`.u-nav-glass`), 64px tall, inset 16px
+  from the screen edges, sitting above `env(safe-area-inset-bottom)` with a `20px` backdrop blur
+  and a 1px directional specular rim catching light along its top-left and bottom-right curves.
+  Inactive slots stay compact icon-only (`flex-grow: 1`, minimum 48px touch target each); the
+  selected slot expands (`flex-grow: 1.9`) to reveal its label beside the icon.
+- **Primary tabs and More:** the schedule tabs (Home, Week, Changes — with a count badge capped at
+  `9+` when changes exist) occupy the primary slots. Personal tabs (Subjects, Transit, Settings)
+  fold into a single **More** slot that opens `MoreSheet` (a `BottomSheet` holding the class/teacher
+  identity row at the top followed by the personal destinations). When a role has only one visible
+  personal tab (e.g. a teacher's lone Settings tab, or a student who turned off Subjects and
+  Transit), that tab is promoted directly to a bar slot with no More sheet.
+- **Active state:** a translucent inner frosted glass lens (`.u-nav-pill`) glides beneath the tabs
+  on `--ease-spring` while the selected slot widens and smoothly reveals its label beside the
+  `--text-strong` active icon (`2.25px` stroke) via a `0fr → 1fr` grid-column expansion (exiting
+  faster on `--dur-fast`, entering with a 35ms lead-in so the label opens as the pill arrives).
+  When the active tab lives inside `MoreSheet`, the More slot holds the active pill and
+  `aria-current="page"`.
+- **Date dock:** on Home and Week (phone layout), a compact 44px matching frosted-glass pill
+  (`.u-nav-glass`) floats 8px above the bottom bar in the same fixed stack, holding previous/next
+  stepping, the calendar `DatePicker`, and a "Today" jump when away from today/this week.
+- **Status bar:** on phone layout, a fixed 36px read-only strip below the top safe-area inset shows
+  the active class/teacher on the left and sync freshness (`role="status"`) on the right over
+  `bg-app` with a soft fade-out skirt. No interactive controls live in the status bar; manual
+  refresh is pull-to-refresh and identity switching lives in `MoreSheet`.
 - **Top bar:** 56px, scrolls with content, optional uppercase eyebrow above a Display-2 title, with
   `app` and `brand` (on-blue) tones. The title is a real `<h1>`, not styled text — a screen with no
   heading has an empty heading list.
