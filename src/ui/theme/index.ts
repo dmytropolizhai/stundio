@@ -16,6 +16,8 @@ export {
   overrideAccent,
   groupToneKey,
   subjectToneKey,
+  isDarkTone,
+  toneFieldVars,
   type SubjectTone,
   type SubjectAccent,
 } from "./colors.ts";

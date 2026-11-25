@@ -1,8 +1,6 @@
-import type { CSSProperties } from "react";
 import { Card, Icon } from "@/ds";
 import type { SubjectRef, TeacherRef } from "@/lib/edupage";
-import type { SubjectAccent } from "@/ui/theme";
-import { subjectCode } from "@/ui/theme";
+import { isDarkTone, subjectCode, toneFieldVars, type SubjectAccent } from "@/ui/theme";
 import { useT } from "@/ui/i18n";
 
 type SubjectCardProps = {
@@ -15,19 +13,6 @@ type SubjectCardProps = {
   featured?: boolean;
   onSelect: () => void;
 };
-
-/**
- * The tone's fill and ink pair as the two variables `.u-tone-field` and the mark mix from. A fixed
- * tone reads the design-system tokens (its persisted key still names the legacy variable); a
- * custom pick carries its own pair.
- */
-const toneVars = (accent: SubjectAccent): CSSProperties =>
-  (accent.tone === "custom"
-    ? { "--tone": accent.fill, "--tone-ink": accent.ink }
-    : {
-        "--tone": `var(--accent-${accent.tone})`,
-        "--tone-ink": `var(--accent-${accent.tone}-ink)`,
-      }) as CSSProperties;
 
 /**
  * A subject's profile card (design system: SubjectCard, banner version): a surface card with a
@@ -48,7 +33,8 @@ export const SubjectCard = ({
   const t = useT();
   const subjectKey = subject.name === "" ? subject.short : subject.name;
   const code = subjectCode(subject);
-  const vars = toneVars(accent);
+  const vars = toneFieldVars(accent);
+  const darkTone = isDarkTone(accent);
 
   return (
     <Card
@@ -61,7 +47,7 @@ export const SubjectCard = ({
           : "min-w-0 p-3 text-left"
       }
       style={featured ? vars : undefined}
-      {...(featured && accent.tone === "lime" ? { "data-tone-dark": "" } : {})}
+      {...(featured && darkTone ? { "data-tone-dark": "" } : {})}
       data-testid={`subject-${subject.id}`}
       data-featured={featured ? "" : undefined}
       onClick={onSelect}
@@ -70,7 +56,7 @@ export const SubjectCard = ({
         <div
           className="u-tone-field h-[88px] rounded-md"
           style={vars}
-          {...(accent.tone === "lime" ? { "data-tone-dark": "" } : {})}
+          {...(darkTone ? { "data-tone-dark": "" } : {})}
         />
       )}
       <div

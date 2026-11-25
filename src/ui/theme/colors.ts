@@ -7,6 +7,7 @@
  * school-supplied hex satisfies neither guarantee, so the hex is dropped and each subject is
  * assigned one of the six deterministically instead.
  */
+import type { CSSProperties } from "react";
 import {
   isMainBuilding,
   type Building,
@@ -292,5 +293,26 @@ export const STATUS_TREATMENT: Record<ResolvedStatus, LessonStatus> = {
 
 export const isChanged = (status: ResolvedStatus): status is Exclude<ResolvedStatus, "normal"> =>
   status !== "normal";
+
+/**
+ * True when an accent's base fill is dark enough that its paired ink is light (`lime`/indigo in
+ * the shipped palette, or a dark custom ColorWheel pick). `.u-tone-field` and `.u-tone-field-deep`
+ * read `data-tone-dark` so they darken toward `--shade` rather than toward a light `--tone-ink`.
+ */
+export const isDarkTone = (accent: SubjectAccent): boolean =>
+  accent.tone === "lime" || (accent.tone === "custom" && accent.ink === "#ffffff");
+
+/**
+ * The tone's fill and ink pair as the two CSS custom properties `.u-tone-field`,
+ * `.u-tone-field-deep`, and `.u-glance-glow` mix from. Fixed tones bind to design-system tokens;
+ * custom picks carry their resolved hex pair.
+ */
+export const toneFieldVars = (accent: SubjectAccent): CSSProperties =>
+  (accent.tone === "custom"
+    ? { "--tone": accent.fill, "--tone-ink": accent.ink }
+    : {
+        "--tone": `var(--accent-${accent.tone})`,
+        "--tone-ink": `var(--accent-${accent.tone}-ink)`,
+      }) as CSSProperties;
 
 export type { LessonTone };
