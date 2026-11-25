@@ -43,13 +43,17 @@ export const LiveMapCard = () => {
       <p className="mb-3 font-text text-body-sm text-muted">{t("transit.live.description")}</p>
       {warning && (
         <Card
-          tone="caution"
+          tone="sunken"
           radius="lg"
           elevation="none"
           role="status"
           className="mb-3 flex items-center gap-2 font-text text-caption"
         >
-          <Icon name={offline ? "wifi-off" : "triangle-alert"} size={16} className="shrink-0" />
+          <Icon
+            name={offline ? "wifi-off" : "triangle-alert"}
+            size={16}
+            className="shrink-0 text-caution"
+          />
           {t(warning)}
         </Card>
       )}

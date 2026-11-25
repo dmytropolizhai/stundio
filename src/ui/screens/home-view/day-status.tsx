@@ -6,7 +6,12 @@ export const DayStaleNotice = ({ stale }: { stale: boolean }) => {
   const t = useT();
 
   return stale ? (
-    <Card tone="caution" radius="lg" className="mt-3 font-text text-caption">
+    <Card
+      tone="surface"
+      radius="lg"
+      className="mt-3 flex items-center gap-2 font-text text-caption"
+    >
+      <Icon name="triangle-alert" size={16} className="shrink-0 text-caution" />
       {t("day.stale")}
     </Card>
   ) : null;

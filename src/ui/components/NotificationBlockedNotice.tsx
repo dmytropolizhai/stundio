@@ -19,13 +19,13 @@ export const NotificationBlockedNotice = () => {
 
   return (
     <Card
-      tone="caution"
+      tone="surface"
       radius="lg"
       className="mt-3 flex flex-wrap items-center justify-between gap-3 font-text text-caption"
       data-testid="notify-blocked"
     >
       <span className="flex min-w-0 flex-1 items-center gap-2">
-        <Icon name="bell-off" size={16} className="shrink-0" />
+        <Icon name="bell-off" size={16} className="shrink-0 text-caution" />
         {native ? t("home.notifyBlocked") : t("home.notifyBlockedWeb")}
       </span>
       {native && (

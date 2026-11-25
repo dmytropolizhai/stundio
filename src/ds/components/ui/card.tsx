@@ -15,7 +15,6 @@ const cardVariants = cva("transition-transform duration-(--dur-instant) ease-(--
       sunken: "bg-sunken text-fg",
       brand: "bg-brand text-on-brand",
       panel: "bg-panel text-strong",
-      caution: "bg-warning text-caution-ink",
       ink: "bg-inverse text-on-inverse",
       amber: "bg-amber text-amber-ink",
       sky: "bg-sky text-sky-ink",
@@ -37,7 +36,7 @@ const cardVariants = cva("transition-transform duration-(--dur-instant) ease-(--
   defaultVariants: { tone: "surface", radius: "xl", elevation: "card", interactive: false },
 });
 
-const TINTED = ["caution", "amber", "sky", "lilac", "pink", "mint", "lime", "custom"] as const;
+const TINTED = ["amber", "sky", "lilac", "pink", "mint", "lime", "custom"] as const;
 
 export type CardProps = ComponentPropsWithoutRef<"div"> &
   Pick<VariantProps<typeof cardVariants>, "tone" | "radius" | "elevation">;
