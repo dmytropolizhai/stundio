@@ -27,7 +27,7 @@ import {
   minutesOf,
   tomorrowPreview,
 } from "@/lib/schedule";
-import { dayWeatherOutlook, weatherOutlook } from "@/lib/weather";
+import { dayWeatherOutlook, weatherOutlook, weatherScene } from "@/lib/weather";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button, cn } from "@/ds";
 import { buildingNotice } from "@/ui/theme";
@@ -43,11 +43,11 @@ import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { useT } from "@/ui/i18n";
 import { HomeTopBar } from "./home-top-bar.tsx";
 import { HomeBrief } from "./home-brief.tsx";
+import { WeatherAmbient } from "./weather-ambient.tsx";
 import { DayHeader } from "./day-header.tsx";
 import { DayOfflineNotice, DayStaleNotice, DayStatus } from "./day-status.tsx";
 import { DayGlance } from "./day-glance.tsx";
 import { glanceWalk } from "./glance-walk.ts";
-import { DaySummary } from "./day-summary.tsx";
 import { DayTomorrow } from "./day-tomorrow.tsx";
 import { DayLessonList } from "./day-lesson-list.tsx";
 import { DaySchoolNotes } from "./day-school-notes.tsx";
@@ -63,9 +63,17 @@ type HomeViewProps = {
   onDateChange: (date: ISODate) => void;
   onPickClass: () => void;
   onOpenChanges?: ((date: ISODate) => void) | undefined;
+  /** True on phones while the live/upcoming glance is docked above `TabBar` instead of inline. */
+  dockedGlance?: boolean;
 };
 
-export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: HomeViewProps) => {
+export const HomeView = ({
+  date,
+  onDateChange,
+  onPickClass,
+  onOpenChanges,
+  dockedGlance = false,
+}: HomeViewProps) => {
   const t = useT();
   const now = useNow();
 
@@ -73,6 +81,7 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
   const [prevDate, setPrevDate] = useState(date);
   const [showAllNotes, setShowAllNotes] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [weatherExpanded, setWeatherExpanded] = useState(false);
 
   if (prevDate !== date) {
     setPrevDate(date);
@@ -238,8 +247,10 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
         weatherDate={weather?.date ?? null}
         today={now.date}
         changedCount={briefChanges}
+        hideChangesChip={onOpenChanges !== undefined && (isToday || briefLater)}
+        onWeatherExpandedChange={setWeatherExpanded}
       >
-        {glance !== null && glance.kind !== "finished" && today !== null && (
+        {!dockedGlance && glance !== null && glance.kind !== "finished" && today !== null && (
           <DayGlance day={today} glance={glance} onOpenLesson={setOpen} />
         )}
 
@@ -283,8 +294,6 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
     return (
       <>
         <DayStaleNotice stale={day.stale} />
-
-        {summary !== null && <DaySummary summary={summary} />}
 
         <DayLessonList
           day={day}
@@ -331,8 +340,12 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
 
       {top()}
 
-      <section aria-labelledby="home-schedule" className="mt-7" data-testid="home-schedule">
-        <h2 id="home-schedule" className="u-eyebrow">
+      <section
+        aria-labelledby="home-schedule"
+        className="mt-3.5 tablet:mt-6"
+        data-testid="home-schedule"
+      >
+        <h2 id="home-schedule" className="sr-only">
           {t("home.schedule")}
         </h2>
 
@@ -357,6 +370,7 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
             date={date}
             today={now.date}
             isToday={isToday}
+            summary={ready && hasIdentity ? summary : null}
             changedLessonsCount={changedLessonsCount}
             onOpenChanges={onOpenChanges}
             onDateChange={onDateChange}
@@ -371,45 +385,53 @@ export const HomeView = ({ date, onDateChange, onPickClass, onOpenChanges }: Hom
     </>
   );
 
+  const ambientScene = useMemo(
+    () => (weather === null ? null : weatherScene(weather.outlook)),
+    [weather],
+  );
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <PullToRefresh
-        refreshing={syncStatus === "syncing"}
-        label={t("sync.pull")}
-        releaseLabel={t("sync.release")}
-        onRefresh={refreshDay}
-      >
-        <div
-          className={cn(
-            "mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe",
-            side &&
-              "grid max-w-[1160px] grid-cols-[minmax(0,1fr)_22rem] items-start gap-x-10 px-10",
-          )}
+    <div className="relative flex min-h-0 flex-1 flex-col">
+      {ambientScene !== null && <WeatherAmbient scene={ambientScene} active={weatherExpanded} />}
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+        <PullToRefresh
+          refreshing={syncStatus === "syncing"}
+          label={t("sync.pull")}
+          releaseLabel={t("sync.release")}
+          onRefresh={refreshDay}
         >
-          {side ? (
-            <>
-              <div className="min-w-0">{body}</div>
-              <HomeSide
-                today={today}
-                todayDate={now.date}
-                tomorrow={
-                  tomorrowShownAbove || tomorrow === null
-                    ? null
-                    : { date: nextDate, preview: tomorrow }
-                }
-                onOpenLesson={setOpen}
-                onOpenDay={(next) => {
-                  enterDir.current = next > date ? 1 : -1;
-                  onDateChange(next);
-                }}
-                onOpenChanges={onOpenChanges}
-              />
-            </>
-          ) : (
-            body
-          )}
-        </div>
-      </PullToRefresh>
+          <div
+            className={cn(
+              "mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe",
+              side &&
+                "grid max-w-[1160px] grid-cols-[minmax(0,1fr)_22rem] items-start gap-x-10 px-10",
+            )}
+          >
+            {side ? (
+              <>
+                <div className="min-w-0">{body}</div>
+                <HomeSide
+                  today={today}
+                  todayDate={now.date}
+                  tomorrow={
+                    tomorrowShownAbove || tomorrow === null
+                      ? null
+                      : { date: nextDate, preview: tomorrow }
+                  }
+                  onOpenLesson={setOpen}
+                  onOpenDay={(next) => {
+                    enterDir.current = next > date ? 1 : -1;
+                    onDateChange(next);
+                  }}
+                  onOpenChanges={onOpenChanges}
+                />
+              </>
+            ) : (
+              body
+            )}
+          </div>
+        </PullToRefresh>
+      </div>
 
       <LessonSheet
         lesson={open}

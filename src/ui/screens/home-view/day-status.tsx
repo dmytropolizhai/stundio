@@ -1,19 +1,15 @@
 import { Card, Icon } from "@/ds";
 import { useT } from "@/ui/i18n";
 
-/** A stale timetable changes how far to trust the glance, so it stays above it. */
+/** A stale timetable changes how far to trust the schedule, rendered in the Day block's glass family. */
 export const DayStaleNotice = ({ stale }: { stale: boolean }) => {
   const t = useT();
 
   return stale ? (
-    <Card
-      tone="surface"
-      radius="lg"
-      className="mt-3 flex items-center gap-2 font-text text-caption"
-    >
+    <div className="u-schedule-glass mt-2.5 flex items-center gap-2.5 rounded-xl px-4 py-3 font-text text-caption text-fg">
       <Icon name="triangle-alert" size={16} className="shrink-0 text-caution" />
-      {t("day.stale")}
-    </Card>
+      <span>{t("day.stale")}</span>
+    </div>
   ) : null;
 };
 
@@ -51,23 +47,21 @@ export const DayStatus = ({ buildings, isToday, finished }: DayStatusProps) => {
   return (
     <>
       {buildings !== null && (
-        <Card
-          tone="sunken"
-          radius="lg"
-          elevation="none"
-          className="mt-3 flex items-center gap-2 font-text text-caption text-fg"
+        <div
+          className="u-schedule-glass mt-2.5 flex items-center gap-2.5 rounded-xl px-4 py-3 font-text text-caption text-fg"
           data-testid="day-building"
         >
           <Icon name="building-2" size={16} className="shrink-0 text-muted" />
-
-          {buildings.length === 1
-            ? t("day.buildingOther", {
-                building: buildings[0] ?? "",
-              })
-            : t("day.buildingMixed", {
-                buildings: buildings.join(" → "),
-              })}
-        </Card>
+          <span>
+            {buildings.length === 1
+              ? t("day.buildingOther", {
+                  building: buildings[0] ?? "",
+                })
+              : t("day.buildingMixed", {
+                  buildings: buildings.join(" → "),
+                })}
+          </span>
+        </div>
       )}
 
       {isToday && finished && (

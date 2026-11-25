@@ -2,12 +2,19 @@ type DayNowMarkerProps = {
   label: string;
 };
 
+/** Luminous warm-lamp liquid-glass timeline horizon shown between slabs when no lesson is live. */
 export const DayNowMarker = ({ label }: DayNowMarkerProps) => (
-  <li className="flex items-center gap-2 px-2" data-testid="now-marker">
-    <span className="size-2 rounded-pill bg-brand" />
-    <span className="h-px flex-1 bg-brand/60" />
-    <span className="font-text text-caption font-bold tracking-label text-brand-strong uppercase">
+  <div className="flex items-center gap-2.5 px-2 py-0.5" data-testid="now-marker">
+    <span
+      aria-hidden="true"
+      className="size-2 shrink-0 rounded-pill bg-lamp-mark shadow-[0_2px_8px_var(--lamp-glow)] dark:bg-lamp"
+    />
+    <span
+      aria-hidden="true"
+      className="h-px flex-1 bg-gradient-to-r from-lamp-mark/70 via-lamp-mark/25 to-transparent dark:from-lamp/75 dark:via-lamp/25"
+    />
+    <span className="u-schedule-glass-live inline-flex items-center rounded-pill px-2.5 py-0.5 font-text text-micro font-bold tracking-label text-lamp-text uppercase">
       {label}
     </span>
-  </li>
+  </div>
 );

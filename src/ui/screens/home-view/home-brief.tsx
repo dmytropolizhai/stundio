@@ -41,6 +41,10 @@ type HomeBriefProps = {
   today: ISODate;
   /** The brief's day's changed lessons; the schedule below carries the button to them. */
   changedCount: number;
+  /** Suppresses the static changes chip when the adjacent schedule horizon strip already renders an interactive one. */
+  hideChangesChip?: boolean;
+  /** Fires whenever the weather tile expands or collapses so Home can tint its backdrop. */
+  onWeatherExpandedChange?: (expanded: boolean) => void;
   /** The glance card or tomorrow's preview, rendered by the screen. */
   children?: ReactNode;
 };
@@ -53,6 +57,8 @@ export const HomeBrief = ({
   weatherDate,
   today,
   changedCount,
+  hideChangesChip = false,
+  onWeatherExpandedChange,
   children,
 }: HomeBriefProps) => {
   const t = useT();
@@ -79,6 +85,13 @@ export const HomeBrief = ({
       : expandedTile === "weather" && weather !== null
         ? "weather"
         : null;
+
+  useEffect(() => {
+    onWeatherExpandedChange?.(activeExpanded === "weather");
+    return () => {
+      onWeatherExpandedChange?.(false);
+    };
+  }, [activeExpanded, onWeatherExpandedChange]);
 
   useEffect(() => {
     if (activeExpanded === null) return;
@@ -109,7 +122,8 @@ export const HomeBrief = ({
     };
   }, [activeExpanded]);
 
-  const showChanges = changedCount > 0 && brief !== null && brief.kind !== "finished";
+  const showChanges =
+    !hideChangesChip && changedCount > 0 && brief !== null && brief.kind !== "finished";
 
   if (brief === null && weather === null && children === undefined) return null;
 

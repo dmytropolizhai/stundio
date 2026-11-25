@@ -14,7 +14,14 @@
 import { memo, type CSSProperties, type KeyboardEvent } from "react";
 import type { ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
 import { Badge, Icon, cn, type LessonTone } from "@/ds";
-import { STATUS_TREATMENT, isChanged, lessonAccent, type SubjectAccent } from "@/ui/theme";
+import {
+  STATUS_TREATMENT,
+  isChanged,
+  isDarkTone,
+  lessonAccent,
+  toneFieldVars,
+  type SubjectAccent,
+} from "@/ui/theme";
 import { StatusDot } from "@/ui/components/Badge.tsx";
 import { lessonHeading } from "@/ui/components/lesson-heading.ts";
 import { useT } from "@/ui/i18n";
@@ -40,6 +47,8 @@ type DayGlassLessonProps = {
   passed?: boolean;
   progress?: number;
   showTime: boolean;
+  /** Plays the scale-in reveal only when `showTime` is toggled on, never on day swipes. */
+  animateTime?: boolean;
   building?: string;
   subjectColorOverrides: Record<string, string>;
   colorCodingEnabled: boolean;
@@ -49,6 +58,8 @@ type DayGlassLessonProps = {
   connectBottom?: boolean;
   /** One of two subgroups sharing a period: half-width compact cell inside a paired row. */
   half?: boolean;
+  /** True when a non-live half-row sits beside a live peer outside a shared glass slab. */
+  standalone?: boolean;
   onOpen?: (lesson: ResolvedLesson) => void;
 };
 
@@ -59,6 +70,7 @@ export const DayGlassLesson = memo(
     passed = false,
     progress,
     showTime,
+    animateTime = false,
     building,
     subjectColorOverrides,
     colorCodingEnabled,
@@ -66,6 +78,7 @@ export const DayGlassLesson = memo(
     connectTop = false,
     connectBottom = false,
     half = false,
+    standalone = false,
     onOpen,
   }: DayGlassLessonProps) => {
     const t = useT();
@@ -103,7 +116,11 @@ export const DayGlassLesson = memo(
     const hasNote = (lesson.noteRefs?.length ?? 0) > 0;
     const interactive = onOpen !== undefined;
 
-    const toneVars = { "--row-tone": accentVar(accent) } as CSSProperties;
+    const fieldVars = toneFieldVars(accent);
+    const darkTone = isDarkTone(accent);
+    const toneVars = (
+      live ? { "--row-tone": accentVar(accent), ...fieldVars } : { "--row-tone": accentVar(accent) }
+    ) as CSSProperties;
 
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
       if (!interactive) return;
@@ -130,22 +147,22 @@ export const DayGlassLesson = memo(
         {!half && connectTop && (
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-0 bottom-1/2 left-1/2 w-px -translate-x-1/2 bg-(--schedule-spine)"
+            className="pointer-events-none absolute -top-3 bottom-1/2 left-1/2 w-px -translate-x-1/2 bg-(--schedule-spine)"
           />
         )}
         {!half && connectBottom && (
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 bottom-0 left-1/2 w-px -translate-x-1/2 bg-(--schedule-spine)"
+            className="pointer-events-none absolute top-1/2 -bottom-3 left-1/2 w-px -translate-x-1/2 bg-(--schedule-spine)"
           />
         )}
         <div className="relative flex items-center justify-center">
-          {!filled && !cancelled && (
+          {!live && !filled && !cancelled && (
             <span
               aria-hidden="true"
               className={cn(
                 "u-schedule-orb-halo pointer-events-none absolute -inset-2.5 rounded-full transition-opacity duration-(--dur-fast)",
-                live ? "opacity-75" : passed ? "opacity-30" : "opacity-55 group-hover:opacity-80",
+                passed ? "opacity-30" : "opacity-55 group-hover:opacity-80",
               )}
             />
           )}
@@ -155,6 +172,7 @@ export const DayGlassLesson = memo(
               half ? "size-7.5 text-caption" : "size-9 text-[14px]",
               "shadow-[inset_0_1px_1px_rgba(255,255,255,0.48),0_1px_2px_rgba(18,20,25,0.1)]",
               accent.tone === "custom" ? "" : ORB_TONE[accent.tone],
+              live && "ring-2 ring-on-deep/25",
               passed && !cancelled && "opacity-78 saturate-[0.82]",
               cancelled && "line-through",
             )}
@@ -173,9 +191,11 @@ export const DayGlassLesson = memo(
     const roomPill = showStudentRoom ? (
       <span
         className={cn(
-          "u-schedule-room-pill inline-flex max-w-[7.25rem] shrink-0 items-center truncate rounded-pill font-data font-semibold tabular-nums",
+          "inline-flex max-w-[7.25rem] shrink-0 items-center truncate rounded-pill font-data font-semibold tabular-nums",
           half ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-[12px]",
-          live ? "text-lamp-ink dark:text-lamp-text" : passed ? "text-fg" : "text-strong",
+          live
+            ? "bg-on-deep/15 text-on-deep ring-1 ring-on-deep/20"
+            : cn("u-schedule-room-pill", passed ? "text-fg" : "text-strong"),
           cancelled && "line-through",
         )}
       >
@@ -187,10 +207,15 @@ export const DayGlassLesson = memo(
       live || isCover || hasNote ? (
         <div className="flex flex-wrap items-center gap-1.5">
           {live && (
-            <Badge tone="brand" className="bg-lamp text-lamp-ink" data-testid="status-now">
+            <Badge
+              tone="brand"
+              className="bg-on-deep/18 text-on-deep ring-1 ring-on-deep/25"
+              data-testid="status-now"
+            >
               <span
                 aria-hidden="true"
-                className="mr-1 inline-block size-1.5 rounded-full bg-lamp-ink"
+                className="mr-1 inline-block size-1.5 rounded-full"
+                style={{ backgroundColor: "var(--tone)" }}
               />
               {t("day.now")}
             </Badge>
@@ -201,7 +226,12 @@ export const DayGlassLesson = memo(
             </Badge>
           )}
           {hasNote && (
-            <Badge tone="quiet" data-testid="lesson-note-badge" aria-label={t("lesson.note")}>
+            <Badge
+              tone="quiet"
+              className={live ? "bg-on-deep/15 text-on-deep" : undefined}
+              data-testid="lesson-note-badge"
+              aria-label={t("lesson.note")}
+            >
               {t("lesson.note")}
             </Badge>
           )}
@@ -223,6 +253,7 @@ export const DayGlassLesson = memo(
         data-testid={`lesson-${lesson.period}`}
         data-live={live ? "true" : undefined}
         data-passed={passed ? "true" : undefined}
+        {...(live && darkTone ? { "data-tone-dark": "" } : {})}
         style={toneVars}
         className={cn(
           "group relative grid transition-[background-color,transform] duration-(--dur-instant) ease-(--ease-out)",
@@ -233,10 +264,12 @@ export const DayGlassLesson = memo(
               ? "grid-cols-[auto_1fr_auto] items-center gap-3 px-3.5 py-3"
               : "grid-cols-[auto_1fr] items-center gap-3 px-3.5 py-3",
           interactive ? "cursor-pointer active:scale-[0.99]" : "cursor-default",
+          live &&
+            "u-tone-field u-tone-field-deep overflow-hidden rounded-xl text-on-deep shadow-raised",
+          !live && standalone && "u-schedule-glass overflow-hidden rounded-xl",
           !live && filled && "u-schedule-row-tinted",
           !live && !filled && !cancelled && "u-schedule-row-caustic",
           !live && "hover:bg-(--schedule-row-hover)",
-          live && half && "u-schedule-glass-live rounded-xl",
           cancelled && "opacity-55",
           isCover && highlightCoverLessons && "inset-ring-2 inset-ring-warning",
         )}
@@ -248,7 +281,8 @@ export const DayGlassLesson = memo(
               {subtitle !== undefined && (
                 <span
                   className={cn(
-                    "truncate font-text text-micro font-bold text-muted",
+                    "truncate font-text text-micro font-bold",
+                    live ? "text-on-deep/80" : "text-muted",
                     cancelled && "line-through",
                   )}
                 >
@@ -269,14 +303,21 @@ export const DayGlassLesson = memo(
               <div className="flex min-w-11 flex-col items-start justify-center gap-0.5">
                 <span
                   className={cn(
-                    "u-data origin-top animate-time-in text-[13px] leading-none font-bold",
-                    passed ? "text-fg" : "text-strong",
+                    "u-data origin-top text-[13px] leading-none font-bold",
+                    animateTime && "animate-time-in",
+                    live ? "text-on-deep" : passed ? "text-fg" : "text-strong",
                     cancelled && "line-through",
                   )}
                 >
                   {lesson.start}
                 </span>
-                <span className="u-data origin-bottom animate-time-in text-[11px] leading-none text-muted">
+                <span
+                  className={cn(
+                    "u-data origin-bottom text-[11px] leading-none",
+                    animateTime && "animate-time-in",
+                    live ? "text-on-deep/75" : "text-muted",
+                  )}
+                >
                   {lesson.end}
                 </span>
               </div>
@@ -292,7 +333,7 @@ export const DayGlassLesson = memo(
             className={cn(
               "m-0 font-display leading-[1.2] font-bold tracking-[-0.02em]",
               half ? "text-[15px]" : "text-[16px]",
-              live ? "text-strong" : passed ? "text-fg" : "text-strong",
+              live ? "text-on-deep" : passed ? "text-fg" : "text-strong",
               cancelled && "line-clamp-2 line-through",
             )}
           >
@@ -300,7 +341,12 @@ export const DayGlassLesson = memo(
           </h3>
 
           {hasSecondary && (
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-text text-[12.5px] leading-snug text-muted">
+            <div
+              className={cn(
+                "flex flex-wrap items-center gap-x-2 gap-y-0.5 font-text text-[12.5px] leading-snug",
+                live ? "text-on-deep/80" : "text-muted",
+              )}
+            >
               {secondaryLine !== "" && (
                 <span className={cn("min-w-0 truncate", cancelled && "line-through")}>
                   {secondaryLine}
@@ -312,7 +358,14 @@ export const DayGlassLesson = memo(
               )}
 
               {building !== undefined && (
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-pill bg-(--schedule-room-bg) px-2 py-0.5 font-text text-[11px] leading-none font-semibold text-strong">
+                <span
+                  className={cn(
+                    "inline-flex shrink-0 items-center gap-1 rounded-pill px-2 py-0.5 font-text text-[11px] leading-none font-semibold",
+                    live
+                      ? "bg-on-deep/15 text-on-deep ring-1 ring-on-deep/20"
+                      : "bg-(--schedule-room-bg) text-strong",
+                  )}
+                >
                   <Icon name="building-2" size={11} className="shrink-0" />
                   {building}
                 </span>
@@ -331,13 +384,14 @@ export const DayGlassLesson = memo(
         {live && progress !== undefined && (
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] overflow-hidden bg-lamp/20"
+            className="pointer-events-none !absolute inset-x-0 bottom-0 z-[3] h-[3px] overflow-hidden bg-on-deep/15"
           >
             <span
               data-testid="live-lesson-progress"
-              className="block h-full rounded-r-pill bg-lamp-mark dark:bg-lamp"
+              className="block h-full rounded-r-pill"
               style={{
                 width: `${String(Math.round(Math.min(1, Math.max(0, progress)) * 100))}%`,
+                background: "color-mix(in oklab, var(--tone) 30%, var(--on-deep))",
               }}
             />
           </span>

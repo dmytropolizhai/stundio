@@ -209,7 +209,9 @@ describe("HomeView", () => {
       const harness = await bootHarness();
       const tomorrow = renderDay(harness, "2026-09-10");
 
-      expect(screen.getByTestId("day-summary").textContent).toMatch(/\d\d:\d\d – \d\d:\d\d/);
+      expect(
+        within(screen.getByTestId("day-header")).getByTestId("day-time-range").textContent,
+      ).toMatch(/\d\d:\d\d – \d\d:\d\d/);
       // How long tomorrow will be, named, rather than how much of today is left.
       const tomorrowBrief = screen.getByTestId("home-brief");
       expect(tomorrowBrief.getAttribute("aria-label")).toMatch(/^Mācības sākas \d\d:\d\d/);
@@ -398,8 +400,11 @@ describe("HomeView", () => {
       expect(screen.getByTestId("weather-backdrop").getAttribute("data-precip")).toBe("rain");
 
       // Tap expands horizontally and reveals condition + day/night temps while school tile is inert
+      expect(screen.getByTestId("weather-ambient").getAttribute("data-active")).toBe("false");
       fireEvent.click(weather);
       expect(weather.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByTestId("weather-ambient").getAttribute("data-active")).toBe("true");
+      expect(screen.getByTestId("weather-ambient").getAttribute("data-precip")).toBe("rain");
       expect(screen.getByTestId("home-tiles").style.gridTemplateColumns).toBe("0fr 2fr");
       expect(screen.getByTestId("home-brief").hasAttribute("inert")).toBe(true);
       expect(weather.textContent).toContain("Tagad");
@@ -411,6 +416,7 @@ describe("HomeView", () => {
       // Second tap collapses back to equal columns
       fireEvent.click(weather);
       expect(weather.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.getByTestId("weather-ambient").getAttribute("data-active")).toBe("false");
       expect(screen.getByTestId("home-tiles").style.gridTemplateColumns).toBe("1fr 1fr");
       expect(screen.getByTestId("home-brief").hasAttribute("inert")).toBe(false);
 
@@ -741,5 +747,146 @@ describe("HomeView", () => {
     expect(badge).toBeDefined();
     fireEvent.click(badge);
     expect(onOpenChanges).toHaveBeenCalledWith(FIXTURE_DATE);
+  });
+
+  it("groups consecutive lessons into frosted-glass panes and lifts the live lesson onto its deep subject field", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+
+    // During the first lesson, it lifts out onto its subject's deep grainy tone field (matching the
+    // featured SubjectCard, DayGlance, and NowDock) while the remaining consecutive lessons share a
+    // frosted-glass pane below it.
+    const livePane = screen.getByTestId("schedule-live-pane");
+    const liveCard = livePane.querySelector<HTMLElement>('[data-live="true"]');
+    expect(liveCard).not.toBeNull();
+    expect(liveCard!.className).toContain("u-tone-field");
+    expect(liveCard!.className).toContain("u-tone-field-deep");
+    expect(liveCard!.style.getPropertyValue("--tone")).not.toBe("");
+    expect(liveCard!.style.getPropertyValue("--tone-ink")).not.toBe("");
+    expect(within(livePane).getByTestId("status-now")).toBeDefined();
+
+    const glassPanes = screen.getAllByTestId("schedule-glass-pane");
+    expect(glassPanes.length).toBeGreaterThanOrEqual(1);
+    expect(glassPanes[0]!.className).toContain("u-schedule-glass");
+  });
+
+  it("sets data-tone-dark on the live lesson card when its subject uses a dark tone", async () => {
+    const harness = await bootHarness();
+    const day = harness.store.getState().resolvedDay(FIXTURE_DATE);
+    const liveLesson = day?.lessons.find((l) => l.status !== "cancelled");
+    expect(liveLesson?.subject).toBeDefined();
+    const key = (
+      liveLesson!.subject!.short ||
+      liveLesson!.subject!.name ||
+      liveLesson!.subject!.id
+    )
+      .trim()
+      .toLowerCase();
+    await harness.store.getState().setSubjectColorOverride(key, "lime");
+    renderDay(harness);
+
+    const livePane = screen.getByTestId("schedule-live-pane");
+    const liveCard = livePane.querySelector<HTMLElement>('[data-live="true"]');
+    expect(liveCard).not.toBeNull();
+    expect(liveCard!.hasAttribute("data-tone-dark")).toBe(true);
+    expect(liveCard!.style.getPropertyValue("--tone")).toBe("var(--accent-lime)");
+  });
+
+  it("tints glass lesson rows with subject tone when lessonCardStyle is filled", async () => {
+    const harness = await bootHarness({ lessonCardStyle: "filled" });
+    renderDay(harness);
+
+    const glassPane = screen.getAllByTestId("schedule-glass-pane")[0]!;
+    const firstNonLiveButton = glassPane.querySelector('[role="button"]');
+    expect(firstNonLiveButton).not.toBeNull();
+    expect(firstNonLiveButton!.className).toContain("u-schedule-row-tinted");
+  });
+
+  it("collapses redundant phone header chrome on today and reveals browsed day title when away", async () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => ({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+
+    try {
+      const harness = await bootHarness();
+      const onOpenChanges = vi.fn();
+      const todayView = render(
+        <TooltipProvider>
+          <StoreContext.Provider value={harness.store}>
+            <HomeView
+              date={FIXTURE_DATE}
+              onDateChange={vi.fn()}
+              onPickClass={vi.fn()}
+              onOpenChanges={onOpenChanges}
+              dockedGlance
+            />
+          </StoreContext.Provider>
+        </TooltipProvider>,
+      );
+
+      const header = screen.getByTestId("day-header");
+      expect(within(header).getByTestId("day-time-range")).toBeDefined();
+      expect(within(header).getByTestId("day-summary")).toBeDefined();
+      expect(within(header).getByTestId("day-changes-badge")).toBeDefined();
+      // Static brief changes chip is suppressed when the interactive horizon chip is right below
+      expect(screen.queryByTestId("home-brief-changes")).toBeNull();
+      // Long date is dropped on phones because DateDock already owns it
+      expect(header.textContent).not.toContain("septembris");
+      todayView.unmount();
+
+      render(
+        <TooltipProvider>
+          <StoreContext.Provider value={harness.store}>
+            <HomeView
+              date="2026-09-10"
+              onDateChange={vi.fn()}
+              onPickClass={vi.fn()}
+              onOpenChanges={onOpenChanges}
+              dockedGlance
+            />
+          </StoreContext.Provider>
+        </TooltipProvider>,
+      );
+
+      const tomorrowHeader = screen.getByTestId("day-header");
+      expect(tomorrowHeader.textContent).toContain("Rīt");
+      expect(within(tomorrowHeader).getByTestId("day-time-range")).toBeDefined();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("marks finished earlier lessons on today as passed while keeping later ones active", async () => {
+    // 11:30 Riga (08:30Z): past early morning periods, mid-day
+    vi.setSystemTime(new Date("2026-09-09T08:30:00Z"));
+    const harness = await bootHarness();
+    const { container } = renderDay(harness);
+
+    const passedRows = container.querySelectorAll('[data-passed="true"]');
+    expect(passedRows.length).toBeGreaterThan(0);
+  });
+
+  it("expands the horizon summary capsule inline on tap to show labelled lesson count and longest break window", async () => {
+    const harness = await bootHarness();
+    renderDay(harness);
+
+    const toggle = within(screen.getByTestId("day-header")).getByTestId("day-summary-toggle");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+
+    const details = screen.getByTestId("day-summary-details");
+    expect(details.textContent).toContain("Stundas");
+    expect(details.textContent).toContain("Garākais starpbrīdis");
+    expect(details.textContent).toMatch(/\d\d:\d\d – \d\d:\d\d/);
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
   });
 });

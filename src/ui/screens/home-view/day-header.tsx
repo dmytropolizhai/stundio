@@ -1,21 +1,32 @@
 /**
- * The header of the Home screen's day block: which day the schedule below shows, plus the jump to
- * that day's changes. On phones, day stepping and the calendar live in the bottom `DateDock` so
- * they sit in the thumb zone; wide layouts (which have no dock) keep the inline controls here.
+ * Horizon bar for the Home screen's Day schedule.
+ *
+ * On phones, `DateDock` and `SchoolTile` already own today's date and countdown, so redundant
+ * "Today" title and long-date rows collapse into a single compact liquid-glass horizon strip
+ * (browsed day pill when away from today, tappable time-span + lesson/longest-break capsule that
+ * expands inline for labelled details, and the changes shortcut — both carrying 44px touch boxes
+ * around their 30px visual pills), pulling lessons high into the first viewport. Wide layouts keep
+ * the inline `DatePicker`, "to today" action, and 44px day-stepping chevrons.
  */
-import { useState } from "react";
-import { Button, IconButton } from "@/ds";
+import { useEffect, useId, useState } from "react";
+import { Button, Icon, IconButton, cn } from "@/ds";
 import { stepSchoolDay } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
+import type { DaySummary as Summary } from "@/lib/schedule";
 import { DatePicker } from "@/ui/components/DatePicker.tsx";
 import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { dayTitle } from "@/ui/lib/dayTitle.ts";
-import { formatLongDate, useLang, useT } from "@/ui/i18n";
+import { formatDuration, formatLongDate, useLang, useT } from "@/ui/i18n";
+import { DaySummary, DaySummaryDetails } from "./day-summary.tsx";
 
 type DayHeaderProps = {
   date: ISODate;
   today: ISODate;
   isToday: boolean;
+  /** First-to-last lesson time span (e.g. "08:30 – 14:15"). */
+  timeRange?: string | undefined;
+  /** Day lesson/break outline, fused into the tappable horizon capsule with `timeRange`. */
+  summary?: Summary | null | undefined;
   changedLessonsCount?: number | undefined;
   onOpenChanges?: ((date: ISODate) => void) | undefined;
   onDateChange: (date: ISODate) => void;
@@ -26,6 +37,8 @@ export const DayHeader = ({
   date,
   today,
   isToday,
+  timeRange,
+  summary = null,
   changedLessonsCount,
   onOpenChanges,
   onDateChange,
@@ -35,62 +48,169 @@ export const DayHeader = ({
   const lang = useLang();
   const wide = useLayout() !== "phone";
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [summaryExpanded, setSummaryExpanded] = useState(false);
+  const [prevDate, setPrevDate] = useState(date);
+  const summaryPanelId = useId();
+
+  if (prevDate !== date) {
+    setPrevDate(date);
+    setSummaryExpanded(false);
+  }
+
+  useEffect(() => {
+    if (!summaryExpanded) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSummaryExpanded(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [summaryExpanded]);
+
   const showChanges = (changedLessonsCount ?? 0) > 0 && onOpenChanges !== undefined;
+  const effectiveRange =
+    timeRange ?? (summary !== null ? `${summary.start} – ${summary.end}` : undefined);
+  const hasFacts = effectiveRange !== undefined || summary !== null;
+  const title = dayTitle(date, today, t, lang);
+
+  const summaryAriaLabel =
+    summary !== null
+      ? [
+          effectiveRange,
+          t("day.summary.lessons", { count: summary.lessonCount }),
+          summary.longestBreak !== null
+            ? `${t("day.summary.longestBreak", { duration: formatDuration(summary.longestBreak.minutes) })} (${summary.longestBreak.start} – ${summary.longestBreak.end})`
+            : undefined,
+          t(summaryExpanded ? "day.summary.collapse" : "day.summary.expand"),
+        ]
+          .filter((part): part is string => part !== undefined)
+          .join(". ")
+      : undefined;
+
+  const factsCapsule = hasFacts ? (
+    summary !== null ? (
+      <button
+        type="button"
+        data-testid="day-summary-toggle"
+        aria-expanded={summaryExpanded}
+        aria-controls={summaryPanelId}
+        aria-label={summaryAriaLabel}
+        onClick={() => {
+          setSummaryExpanded((open) => !open);
+        }}
+        className="-my-1.5 inline-flex min-h-11 min-w-0 cursor-pointer items-center rounded-pill border-0 bg-transparent px-0 py-1.5 text-left transition-transform duration-(--dur-instant) ease-(--ease-out) active:scale-(--press-scale)"
+      >
+        <span className="u-schedule-glass-chip inline-flex h-7.5 min-w-0 items-center gap-2 rounded-pill px-2.5 font-data text-[12px] font-medium tracking-[-0.03em] tabular-nums text-strong">
+          {effectiveRange !== undefined && (
+            <span
+              aria-hidden="true"
+              data-testid="day-time-range"
+              className="shrink-0 leading-none whitespace-nowrap"
+            >
+              {effectiveRange}
+            </span>
+          )}
+          {effectiveRange !== undefined && (
+            <span aria-hidden="true" className="h-3 w-px shrink-0 bg-(--schedule-divider)" />
+          )}
+          <DaySummary summary={summary} bare />
+          <Icon
+            name="chevron-down"
+            size={12}
+            className={cn(
+              "shrink-0 text-muted transition-transform duration-(--dur-base) ease-(--ease-standard)",
+              summaryExpanded && "rotate-180 text-strong",
+            )}
+          />
+        </span>
+      </button>
+    ) : (
+      <div className="u-schedule-glass-chip inline-flex min-h-7.5 min-w-0 items-center gap-2 rounded-pill px-2.5 py-1 font-data text-[12px] font-medium tracking-[-0.03em] tabular-nums text-strong">
+        <span
+          aria-label={effectiveRange}
+          data-testid="day-time-range"
+          className="shrink-0 leading-none whitespace-nowrap"
+        >
+          {effectiveRange}
+        </span>
+      </div>
+    )
+  ) : null;
+
+  if (!wide) {
+    const emptyToday = isToday && !hasFacts && !showChanges;
+
+    if (emptyToday) {
+      return (
+        <div className="sr-only" data-testid="day-header">
+          {title}
+        </div>
+      );
+    }
+
+    return (
+      <div data-testid="day-header">
+        <div className="flex items-center justify-between gap-1.5">
+          <div className="no-scrollbar flex min-w-0 items-center gap-2 overflow-x-auto">
+            {isToday ? (
+              <span className="sr-only">{title}</span>
+            ) : (
+              <span className="shrink-0 font-display text-[16px] leading-none font-bold tracking-display text-strong first-letter:uppercase">
+                {title}
+              </span>
+            )}
+            {factsCapsule}
+          </div>
+
+          {showChanges && (
+            <button
+              type="button"
+              onClick={() => {
+                onOpenChanges(date);
+              }}
+              data-testid="day-changes-badge"
+              className="-my-1.5 inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-pill border-0 bg-transparent px-0 py-1.5 font-text text-[12px] font-semibold text-strong transition-transform duration-(--dur-instant) ease-(--ease-out) active:scale-(--press-scale)"
+            >
+              <span className="u-schedule-glass-chip inline-flex h-7.5 items-center gap-1.5 rounded-pill px-2.5">
+                <Icon name="repeat" size={14} className="shrink-0" />
+                <span>{t("day.changesBadge", { n: changedLessonsCount! })}</span>
+              </span>
+            </button>
+          )}
+        </div>
+
+        {summary !== null && (
+          <DaySummaryDetails id={summaryPanelId} summary={summary} expanded={summaryExpanded} />
+        )}
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-2" data-testid="day-header">
-      <div className="flex items-center justify-between gap-2">
+    <div data-testid="day-header">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="font-display text-display-2 leading-none tracking-display text-strong">
-            {wide ? (
-              <DatePicker
-                date={date}
-                today={today}
-                open={calendarOpen}
-                onOpenChange={setCalendarOpen}
-                onSelect={onDateChange}
-              />
-            ) : (
-              <span>{dayTitle(date, today, t, lang)}</span>
-            )}
+            <DatePicker
+              date={date}
+              today={today}
+              open={calendarOpen}
+              onOpenChange={setCalendarOpen}
+              onSelect={onDateChange}
+            />
           </div>
           <p className="mt-1 font-text text-caption text-muted first-letter:uppercase">
             {formatLongDate(date, lang)}
           </p>
         </div>
 
-        {wide && (
-          <div className="flex shrink-0 items-center gap-1">
-            <IconButton
-              icon="chevron-left"
-              label={t("day.previousDay")}
-              variant="light"
-              size="sm"
-              onClick={() => {
-                onNavigate(-1);
-                onDateChange(stepSchoolDay(date, -1));
-              }}
-            />
-            <IconButton
-              icon="chevron-right"
-              label={t("day.nextDay")}
-              variant="light"
-              size="sm"
-              onClick={() => {
-                onNavigate(1);
-                onDateChange(stepSchoolDay(date, 1));
-              }}
-            />
-          </div>
-        )}
-      </div>
-
-      {((wide && !isToday) || showChanges) && (
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          {wide && !isToday && (
+        <div className="flex flex-wrap items-center gap-2">
+          {!isToday && (
             <Button
               variant="ghost"
-              size="sm"
+              size="md"
+              className="u-schedule-glass-chip rounded-pill px-4 text-caption"
               onClick={() => {
                 onDateChange(today);
               }}
@@ -100,9 +220,10 @@ export const DayHeader = ({
           )}
           {showChanges && (
             <Button
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="md"
               icon="repeat"
+              className="u-schedule-glass-chip rounded-pill px-4 text-caption"
               onClick={() => {
                 onOpenChanges(date);
               }}
@@ -111,7 +232,35 @@ export const DayHeader = ({
               {t("day.changesBadge", { n: changedLessonsCount! })}
             </Button>
           )}
+          {factsCapsule}
+
+          <div className="u-schedule-glass-chip flex shrink-0 items-center gap-0.5 rounded-pill p-0.5">
+            <IconButton
+              icon="chevron-left"
+              label={t("day.previousDay")}
+              variant="bare"
+              size="md"
+              onClick={() => {
+                onNavigate(-1);
+                onDateChange(stepSchoolDay(date, -1));
+              }}
+            />
+            <IconButton
+              icon="chevron-right"
+              label={t("day.nextDay")}
+              variant="bare"
+              size="md"
+              onClick={() => {
+                onNavigate(1);
+                onDateChange(stepSchoolDay(date, 1));
+              }}
+            />
+          </div>
         </div>
+      </div>
+
+      {summary !== null && (
+        <DaySummaryDetails id={summaryPanelId} summary={summary} expanded={summaryExpanded} />
       )}
     </div>
   );

@@ -67,6 +67,89 @@ describe("LessonRow and LessonSheet", () => {
       expect(pair.children[0]?.textContent).toContain("Anglu");
       expect(pair.children[1]?.textContent).toContain("Vācu");
     });
+
+    it("splits schedule slabs with a building bridge when consecutive lessons switch buildings", () => {
+      const day = {
+        date: "2026-09-09",
+        lessons: [
+          createLesson({
+            period: "1",
+            start: "08:30",
+            end: "09:10",
+            building: "Galvenā ēka",
+          }),
+          createLesson({
+            period: "2",
+            start: "09:15",
+            end: "09:55",
+            building: "TIC",
+          }),
+        ],
+        building: "Galvenā ēka",
+        buildings: ["Galvenā ēka", "TIC"],
+      } as unknown as ResolvedDay;
+
+      renderWithStore(
+        <DayLessonList
+          day={day}
+          date="2026-09-09"
+          now={{ date: "2026-09-10", minutes: 0 }}
+          progress={{ current: null, progress: null }}
+          showTime={true}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+          x={motionValue(0)}
+          opacity={motionValue(1)}
+          dragging={false}
+          onOpenLesson={() => undefined}
+        />,
+      );
+
+      expect(screen.getAllByTestId("schedule-glass-pane")).toHaveLength(2);
+      expect(screen.getByTestId("day-building-bridge").textContent).toContain("TIC");
+    });
+
+    it("combines free-period gap and building walk into one bridge when both happen together", () => {
+      const day = {
+        date: "2026-09-09",
+        lessons: [
+          createLesson({
+            period: "1",
+            start: "08:30",
+            end: "09:10",
+            building: "Galvenā ēka",
+          }),
+          createLesson({
+            period: "3",
+            start: "10:00",
+            end: "10:40",
+            building: "TIC",
+          }),
+        ],
+        building: "Galvenā ēka",
+        buildings: ["Galvenā ēka", "TIC"],
+      } as unknown as ResolvedDay;
+
+      renderWithStore(
+        <DayLessonList
+          day={day}
+          date="2026-09-09"
+          now={{ date: "2026-09-10", minutes: 0 }}
+          progress={{ current: null, progress: null }}
+          showTime={false}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+          x={motionValue(0)}
+          opacity={motionValue(1)}
+          dragging={false}
+          onOpenLesson={() => undefined}
+        />,
+      );
+
+      expect(screen.getByTestId("day-gap").textContent).toContain("TIC");
+    });
   });
 
   describe("LessonRow half", () => {

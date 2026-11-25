@@ -11,7 +11,10 @@ import { ViewOptionsMenu } from "@/ui/components/ViewOptionsMenu.tsx";
 import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { useT } from "@/ui/i18n";
 import { useAppStore, useSettingSetter } from "@/store";
-import { useIsFormTeacher } from "@/ui/persona";
+import { useIsFormTeacher, usePersona } from "@/ui/persona";
+import { matchPersona } from "@/lib/persona";
+import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
+import { useSelectedTeacher } from "@/ui/hooks/useTeachers.ts";
 import { greetingKey } from "./greeting.ts";
 
 type HomeTopBarProps = {
@@ -20,19 +23,33 @@ type HomeTopBarProps = {
   onRefresh: () => void;
 };
 
+/** "Surname Firstname" → "F. Surname". */
+const teacherShortLabel = (short: string): string => {
+  const [surname = "", firstName = ""] = short.trim().split(/\s+/);
+  return surname ? `${firstName[0]?.toUpperCase() || ""}. ${surname}` : firstName;
+};
+
 export const HomeTopBar = ({ nowMinutes, onPickClass, onRefresh }: HomeTopBarProps) => {
   const t = useT();
   const wide = useLayout() !== "phone";
   const teacherView = useAppStore((s) => s.settings.teacherView);
   const setTeacherView = useSettingSetter("teacherView");
   const isFormTeacher = useIsFormTeacher();
+  const { identity } = usePersona();
+  const selectedClass = useSelectedClass();
+  const selectedTeacher = useSelectedTeacher();
+  const identityLabel = matchPersona<string | undefined | null>(identity, {
+    student: () => selectedClass?.short,
+    teacher: () => (selectedTeacher?.short ? teacherShortLabel(selectedTeacher.short) : null),
+  });
+  const greeting = t(greetingKey(nowMinutes));
   const showTime = useAppStore((s) => s.settings.showTime);
   const setShowTime = useSettingSetter("showTime");
 
   return (
     <>
       <TopBar
-        title={t(greetingKey(nowMinutes))}
+        title={identityLabel ? `${greeting}, ${identityLabel}` : greeting}
         actions={
           <>
             {wide && (
