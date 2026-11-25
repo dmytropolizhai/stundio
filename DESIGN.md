@@ -309,6 +309,9 @@ components:
 >   did not change, so they map `amber→sage, sky→mist, lilac→lavender, pink→rose, mint→teal,
 >   lime→indigo`. Signals: `positive`, `caution` (straw, apart from lamp), `danger` + `on-danger`.
 > - **Type:** Onest for words, Martian Mono for every time and the glance countdown; sentence case.
+> - **Subject card:** banner version (grainy tone field, overlapping mark, mono stats); the subject on
+>   now becomes the "deep" card, the whole card its darkened field with `on-deep` text. Day `lamp-text`
+>   is `#8f4d07` (the design's `#9a5208` is 4.32:1 on the panel).
 > - **Shape:** radii 10 / 16 / 22 / 30 (no square corners); depth is light, not lines.
 
 # Design System: Stundio

@@ -11,6 +11,8 @@ type SubjectCardProps = {
   taughtBy: TeacherRef[];
   hasNote: boolean;
   accent: SubjectAccent;
+  /** The subject on now: the whole card becomes its darkened field. One per screen. */
+  featured?: boolean;
   onSelect: () => void;
 };
 
@@ -40,6 +42,7 @@ export const SubjectCard = ({
   taughtBy,
   hasNote,
   accent,
+  featured = false,
   onSelect,
 }: SubjectCardProps) => {
   const t = useT();
@@ -49,21 +52,30 @@ export const SubjectCard = ({
 
   return (
     <Card
-      tone="surface"
+      tone={featured ? "custom" : "surface"}
       radius="2xl"
       elevation="raised"
-      className="min-w-0 p-3 text-left"
+      className={
+        featured
+          ? "u-tone-field u-tone-field-deep min-w-0 p-3 text-left text-on-deep"
+          : "min-w-0 p-3 text-left"
+      }
+      style={featured ? vars : undefined}
+      {...(featured && accent.tone === "lime" ? { "data-tone-dark": "" } : {})}
       data-testid={`subject-${subject.id}`}
+      data-featured={featured ? "" : undefined}
       onClick={onSelect}
     >
-      <div
-        className="u-tone-field h-[88px] rounded-md"
-        style={vars}
-        {...(accent.tone === "lime" ? { "data-tone-dark": "" } : {})}
-      />
+      {!featured && (
+        <div
+          className="u-tone-field h-[88px] rounded-md"
+          style={vars}
+          {...(accent.tone === "lime" ? { "data-tone-dark": "" } : {})}
+        />
+      )}
       <div
         aria-hidden="true"
-        className="relative z-[2] -mt-9 ml-4 grid size-[84px] place-items-center rounded-full bg-(--tone) font-data text-[24px] leading-none font-semibold tracking-[-0.03em] text-(--tone-ink) ring-[6px] ring-card"
+        className={`relative z-[2] ${featured ? "mt-10 ml-1 ring-on-deep/30" : "-mt-9 ml-4 ring-card"} grid size-[84px] place-items-center rounded-full bg-(--tone) font-data text-[24px] leading-none font-semibold tracking-[-0.03em] text-(--tone-ink) ring-[6px]`}
         style={vars}
       >
         {code}
@@ -71,10 +83,14 @@ export const SubjectCard = ({
 
       <div className="mt-3 flex items-center justify-between gap-3 px-1">
         <div className="min-w-0">
-          <h3 className="m-0 font-display text-title font-semibold tracking-display break-words text-strong">
+          <h3
+            className={`m-0 font-display text-title font-semibold tracking-display break-words ${featured ? "text-on-deep" : "text-strong"}`}
+          >
             {subjectKey}
           </h3>
-          <div className="mt-0.5 font-text text-caption text-muted">
+          <div
+            className={`mt-0.5 font-text text-caption ${featured ? "text-on-deep" : "text-muted"}`}
+          >
             {[code, ...taughtBy.map((x) => x.short)].join(" · ")}
           </div>
         </div>
@@ -86,9 +102,21 @@ export const SubjectCard = ({
         )}
       </div>
 
-      <div className="mt-4 grid grid-cols-2 border-t border-hairline px-1 pt-4 pb-1">
-        <Stat icon="clock" value={String(count)} label={t("subjects.stat.lessons")} />
-        <Stat icon="user-round" value={String(taughtBy.length)} label={t("subjects.teachers")} />
+      <div
+        className={`mt-4 grid grid-cols-2 px-1 pt-4 pb-1 ${featured ? "text-on-deep" : "border-t border-hairline"}`}
+      >
+        <Stat
+          icon="clock"
+          value={String(count)}
+          label={t("subjects.stat.lessons")}
+          featured={featured}
+        />
+        <Stat
+          icon="user-round"
+          value={String(taughtBy.length)}
+          label={t("subjects.teachers")}
+          featured={featured}
+        />
       </div>
     </Card>
   );
@@ -98,16 +126,22 @@ const Stat = ({
   icon,
   value,
   label,
+  featured,
 }: {
   icon: "clock" | "user-round";
   value: string;
   label: string;
+  featured: boolean;
 }) => (
   <div className="grid justify-items-center gap-1.5">
-    <span className="flex items-center gap-2 font-data text-[24px] leading-none font-medium tracking-[-0.03em] tabular-nums text-strong">
+    <span
+      className={`flex items-center gap-2 font-data text-[24px] leading-none font-medium tracking-[-0.03em] tabular-nums ${featured ? "text-on-deep" : "text-strong"}`}
+    >
       <Icon name={icon} size={18} />
       {value}
     </span>
-    <span className="font-text text-caption text-muted">{label}</span>
+    <span className={`font-text text-caption ${featured ? "text-on-deep" : "text-muted"}`}>
+      {label}
+    </span>
   </div>
 );

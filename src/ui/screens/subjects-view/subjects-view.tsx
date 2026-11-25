@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAppStore } from "@/store";
 import { TopBar } from "@/ds";
 import { subjectAccent } from "@/ui/theme";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { useSubjects } from "@/ui/hooks/useSubjects.ts";
+import { useNow } from "@/ui/hooks/useNow.ts";
+import { dayGlance } from "@/lib/schedule";
 import { SubjectNoteSheet } from "@/ui/screens/sheets/SubjectNoteSheet.tsx";
 import { useT } from "@/ui/i18n";
 import type { SubjectRef } from "@/lib/edupage";
@@ -29,6 +31,10 @@ export const SubjectsView = () => {
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const { subjects, teachers } = useSubjects();
   const notes = useAppStore((s) => s.notes);
+  const now = useNow();
+  const today = useAppStore((s) => s.resolvedDay(now.date));
+  const live = useMemo(() => dayGlance(today, now), [today, now]);
+  const liveSubjectId = live?.kind === "live" ? (live.lesson.subject?.id ?? null) : null;
   const [openSubject, setOpenSubject] = useState<SubjectRef | null>(null);
 
   const body = () => {
@@ -57,6 +63,7 @@ export const SubjectsView = () => {
                 taughtBy={taughtBy}
                 hasNote={hasNote}
                 accent={accent}
+                featured={liveSubjectId !== null && liveSubjectId === subject.id}
                 onSelect={() => {
                   setOpenSubject(subject);
                 }}

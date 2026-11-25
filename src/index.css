@@ -640,3 +640,28 @@
   position: relative;
   z-index: 1;
 }
+
+/*
+ * The featured (deep) subject field: the whole card, darkened toward `--shade` so `--on-deep` text
+ * keeps 4.5:1 (design system: SubjectCard "Deep"). One per screen — the subject on now — never a list.
+ */
+.u-tone-field-deep {
+  --field-hi: color-mix(in oklab, var(--tone) 55%, var(--on-deep));
+  --deep-base: color-mix(in oklab, var(--tone-ink) 78%, var(--shade));
+  background-color: var(--deep-base);
+  background-image:
+    radial-gradient(
+      70% 55% at 85% 8%,
+      color-mix(in oklab, var(--tone) 70%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      55% 45% at 8% 22%,
+      color-mix(in oklab, var(--field-hi) 55%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(90% 60% at 40% 100%, var(--deep-base) 0%, transparent 80%);
+}
+.u-tone-field-deep[data-tone-dark] {
+  --deep-base: color-mix(in oklab, var(--tone) 45%, var(--shade));
+}

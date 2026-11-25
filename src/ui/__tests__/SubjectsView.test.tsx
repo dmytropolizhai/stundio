@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import { render, renderHook, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { SubjectsView } from "../screens/subjects-view";
+import { SubjectCard } from "../screens/subjects-view/subject-card.tsx";
 import { useSubjects } from "../hooks/useSubjects.ts";
 import { bootHarness, type Harness } from "./harness.tsx";
 
@@ -87,6 +88,39 @@ describe("useSubjects", () => {
   });
 });
 
+/** A card's tone variable: on the card itself when it is the featured (deep) one, else its banner. */
+const toneOf = (card: HTMLElement): string | undefined =>
+  (card.matches(".u-tone-field")
+    ? card
+    : card.querySelector<HTMLElement>(".u-tone-field")
+  )?.style.getPropertyValue("--tone");
+
+describe("SubjectCard", () => {
+  const subject = { id: "S1", short: "MAT", name: "Matemātika I" } as never;
+  const props = { subject, count: 6, taughtBy: [], hasNote: false, onSelect: () => undefined };
+
+  it("is the whole darkened field when featured, with on-deep text", async () => {
+    wrap(await bootHarness(), <SubjectCard {...props} accent={{ tone: "mint" }} featured />);
+    const card = screen.getByTestId("subject-S1");
+    expect(card.hasAttribute("data-featured")).toBe(true);
+    expect(card.className).toContain("u-tone-field-deep");
+    expect(card.className).toContain("text-on-deep");
+  });
+
+  it("marks indigo as the one dark tone so its field darkens toward shade", async () => {
+    wrap(await bootHarness(), <SubjectCard {...props} accent={{ tone: "lime" }} featured />);
+    expect(screen.getByTestId("subject-S1").hasAttribute("data-tone-dark")).toBe(true);
+  });
+
+  it("carries a custom pick's own fill and ink pair", async () => {
+    wrap(
+      await bootHarness(),
+      <SubjectCard {...props} accent={{ tone: "custom", fill: "#112233", ink: "#ffeedd" }} />,
+    );
+    expect(toneOf(screen.getByTestId("subject-S1"))).toBe("#112233");
+  });
+});
+
 describe("SubjectsView", () => {
   it("lists the class's subjects with how often they meet", async () => {
     const harness = await bootHarness();
@@ -116,13 +150,7 @@ describe("SubjectsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SubjectsView />);
 
-    const tones = new Set(
-      screen
-        .getAllByTestId(/^subject-/)
-        .map((card) =>
-          card.querySelector<HTMLElement>(".u-tone-field")?.style.getPropertyValue("--tone"),
-        ),
-    );
+    const tones = new Set(screen.getAllByTestId(/^subject-/).map((card) => toneOf(card)));
     expect(tones.size).toBeGreaterThan(1);
   });
 
@@ -133,9 +161,7 @@ describe("SubjectsView", () => {
     const cards = screen.getAllByTestId(/^subject-/);
     expect(cards.length).toBeGreaterThan(0);
     for (const card of cards) {
-      expect(
-        card.querySelector<HTMLElement>(".u-tone-field")?.style.getPropertyValue("--tone"),
-      ).toBe("var(--accent-sky)");
+      expect(toneOf(card)).toBe("var(--accent-sky)");
     }
   });
 

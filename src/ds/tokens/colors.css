@@ -28,7 +28,7 @@
   --lamp: #f2b56b;
   --lamp-ink: #2a1700;
   --lamp-mark: #b5680f; /* thin marks on a surface, deepened in Day to keep 3:1 */
-  --lamp-text: #9a5208; /* lamp-coloured words */
+  --lamp-text: #8f4d07; /* lamp-coloured words; deepened from the design's #9a5208, which is 4.32:1 on the panel */
   --lamp-glow: rgba(181, 104, 15, 0.2);
 
   /* ——— Subject tones (same in both themes), each with its own ink ——— */
