@@ -335,11 +335,15 @@ describe("HomeView", () => {
       expect(tile.getAttribute("aria-expanded")).toBe("false");
       expect(tile.textContent).toMatch(/^\d+\+līdz$/);
 
-      // Tap expands to h:mm and marks weather tile inert
+      // Tap expands to h:mm across the full row and marks weather tile inert
       fireEvent.click(tile);
       expect(tile.getAttribute("aria-expanded")).toBe("true");
       expect(tile.textContent).toMatch(/^\d+:\d\dlīdz beigām$/);
+      expect(screen.getByTestId("home-tiles").style.gridTemplateColumns).toBe("2fr 0fr");
       expect(screen.getByTestId("home-weather").hasAttribute("inert")).toBe(true);
+      // Neither grid item may carry outer padding, or its `0fr` track cannot collapse to 0 px
+      expect(tile.className.split(/\s+/)).toContain("p-0");
+      expect(screen.getByTestId("home-weather").className.split(/\s+/)).toContain("p-0");
 
       // Second tap collapses
       fireEvent.click(tile);

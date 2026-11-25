@@ -71,7 +71,7 @@ export const WeatherTile = ({
       aria-controls={contentId}
       inert={hidden}
       onClick={onToggle}
-      className="relative flex h-full min-w-0 cursor-pointer flex-col justify-end overflow-hidden rounded-xl border-0 p-4 text-left transition-[opacity,transform] duration-(--dur-slow) ease-(--ease-standard) active:scale-(--press-scale-tile) active:duration-(--dur-instant)"
+      className="relative flex h-full min-w-0 cursor-pointer overflow-hidden rounded-xl border-0 p-0 text-left transition-[opacity,transform] duration-(--dur-slow) ease-(--ease-standard) active:scale-(--press-scale-tile) active:duration-(--dur-instant)"
       style={{
         color: WEATHER_SKY_TEXT[scene.sky],
         opacity: hidden ? 0 : 1,
@@ -79,56 +79,59 @@ export const WeatherTile = ({
     >
       <WeatherBackdrop scene={scene} paused={hidden} />
 
-      {dayLabel !== null ? (
-        <span
-          aria-hidden="true"
-          data-testid="home-weather-day"
-          className="relative z-10 mb-auto font-text text-micro font-bold uppercase tracking-label"
-        >
-          {dayLabel}
-        </span>
-      ) : (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none relative z-10 mb-auto font-text text-micro font-bold uppercase tracking-label"
-          style={{
-            opacity: expanded ? 1 : 0,
-            transform: expanded ? "translateY(0)" : "translateY(4px)",
-            transition: expanded
-              ? "opacity var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.45), transform var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.45)"
-              : "opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard)",
-          }}
-        >
-          {t("home.weather.now")}
-        </span>
-      )}
-
-      <div
-        id={contentId}
-        aria-hidden="true"
-        className="relative z-10 flex w-full min-w-0 items-end justify-between gap-3"
-      >
-        <span className="shrink-0 font-display text-display-1 leading-none tabular-nums">
-          {`${String(outlook.temperature)}°`}
-        </span>
+      {/* Padding lives inside so the grid item can collapse all the way to 0 px in the `0fr` track. */}
+      <div className="relative z-10 flex h-full w-full min-w-0 flex-col justify-end p-4">
+        {dayLabel !== null ? (
+          <span
+            aria-hidden="true"
+            data-testid="home-weather-day"
+            className="mb-auto font-text text-micro font-bold uppercase tracking-label"
+          >
+            {dayLabel}
+          </span>
+        ) : (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none mb-auto font-text text-micro font-bold uppercase tracking-label"
+            style={{
+              opacity: expanded ? 1 : 0,
+              transform: expanded ? "translateY(0)" : "translateY(4px)",
+              transition: expanded
+                ? "opacity var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.45), transform var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.45)"
+                : "opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard)",
+            }}
+          >
+            {t("home.weather.now")}
+          </span>
+        )}
 
         <div
-          data-testid="home-weather-details"
-          className="pointer-events-none absolute right-0 bottom-0 max-w-[calc(100cqw-128px)] text-right"
-          style={{
-            opacity: expanded ? 1 : 0,
-            transform: expanded ? "translateX(0)" : "translateX(10px)",
-            transition: expanded
-              ? "opacity var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.5), transform var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.5)"
-              : "opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard)",
-          }}
+          id={contentId}
+          aria-hidden="true"
+          className="relative flex w-full min-w-0 items-end justify-between gap-3"
         >
-          <p className="font-text text-body font-bold leading-tight">{capitalize(condition)}</p>
-          {hasRange && (
-            <p className="mt-1 font-data text-caption leading-tight tabular-nums">
-              {`${t("home.weather.dayTemp", { temp: outlook.max! })} · ${t("home.weather.nightTemp", { temp: outlook.min! })}`}
-            </p>
-          )}
+          <span className="shrink-0 font-display text-display-1 leading-none tabular-nums">
+            {`${String(outlook.temperature)}°`}
+          </span>
+
+          <div
+            data-testid="home-weather-details"
+            className="pointer-events-none absolute right-0 bottom-0 max-w-[calc(100cqw-128px)] text-right"
+            style={{
+              opacity: expanded ? 1 : 0,
+              transform: expanded ? "translateX(0)" : "translateX(10px)",
+              transition: expanded
+                ? "opacity var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.5), transform var(--dur-base) var(--ease-standard) calc(var(--dur-fast) * 0.5)"
+                : "opacity var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard)",
+            }}
+          >
+            <p className="font-text text-body font-bold leading-tight">{capitalize(condition)}</p>
+            {hasRange && (
+              <p className="mt-1 font-data text-caption leading-tight tabular-nums">
+                {`${t("home.weather.dayTemp", { temp: outlook.max! })} · ${t("home.weather.nightTemp", { temp: outlook.min! })}`}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </button>
