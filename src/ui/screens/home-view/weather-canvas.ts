@@ -9,6 +9,28 @@
  */
 import type { WeatherScene, WeatherSky } from "@/lib/weather";
 
+export const WEATHER_SKY_GRADIENT: Record<WeatherSky, string> = {
+  "clear-day":
+    "linear-gradient(175deg, color-mix(in oklab, var(--accent-sky) 80%, var(--accent-sky-ink)) 0%, var(--accent-sky) 52%, color-mix(in oklab, var(--accent-sky) 70%, var(--white)) 100%)",
+  "partly-cloudy-day":
+    "linear-gradient(175deg, color-mix(in oklab, var(--accent-sky) 84%, var(--accent-sky-ink)) 0%, var(--accent-sky) 56%, color-mix(in oklab, var(--accent-sky) 68%, var(--ink-100)) 100%)",
+  "clear-night":
+    "linear-gradient(175deg, var(--shade) 0%, var(--ink-900) 42%, color-mix(in oklab, var(--accent-lime) 34%, var(--ink-900)) 100%)",
+  "partly-cloudy-night":
+    "linear-gradient(175deg, var(--shade) 0%, var(--ink-900) 48%, color-mix(in oklab, var(--ink-700) 58%, var(--accent-sky-ink)) 100%)",
+  "cloudy-day":
+    "linear-gradient(175deg, color-mix(in oklab, var(--ink-700) 82%, var(--accent-sky-ink)) 0%, color-mix(in oklab, var(--ink-700) 74%, var(--accent-sky)) 58%, color-mix(in oklab, var(--ink-500) 82%, var(--accent-sky)) 100%)",
+  "cloudy-night":
+    "linear-gradient(175deg, var(--shade) 0%, var(--ink-900) 46%, var(--ink-700) 100%)",
+  "fog-day":
+    "linear-gradient(175deg, color-mix(in oklab, var(--ink-200) 82%, var(--accent-sky)) 0%, var(--ink-100) 60%, color-mix(in oklab, var(--ink-050) 85%, var(--accent-sky)) 100%)",
+  "fog-night":
+    "linear-gradient(175deg, var(--ink-900) 0%, var(--ink-700) 58%, color-mix(in oklab, var(--ink-700) 72%, var(--ink-400)) 100%)",
+  cold: "linear-gradient(175deg, color-mix(in oklab, var(--accent-sky-ink) 88%, var(--shade)) 0%, var(--accent-sky-ink) 48%, color-mix(in oklab, var(--accent-sky) 36%, var(--accent-sky-ink)) 100%)",
+  storm:
+    "linear-gradient(175deg, var(--shade) 0%, color-mix(in oklab, var(--ink-900) 80%, var(--accent-sky-ink)) 55%, color-mix(in oklab, var(--ink-900) 66%, var(--accent-lime)) 100%)",
+};
+
 type Star = {
   x: number;
   y: number;
@@ -207,16 +229,20 @@ const cloudPaletteFor = (sky: WeatherSky, precip: WeatherScene["precip"]): Cloud
 };
 
 /**
- * Generates a soft volumetric cloud texture using 4-octave fBm noise shaped by a natural
+ * Generates a soft volumetric cloud texture using multi-octave fBm noise shaped by a natural
  * cumulus/stratus dome with directional top-right lighting and self-shadowed underbelly.
+ * Resolution scales up for full-viewport canvases so clouds stay crisp without upscaling blur.
  */
 const buildCloudSprite = (
   seed: number,
   palette: CloudPalette,
   stratus: boolean,
+  unit: number,
 ): HTMLCanvasElement | null => {
-  const w = 128;
-  const h = 68;
+  const hiRes = unit > 240;
+  const w = hiRes ? Math.min(320, Math.round(unit * 0.72)) : 128;
+  const h = Math.max(68, Math.round(w * (68 / 128)));
+  const octaves = hiRes ? 5 : 4;
   const off = createOffscreenCanvas(w, h);
   if (off === null) return null;
 
@@ -238,7 +264,7 @@ const buildCloudSprite = (
       const mask = Math.max(0, 1 - distSq);
       if (mask <= 0) continue;
 
-      const n = fbm2D((px / w) * scaleX + 1.3, (py / h) * scaleY + 2.1, seed, 4);
+      const n = fbm2D((px / w) * scaleX + 1.3, (py / h) * scaleY + 2.1, seed, octaves);
       const density = Math.max(0, Math.min(1, (mask * 1.35 + (n - 0.44) * 1.15 - 0.28) * 1.85));
       if (density <= 0.01) continue;
 
@@ -275,9 +301,9 @@ const buildCloudSprite = (
 };
 
 /** Generates a soft horizontal rolling fog/mist texture via stretched fBm noise. */
-const buildFogSprite = (seed: number, isDay: boolean): HTMLCanvasElement | null => {
-  const w = 144;
-  const h = 56;
+const buildFogSprite = (seed: number, isDay: boolean, unit: number): HTMLCanvasElement | null => {
+  const w = unit > 240 ? Math.min(320, Math.round(unit * 0.72)) : 144;
+  const h = Math.max(56, Math.round(w * (56 / 144)));
   const off = createOffscreenCanvas(w, h);
   if (off === null) return null;
 
@@ -308,9 +334,10 @@ const buildFogSprite = (seed: number, isDay: boolean): HTMLCanvasElement | null 
 };
 
 /** Generates a delicate crystalline rime/frost vignette hugging the upper-right rim. */
-const buildFrostSprite = (seed: number): HTMLCanvasElement | null => {
-  const w = 112;
-  const h = 112;
+const buildFrostSprite = (seed: number, unit: number): HTMLCanvasElement | null => {
+  const size = unit > 240 ? Math.min(224, Math.round(unit * 0.56)) : 112;
+  const w = size;
+  const h = size;
   const off = createOffscreenCanvas(w, h);
   if (off === null) return null;
 
@@ -410,7 +437,7 @@ export const createWeatherCanvasState = (
     const stratus = scene.clouds === "overcast";
     const palette = cloudPaletteFor(scene.sky, scene.precip);
     for (let s = 0; s < 3; s++) {
-      const sprite = buildCloudSprite(seed + s * 97, palette, stratus);
+      const sprite = buildCloudSprite(seed + s * 97, palette, stratus, unit);
       if (sprite !== null) cloudSprites.push(sprite);
     }
 
@@ -440,7 +467,7 @@ export const createWeatherCanvasState = (
   if (scene.clouds === "fog") {
     const isDay = scene.sky === "fog-day";
     for (let s = 0; s < 2; s++) {
-      const sprite = buildFogSprite(seed + s * 53, isDay);
+      const sprite = buildFogSprite(seed + s * 53, isDay, unit);
       if (sprite !== null) fogSprites.push(sprite);
     }
     const count = Math.round(4 * widthRatio);
@@ -462,7 +489,7 @@ export const createWeatherCanvasState = (
     }
   }
 
-  const frostSprite = scene.frost ? buildFrostSprite(seed + 409) : null;
+  const frostSprite = scene.frost ? buildFrostSprite(seed + 409, unit) : null;
   const iceDust: IceDust[] = [];
   if (scene.frost) {
     const count = Math.round(16 * areaScale);
@@ -1052,6 +1079,8 @@ export const renderWeatherFrame = (
 ) => {
   const { width: w, height: h, scene } = state;
   ctx.clearRect(0, 0, w, h);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
 
   drawHorizonAtmosphere(ctx, w, h, scene.sky);
 

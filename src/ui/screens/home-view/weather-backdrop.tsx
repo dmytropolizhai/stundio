@@ -10,34 +10,13 @@
  * while the school tile is expanded), or under reduced motion (single still frame).
  */
 import { useEffect, useRef, useState } from "react";
-import type { WeatherScene, WeatherSky } from "@/lib/weather";
+import type { WeatherScene } from "@/lib/weather";
 import {
   createWeatherCanvasState,
   renderWeatherFrame,
+  WEATHER_SKY_GRADIENT,
   type WeatherCanvasState,
 } from "./weather-canvas.ts";
-
-const WEATHER_SKY_GRADIENT: Record<WeatherSky, string> = {
-  "clear-day":
-    "linear-gradient(175deg, color-mix(in oklab, var(--accent-sky) 80%, var(--accent-sky-ink)) 0%, var(--accent-sky) 52%, color-mix(in oklab, var(--accent-sky) 70%, var(--white)) 100%)",
-  "partly-cloudy-day":
-    "linear-gradient(175deg, color-mix(in oklab, var(--accent-sky) 84%, var(--accent-sky-ink)) 0%, var(--accent-sky) 56%, color-mix(in oklab, var(--accent-sky) 68%, var(--ink-100)) 100%)",
-  "clear-night":
-    "linear-gradient(175deg, var(--shade) 0%, var(--ink-900) 42%, color-mix(in oklab, var(--accent-lime) 34%, var(--ink-900)) 100%)",
-  "partly-cloudy-night":
-    "linear-gradient(175deg, var(--shade) 0%, var(--ink-900) 48%, color-mix(in oklab, var(--ink-700) 58%, var(--accent-sky-ink)) 100%)",
-  "cloudy-day":
-    "linear-gradient(175deg, color-mix(in oklab, var(--ink-700) 82%, var(--accent-sky-ink)) 0%, color-mix(in oklab, var(--ink-700) 74%, var(--accent-sky)) 58%, color-mix(in oklab, var(--ink-500) 82%, var(--accent-sky)) 100%)",
-  "cloudy-night":
-    "linear-gradient(175deg, var(--shade) 0%, var(--ink-900) 46%, var(--ink-700) 100%)",
-  "fog-day":
-    "linear-gradient(175deg, color-mix(in oklab, var(--ink-200) 82%, var(--accent-sky)) 0%, var(--ink-100) 60%, color-mix(in oklab, var(--ink-050) 85%, var(--accent-sky)) 100%)",
-  "fog-night":
-    "linear-gradient(175deg, var(--ink-900) 0%, var(--ink-700) 58%, color-mix(in oklab, var(--ink-700) 72%, var(--ink-400)) 100%)",
-  cold: "linear-gradient(175deg, color-mix(in oklab, var(--accent-sky-ink) 88%, var(--shade)) 0%, var(--accent-sky-ink) 48%, color-mix(in oklab, var(--accent-sky) 36%, var(--accent-sky-ink)) 100%)",
-  storm:
-    "linear-gradient(175deg, var(--shade) 0%, color-mix(in oklab, var(--ink-900) 80%, var(--accent-sky-ink)) 55%, color-mix(in oklab, var(--ink-900) 66%, var(--accent-lime)) 100%)",
-};
 
 const STATIC_FRAME_TIME_S = 4.2;
 

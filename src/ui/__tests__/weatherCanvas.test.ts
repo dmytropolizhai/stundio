@@ -1,7 +1,8 @@
 import { createElement } from "react";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weatherScene, type WeatherCondition, type WeatherHint } from "@/lib/weather";
+import { WeatherAmbient } from "../screens/home-view/weather-ambient.tsx";
 import { WeatherBackdrop } from "../screens/home-view/weather-backdrop.tsx";
 import {
   createWeatherCanvasState,
@@ -183,5 +184,56 @@ describe("WeatherBackdrop", () => {
     rerender(createElement(WeatherBackdrop, { scene, paused: false }));
     expect(getByTestId("weather-backdrop").getAttribute("data-paused")).toBe("false");
     expect(setTransform).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("WeatherAmbient", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("stays idle without a canvas until expanded, then animates and pauses after fade-out", () => {
+    vi.useFakeTimers();
+    const { ctx } = makeMockContext();
+    (ctx as unknown as { setTransform: ReturnType<typeof vi.fn> }).setTransform = vi.fn();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(ctx);
+
+    const rafCallbacks: FrameRequestCallback[] = [];
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      rafCallbacks.push(cb);
+      return rafCallbacks.length;
+    });
+    const cancelSpy = vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
+
+    const scene = weatherScene({ condition: "rain", isDay: true, hint: null });
+    const { getByTestId, rerender } = render(
+      createElement(WeatherAmbient, { scene, active: false }),
+    );
+
+    const ambient = getByTestId("weather-ambient");
+    expect(ambient.getAttribute("data-active")).toBe("false");
+    expect(ambient.getAttribute("data-precip")).toBe("rain");
+    expect(ambient.querySelector("canvas")).toBeNull();
+    expect(rafCallbacks).toHaveLength(0);
+
+    // Expanding wakes the ambient canvas, marks the root for StatusBar transparency, and starts rAF
+    rerender(createElement(WeatherAmbient, { scene, active: true }));
+    expect(ambient.getAttribute("data-active")).toBe("true");
+    expect(document.documentElement.dataset.weatherAmbient).toBe("true");
+    expect(ambient.querySelector("canvas")).not.toBeNull();
+    expect(rafCallbacks.length).toBeGreaterThan(0);
+
+    rafCallbacks.shift()?.(1000);
+    rafCallbacks.shift()?.(1032);
+
+    // Collapsing clears the root flag, fades out, and cancels rAF once the fade completes
+    rerender(createElement(WeatherAmbient, { scene, active: false }));
+    expect(ambient.getAttribute("data-active")).toBe("false");
+    expect(document.documentElement.dataset.weatherAmbient).toBeUndefined();
+    act(() => {
+      vi.advanceTimersByTime(450);
+    });
+    expect(cancelSpy).toHaveBeenCalled();
   });
 });

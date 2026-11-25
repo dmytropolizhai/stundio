@@ -181,12 +181,12 @@ export const WeatherAmbient = ({ scene, active }: WeatherAmbientProps) => {
       data-precip={scene.precip}
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden transition-opacity duration-(--dur-slow) ease-(--ease-standard)"
       style={{
-        opacity: active ? 0.44 : 0,
+        opacity: active ? 0.74 : 0,
         background: WEATHER_SKY_GRADIENT[scene.sky],
         maskImage:
-          "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.78) 54%, rgba(0, 0, 0, 0.24) 100%)",
+          "linear-gradient(to bottom, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.88) 60%, rgba(0, 0, 0, 0.68) 100%)",
         WebkitMaskImage:
-          "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.78) 54%, rgba(0, 0, 0, 0.24) 100%)",
+          "linear-gradient(to bottom, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.88) 60%, rgba(0, 0, 0, 0.68) 100%)",
       }}
     >
       {awake && <canvas ref={canvasRef} className="block h-full w-full" />}
