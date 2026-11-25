@@ -131,7 +131,7 @@ describe("app shell", () => {
     expect(screen.queryByTestId("side-nav")).toBeNull();
     expect(screen.getByRole("navigation", { name: "Sections" })).toBeDefined();
     expect(screen.getByTestId("status-bar")).toBeDefined();
-    expect(screen.getByTestId("date-dock")).toBeDefined();
+    expect(screen.queryByTestId("now-dock") ?? screen.queryByTestId("date-dock")).not.toBeNull();
   });
 
   it("puts an icon-only rail on a tablet, named for assistive tech", async () => {
@@ -141,6 +141,7 @@ describe("app shell", () => {
     const rail = screen.getByTestId("side-nav");
     expect(screen.queryByTestId("status-bar")).toBeNull();
     expect(screen.queryByTestId("date-dock")).toBeNull();
+    expect(screen.queryByTestId("now-dock")).toBeNull();
     const week = within(rail).getByRole("button", { name: "Week" });
     expect(week.textContent).toBe("");
     expect(within(rail).queryByText("Personal")).toBeNull();
@@ -190,7 +191,7 @@ describe("app shell", () => {
     expect(screen.queryByTestId("side-nav")).toBeNull();
     expect(screen.getByRole("navigation", { name: "Sections" })).toBeDefined();
     expect(screen.getByTestId("status-bar")).toBeDefined();
-    expect(screen.getByTestId("date-dock")).toBeDefined();
+    expect(screen.queryByTestId("now-dock") ?? screen.queryByTestId("date-dock")).not.toBeNull();
   });
 });
 

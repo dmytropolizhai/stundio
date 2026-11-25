@@ -3,15 +3,20 @@
  * are looking at). No router — five tabs and a modal picker do not need one, and every
  * kilobyte counts inside a WebView.
  */
-import { useCallback, useEffect, useState } from "react";
-import { LazyMotion, domAnimation } from "framer-motion";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
 import { AppStoreProvider, useAppStore, useSettingSetter } from "@/store";
 import { Button, TopBar, TooltipProvider } from "@/ds";
+import { dayGlance } from "@/lib/schedule";
+import type { ResolvedLesson } from "@/lib/edupage";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
-import { DateDock } from "./ui/components/DateDock.tsx";
+import { DateDock, type DateDockNowToggle } from "./ui/components/DateDock.tsx";
+import { NowDock } from "./ui/components/NowDock.tsx";
 import { StatusBar } from "./ui/components/StatusBar.tsx";
 import { SideNav } from "./ui/components/SideNav.tsx";
 import { useLayout } from "./ui/hooks/useLayout.ts";
+import { useNow } from "./ui/hooks/useNow.ts";
+import { LessonSheet } from "./ui/screens/lesson-sheet";
 import { ClassSelector } from "./ui/screens/class-selector";
 import { TeacherPicker } from "./ui/screens/teacher-picker";
 import { OnboardingLanguage } from "./ui/screens/onboarding-language";
@@ -34,8 +39,8 @@ import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
 import { RefreshToast } from "./ui/components/RefreshToast.tsx";
 import { ErrorBoundary } from "./ui/components/ErrorBoundary.tsx";
 import { StateMessage } from "./ui/components/StateMessage.tsx";
-import { useCustomization, useTheme } from "@/ui/theme";
-import { translate, useT } from "@/ui/i18n";
+import { lessonAccent, useCustomization, useTheme } from "@/ui/theme";
+import { formatDuration, translate, useT } from "@/ui/i18n";
 import { PERSONA_PROFILES, usePersona } from "@/ui/persona";
 import { nativeApp } from "@/lib/app";
 import { handleBackPress, useBackButton } from "./ui/hooks/useBackButton.ts";
@@ -210,7 +215,28 @@ const Shell = () => {
   const iphoneInstall = useIphoneInstallPrompt();
   const scheduleNav = useScheduleNavigation();
   const layout = useLayout();
+  const reduceMotion = useReducedMotion() ?? false;
+  const now = useNow();
+  const today = useAppStore((s) => s.resolvedDay(now.date));
+  const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
+  const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
+  const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const [picking, setPicking] = useState<"class" | "teacher" | null>(null);
+  const [dockOverride, setDockOverride] = useState<"now" | "date" | null>(null);
+  const [dockMorph, setDockMorph] = useState<"to-date" | "to-now" | null>(null);
+  const [prevNavDate, setPrevNavDate] = useState(scheduleNav.date);
+  const [dockLesson, setDockLesson] = useState<ResolvedLesson | null>(null);
+
+  if (prevNavDate !== scheduleNav.date) {
+    setPrevNavDate(scheduleNav.date);
+    setDockOverride(null);
+    setDockMorph(scheduleNav.isToday ? "to-now" : "to-date");
+  }
+
+  const glance = useMemo(() => dayGlance(today, now), [today, now]);
+  const activeGlance =
+    glance !== null && glance.kind !== "finished" && today !== null ? glance : null;
+  const nowDocked = layout === "phone" && activeGlance !== null;
 
   useBackButton(
     () => {
@@ -308,6 +334,7 @@ const Shell = () => {
           <HomeView
             date={scheduleNav.date}
             onDateChange={scheduleNav.setDate}
+            dockedGlance={nowDocked}
             onPickClass={() => {
               setPicking(profile.picker);
             }}
@@ -376,18 +403,53 @@ const Shell = () => {
         onClose={teacherAnnouncement.dismiss}
       />
       <IphoneInstallSheet open={iphoneInstall.open} onClose={iphoneInstall.dismiss} />
+      <LessonSheet
+        lesson={dockLesson}
+        day={today}
+        onClose={() => {
+          setDockLesson(null);
+        }}
+      />
     </>
   );
 
   // The phone layout is the reference: fixed read-only status strip at the top, and one fixed
-  // bottom stack holding the date dock (Home and Week only) above the single-surface nav bar.
-  // Wide windows put the nav in a rail beside the screen instead.
+  // bottom stack holding the contextual dock (`NowDock` or `DateDock`) above the single-surface
+  // nav bar. Wide windows put the nav in a rail beside the screen instead.
   if (layout === "phone") {
     const dockMode = tab === "home" ? "day" : tab === "week" ? "week" : null;
+    const onCurrent = dockMode === "day" ? scheduleNav.isToday : scheduleNav.isThisWeek;
+    const showNowDock =
+      activeGlance !== null &&
+      (dockMode === null || dockOverride === "now" || (dockOverride === null && onCurrent));
+    const showDateDock = dockMode !== null && !showNowDock;
+    const hasDock = showNowDock || showDateDock;
+
+    const nowToggle: DateDockNowToggle | undefined =
+      activeGlance === null
+        ? undefined
+        : {
+            accent: lessonAccent(
+              activeGlance.lesson,
+              subjectColorOverrides,
+              groupColorOverrides,
+              colorCodingEnabled,
+            ),
+            countdown: formatDuration(
+              activeGlance.kind === "live" ? activeGlance.minutesLeft : activeGlance.minutesUntil,
+            ),
+            label: t("day.now"),
+            live: activeGlance.kind === "live",
+            onShowNow: () => {
+              setDockOverride("now");
+              setDockMorph("to-now");
+            },
+          };
+
     return (
       <div
         className="relative flex h-full flex-col overflow-hidden"
-        data-dock={dockMode !== null ? "true" : undefined}
+        data-dock={hasDock ? "true" : undefined}
       >
         <StatusBar />
         {screen}
@@ -396,7 +458,85 @@ const Shell = () => {
           style={{ transform: "translateZ(0)" }}
         >
           <div className="flex w-full max-w-screen flex-col gap-2">
-            {dockMode !== null && <DateDock mode={dockMode} nav={scheduleNav} />}
+            {hasDock && (
+              <div className="relative h-[52px] w-full">
+                <AnimatePresence initial={false}>
+                  {showNowDock && activeGlance !== null && today !== null && (
+                    <m.div
+                      key="now-dock"
+                      className="absolute inset-0 flex items-center"
+                      style={{ transformOrigin: "65% 50%" }}
+                      initial={reduceMotion ? { opacity: 0 } : { scaleX: 0.22, scaleY: 0.86 }}
+                      animate={reduceMotion ? { opacity: 1 } : { scaleX: 1, scaleY: 1 }}
+                      exit={
+                        reduceMotion
+                          ? { opacity: 0 }
+                          : {
+                              opacity: 0,
+                              scaleX: 0.22,
+                              scaleY: 0.86,
+                              transition: { duration: 0.14, ease: [0.4, 0, 1, 1] },
+                            }
+                      }
+                      transition={
+                        reduceMotion
+                          ? { duration: 0.12 }
+                          : { type: "spring", stiffness: 460, damping: 24, mass: 0.82 }
+                      }
+                    >
+                      <NowDock
+                        day={today}
+                        glance={activeGlance}
+                        onOpenLesson={setDockLesson}
+                        {...(dockMorph === "to-now" ? { animateFrom: "chip" as const } : {})}
+                        {...(dockMode !== null
+                          ? {
+                              onShowDateDock: () => {
+                                setDockOverride("date");
+                                setDockMorph("to-date");
+                              },
+                            }
+                          : {})}
+                      />
+                    </m.div>
+                  )}
+                  {showDateDock && (
+                    <m.div
+                      key="date-dock"
+                      className="absolute inset-0 flex items-center"
+                      style={{ transformOrigin: "calc(100% - 72px) 50%" }}
+                      initial={
+                        reduceMotion ? { opacity: 0 } : { x: -16, scaleX: 0.22, scaleY: 0.86 }
+                      }
+                      animate={reduceMotion ? { opacity: 1 } : { x: 0, scaleX: 1, scaleY: 1 }}
+                      exit={
+                        reduceMotion
+                          ? { opacity: 0 }
+                          : {
+                              opacity: 0,
+                              x: -10,
+                              scaleX: 0.22,
+                              scaleY: 0.86,
+                              transition: { duration: 0.14, ease: [0.4, 0, 1, 1] },
+                            }
+                      }
+                      transition={
+                        reduceMotion
+                          ? { duration: 0.12 }
+                          : { type: "spring", stiffness: 460, damping: 24, mass: 0.82 }
+                      }
+                    >
+                      <DateDock
+                        mode={dockMode}
+                        nav={scheduleNav}
+                        {...(dockMorph === "to-date" ? { animateFrom: "right" as const } : {})}
+                        {...(nowToggle !== undefined ? { nowToggle } : {})}
+                      />
+                    </m.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
             <TabBar
               tab={tab}
               onChange={setTab}

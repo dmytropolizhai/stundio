@@ -27,9 +27,15 @@ export const PullToRefresh = ({
 }) => {
   const scroller = useRef<HTMLDivElement | null>(null);
   const startY = useRef<number | null>(null);
+  const pulledRef = useRef(false);
   const [pull, setPull] = useState(0);
 
+  if (!refreshing && pulledRef.current) {
+    pulledRef.current = false;
+  }
+
   const armed = pull >= THRESHOLD;
+  const showIndicator = pull > 8 || (refreshing && pulledRef.current);
 
   const onTouchStart = (e: TouchEvent) => {
     if ((scroller.current?.scrollTop ?? 0) > 0 || refreshing) return;
@@ -49,7 +55,10 @@ export const PullToRefresh = ({
   };
 
   const onTouchEnd = () => {
-    if (startY.current !== null && pull >= THRESHOLD) void onRefresh();
+    if (startY.current !== null && pull >= THRESHOLD) {
+      pulledRef.current = true;
+      void onRefresh();
+    }
     startY.current = null;
     setPull(0);
   };
@@ -58,7 +67,10 @@ export const PullToRefresh = ({
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
       <m.div
         className="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center"
-        animate={{ y: refreshing ? 12 : pull - 8, opacity: refreshing || pull > 8 ? 1 : 0 }}
+        animate={{
+          y: refreshing && pulledRef.current ? 12 : pull - 8,
+          opacity: showIndicator ? 1 : 0,
+        }}
         transition={{ duration: 0.12 }}
       >
         <span className="rounded-pill bg-card px-3 py-1 font-text text-caption font-bold text-muted shadow-card">
