@@ -82,4 +82,18 @@ describe("BottomSheet", () => {
     expect(sheet.className).toContain("tablet:max-w-[560px]");
     expect(sheet.className).toContain("desktop:left-58");
   });
+
+  it("uses a 44px close button with a localized label and a full-header drag zone", () => {
+    render(
+      <BottomSheet open onClose={() => {}} title="Title" closeLabel="Aizvērt">
+        <p>Body</p>
+      </BottomSheet>,
+    );
+
+    const closeBtn = screen.getByRole("button", { name: "Aizvērt" });
+    expect(closeBtn.className).toContain("size-11");
+
+    const dragZone = screen.getByTestId("sheet-drag-zone");
+    expect(dragZone.contains(screen.getByText("Title"))).toBe(true);
+  });
 });

@@ -335,17 +335,117 @@ describe("LessonRow and LessonSheet", () => {
       expect(origSubj.textContent).toBe("Latviešu valoda I un Literatūra I");
       expect(origSubj.className).toContain("line-through");
 
-      const origTeacher = screen.getByText("Bērziņš J.");
+      const origTeacher = screen.getByText(/Jānis Bērziņš/);
       expect(origTeacher.className).toContain("line-through");
-      expect(screen.getByText(/➔ Pleča S\./)).toBeDefined();
+      expect(screen.getByText("Sintija Pleča")).toBeDefined();
 
-      const origRoom = screen.getByText("101");
+      const origRoom = screen.getByText(/101/);
       expect(origRoom.className).toContain("line-through");
-      expect(screen.getByText(/➔ 109/)).toBeDefined();
+      const newRoom = screen.getByText("109");
+      expect(newRoom.className).toContain("u-schedule-room-pill");
 
       const origPeriod = screen.getByText("10");
       expect(origPeriod.className).toContain("line-through");
-      expect(screen.getByText(/➔ 3/)).toBeDefined();
+      expect(screen.getByText("3", { selector: "dd span" })).toBeDefined();
+
+      // Never uses Unicode arrow glyphs; Lucide <Icon name="arrow-right"> is rendered instead.
+      expect(screen.getByRole("dialog").textContent).not.toContain("➔");
+    });
+  });
+
+  describe("LessonSheet liquid-glass Home design alignment", () => {
+    it("renders the frosted glass sheet, subject-toned period jewel, time capsule, recessed detail slab, and room capsule", () => {
+      const lesson = createLesson({
+        period: "4",
+        start: "11:00",
+        end: "11:40",
+        rooms: [{ id: "r1", name: "205", short: "205" }],
+      });
+
+      renderWithStore(
+        <LessonSheet
+          lesson={lesson}
+          day={{
+            date: "2026-09-09",
+            weekday: "wed",
+            classId: "c1",
+            building: "Galvenā ēka",
+            buildings: ["Galvenā ēka"],
+            ttNum: "1",
+            lessons: [lesson],
+            notes: [],
+            stale: false,
+          }}
+          onClose={vi.fn()}
+        />,
+      );
+
+      const dialog = screen.getByRole("dialog");
+      expect(dialog.className).toContain("u-sheet-glass");
+      expect(dialog.className).toContain("u-sheet-glass-caustic");
+
+      const jewel = screen.getByTestId("lesson-sheet-period-jewel");
+      expect(jewel.textContent).toBe("4");
+
+      const dateChip = screen.getByTestId("lesson-sheet-date");
+      expect(dateChip.textContent).toMatch(/9/);
+
+      const timeChip = screen.getByTestId("lesson-sheet-time");
+      expect(timeChip.className).toContain("u-schedule-glass-chip");
+      expect(timeChip.textContent).toContain("11:00");
+      expect(timeChip.textContent).toContain("11:40");
+
+      const slab = screen.getByTestId("lesson-details-slab");
+      expect(slab.className).toContain("u-sheet-slab");
+      expect(slab.className).not.toContain("u-schedule-glass");
+      // Unchanged period is omitted from the fact slab because the header jewel already shows it.
+      expect(screen.queryByText("Stunda")).toBeNull();
+
+      const roomPill = screen.getByText("205");
+      expect(roomPill.className).toContain("u-schedule-room-pill");
+    });
+
+    it("suppresses the caustic wash, dims the period jewel, and strikes through the title when cancelled", () => {
+      const lesson = createLesson({
+        period: "2",
+        status: "cancelled",
+        rooms: [{ id: "r1", name: "301", short: "301" }],
+      });
+
+      renderWithStore(<LessonSheet lesson={lesson} day={null} onClose={vi.fn()} />);
+
+      const dialog = screen.getByRole("dialog");
+      expect(dialog.className).toContain("u-sheet-glass");
+      expect(dialog.className).not.toContain("u-sheet-glass-caustic");
+
+      const jewel = screen.getByTestId("lesson-sheet-period-jewel");
+      expect(jewel.className).toContain("opacity-55");
+      expect(jewel.className).not.toContain("line-through");
+
+      const room = screen.getByText("301");
+      expect(room.className).not.toContain("u-schedule-room-pill");
+    });
+
+    it("shows movedTo destination and omits redundant Cover row when coverFor is null", () => {
+      const lesson = createLesson({
+        period: "5",
+        status: "moved",
+        movedTo: { date: "2026-09-11", period: "2" },
+        classes: [{ id: "c1", name: "DP3-1", short: "DP3-1" }],
+        role: "cover",
+        coverFor: null,
+        isCover: true,
+      });
+
+      renderWithStore(<LessonSheet lesson={lesson} day={null} onClose={vi.fn()} />);
+
+      // Teacher mode leads with class name and shows subject in subtitle.
+      expect(screen.getByRole("heading", { name: "DP3-1" })).toBeDefined();
+      expect(screen.getByTestId("lesson-sheet-subject").textContent).toBe("Informātika");
+      // Cover badge is shown in header, but no duplicate "Aizvietošana | Aizvietošana" row in the slab.
+      expect(screen.getAllByText("Aizvietošana")).toHaveLength(1);
+      // Moved destination is rendered inside the fact slab.
+      expect(screen.getByText(/2\./)).toBeDefined();
     });
   });
 });
