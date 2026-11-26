@@ -603,14 +603,15 @@ pills derived from the cached timetable; active pills are inverse. Favorites and
 full inverse swap. A bottom-skirt `Continue · <class>` button commits or steps into the glass
 `SubgroupPicker`.
 
-### Week Grid
+### Week Calendar (2D Liquid-Glass Time Canvas)
 
-A `36px + n` column grid with 6px gutters, mono start-times on the left, and 40px cells at the 10px
-radius. Cells carry the subject tone with its ink pair and the short code in bold caption — the only
-place abbreviation is allowed; the full name rides along for assistive tech. Multi-period lessons span
-rows (`grid-row: span N`). Tone fills are the same in both themes. Empty cells are sunken blocks;
-cancelled cells are 40% opacity with a strikethrough. Today's header uses `brand-strong` ink, the rest
-are muted.
+The Week tab replaces the fixed 3-letter period matrix with a full-viewport, edge-to-edge proportional 2D-pannable liquid-glass calendar canvas (`week-calendar.tsx` + `week-calendar-event.tsx` + `week-calendar-layout.ts`) that fills 100% of the device's width and height:
+
+- **Proportional wall-clock axis:** Every lesson block is positioned and sized by its true start/end minutes (`PX_PER_MINUTE`), so double periods, long breaks (`.u-week-break-band`), and free windows read immediately by physical height. A live `--lamp` hairline with a glowing leading orb and matching sticky-rail time pill marks the current time on Today's column (preserving the One Lamp rule).
+- **Sticky dual axes & 2D pan:** A single `overflow-auto` viewport pins frosted weekday headers (`.u-week-sticky-header`, weekday + day number, Today in `bg-inverse text-on-inverse`, tappable to open that day) along the top and a Martian Mono time rail (`.u-week-sticky-rail`) along the left.
+- **Zoom toggle (Detailed ↔ Full Week):** On phones and tablets, Detailed mode defaults to ~176px day columns (showing ~2.1 days simultaneously with full unabbreviated subject names, dusk-toned period jewels, `.u-schedule-room-pill` room capsules, inline time ranges, teachers/groups, building pills, and `StatusDot` cues) and auto-focuses Today; tapping the header zoom pill switches to a 5-day Full-Week overview fit. Desktop naturally displays all 5 days in full Detailed mode.
+- **Live & cancelled states:** The lesson in progress lifts onto `.u-tone-field u-tone-field-deep` with a `NOW` badge and bottom progress filament; cancelled lessons stay in place at 48% opacity with strikethrough; overlapping or subgroup-paired lessons split cleanly 50/50 side-by-side.
+- **Compact chrome:** Non-main building days appear as inline `.u-schedule-glass-chip` pills above the canvas, Share Week sits in `WeekTopBar`, and `WeekOverview` tucks into a collapsible liquid-glass summary bar beneath the canvas. (The DS `WeekGrid` primitive remains intact for legacy/export callers.)
 
 ### Colour Wheel & Custom Tone Controls
 
@@ -650,6 +651,13 @@ large viewport; `--app-viewport-height` is `100dvh` where available). In iOS sta
 `FeedbackSheet` adds segmented toggles, a counted textarea and a pill submit with send/check states.
 The DS also exports a Radix `Tooltip` primitive (mounted via `TooltipProvider` in `App.tsx`) that no
 screen currently uses; the bottom sheet remains the only modal.
+
+- **LessonSheet:** Extends the Home screen's liquid-glass grammar (`.u-sheet-glass` + subject-toned
+  `.u-sheet-glass-caustic`, suppressed when cancelled) into the bottom sheet: a backlit dusk-toned
+  period jewel beside the subject heading, a Martian Mono `.u-schedule-glass-chip` time capsule
+  paired with status/cover badges, one continuous `.u-schedule-glass` detail slab with icon-led
+  rows and a recessed `.u-schedule-room-pill` for unchanged rooms, verbatim school notes in a
+  matching `.u-schedule-glass` slab, and a pinned tactile Close button in the sheet footer.
 
 ### Empty State
 

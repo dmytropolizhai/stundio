@@ -49,12 +49,12 @@ const makeMockContext = () => {
 };
 
 describe("school-fluid-canvas", () => {
-  it("maps ongoing progress monotonically and keeps ahead as a calm low pool", () => {
-    expect(visualFluidLevel("ongoing", 0)).toBeCloseTo(0.14, 4);
+  it("drains ongoing fluid level as progress approaches end of day and keeps ahead as a calm low pool", () => {
+    expect(visualFluidLevel("ongoing", 0)).toBeCloseTo(0.94, 4);
     expect(visualFluidLevel("ongoing", 0.5)).toBeCloseTo(0.54, 4);
-    expect(visualFluidLevel("ongoing", 1)).toBeCloseTo(0.94, 4);
-    expect(visualFluidLevel("ongoing", 1.5)).toBeCloseTo(0.94, 4);
-    expect(visualFluidLevel("ongoing", -0.2)).toBeCloseTo(0.14, 4);
+    expect(visualFluidLevel("ongoing", 1)).toBeCloseTo(0.14, 4);
+    expect(visualFluidLevel("ongoing", 1.5)).toBeCloseTo(0.14, 4);
+    expect(visualFluidLevel("ongoing", -0.2)).toBeCloseTo(0.94, 4);
     expect(visualFluidLevel("ahead", 0)).toBeCloseTo(0.12, 4);
     expect(visualFluidLevel("ahead", 0.8)).toBeCloseTo(0.12, 4);
   });
@@ -185,7 +185,7 @@ describe("SchoolBackdrop", () => {
 
     const backdrop = getByTestId("school-backdrop");
     expect(backdrop.getAttribute("data-tone")).toBe("ongoing");
-    expect(backdrop.getAttribute("data-fill")).toBe("40");
+    expect(backdrop.getAttribute("data-fill")).toBe("60");
     expect(backdrop.getAttribute("data-paused")).toBe("false");
 
     const stage = getByTestId("school-backdrop-stage");
@@ -208,7 +208,7 @@ describe("SchoolBackdrop", () => {
         paused: false,
       }),
     );
-    expect(getByTestId("school-backdrop").getAttribute("data-fill")).toBe("55");
+    expect(getByTestId("school-backdrop").getAttribute("data-fill")).toBe("45");
     rafCallbacks.shift()?.(1100);
     expect(setTransform).toHaveBeenCalledTimes(1);
 

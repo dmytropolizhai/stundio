@@ -1,10 +1,11 @@
 /**
  * Pure 2D Canvas fluid renderer for the Home school tile.
  *
- * Paints a luminous, rising liquid surface whose height tracks how close the school day is to
- * finishing: a translucent counter-drifting back wave for depth, a multi-harmonic front fluid
- * body with a vertical warmth gradient, a soft subsurface light band beneath the crest, slow
- * rising micro-bubbles clipped inside the fluid, and a crisp specular meniscus rim.
+ * Paints a luminous, draining liquid surface whose height tracks how much of the school day
+ * remains (draining toward empty as the end of the day approaches): a translucent counter-drifting
+ * back wave for depth, a multi-harmonic front fluid body with a vertical warmth gradient, a soft
+ * subsurface light band beneath the crest, slow rising micro-bubbles clipped inside the fluid, and
+ * a crisp specular meniscus rim.
  *
  * Wavelengths and bubble spacing anchor to the tile's height (the collapsed square dimension),
  * so rendering on a full-row `100cqw` stage keeps proportions identical between collapsed and
@@ -99,10 +100,14 @@ const mulberry32 = (seed: number): (() => number) => {
   };
 };
 
-/** Maps logical day progress (`0..1`) to visible fluid height fraction in the tile. */
+/**
+ * Maps logical day progress (`0..1`) to visible fluid height fraction in the tile.
+ * During an ongoing school day, the vessel drains as the end of the day approaches (`0.94` → `0.14`);
+ * before school starts (`ahead`), it rests as a calm low pool.
+ */
 export const visualFluidLevel = (tone: SchoolFluidTone, progress: number): number => {
   if (tone === "ahead") return 0.12;
-  return 0.14 + clamp01(progress) * 0.8;
+  return 0.14 + (1 - clamp01(progress)) * 0.8;
 };
 
 export const createSchoolFluidState = (

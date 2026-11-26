@@ -1013,11 +1013,6 @@
 .u-glance-glow[data-tone-dark] {
   --deep-base: color-mix(in oklab, var(--tone) 45%, var(--shade));
 }
-.u-glance-glow-dock {
-  inset: 6px 10px -6px 10px;
-  filter: blur(18px);
-  transform: translateZ(0);
-}
 :root.dark .u-glance-glow {
   opacity: 0.62;
 }
@@ -1081,7 +1076,7 @@
 }
 
 /*
- * Liquid-glass floating chrome (`BottomNav` and `DateDock`).
+ * Liquid-glass floating chrome (`BottomNav`, `DateDock`, and `NowDock`).
  * `::before` renders a 1px directional specular rim via CSS mask-composite so the glass edge
  * catches light along the top-left and bottom-right capsule curves without shifting box geometry.
  */
@@ -1328,4 +1323,177 @@
 }
 .u-btn-danger:hover {
   opacity: 0.92;
+}
+
+/*
+ * Week Calendar 2D liquid-glass canvas (`src/ui/screens/week-view/`).
+ * Uses only semantic Night/Day aliases and `color-mix(in oklab, ...)` so sticky headers,
+ * proportional time guides, long-break bands, and subject-caustic event blocks stay razor-sharp
+ * in both themes without introducing raw hex values.
+ */
+.u-week-canvas {
+  background: color-mix(in oklab, var(--surface-card) 42%, var(--bg-app));
+}
+
+:root.dark .u-week-canvas {
+  background: color-mix(in oklab, var(--surface-card) 32%, var(--bg-app));
+}
+
+.u-week-sticky-header {
+  background: color-mix(in oklab, var(--surface-card) 86%, transparent);
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  border-bottom: 1px solid color-mix(in oklab, var(--border-hairline) 85%, transparent);
+  transition: box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+[data-scrolled-y="true"] .u-week-sticky-header,
+[data-scrolled-y="true"] .u-week-sticky-corner {
+  box-shadow: 0 6px 16px -8px color-mix(in oklab, var(--shade) 24%, transparent);
+}
+
+:root.dark [data-scrolled-y="true"] .u-week-sticky-header,
+:root.dark [data-scrolled-y="true"] .u-week-sticky-corner {
+  box-shadow: 0 8px 20px -8px color-mix(in oklab, var(--shade) 70%, transparent);
+}
+
+.u-week-sticky-rail {
+  background: color-mix(in oklab, var(--surface-card) 84%, transparent);
+  backdrop-filter: blur(16px) saturate(155%);
+  -webkit-backdrop-filter: blur(16px) saturate(155%);
+  border-right: 1px solid color-mix(in oklab, var(--border-hairline) 75%, transparent);
+  transition: box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+[data-scrolled-x="true"] .u-week-sticky-rail,
+[data-scrolled-x="true"] .u-week-sticky-corner {
+  box-shadow: 6px 0 16px -8px color-mix(in oklab, var(--shade) 24%, transparent);
+}
+
+:root.dark [data-scrolled-x="true"] .u-week-sticky-rail,
+:root.dark [data-scrolled-x="true"] .u-week-sticky-corner {
+  box-shadow: 8px 0 20px -8px color-mix(in oklab, var(--shade) 70%, transparent);
+}
+
+.u-week-sticky-corner {
+  background: color-mix(in oklab, var(--surface-card) 92%, transparent);
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  border-right: 1px solid color-mix(in oklab, var(--border-hairline) 75%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--border-hairline) 85%, transparent);
+  transition: box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+.u-week-today-col {
+  background: color-mix(in oklab, var(--lamp) 4.5%, transparent);
+}
+
+:root.dark .u-week-today-col {
+  background: color-mix(in oklab, var(--lamp) 6.5%, transparent);
+}
+
+.u-week-event {
+  background:
+    radial-gradient(
+      140% 100% at 0% 0%,
+      color-mix(in oklab, var(--row-tone) 26%, transparent) 0%,
+      transparent 72%
+    ),
+    color-mix(in oklab, var(--surface-raised) 86%, var(--row-tone) 14%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white) 58%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--row-tone) 34%, var(--border-hairline)),
+    0 2px 8px -4px color-mix(in oklab, var(--shade) 18%, transparent);
+}
+
+.u-week-event:hover {
+  background:
+    radial-gradient(
+      140% 100% at 0% 0%,
+      color-mix(in oklab, var(--row-tone) 34%, transparent) 0%,
+      transparent 74%
+    ),
+    color-mix(in oklab, var(--surface-raised) 82%, var(--row-tone) 18%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white) 72%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--row-tone) 50%, var(--border-hairline)),
+    0 6px 16px -6px color-mix(in oklab, var(--shade) 24%, transparent);
+}
+
+:root.dark .u-week-event {
+  background:
+    radial-gradient(
+      140% 100% at 0% 0%,
+      color-mix(in oklab, var(--row-tone) 28%, transparent) 0%,
+      transparent 74%
+    ),
+    color-mix(in oklab, var(--surface-raised) 84%, var(--row-tone) 16%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white) 10%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--row-tone) 36%, transparent),
+    0 4px 12px -4px color-mix(in oklab, var(--shade) 55%, transparent);
+}
+
+:root.dark .u-week-event:hover {
+  background:
+    radial-gradient(
+      140% 100% at 0% 0%,
+      color-mix(in oklab, var(--row-tone) 36%, transparent) 0%,
+      transparent 76%
+    ),
+    color-mix(in oklab, var(--surface-raised) 79%, var(--row-tone) 21%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white) 16%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--row-tone) 52%, transparent),
+    0 8px 20px -6px color-mix(in oklab, var(--shade) 68%, transparent);
+}
+
+.u-week-event-filled {
+  background: var(--row-tone);
+  color: var(--row-ink);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white) 26%, transparent),
+    0 2px 8px -4px color-mix(in oklab, var(--shade) 20%, transparent);
+}
+
+.u-week-event-filled:hover {
+  filter: brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white) 34%, transparent),
+    0 6px 16px -6px color-mix(in oklab, var(--shade) 28%, transparent);
+}
+
+.u-week-event-cancelled {
+  background: color-mix(in oklab, var(--surface-sunken) 78%, transparent);
+  border: 1px dashed color-mix(in oklab, var(--border-strong) 68%, transparent);
+  box-shadow: none;
+}
+
+.u-week-break-band {
+  background: color-mix(in oklab, var(--surface-sunken) 62%, transparent);
+  border-top: 1px dashed color-mix(in oklab, var(--border-strong) 42%, transparent);
+  border-bottom: 1px dashed color-mix(in oklab, var(--border-strong) 42%, transparent);
+}
+
+.u-week-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--border-strong) 45%, transparent) transparent;
+}
+
+.u-week-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.u-week-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.u-week-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--border-strong) 45%, transparent);
+  border-radius: 999px;
+}
+
+.u-week-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
 }

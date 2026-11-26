@@ -66,6 +66,113 @@ describe("LessonRow and LessonSheet", () => {
       expect(pair.children).toHaveLength(2);
       expect(pair.children[0]?.textContent).toContain("Anglu");
       expect(pair.children[1]?.textContent).toContain("Vācu");
+      expect(screen.getByTestId("lesson-pair-time").textContent).toBe("13:30–14:50");
+    });
+
+    it("shows inline time hierarchy for passed, live, upcoming, and cancelled lessons", () => {
+      const passedLesson = createLesson({
+        period: "1",
+        start: "08:30",
+        end: "09:10",
+        subject: { id: "s1", name: "Latviešu valoda", short: "LV" },
+      });
+      const liveLesson = createLesson({
+        period: "2",
+        start: "09:20",
+        end: "10:00",
+        subject: { id: "s2", name: "Matemātika", short: "MAT" },
+      });
+      const upcomingLesson = createLesson({
+        period: "3",
+        start: "10:15",
+        end: "10:55",
+        subject: { id: "s3", name: "Fizika", short: "FIZ" },
+      });
+      const cancelledLesson = createLesson({
+        period: "4",
+        start: "11:05",
+        end: "11:45",
+        status: "cancelled",
+        subject: { id: "s4", name: "Ķīmija", short: "ĶĪM" },
+      });
+      const day = {
+        date: "2026-09-09",
+        lessons: [passedLesson, liveLesson, upcomingLesson, cancelledLesson],
+        building: "main",
+        buildings: ["main"],
+      } as unknown as ResolvedDay;
+
+      renderWithStore(
+        <DayLessonList
+          day={day}
+          date="2026-09-09"
+          now={{ date: "2026-09-09", minutes: 9 * 60 + 40 }}
+          progress={{ current: liveLesson, progress: 0.5 }}
+          showTime={true}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+          x={motionValue(0)}
+          opacity={motionValue(1)}
+          dragging={false}
+          onOpenLesson={() => undefined}
+        />,
+      );
+
+      const times = screen.getAllByTestId("lesson-time");
+      expect(times.map((el) => el.textContent)).toEqual([
+        "08:30–09:10",
+        "09:20–10:00",
+        "10:15–10:55",
+        "11:05–11:45",
+      ]);
+      expect(times[0]?.className).toContain("text-muted");
+      expect(times[1]?.className).toContain("text-on-deep/85");
+      expect(times[2]?.className).toContain("text-fg");
+      expect(times[2]?.className).toContain("font-medium");
+      expect(times[3]?.className).toContain("line-through");
+    });
+
+    it("keeps the live lesson window beside NOW even when showTime is false", () => {
+      const liveLesson = createLesson({
+        period: "2",
+        start: "09:20",
+        end: "10:00",
+        subject: { id: "s2", name: "Matemātika", short: "MAT" },
+      });
+      const upcomingLesson = createLesson({
+        period: "3",
+        start: "10:15",
+        end: "10:55",
+        subject: { id: "s3", name: "Fizika", short: "FIZ" },
+      });
+      const day = {
+        date: "2026-09-09",
+        lessons: [liveLesson, upcomingLesson],
+        building: "main",
+        buildings: ["main"],
+      } as unknown as ResolvedDay;
+
+      renderWithStore(
+        <DayLessonList
+          day={day}
+          date="2026-09-09"
+          now={{ date: "2026-09-09", minutes: 9 * 60 + 40 }}
+          progress={{ current: liveLesson, progress: 0.5 }}
+          showTime={false}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+          x={motionValue(0)}
+          opacity={motionValue(1)}
+          dragging={false}
+          onOpenLesson={() => undefined}
+        />,
+      );
+
+      const times = screen.getAllByTestId("lesson-time");
+      expect(times).toHaveLength(1);
+      expect(times[0]?.textContent).toBe("09:20–10:00");
     });
 
     it("splits schedule slabs with a building bridge when consecutive lessons switch buildings", () => {
@@ -148,7 +255,46 @@ describe("LessonRow and LessonSheet", () => {
         />,
       );
 
-      expect(screen.getByTestId("day-gap").textContent).toContain("TIC");
+      const gap = screen.getByTestId("day-gap");
+      expect(gap.textContent).toContain("50 min");
+      expect(gap.textContent).toContain("TIC");
+      expect(gap.textContent).not.toContain("09:10–10:00");
+      expect(gap.textContent).not.toContain("Brīvstunda");
+      expect(gap.getAttribute("aria-label")).toBe("Brīvstunda · 50 min · 09:10–10:00 · TIC");
+    });
+
+    it("renders only the time on a plain free-period gap without icon or label text", () => {
+      const day = {
+        date: "2026-09-09",
+        lessons: [
+          createLesson({ period: "1", start: "08:30", end: "09:10" }),
+          createLesson({ period: "3", start: "10:00", end: "10:40" }),
+        ],
+        building: "Galvenā ēka",
+        buildings: ["Galvenā ēka"],
+      } as unknown as ResolvedDay;
+
+      renderWithStore(
+        <DayLessonList
+          day={day}
+          date="2026-09-09"
+          now={{ date: "2026-09-10", minutes: 0 }}
+          progress={{ current: null, progress: null }}
+          showTime={false}
+          subjectColorOverrides={{}}
+          colorCodingEnabled={true}
+          filled={false}
+          x={motionValue(0)}
+          opacity={motionValue(1)}
+          dragging={false}
+          onOpenLesson={() => undefined}
+        />,
+      );
+
+      const gap = screen.getByTestId("day-gap");
+      expect(gap.textContent).toBe("50 min·09:10–10:00");
+      expect(gap.querySelector("svg")).toBeNull();
+      expect(gap.getAttribute("aria-label")).toBe("Brīvstunda · 50 min · 09:10–10:00");
     });
   });
 

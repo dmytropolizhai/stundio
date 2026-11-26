@@ -465,10 +465,7 @@ describe("WeekView", () => {
       />,
     );
     const tones = new Set(
-      screen
-        .getAllByTestId("week-cell")
-        .flatMap((cell) => cell.className.split(" "))
-        .filter((cls) => cls.startsWith("bg-")),
+      screen.getAllByTestId("week-cell").map((cell) => cell.getAttribute("data-tone")),
     );
     expect(tones.size).toBeGreaterThan(1);
   });
@@ -487,7 +484,7 @@ describe("WeekView", () => {
     const cells = screen.getAllByTestId("week-cell");
     expect(cells.length).toBeGreaterThan(0);
     for (const cell of cells) {
-      expect(cell.className.split(" ")).toContain("bg-sky");
+      expect(cell.getAttribute("data-tone")).toBe("sky");
     }
   });
 
@@ -777,11 +774,11 @@ describe("SettingsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
-    expect(harness.store.getState().settings.showTime).toBe(false);
+    expect(harness.store.getState().settings.showTime).toBe(true);
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("switch", { name: "Rādīt laiku" }));
     });
-    expect(harness.store.getState().settings.showTime).toBe(true);
+    expect(harness.store.getState().settings.showTime).toBe(false);
   });
 
   it("persists the subjects-tab switch, offered only to a role with that tab", async () => {

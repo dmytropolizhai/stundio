@@ -709,22 +709,23 @@ describe("HomeView", () => {
     expect(screen.queryByText(/Paziņojumi · No skolas/i)).toBeNull();
   });
 
-  it("allows toggling show-time preference directly from HomeView", async () => {
+  it("shows inline lesson times by default and drops the top-bar view options menu", async () => {
     const harness = await bootHarness();
     renderDay(harness);
 
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Skata opcijas" }));
-    });
-    const toggle = screen.getByRole("switch", { name: "Rādīt laiku" });
-    expect(toggle).toBeDefined();
-    expect(harness.store.getState().settings.showTime).toBe(false);
-
-    await clickAndSettle(() => {
-      fireEvent.click(toggle);
-    });
-
     expect(harness.store.getState().settings.showTime).toBe(true);
+    expect(screen.queryByTestId("view-options")).toBeNull();
+    const beforeCount = screen.getAllByTestId("lesson-time").length;
+    expect(beforeCount).toBeGreaterThan(1);
+
+    await clickAndSettle(() => {
+      void harness.store.getState().updateSettings({ showTime: false });
+    });
+
+    // Only the live lesson keeps its time window beside the NOW badge when showTime is off.
+    const remaining = screen.queryAllByTestId("lesson-time");
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0]?.closest('[data-live="true"]')).not.toBeNull();
   });
 
   it("renders changes badge and calls onOpenChanges when tapped", async () => {

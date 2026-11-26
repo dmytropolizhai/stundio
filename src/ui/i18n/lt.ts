@@ -221,6 +221,9 @@ export const lt: Dict = {
   "week.pageHint":
     "Braukite kairėn arba dešinėn arba naudokite rodyklių klavišus savaitei pakeisti",
   "week.buildingDays": "{building}: {days}",
+  "week.view.detailed": "Išsamiai",
+  "week.view.overview": "Visa savaitė",
+  "week.view.zoomToggle": "Keisti kalendoriaus mastelį",
   "week.overview.title": "Apžvalga",
   "week.overview.lessons": "Pamokų: {n}",
   "week.overview.lessonsUp": "+{n}, palyginti su praėjusia savaite",

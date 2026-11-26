@@ -1,8 +1,9 @@
 /**
- * Hybrid CSS vessel + 2D Canvas rising fluid backdrop for the Home school tile.
+ * Hybrid CSS vessel + 2D Canvas fluid backdrop for the Home school tile.
  *
  * The CSS gradient paints the unfilled upper vessel synchronously on first render; the `<canvas>`
- * renders the rising liquid surface inside a left-anchored `100cqw` stage matching the full
+ * renders the liquid surface (draining toward empty as the school day nears its end) inside a
+ * left-anchored `100cqw` stage matching the full
  * expanded tile row width, so expanding or collapsing the tile clips and reveals a continuous
  * tank without stretching, resizing, or resetting the wave phase. Tapping the tile injects a
  * subtle damped slosh impulse. The animation loop pauses immediately when `document.hidden`,
@@ -275,12 +276,15 @@ export const SchoolBackdrop = ({
     };
   }, [isPaused, reducedMotion]);
 
+  const clampedProgress = Math.min(1, Math.max(0, progress));
+  const dataFill = tone === "ongoing" ? 1 - clampedProgress : clampedProgress;
+
   return (
     <div
       aria-hidden="true"
       data-testid="school-backdrop"
       data-tone={tone}
-      data-fill={String(Math.round(Math.min(1, Math.max(0, progress)) * 100))}
+      data-fill={String(Math.round(dataFill * 100))}
       data-paused={isPaused ? "true" : "false"}
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ background: VESSEL_GRADIENT[tone] }}

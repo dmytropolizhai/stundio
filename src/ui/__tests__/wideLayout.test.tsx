@@ -301,16 +301,21 @@ describe("Week grid subject names", () => {
     return { cell, name: (cell.title.split(" · ")[0] ?? "").trim() };
   };
 
-  it("keeps the short subject code on a phone and a tablet", async () => {
+  it("shows full subject names in Detailed 2D mode on phone/tablet and compacts on Overview zoom", async () => {
     stubLayout("tablet");
     const { cell, name } = await renderWeek();
     expect(name.length).toBeGreaterThan(3);
-    expect(cell.textContent).not.toContain(name);
+    expect(cell.textContent).toContain(name);
+
+    fireEvent.click(screen.getByTestId("week-density-toggle"));
+    const compactCell = screen.getAllByTestId("week-cell")[0] as HTMLElement;
+    expect(compactCell.textContent).not.toContain(name);
   });
 
   it("spells the whole subject name out on a desktop", async () => {
     stubLayout("desktop");
     const { cell, name } = await renderWeek();
     expect(cell.textContent).toContain(name);
+    expect(screen.queryByTestId("week-density-toggle")).toBeNull();
   });
 });

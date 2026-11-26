@@ -1,5 +1,5 @@
 /**
- * The Home header's school tile: a rising lamp-tinted fluid card showing the countdown to the
+ * The Home header's school tile: a lamp-tinted fluid card showing the countdown to the
  * end or start of the school day (or a later day's start time, or a resting Done/Free face).
  *
  * Interactive faces (`until` and `startsAt`) expand horizontally on tap to reveal the exact

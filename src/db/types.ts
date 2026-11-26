@@ -203,7 +203,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lang: "lv",
   mergeConsecutiveLessons: false,
   showMovedOnTargetDay: true,
-  showTime: false,
+  showTime: true,
   showSubjectsTab: true,
   showTransitTab: true,
   lessonCardStyle: "outline",

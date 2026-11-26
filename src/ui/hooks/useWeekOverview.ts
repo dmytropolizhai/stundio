@@ -13,11 +13,19 @@ import { addDays } from "@/sync";
 import { weekDates, weekPeriods } from "@/lib/schedule";
 import type { ISODate } from "@/lib/edupage";
 
+export type WeekOverviewDay = {
+  date: ISODate;
+  count: number;
+  changed: number;
+};
+
 export type WeekOverview = {
   totalLessons: number;
   changedLessons: number;
   busiest: { date: ISODate; count: number } | null;
   lightest: { date: ISODate; count: number } | null;
+  /** Per-weekday counts (Mon–Fri) for the workload bar strip. */
+  days: WeekOverviewDay[];
   /** This week's total minus last week's; `null` if last week isn't cached. */
   lessonDelta: number | null;
 };
@@ -38,10 +46,14 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
     let changedLessons = 0;
     let busiest: { date: ISODate; count: number } | null = null;
     let lightest: { date: ISODate; count: number } | null = null;
+    const daily: WeekOverviewDay[] = [];
 
     dates.forEach((d, i) => {
       const day = days[i];
-      if (day === null || day === undefined) return;
+      if (day === null || day === undefined) {
+        daily.push({ date: d, count: 0, changed: 0 });
+        return;
+      }
 
       const count = weekPeriods([day]).length;
 
@@ -54,6 +66,7 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
         }
       }
 
+      daily.push({ date: d, count, changed: dayChanged });
       totalLessons += count;
       changedLessons += dayChanged;
       if (count === 0) return;
@@ -73,6 +86,7 @@ export const useWeekOverview = (date: ISODate): WeekOverview | null => {
       changedLessons,
       busiest,
       lightest,
+      days: daily,
       lessonDelta: prevAvailable ? totalLessons - prevTotal : null,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the store data drives the result

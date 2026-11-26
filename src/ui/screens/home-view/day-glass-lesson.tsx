@@ -3,8 +3,11 @@
  *
  * Built around a 2-second corridor scan:
  * - Left spine: period jewel in the subject's dusk tone (connected across consecutive rows inside
- *   a slab by an optical spine thread, with optional Martian Mono start/end times).
- * - Center: subject heading (or group · room in teacher mode) and quiet single-line metadata.
+ *   a slab by an optical spine thread).
+ * - Center: subject heading (or group · room in teacher mode) and quiet metadata led by an inline
+ *   Martian Mono time range (`08:30–09:10`) when `showTime` is enabled, keeping every start time
+ *   aligned down one vertical axis with zero horizontal squeeze. Live cards pair the window
+ *   directly beside the `NOW` badge instead of cluttering the metadata line.
  * - Trailing right edge: recessed liquid-glass room capsule so rooms align down a scannable column,
  *   paired with the accessible change indicator dot when modified.
  *
@@ -47,8 +50,6 @@ type DayGlassLessonProps = {
   passed?: boolean;
   progress?: number;
   showTime: boolean;
-  /** Plays the scale-in reveal only when `showTime` is toggled on, never on day swipes. */
-  animateTime?: boolean;
   building?: string;
   subjectColorOverrides: Record<string, string>;
   colorCodingEnabled: boolean;
@@ -63,6 +64,9 @@ type DayGlassLessonProps = {
   onOpen?: (lesson: ResolvedLesson) => void;
 };
 
+const formatTimeRange = (start: string, end: string): string =>
+  [start, end].filter((part) => part !== "").join("–");
+
 export const DayGlassLesson = memo(
   ({
     lesson,
@@ -70,7 +74,6 @@ export const DayGlassLesson = memo(
     passed = false,
     progress,
     showTime,
-    animateTime = false,
     building,
     subjectColorOverrides,
     colorCodingEnabled,
@@ -132,6 +135,9 @@ export const DayGlassLesson = memo(
 
     const showStudentRoom = !isTeacherMode && rooms !== "" && !cancelled;
     const hasTrailing = !half && (showStudentRoom || changed);
+    const timeRange = formatTimeRange(lesson.start, lesson.end);
+    const liveTime = live && timeRange !== "" ? timeRange : null;
+    const inlineTime = !live && !half && showTime && timeRange !== "" ? timeRange : null;
 
     const secondaryParts: string[] = [];
     if (!half && subtitle !== undefined) secondaryParts.push(subtitle);
@@ -140,7 +146,10 @@ export const DayGlassLesson = memo(
     const secondaryLine = secondaryParts.join(" · ");
 
     const hasSecondary =
-      secondaryLine !== "" || originalSubjectName !== undefined || building !== undefined;
+      inlineTime !== null ||
+      secondaryLine !== "" ||
+      originalSubjectName !== undefined ||
+      building !== undefined;
 
     const periodJewel = (
       <div className="relative flex shrink-0 items-center justify-center self-stretch">
@@ -220,6 +229,14 @@ export const DayGlassLesson = memo(
               {t("day.now")}
             </Badge>
           )}
+          {liveTime !== null && (
+            <span
+              data-testid="lesson-time"
+              className="u-data shrink-0 text-[11.5px] leading-none font-medium whitespace-nowrap text-on-deep/85"
+            >
+              {liveTime}
+            </span>
+          )}
           {isCover && (
             <Badge tone="warning" uppercase={false} data-testid="status-cover">
               {coverBadgeText}
@@ -297,32 +314,7 @@ export const DayGlassLesson = memo(
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-2.5 self-stretch">
-            {showTime && (
-              <div className="flex min-w-11 flex-col items-start justify-center gap-0.5">
-                <span
-                  className={cn(
-                    "u-data origin-top text-[13px] leading-none font-bold",
-                    animateTime && "animate-time-in",
-                    live ? "text-on-deep" : passed ? "text-fg" : "text-strong",
-                    cancelled && "line-through",
-                  )}
-                >
-                  {lesson.start}
-                </span>
-                <span
-                  className={cn(
-                    "u-data origin-bottom text-[11px] leading-none",
-                    animateTime && "animate-time-in",
-                    live ? "text-on-deep/75" : "text-muted",
-                  )}
-                >
-                  {lesson.end}
-                </span>
-              </div>
-            )}
-            {periodJewel}
-          </div>
+          periodJewel
         )}
 
         <div className="flex min-w-0 flex-col gap-1">
@@ -346,6 +338,19 @@ export const DayGlassLesson = memo(
                 live ? "text-on-deep/80" : "text-muted",
               )}
             >
+              {inlineTime !== null && (
+                <span
+                  data-testid="lesson-time"
+                  className={cn(
+                    "u-data shrink-0 text-[11.5px] leading-none whitespace-nowrap",
+                    passed ? "text-muted" : "font-medium text-fg",
+                    cancelled && "line-through",
+                  )}
+                >
+                  {inlineTime}
+                </span>
+              )}
+
               {secondaryLine !== "" && (
                 <span className={cn("min-w-0 truncate", cancelled && "line-through")}>
                   {secondaryLine}

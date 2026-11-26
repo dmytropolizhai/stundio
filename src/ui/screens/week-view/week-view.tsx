@@ -1,13 +1,19 @@
-import { useMemo, useState } from "react";
+/**
+ * Week tab — proportional 2D liquid-glass calendar canvas.
+ *
+ * Replaces the fixed 3-letter period matrix with a free 2D-pannable calendar field (X across
+ * Mon–Fri, Y along real wall-clock minutes) where every lesson displays its full subject name,
+ * room capsule, time range, teacher/group, and live/change states. Users on phones and tablets
+ * can toggle between Detailed 2D pan and 5-day Full-Week overview with one tap.
+ */
+import { useCallback, useMemo, useState, type TouchEvent } from "react";
 import { m } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { usePersona } from "@/ui/persona";
-import { dayProgress, longBreaks, pairByGroup, weekDates, weekPeriods } from "@/lib/schedule";
-import type { ISODate, ResolvedDay, ResolvedLesson, TeacherResolvedLesson } from "@/lib/edupage";
-import { Button, WeekGrid, type WeekGridCell, type WeekGridPeriod } from "@/ds";
-import { buildingNotice, lessonBuilding, subjectCode, lessonAccent } from "@/ui/theme";
-import { PullToRefresh } from "@/ui/components/PullToRefresh.tsx";
+import { weekDates, weekPeriods } from "@/lib/schedule";
+import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
+import { buildingNotice } from "@/ui/theme";
 import { StateMessage } from "@/ui/components/StateMessage.tsx";
 import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { LessonSheet } from "@/ui/screens/lesson-sheet";
@@ -21,11 +27,8 @@ import { formatWeekdayShort, useLang, useT } from "@/ui/i18n";
 import { WeekTopBar } from "./week-top-bar.tsx";
 import { WeekBuildings } from "./week-buildings.tsx";
 import { WeekOverview } from "./week-overview.tsx";
-
-const periodNum = (p: string): number => {
-  const n = Number(p);
-  return Number.isFinite(n) ? n : 0;
-};
+import { WeekCalendar } from "./week-calendar.tsx";
+import type { CalendarDensity } from "./week-calendar-event.tsx";
 
 type WeekViewProps = {
   date: ISODate;
@@ -34,21 +37,13 @@ type WeekViewProps = {
   onPickClass: () => void;
 };
 
-/**
- * The whole school week at a glance: periods down, Mon–Fri across.
- *
- * Deliberately a grid rather than a pager of day lists — the point of this screen is comparing
- * days, and the DS sizes the cells for exactly that: a fixed 3-letter subject code, which is the
- * one place in the system abbreviation is allowed. What *does* page is the week itself: a swipe
- * (or the arrow keys) steps to the neighbouring week, like the arrows in the header.
- */
 export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekViewProps) => {
   const t = useT();
   const lang = useLang();
-  // Desktop cells are wide enough for the whole subject name; the 3-letter code is for phones.
-  const fullNames = useLayout() === "desktop";
+  const isDesktop = useLayout() === "desktop";
   const now = useNow();
 
+  const [density, setDensity] = useState<CalendarDensity>("detailed");
   const [open, setOpen] = useState<{
     lesson: ResolvedLesson;
     day: ResolvedDay;
@@ -57,10 +52,11 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   const ready = useAppStore((s) => s.ready);
   const { identified: hasIdentity, key: identityKey, profile } = usePersona();
   const mergeConsecutive = useAppStore((s) => s.settings.mergeConsecutiveLessons);
+  const lessonCardStyle = useAppStore((s) => s.settings.lessonCardStyle);
   const subjectColorOverrides = useAppStore((s) => s.settings.subjectColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
-  const syncStatus = useAppStore((s) => s.syncStatus);
+  const highlightCoverLessons = useAppStore((s) => s.settings.highlightCoverLessons);
   const refresh = useAppStore((s) => s.refresh);
 
   // `resolvedDay` is a stable store function; these are the inputs that change its output.
@@ -81,25 +77,9 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   );
 
   const periods = useMemo(() => weekPeriods(days), [days]);
-  const breaks = useMemo(() => longBreaks(periods), [periods]);
   const overview = useWeekOverview(date);
   const shareWeek = useShareWeek(date);
 
-  const columns = useMemo(
-    () =>
-      dates.map((d) => ({
-        key: d,
-        weekday: formatWeekdayShort(d, lang),
-        today: d === now.date,
-      })),
-    [dates, lang, now.date],
-  );
-
-  /*
-   * Which days are somewhere else, grouped by building. The grid marks those cells with a
-   * hairline ring, but a 40px cell cannot say *where* — and "which days do I go to the annex"
-   * is the question a week view is opened with, so it gets one plain line under the grid.
-   */
   const buildingDays = useMemo(() => {
     const byBuilding = new Map<string, string[]>();
 
@@ -117,131 +97,52 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
     return [...byBuilding.entries()];
   }, [days, dates, lang]);
 
-  /* The grid speaks in codes; this is what turns a tapped cell back into a real lesson. */
-  const lessonAt = useMemo(() => {
-    const map = new Map<string, { lesson: ResolvedLesson; day: ResolvedDay }>();
-
-    days.forEach((day, i) => {
-      const d = dates[i];
-
-      if (day === null || d === undefined) return;
-
-      for (const lesson of day.lessons) {
-        const start = periodNum(lesson.period);
-        const span = Math.max(1, lesson.span);
-        for (let offset = 0; offset < span; offset += 1) {
-          const key = `${d}|${String(start + offset)}`;
-          // A period shared by two groups: the first lesson owns the cell, the second its right
-          // half (`|1`), so a tap on either side opens the lesson it shows.
-          map.set(map.has(key) ? `${key}|1` : key, { lesson, day });
-        }
-      }
-    });
-
-    return map;
-  }, [days, dates]);
-
-  /* The lesson in progress, if today is in this week — the grid rings it like the day view. */
-  const liveLesson = useMemo(() => {
-    const i = dates.indexOf(now.date);
-    return i === -1 ? null : dayProgress(days[i] ?? null, now).current;
-  }, [dates, days, now]);
-
-  const rows = useMemo<WeekGridPeriod<ISODate>[]>(
-    () =>
-      periods.map(({ period, start, end }) => {
-        const cells: Partial<Record<ISODate, WeekGridCell>> = {};
-
-        days.forEach((day, i) => {
-          const d = dates[i];
-
-          if (day === null || d === undefined) return;
-
-          const slot = pairByGroup(day.lessons.filter((l) => l.period === period))[0];
-
-          if (slot === undefined) return;
-
-          const [lesson, second] = Array.isArray(slot)
-            ? (slot as readonly [ResolvedLesson, ResolvedLesson])
-            : [slot as ResolvedLesson, undefined];
-
-          const toCell = (l: ResolvedLesson): WeekGridCell => {
-            const building = lessonBuilding(day, l);
-            const accent = lessonAccent(
-              l,
-              subjectColorOverrides,
-              groupColorOverrides,
-              colorCodingEnabled,
-            );
-
-            const teacherLesson = l as Partial<TeacherResolvedLesson>;
-            const classNames = teacherLesson.classes?.map((c) => c.short || c.name).join(" + ");
-            const subjectName = l.subject?.name ?? l.subject?.short ?? "";
-            const displayName = classNames ? `${subjectName} (${classNames})` : subjectName;
-
-            return {
-              // A teacher scans the week for "which group", so the cell leads with the group and
-              // the subject stays in `name` (tooltip / aria label); students keep the subject code.
-              short:
-                fullNames && subjectName
-                  ? displayName
-                  : classNames
-                    ? classNames
-                    : subjectCode(l.subject),
-              name: displayName,
-              tone: accent.tone,
-              cancelled: l.status === "cancelled",
-              ...(l === liveLesson ? { live: true } : {}),
-              span: l.span,
-              ...(building === undefined ? {} : { building }),
-              ...(accent.tone === "custom"
-                ? { accentColor: { fill: accent.fill, ink: accent.ink } }
-                : {}),
-            };
-          };
-
-          cells[d] = {
-            ...toCell(lesson),
-            ...(second === undefined ? {} : { sibling: toCell(second) }),
-          };
-        });
-
-        const gap = breaks.get(period);
-
-        return {
-          period: periodNum(period),
-          start,
-          end,
-          cells,
-          ...(gap !== undefined ? { breakBefore: t("week.longBreak", { min: String(gap) }) } : {}),
-        };
-      }),
-    [
-      periods,
-      days,
-      dates,
-      subjectColorOverrides,
-      groupColorOverrides,
-      colorCodingEnabled,
-      liveLesson,
-      breaks,
-      fullNames,
-      t,
-    ],
-  );
-
   const firstDay = dates[0];
   const lastDay = dates[dates.length - 1];
-
   const isFuture = firstDay !== undefined && firstDay > now.date;
+  const hasSchedule =
+    ready &&
+    hasIdentity &&
+    !(isFuture && days.every((d) => d === null || d.stale)) &&
+    periods.length > 0;
+
+  /*
+   * When the 2D calendar canvas has real horizontal overflow (Detailed mode on phone/tablet),
+   * let touch drags pan smoothly across Mon–Fri inside the canvas rather than paging weeks.
+   * When zoomed out to 5-day Overview (or in environments with no overflow), swiping pages weeks.
+   */
+  const guardCanvasTouch = useCallback((e: TouchEvent<HTMLDivElement>) => {
+    const scroller = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+      "[data-testid='week-calendar-scroll']",
+    );
+    if (
+      scroller !== null &&
+      scroller !== undefined &&
+      scroller.scrollWidth > scroller.clientWidth
+    ) {
+      e.stopPropagation();
+    }
+  }, []);
+
+  const handleSelectLesson = useCallback((lesson: ResolvedLesson, day: ResolvedDay) => {
+    setOpen({ lesson, day });
+  }, []);
 
   const body = () => {
     if (!ready) {
-      return <DaySkeleton rows={7} />;
+      return (
+        <div className="mx-auto w-full max-w-screen px-gutter pt-4 pb-nav-safe">
+          <DaySkeleton rows={7} />
+        </div>
+      );
     }
 
     if (!hasIdentity) {
-      return <StateMessage icon={profile.icon} title={t(profile.noneSelected)} />;
+      return (
+        <div className="mx-auto flex w-full max-w-screen flex-1 items-center justify-center px-gutter pb-nav-safe">
+          <StateMessage icon={profile.icon} title={t(profile.noneSelected)} />
+        </div>
+      );
     }
 
     /*
@@ -251,110 +152,100 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
      */
     if (isFuture && days.every((d) => d === null || d.stale)) {
       return (
-        <StateMessage
-          icon="calendar-days"
-          title={t("week.noSchedule")}
-          hint={t("week.noScheduleHint")}
-        />
+        <div className="mx-auto flex w-full max-w-screen flex-1 items-center justify-center px-gutter pb-nav-safe">
+          <StateMessage
+            icon="calendar-days"
+            title={t("week.noSchedule")}
+            hint={t("week.noScheduleHint")}
+          />
+        </div>
       );
     }
 
     if (periods.length === 0) {
-      return <StateMessage icon="cloud" title={t("day.noData")} hint={t("day.noDataHint")} />;
+      return (
+        <div className="mx-auto flex w-full max-w-screen flex-1 items-center justify-center px-gutter pb-nav-safe">
+          <StateMessage icon="cloud" title={t("day.noData")} hint={t("day.noDataHint")} />
+        </div>
+      );
     }
 
     return (
-      <>
-        <WeekGrid
-          className="mt-4"
-          days={columns}
-          periods={rows}
-          cellLabel={(cell, day) =>
-            `${cell.name ?? cell.short} · ${day.weekday}` +
-            (cell.building !== undefined ? ` · ${cell.building}` : "")
-          }
-          onSelectDay={onOpenDay}
+      <div
+        className="flex min-h-0 flex-1 flex-col"
+        onTouchStart={guardCanvasTouch}
+        onTouchMove={guardCanvasTouch}
+        onTouchEnd={guardCanvasTouch}
+      >
+        <WeekCalendar
+          dates={dates}
+          days={days}
+          periods={periods}
+          now={now}
+          density={density}
+          isDesktop={isDesktop}
           mergeConsecutive={mergeConsecutive}
-          onSelect={(_cell, dayKey, period, half, end) => {
-            const key = `${dayKey}|${String(period)}`;
-            const hit = lessonAt.get(half === 1 ? `${key}|1` : key);
-
-            if (hit !== undefined) {
-              // A merged cell stands for the whole run of identical lessons, so the sheet shows
-              // the run's full time ("08:30–10:10"), not just the first lesson's.
-              setOpen(end > hit.lesson.end ? { ...hit, lesson: { ...hit.lesson, end } } : hit);
-            }
-          }}
+          filled={lessonCardStyle === "filled"}
+          subjectColorOverrides={subjectColorOverrides}
+          groupColorOverrides={groupColorOverrides}
+          colorCodingEnabled={colorCodingEnabled}
+          highlightCoverLessons={highlightCoverLessons}
+          onOpenDay={onOpenDay}
+          onSelectLesson={handleSelectLesson}
         />
-
-        <WeekBuildings buildingDays={buildingDays} />
-
-        {/*
-          Under the grid rather than in the header: at 375px the header already carries the week
-          range between two arrows, the class chip and the sync badge, and a fourth control there
-          truncates the date range — the one thing that says which week this is. Down here it can
-          also be a labelled button instead of a bare glyph.
-        */}
-        <Button
-          icon="share-2"
-          variant="outline"
-          block
-          className="mt-4"
-          disabled={shareWeek.disabled}
-          onClick={shareWeek.share}
-          data-testid="share-week"
-        >
-          {shareWeek.status === "working" ? t("share.working") : t("share.week")}
-        </Button>
-
-        {shareWeek.status === "error" && (
-          <p role="status" className="mt-2 text-center font-text text-caption text-danger">
-            {t("share.error")}
-          </p>
-        )}
-
-        {overview !== null && <WeekOverview overview={overview} />}
-      </>
+      </div>
     );
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <PullToRefresh
-        refreshing={syncStatus === "syncing"}
-        label={t("sync.pull")}
-        releaseLabel={t("sync.release")}
-        onRefresh={() => {
-          void refresh({ date, scope: "week", force: true });
-        }}
-      >
-        <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
-          <WeekTopBar
-            date={date}
-            today={now.date}
-            isThisWeek={dates.includes(now.date)}
-            firstDay={firstDay}
-            lastDay={lastDay}
-            onDateChange={onDateChange}
-            onPickClass={onPickClass}
-            onRefresh={() => void refresh({ date, scope: "week", force: true })}
-          />
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-app">
+      <div className="w-full shrink-0 px-gutter pt-safe-top">
+        <WeekTopBar
+          date={date}
+          today={now.date}
+          isThisWeek={dates.includes(now.date)}
+          firstDay={firstDay}
+          lastDay={lastDay}
+          density={density}
+          onDensityChange={setDensity}
+          showShare={hasSchedule}
+          shareDisabled={shareWeek.disabled}
+          shareWorking={shareWeek.status === "working"}
+          onShare={shareWeek.share}
+          onDateChange={onDateChange}
+          onPickClass={onPickClass}
+          onRefresh={() => void refresh({ date, scope: "week", force: true })}
+        />
 
-          <div
-            className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-ring)"
-            role="group"
-            tabIndex={0}
-            aria-label={t("week.pageHint")}
-            style={{ touchAction: "pan-y" }}
-            data-testid="week-pager"
-            {...pager.gesture}
-          >
-            <m.div style={{ ...pager.slide, willChange: pager.dragging ? "transform" : "auto" }}>
-              {body()}
-            </m.div>
-          </div>
-        </div>
-      </PullToRefresh>
+        {hasSchedule && <WeekBuildings buildingDays={buildingDays} />}
+
+        {shareWeek.status === "error" && (
+          <p role="status" className="py-1.5 text-center font-text text-caption text-danger">
+            {t("share.error")}
+          </p>
+        )}
+      </div>
+
+      {hasSchedule && overview !== null && (
+        <WeekOverview overview={overview} today={now.date} onOpenDay={onOpenDay} />
+      )}
+
+      <div
+        className="flex min-h-0 w-full flex-1 flex-col focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus-ring)"
+        role="group"
+        tabIndex={0}
+        aria-label={t("week.pageHint")}
+        style={{ touchAction: "pan-y" }}
+        data-testid="week-pager"
+        {...pager.gesture}
+      >
+        <m.div
+          className="flex min-h-0 flex-1 flex-col"
+          style={{ ...pager.slide, willChange: pager.dragging ? "transform" : "auto" }}
+        >
+          {body()}
+        </m.div>
+      </div>
 
       <LessonSheet
         lesson={open?.lesson ?? null}

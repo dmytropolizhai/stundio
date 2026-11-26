@@ -224,6 +224,9 @@ export const de: Dict = {
   "week.pageHint":
     "Nach links oder rechts wischen oder Pfeiltasten nutzen, um die Woche zu wechseln",
   "week.buildingDays": "{building}: {days}",
+  "week.view.detailed": "Details",
+  "week.view.overview": "Ganze Woche",
+  "week.view.zoomToggle": "Kalenderansicht wechseln",
   "week.overview.title": "Übersicht",
   "week.overview.lessons": "{n} Stunden",
   "week.overview.lessonsUp": "+{n} vs. letzte Woche",

@@ -206,13 +206,13 @@ describe("Teacher Day and Week Views", () => {
     // WeekView renders week overview ("Pārskats") and grid
     expect(screen.getByText("Pārskats")).toBeDefined();
 
-    // Grid cells lead with the teacher's group, not the subject code
+    // Calendar cards lead with the teacher's group and include the full subject name
     const resolved = harness.store.getState().resolvedTeacherDay(FIXTURE_DATE)!;
     const lesson = resolved.lessons[0]!;
     const group = lesson.classes.map((c) => c.short || c.name).join(" + ");
     const cell = screen
-      .getAllByRole("button")
-      .find((b) => b.textContent?.endsWith(`(${group})`) === true);
+      .getAllByTestId("week-cell")
+      .find((b) => b.textContent?.includes(group) === true);
     expect(cell).toBeDefined();
   });
 

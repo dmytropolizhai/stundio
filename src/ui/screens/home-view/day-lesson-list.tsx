@@ -7,8 +7,9 @@
  * running lesson lifts out onto its own deep grainy subject-field card (matching the featured
  * `SubjectCard`, `DayGlance`, and `NowDock`).
  */
-import { Fragment, useMemo, useState, type ReactNode } from "react";
+import { Fragment, useMemo, type ReactNode } from "react";
 import { m, type MotionValue } from "framer-motion";
+import { cn } from "@/ds";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { FREE_PERIOD_MIN_MINUTES, minutesOf, pairByGroup } from "@/lib/schedule";
 import { lessonBuilding } from "@/ui/theme";
@@ -43,9 +44,18 @@ type PaneRow = { key: string; node: ReactNode };
 type ScheduleSegment =
   | { kind: "pane"; key: string; rows: PaneRow[] }
   | { kind: "live"; key: string; node: ReactNode }
-  | { kind: "gap"; key: string; minutes: number; walkTo?: string | undefined }
+  | {
+      kind: "gap";
+      key: string;
+      minutes: number;
+      timeRange?: string | undefined;
+      walkTo?: string | undefined;
+    }
   | { kind: "bridge"; key: string; toBuilding: string }
   | { kind: "now"; key: string };
+
+const formatTimeRange = (start: string, end: string): string =>
+  [start, end].filter((part) => part !== "").join("–");
 
 const slotBuildingName = (day: ResolvedDay, lesson: ResolvedLesson): string | undefined => {
   if (day.buildings.length <= 1) return undefined;
@@ -68,18 +78,6 @@ export const DayLessonList = ({
 }: DayLessonListProps) => {
   const t = useT();
   const isToday = date === now.date;
-  const [prevShowTime, setPrevShowTime] = useState(showTime);
-  const [prevDate, setPrevDate] = useState(date);
-  const [animateTime, setAnimateTime] = useState(false);
-
-  if (prevDate !== date) {
-    setPrevDate(date);
-    setPrevShowTime(showTime);
-    setAnimateTime(false);
-  } else if (prevShowTime !== showTime) {
-    setPrevShowTime(showTime);
-    setAnimateTime(showTime);
-  }
 
   const segments = useMemo(() => {
     const out: ScheduleSegment[] = [];
@@ -105,7 +103,6 @@ export const DayLessonList = ({
           live={live}
           passed={passed}
           showTime={showTime}
-          animateTime={animateTime}
           subjectColorOverrides={subjectColorOverrides}
           colorCodingEnabled={colorCodingEnabled}
           filled={filled}
@@ -146,15 +143,37 @@ export const DayLessonList = ({
           };
         }
 
+        const pairTime = formatTimeRange(item.lesson.start, item.lesson.end);
+        const pairEnd = minutesOf(item.lesson.end);
+        const pairPassed = isToday && pairEnd !== null && pairEnd <= now.minutes;
+        const pairCancelled =
+          item.pair[0].status === "cancelled" && item.pair[1].status === "cancelled";
+
         return {
           key: item.key,
           node: (
-            <li
-              className="grid list-none grid-cols-2 divide-x divide-(--schedule-divider)"
-              data-testid="lesson-pair"
-            >
-              {renderSingleRow(item.pair[0], true, false, false)}
-              {renderSingleRow(item.pair[1], true, false, false)}
+            <li className="list-none">
+              {showTime && pairTime !== "" && (
+                <div className="flex items-center border-b border-(--schedule-divider) px-3.5 py-1.5">
+                  <span
+                    data-testid="lesson-pair-time"
+                    className={cn(
+                      "u-data text-[11.5px] leading-none whitespace-nowrap",
+                      pairPassed ? "text-muted" : "font-medium text-fg",
+                      pairCancelled && "line-through",
+                    )}
+                  >
+                    {pairTime}
+                  </span>
+                </div>
+              )}
+              <div
+                className="grid grid-cols-2 divide-x divide-(--schedule-divider)"
+                data-testid="lesson-pair"
+              >
+                {renderSingleRow(item.pair[0], true, false, false)}
+                {renderSingleRow(item.pair[1], true, false, false)}
+              </div>
             </li>
           ),
         };
@@ -167,6 +186,7 @@ export const DayLessonList = ({
 
     let markerDrawn = !isToday || progress.current !== null;
     let previousEnd: number | null = null;
+    let previousEndText: string | null = null;
     let previousBuilding: string | undefined;
 
     pairByGroup(day.lessons).forEach((slot, index) => {
@@ -184,10 +204,15 @@ export const DayLessonList = ({
 
       if (hasFreeGap && start !== null && previousEnd !== null) {
         flushPane();
+        const gapRange =
+          previousEndText !== null && lesson.start !== ""
+            ? `${previousEndText}–${lesson.start}`
+            : undefined;
         out.push({
           kind: "gap",
           key: `gap-${String(index)}`,
           minutes: start - previousEnd,
+          timeRange: gapRange,
           walkTo: buildingChanged ? currentBuilding : undefined,
         });
       } else if (buildingChanged && currentBuilding !== undefined) {
@@ -230,6 +255,7 @@ export const DayLessonList = ({
       const end = minutesOf(lesson.end);
       if (end !== null) {
         previousEnd = end;
+        previousEndText = lesson.end;
       }
       if (currentBuilding !== undefined) {
         previousBuilding = currentBuilding;
@@ -244,7 +270,6 @@ export const DayLessonList = ({
     now.minutes,
     progress,
     showTime,
-    animateTime,
     subjectColorOverrides,
     colorCodingEnabled,
     filled,
@@ -268,6 +293,7 @@ export const DayLessonList = ({
               key={segment.key}
               minutes={segment.minutes}
               label={t("day.free")}
+              timeRange={segment.timeRange}
               walkLabel={segment.walkTo}
             />
           );

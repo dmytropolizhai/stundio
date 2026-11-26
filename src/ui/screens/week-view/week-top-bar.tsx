@@ -1,5 +1,12 @@
+/**
+ * Compact header for the Week Calendar screen.
+ *
+ * Holds the week date range (with prev/next chevrons, DatePicker, ClassBadge, and SyncBadge on
+ * wide layouts), a zoom toggle between Detailed 2D pan and Full-Week 5-day overview on phone/tablet,
+ * a direct Share action, and the ViewOptionsMenu (consecutive lesson merging).
+ */
 import { useState } from "react";
-import { Button, IconButton, SegmentedTabs, TopBar } from "@/ds";
+import { Button, Icon, IconButton, SegmentedTabs, TopBar, cn } from "@/ds";
 import { addDays } from "@/sync";
 import type { ISODate } from "@/lib/edupage";
 import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
@@ -10,6 +17,7 @@ import { formatWeekRange, useLang, useT } from "@/ui/i18n";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useIsFormTeacher } from "@/ui/persona";
 import { ViewOptionsMenu } from "@/ui/components/ViewOptionsMenu.tsx";
+import type { CalendarDensity } from "./week-calendar-event.tsx";
 
 type WeekTopBarProps = {
   date: ISODate;
@@ -17,6 +25,12 @@ type WeekTopBarProps = {
   isThisWeek: boolean;
   firstDay: ISODate | undefined;
   lastDay: ISODate | undefined;
+  density?: CalendarDensity;
+  onDensityChange?: (density: CalendarDensity) => void;
+  showShare?: boolean;
+  shareDisabled?: boolean;
+  shareWorking?: boolean;
+  onShare?: () => void;
   onDateChange: (date: ISODate) => void;
   onPickClass: () => void;
   onRefresh: () => void;
@@ -28,13 +42,21 @@ export const WeekTopBar = ({
   isThisWeek,
   firstDay,
   lastDay,
+  density = "detailed",
+  onDensityChange,
+  showShare = false,
+  shareDisabled = false,
+  shareWorking = false,
+  onShare,
   onDateChange,
   onPickClass,
   onRefresh,
 }: WeekTopBarProps) => {
   const t = useT();
   const lang = useLang();
-  const wide = useLayout() !== "phone";
+  const layout = useLayout();
+  const wide = layout !== "phone";
+  const isDesktop = layout === "desktop";
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const teacherView = useAppStore((s) => s.settings.teacherView);
@@ -89,13 +111,47 @@ export const WeekTopBar = ({
           )
         }
         actions={
-          <>
+          <div className="flex items-center gap-1.5">
             {wide && (
               <>
                 <ClassBadge onClick={onPickClass} />
                 <SyncBadge onRetry={onRefresh} />
               </>
             )}
+
+            {!isDesktop && onDensityChange !== undefined && (
+              <button
+                type="button"
+                data-testid="week-density-toggle"
+                aria-label={t("week.view.zoomToggle")}
+                aria-pressed={density === "overview"}
+                onClick={() => {
+                  onDensityChange(density === "detailed" ? "overview" : "detailed");
+                }}
+                className={cn(
+                  "u-schedule-glass-chip inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-pill px-3 font-text text-caption font-bold transition-[transform,background-color,color] duration-(--dur-fast) active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--focus-ring)",
+                  density === "overview" ? "bg-inverse text-on-inverse" : "text-strong",
+                )}
+              >
+                <Icon name={density === "detailed" ? "layout-grid" : "calendar-days"} size={15} />
+                <span className="hidden xs:inline">
+                  {density === "detailed" ? t("week.view.overview") : t("week.view.detailed")}
+                </span>
+              </button>
+            )}
+
+            {showShare && onShare !== undefined && (
+              <IconButton
+                icon="share-2"
+                label={shareWorking ? t("share.working") : t("share.week")}
+                variant="bare"
+                size="sm"
+                disabled={shareDisabled}
+                onClick={onShare}
+                data-testid="share-week"
+              />
+            )}
+
             <ViewOptionsMenu
               options={[
                 {
@@ -109,12 +165,12 @@ export const WeekTopBar = ({
                 },
               ]}
             />
-          </>
+          </div>
         }
       />
 
       {isFormTeacher && (
-        <div className="mb-4 flex justify-center" data-testid="form-teacher-segment">
+        <div className="mb-3 flex justify-center" data-testid="form-teacher-segment">
           <SegmentedTabs<"own" | "form-class">
             label={t("teacher.formClass")}
             items={[
