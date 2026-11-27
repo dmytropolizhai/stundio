@@ -6,7 +6,8 @@
  *
  * `useTheme` toggles the class; "system" follows the OS.
  */
-:root.dark {
+:root.dark,
+.force-dark {
   --bg-app: #0d1117;
   --surface-card: #161c24;
   --surface-raised: #1c232d;

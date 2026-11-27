@@ -15,7 +15,7 @@ export type SwitchProps = {
 };
 
 /**
- * 50×30 track, 24px thumb, brand fill when on.
+ * 54×32 track, 22px thumb, lamp fill when on (the one place lamp means "on" rather than "now").
  *
  * Radix supplies the real `role="switch"` semantics, label association and keyboard handling; the
  * published component hand-rolls all three on a `<span>`. The thumb travel is one of the two
@@ -41,8 +41,8 @@ export const Switch = ({
       {...(ariaLabel === undefined ? {} : { "aria-label": ariaLabel })}
       {...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy })}
       className={cn(
-        "relative h-[30px] w-[50px] shrink-0 cursor-pointer rounded-pill border-0",
-        "bg-sunken inset-ring-2 inset-ring-strong-border",
+        "relative h-8 w-[54px] shrink-0 cursor-pointer rounded-pill border-0",
+        "bg-sunken inset-ring-[1.5px] inset-ring-strong-border",
         "data-[state=checked]:bg-lamp data-[state=checked]:inset-ring-0",
         "transition-colors duration-(--dur-fast) ease-(--ease-standard)",
         "disabled:cursor-not-allowed",
@@ -50,10 +50,9 @@ export const Switch = ({
     >
       <RadixSwitch.Thumb
         className={cn(
-          "block size-6 translate-x-[3px] rounded-pill bg-strong-border data-[state=checked]:bg-lamp-ink",
-          "shadow-[0_2px_6px_rgba(0,0,0,.24)]",
+          "block size-[22px] translate-x-[5px] rounded-pill bg-strong-border data-[state=checked]:bg-lamp-ink",
           "transition-transform duration-(--dur-fast) ease-(--ease-spring)",
-          "data-[state=checked]:translate-x-[23px]",
+          "data-[state=checked]:translate-x-[27px]",
         )}
       />
     </RadixSwitch.Root>

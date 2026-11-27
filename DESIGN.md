@@ -241,13 +241,13 @@ components:
   switch-track:
     backgroundColor: "{colors.day-sunken}"
     rounded: "{rounded.pill}"
-    height: "30px"
-    width: "50px"
+    height: "32px"
+    width: "54px"
   switch-track-on:
     backgroundColor: "{colors.lamp}"
     rounded: "{rounded.pill}"
-    height: "30px"
-    width: "50px"
+    height: "32px"
+    width: "54px"
   week-grid-cell:
     backgroundColor: "{colors.tone-mist}"
     textColor: "{colors.tone-mist-ink}"
@@ -554,7 +554,15 @@ text, one per screen.
 
 - **Style:** 52px card pill, optional 18px leading icon, hairline inset ring, no border. **Focus:** a global 2px `--focus-ring` (ink in Day, off-white in Night) outline, offset 2px, on `:focus-visible`. **Error:** hairline swapped for a 2px danger inset ring, hint wired through `aria-describedby`.
 - **Label:** an eyebrow above the field. **Select:** the same pill, bold body, 18px muted chevron, a native `<select>` so Android opens the OS picker.
-- **Switch:** 50×30 track, 24px thumb; off is a sunken fill with a 2px strong-border ring, on is the **lamp** with a `lamp-ink` thumb (one of the lamp's two sanctioned uses).
+- **Switch:** 54×32 track, 22px thumb; off is a sunken fill with a 1.5px strong-border ring, on is the **lamp** with a `lamp-ink` thumb (one of the lamp's two sanctioned uses).
+
+### Settings group
+
+The Settings screen is a column of **groups** (the design system's SettingsGroup): a sentence-case title in Title type (semibold, ink, no all-caps eyebrow), 12px above a 22px card that holds rows.
+
+- **Row:** 56px minimum, 16px side padding, a muted 20px icon, the label in medium body, the current value in regular muted caption, and a 16px chevron for rows that open a sheet or a switch for rows that flip in place. A description, when a row needs one, runs full width under the label in muted caption. Rows are separated by a full-width 1px hairline, never a border.
+- **Colour only as status:** an icon turns `danger` for a destructive row; nothing else tints a row. Subject tones belong to subjects.
+- **Theme picker:** the theme is chosen on three thumbnails (System split half Day / half Night, Day, Night), not behind a sheet. Each thumbnail is a tiny screen drawn with the real tokens — it carries `force-light` or `force-dark`, which re-declare the theme tokens on the element itself (`colors.css` and `dark.css` scope them to `:root` / `:root.dark` **and** these classes, so no value is repeated). The chosen thumbnail gets a 2px ink ring and a check; it is a radio group that the arrow keys walk.
 
 ### Navigation
 

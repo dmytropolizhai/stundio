@@ -13,15 +13,15 @@ type SectionProps = {
 
 /** Also used by `CustomizationSheet`, which shares this screen's section/row look. */
 export const Section = ({ title, icon, indicator, children }: SectionProps) => (
-  <section className="mb-7">
+  <section className="mb-8">
     {title !== undefined && (
-      <h2 className="u-eyebrow flex items-center gap-1.5 px-1 pb-2">
-        {icon !== undefined && <Icon name={icon} size={13} />}
+      <h2 className="flex items-center gap-2 px-1 pb-3 font-display text-title leading-tight font-semibold text-strong">
+        {icon !== undefined && <Icon name={icon} size={16} className="text-muted" />}
         {title}
         {indicator}
       </h2>
     )}
-    <Card radius="lg" className="overflow-hidden p-0">
+    <Card radius="xl" className="overflow-hidden p-0">
       {children}
     </Card>
   </section>

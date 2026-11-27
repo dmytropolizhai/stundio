@@ -750,9 +750,7 @@ describe("SettingsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: /^Noformējums/ }));
-    });
+    // The theme is chosen on three thumbnails in the Appearance group, not behind a sheet.
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("radio", { name: "Tumšs" }));
     });

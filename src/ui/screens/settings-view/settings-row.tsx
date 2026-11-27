@@ -1,14 +1,15 @@
 /**
- * The settings screen's one row shape: `[tile] label + description … value [switch | ›]`.
+ * The settings screen's one row shape (the design system's SettingsGroup item):
+ * `[icon] label + description … value [switch | ›]`, 56px tall.
  *
- * Every row leads with a 32px icon tile, so the left edge of the screen reads as a column of
+ * Every row leads with a muted 20px icon, so the left edge of the screen reads as a column of
  * glyphs a student can scan without reading; the current value sits on the right so the state is
  * visible without opening anything; the trailing control says what a tap does (a switch flips in
  * place, a chevron opens a sheet). The description under the label is the same sentence the
  * row's sheet opens with (`SheetDescription`), so the two never drift apart.
  *
- * Tiles are neutral on purpose: the six pastel accents belong to subjects (DESIGN.md, The Index
- * Rule), so colour appears here only as status — the danger tile of a destructive row, the red
+ * Icons are neutral on purpose: the subject tones belong to subjects (DESIGN.md, The Index
+ * Rule), so colour appears here only as status — the danger icon of a destructive row, the red
  * wash of a row that reports something broken.
  */
 import { useId, type ReactNode } from "react";
@@ -26,14 +27,14 @@ export const Tile = ({ icon, tone = "default", size = "md" }: TileProps) => (
   <span
     aria-hidden="true"
     className={cn(
-      "flex shrink-0 items-center justify-center rounded-squircle",
-      size === "md" ? "size-8" : "size-10",
-      tone === "default" && "text-strong",
+      "flex shrink-0 items-center justify-center",
+      size === "md" ? "size-5" : "size-[22px]",
+      tone === "default" && "text-muted",
       tone === "danger" && "text-danger",
       tone === "alert" && "text-danger/12",
     )}
   >
-    <Icon name={icon} size={size === "md" ? 18 : 20} />
+    <Icon name={icon} size={size === "md" ? 20 : 22} />
   </span>
 );
 
@@ -67,8 +68,8 @@ type StaticRowProps = BaseProps & {
 export type SettingsRowProps = ToggleRowProps | ActionRowProps | StaticRowProps;
 
 const ROW =
-  "relative flex min-h-14 w-full items-center gap-3 border-0 bg-transparent py-2.5 pr-4 pl-3 text-left " +
-  "not-first:before:absolute not-first:before:top-0 not-first:before:right-0 not-first:before:left-14 " +
+  "relative flex min-h-14 w-full items-center gap-3.5 border-0 bg-transparent px-4 py-2.5 text-left " +
+  "not-first:before:absolute not-first:before:inset-x-0 not-first:before:top-0 " +
   "not-first:before:h-px not-first:before:bg-hairline";
 
 const PRESSABLE =
@@ -91,7 +92,7 @@ export const SettingsRow = (props: SettingsRowProps) => {
           <span
             id={labelId}
             className={cn(
-              "min-w-0 flex-1 font-text text-body leading-snug font-bold",
+              "min-w-0 flex-1 font-text text-body leading-snug font-medium",
               tone === "default" ? "text-strong" : "text-danger",
             )}
           >
@@ -100,7 +101,7 @@ export const SettingsRow = (props: SettingsRowProps) => {
           {value !== undefined && (
             <span
               id={valueId}
-              className="flex max-w-[55%] shrink-0 items-center gap-1.5 self-center font-text text-caption font-semibold text-muted tabular-nums"
+              className="flex max-w-[55%] shrink-0 items-center gap-1.5 self-center font-text text-caption font-normal text-muted tabular-nums"
             >
               {value}
             </span>
@@ -146,7 +147,7 @@ export const SettingsRow = (props: SettingsRowProps) => {
       >
         {body}
         <span aria-hidden="true" className="flex shrink-0 items-center text-muted">
-          {props.trailing ?? <Icon name="chevron-right" size={18} />}
+          {props.trailing ?? <Icon name="chevron-right" size={16} />}
         </span>
       </button>
     );

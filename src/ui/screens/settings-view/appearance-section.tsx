@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { cn, type IconName } from "@/ds";
+import { useId, useState } from "react";
+import { cn, ThemePicker, type ThemePickerOption } from "@/ds";
 import type { Settings } from "@/db";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useSubjects } from "@/ui/hooks/useSubjects.ts";
@@ -8,13 +8,6 @@ import { SUBJECT_TONES, SUBJECT_TONE_BG, subjectAccent, subjectTone } from "@/ui
 import { Section } from "./settings-section.tsx";
 import { SettingsRow } from "./settings-row.tsx";
 import { ChoiceSheet } from "./settings-sheet.tsx";
-
-/** The theme row's glyph is the theme itself, so its state reads without the value text. */
-const THEME_ICONS: Record<Settings["theme"], IconName> = {
-  system: "sun-moon",
-  light: "sun",
-  dark: "moon",
-};
 
 const PREVIEW_COUNT = 3;
 
@@ -63,29 +56,37 @@ export const AppearanceSection = ({ onOpenCustomization }: AppearanceSectionProp
   const lang = useAppStore((s) => s.settings.lang);
   const setTheme = useSettingSetter("theme");
   const setLang = useSettingSetter("lang");
-  const [sheet, setSheet] = useState<"theme" | "language" | null>(null);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const hintId = useId();
 
-  const themeLabels: Record<Settings["theme"], string> = {
-    system: t("theme.system"),
-    light: t("theme.light"),
-    dark: t("theme.dark"),
-  };
+  // Night is the signature theme, but "follow the phone" stays first: it is the default.
+  const themeOptions: readonly ThemePickerOption<Settings["theme"]>[] = [
+    { key: "system", label: t("theme.system"), preview: "split" },
+    { key: "light", label: t("theme.light"), preview: "light" },
+    { key: "dark", label: t("theme.dark"), preview: "dark" },
+  ];
 
   return (
     <Section title={t("settings.group.appearance")}>
-      <SettingsRow
-        icon={THEME_ICONS[theme]}
-        label={t("settings.theme")}
-        description={t("settings.themeHint")}
-        value={themeLabels[theme]}
-        onClick={() => setSheet("theme")}
-      />
+      <div>
+        <p id={hintId} className="px-4 pt-4 font-text text-caption text-muted">
+          {t("settings.themeHint")}
+        </p>
+        <ThemePicker
+          label={t("settings.theme")}
+          aria-describedby={hintId}
+          options={themeOptions}
+          value={theme}
+          onChange={(value) => void setTheme(value)}
+          className="pt-3"
+        />
+      </div>
       <SettingsRow
         icon="globe"
         label={t("settings.language")}
         description={t("settings.languageHint")}
         value={lang.toUpperCase()}
-        onClick={() => setSheet("language")}
+        onClick={() => setLanguageOpen(true)}
       />
       <SettingsRow
         icon="palette"
@@ -96,22 +97,8 @@ export const AppearanceSection = ({ onOpenCustomization }: AppearanceSectionProp
       />
 
       <ChoiceSheet
-        open={sheet === "theme"}
-        onClose={() => setSheet(null)}
-        icon={THEME_ICONS[theme]}
-        title={t("settings.theme")}
-        description={t("settings.themeHint")}
-        options={(["system", "light", "dark"] as const).map((key) => ({
-          key,
-          label: themeLabels[key],
-          icon: THEME_ICONS[key],
-        }))}
-        value={theme}
-        onChange={(value) => void setTheme(value)}
-      />
-      <ChoiceSheet
-        open={sheet === "language"}
-        onClose={() => setSheet(null)}
+        open={languageOpen}
+        onClose={() => setLanguageOpen(false)}
         icon="globe"
         title={t("settings.language")}
         description={t("settings.languageHint")}

@@ -12,7 +12,8 @@
  * their VALUES moved to the design's dusk tones, identical in both themes:
  *   amber → sage, sky → mist, lilac → lavender, pink → rose, mint → teal, lime → indigo.
  */
-:root {
+:root,
+.force-light {
   /* ——— Day ink ramp (the Night ramp is not a ramp: see dark.css) ——— */
   --white: #ffffff;
   --ink-050: #f8f8fa;
