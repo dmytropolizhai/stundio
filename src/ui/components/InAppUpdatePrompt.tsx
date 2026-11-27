@@ -37,6 +37,9 @@ export const InAppUpdatePrompt = memo(function InAppUpdatePrompt() {
           {t("day.updatePrompt.body", { version: update.latestVersion })}
         </p>
 
+        <p className="mt-2 font-text text-caption text-muted">
+          {t("day.updatePrompt.protectNote")}
+        </p>
         {installState.phase === "handoff" ? (
           <p className="mt-2 font-text text-caption text-muted">{t("day.updatePrompt.handoff")}</p>
         ) : null}

@@ -170,6 +170,8 @@ export const ru: Dict = {
   "day.updatePrompt.dismiss": "Позже",
   "day.updatePrompt.handoff":
     "Загрузка завершена. Подтвердите установку в окне Android или нажмите «Обновить», чтобы повторить.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect может написать «Приложение может быть опасным». Это нормально для приложений вне Play: нажмите «Подробнее» → «Всё равно установить».",
   "day.changesBadge": "{n} изменений",
 
   "changes.title": "Замены",
