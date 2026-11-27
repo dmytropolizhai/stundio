@@ -13,17 +13,22 @@ const gradle = read("android/app/build.gradle");
 const pkg = JSON.parse(read("package.json")) as { version: string };
 
 describe("release version", () => {
-  it("keeps android versionName in step with package.json", () => {
-    const name = /versionName\s+"([^"]+)"/.exec(gradle)?.[1];
-    // "v1.3-elna" -> 1.3.0, "v2.0.0" -> 2.0.0: the numeric core, padded to major.minor.patch.
-    const [major = "0", minor = "0", patch = "0"] = (
-      /^v?(\d+(?:\.\d+)*)/.exec(pkg.version)?.[1] ?? ""
-    ).split(".");
-    expect(name).toBe(`${major}.${minor}.${patch}`);
+  it("derives android versionName and versionCode from package.json", () => {
+    // build.gradle must not hardcode either: package.json is the single source of truth.
+    expect(gradle).toMatch(/versionName\s+appVersion\.name/);
+    expect(gradle).toMatch(/versionCode\s+appVersion\.code/);
+    expect(gradle).toContain("package.json");
   });
 
-  it("has a positive integer versionCode", () => {
-    const code = Number(/versionCode\s+(\d+)/.exec(gradle)?.[1]);
-    expect(Number.isInteger(code) && code > 0).toBe(true);
+  it("has a package.json version Gradle can turn into a rising versionCode", () => {
+    // Mirrors build.gradle: "v2.5.0" -> 20500. Minor/patch must stay below 100.
+    const [major = 0, minor = 0, patch = 0] = (
+      /^v?(\d+(?:\.\d+){0,2})/.exec(pkg.version)?.[1] ?? ""
+    )
+      .split(".")
+      .map(Number);
+    expect(minor).toBeLessThan(100);
+    expect(patch).toBeLessThan(100);
+    expect(major * 10000 + minor * 100 + patch).toBeGreaterThan(5);
   });
 });
