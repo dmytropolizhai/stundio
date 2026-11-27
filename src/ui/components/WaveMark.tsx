@@ -1,17 +1,20 @@
 /**
- * The brand mark filling with a rising wave — the one moving thing on the splash.
+ * The brand mark as a frosted-glass vessel filling with a rising liquid wave — the one moving
+ * thing on the splash.
  *
- * The mark is not inlined as JSX. It is applied as a CSS *mask* over a plain water layer
- * (`mask-image: url(/Mark.svg)`), so the artwork stays a single file a designer can replace
- * without touching this component: only its alpha silhouette matters, never its colours. The
- * consequence — and the point — is that nothing outside the silhouette is ever painted, which
- * is what makes the un-filled part invisible rather than ghosted.
+ * The mark is not inlined as JSX. It is applied as a CSS *mask* (`mask-image: url(/mark.svg)`),
+ * so the artwork stays a single file a designer can replace without touching this component: only
+ * its alpha silhouette matters, never its colours.
  *
- * The water itself is three stacked pieces: two crest svgs (each 200% wide and holding two
- * full sine periods, so the `-50%` drift loops seamlessly) and a solid body hanging below
- * them. `level` moves the whole stack vertically; the crests and the bob keep it alive when
- * `level` is sitting still.
+ * Optical stack (back to front):
+ *   1. Soft ambient lamp/mist light field so `backdrop-filter` has real luminance to refract.
+ *   2. Blurred contour shadow on a sibling underlayer (never an ancestor `filter`, which would
+ *      block `backdrop-filter` in Chromium/WebKit).
+ *   3. Frosted-glass vessel masked to `mark.svg` holding the rising two-crest liquid wave with a
+ *      specular meniscus, a diagonal surface sheen + slow glint sweep, and top-left / bottom-right
+ *      specular bevels carved via shifted `mask-composite: exclude` copies of `mark.svg`.
  */
+import type { CSSProperties } from "react";
 
 /**
  * Two full periods of a sine-ish wave across a 200-wide box, closed downwards so the shape
@@ -20,10 +23,38 @@
  */
 const CREST_PATH = "M0 12C12.5 0 37.5 0 50 12S87.5 24 100 12S137.5 0 150 12S187.5 24 200 12V40H0Z";
 
+/** Open top contour of `CREST_PATH` for the specular liquid meniscus highlight. */
+const MENISCUS_PATH = "M0 12C12.5 0 37.5 0 50 12S87.5 24 100 12S137.5 0 150 12S187.5 24 200 12";
+
 /** Rendered height of a crest strip, in px. The body is parked directly under it. */
 const CREST_H = 24;
 
-const Crest = ({ className, top }: { className: string; top: number }) => (
+/**
+ * `contain` + `center` means `mark.svg`'s own viewBox decides the silhouette's aspect ratio;
+ * the square box is only the space it is fitted into.
+ */
+const MARK_MASK: CSSProperties = {
+  maskImage: "url(/mark.svg)",
+  WebkitMaskImage: "url(/mark.svg)",
+  maskSize: "contain",
+  WebkitMaskSize: "contain",
+  maskPosition: "center",
+  WebkitMaskPosition: "center",
+  maskRepeat: "no-repeat",
+  WebkitMaskRepeat: "no-repeat",
+};
+
+const Crest = ({
+  className,
+  fill,
+  meniscus,
+  top,
+}: {
+  className: string;
+  fill: string;
+  meniscus?: boolean;
+  top: number;
+}) => (
   <svg
     viewBox="0 0 200 40"
     preserveAspectRatio="none"
@@ -31,7 +62,16 @@ const Crest = ({ className, top }: { className: string; top: number }) => (
     className={`absolute left-0 w-[200%] ${className}`}
     style={{ top, height: CREST_H }}
   >
-    <path d={CREST_PATH} />
+    <path d={CREST_PATH} fill={fill} />
+    {meniscus && (
+      <path
+        d={MENISCUS_PATH}
+        fill="none"
+        stroke="var(--mark-wave-meniscus)"
+        strokeWidth="2.2"
+        vectorEffect="non-scaling-stroke"
+      />
+    )}
   </svg>
 );
 
@@ -44,28 +84,37 @@ export type WaveMarkProps = {
 };
 
 export const WaveMark = ({ level, size = 144, className }: WaveMarkProps) => {
-  // `contain` + `center` means the file's own viewBox decides the silhouette's aspect ratio;
-  // the box below is only the space it is fitted into.
-  const mask = {
-    width: size,
-    height: size,
-    maskImage: "url(/mark.svg)",
-    WebkitMaskImage: "url(/mark.svg)",
-    maskSize: "contain",
-    WebkitMaskSize: "contain",
-    maskPosition: "center",
-    WebkitMaskPosition: "center",
-    maskRepeat: "no-repeat",
-    WebkitMaskRepeat: "no-repeat",
-  } as const;
-
   return (
-    <div className={className} style={mask} data-testid="wave-mark" data-level={level}>
-      <div className="relative h-full w-full overflow-hidden">
+    <div
+      className={`relative select-none ${className ?? ""}`}
+      style={{ width: size, height: size }}
+      data-testid="wave-mark"
+      data-level={level}
+    >
+      {/* Ambient refraction field behind the frosted glass vessel. */}
+      <div
+        aria-hidden="true"
+        className="u-mark-glass-ambient pointer-events-none absolute -inset-16 rounded-full"
+      />
+
+      {/* Contour-matching soft floor shadow on a sibling layer so backdrop-filter stays active. */}
+      <div aria-hidden="true" className="u-mark-glass-shadow pointer-events-none absolute inset-0">
+        <div
+          className="h-full w-full"
+          style={{ ...MARK_MASK, backgroundColor: "var(--mark-shadow-color)" }}
+        />
+      </div>
+
+      {/* Frosted-glass vessel clipped to the exact mark silhouette. */}
+      <div
+        className="u-mark-glass-vessel relative h-full w-full overflow-hidden"
+        style={MARK_MASK}
+        data-testid="wave-mark-glass"
+      >
         {/*
-          The lift. `translateY(100%)` parks the water entirely below the mark (empty);
+          The lift. `translateY(100%)` parks the liquid entirely below the mark (empty);
           `translateY(0)` would overfill it. Duration is deliberately long and the easing is
-          decelerating: the rise should read as water finding its level, not as a progress bar
+          decelerating: the rise should read as liquid finding its level, not as a progress bar
           snapping. The bob lives one node deeper because it owns `transform` too.
         */}
         <div
@@ -73,12 +122,33 @@ export const WaveMark = ({ level, size = 144, className }: WaveMarkProps) => {
           style={{ transform: `translateY(${String(100 - level)}%)` }}
         >
           <div className="absolute inset-0 animate-wave-bob">
-            <Crest top={0} className="animate-wave-drift-slow fill-hero-lift opacity-60" />
-            <Crest top={4} className="animate-wave-drift fill-hero" />
+            <Crest top={0} fill="var(--mark-wave-back)" className="animate-wave-drift-slow" />
+            <Crest top={4} fill="var(--mark-wave-front)" meniscus className="animate-wave-drift" />
             {/* Hangs a full box-height below the crest so the body never runs out at low levels. */}
-            <div className="absolute inset-x-0 h-full bg-hero" style={{ top: CREST_H + 3 }} />
+            <div
+              className="absolute inset-x-0 h-full"
+              style={{ top: CREST_H + 3, background: "var(--mark-wave-body)" }}
+            />
           </div>
         </div>
+
+        {/* Diagonal glass sheen, slow specular glint, and contour-hugging bevel rims. */}
+        <div
+          aria-hidden="true"
+          className="u-mark-glass-sheen pointer-events-none absolute inset-0"
+        />
+        <div
+          aria-hidden="true"
+          className="u-mark-glass-glint animate-mark-glint pointer-events-none absolute inset-0 motion-reduce:animate-none"
+        />
+        <div
+          aria-hidden="true"
+          className="u-mark-glass-rim-top pointer-events-none absolute inset-0"
+        />
+        <div
+          aria-hidden="true"
+          className="u-mark-glass-rim-bottom pointer-events-none absolute inset-0"
+        />
       </div>
     </div>
   );

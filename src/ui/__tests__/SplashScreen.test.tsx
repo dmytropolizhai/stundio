@@ -72,4 +72,13 @@ describe("SplashScreen", () => {
     });
     expect(screen.queryByTestId("splash")).toBeNull();
   });
+
+  it("renders the frosted-glass mark vessel with specular rims and meniscus", () => {
+    render(<SplashScreen ready={false} />);
+    const vessel = screen.getByTestId("wave-mark-glass");
+    expect(vessel.className).toContain("u-mark-glass-vessel");
+    expect(vessel.querySelector(".u-mark-glass-rim-top")).toBeTruthy();
+    expect(vessel.querySelector(".u-mark-glass-rim-bottom")).toBeTruthy();
+    expect(vessel.querySelector(".u-mark-glass-sheen")).toBeTruthy();
+  });
 });

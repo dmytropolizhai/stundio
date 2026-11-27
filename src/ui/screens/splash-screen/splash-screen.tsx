@@ -69,7 +69,13 @@ export const SplashScreen = ({ ready }: SplashScreenProps) => {
         leaving ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <WaveMark level={level} />
+      <div
+        className={`transition-transform duration-[260ms] ease-[var(--ease-standard)] motion-reduce:transition-none ${
+          leaving ? "-translate-y-1.5 scale-[0.98]" : "translate-y-0 scale-100"
+        }`}
+      >
+        <WaveMark level={level} />
+      </div>
     </div>
   );
 };

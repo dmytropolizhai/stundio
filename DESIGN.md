@@ -479,7 +479,10 @@ chrome itself is liquid glass: frosted, saturated, and edged with a 1px directio
 `blur(20px) saturate(165%)` and a `::before` 1px rim drawn by `mask-composite: exclude` at 148°, bright
 on the top-left and bottom-right curves. `.u-schedule-glass` (+ `-live`, `-chip`) shares that grammar at
 `blur(20px) saturate(168%)`, rising to `24px / 190%` while the weather tile's ambient sky is expanded so
-the slabs refract it. Glass blur is also used by the glass `IconButton` variant (`--blur-glass`) and the
+the slabs refract it. The splash screen's `WaveMark` (`.u-mark-glass-vessel`) uses the same frosted
+grammar clipped to `mark.svg`, with contour-hugging top-left and bottom-right specular bevels via
+shifted `mask-composite: exclude` layers, an ambient refraction field behind it, and a rising liquid
+wave with a specular meniscus. Glass blur is also used by the glass `IconButton` variant (`--blur-glass`) and the
 sheet scrim (`--blur-scrim`, 8px).
 
 ### Tone fields

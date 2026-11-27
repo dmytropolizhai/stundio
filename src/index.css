@@ -344,6 +344,7 @@
   --animate-wave-drift: studio-wave-drift 3.2s linear infinite;
   --animate-wave-drift-slow: studio-wave-drift 5.1s linear infinite reverse;
   --animate-wave-bob: studio-wave-bob 2.6s ease-in-out infinite alternate;
+  --animate-mark-glint: studio-mark-glint 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @keyframes studio-shimmer {
@@ -405,6 +406,15 @@
   }
   to {
     transform: translateY(1.5%);
+  }
+}
+
+@keyframes studio-mark-glint {
+  from {
+    transform: translateX(-115%);
+  }
+  to {
+    transform: translateX(115%);
   }
 }
 
@@ -611,6 +621,63 @@
     );
     --btn-danger-shadow:
       0 8px 20px -8px rgba(192, 53, 42, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+
+    /*
+     * Splash loading mark glassmorphism (`WaveMark` / `SplashScreen`). Sculpted frosted-glass
+     * vessel masked to `mark.svg` with an ambient refraction field behind it, a rising liquid
+     * wave with a specular meniscus, and contour-hugging top-left / bottom-right glass bevels.
+     */
+    --mark-ambient-warm: radial-gradient(
+      62% 62% at 62% 36%,
+      color-mix(in oklab, var(--lamp) 26%, transparent) 0%,
+      transparent 72%
+    );
+    --mark-ambient-cool: radial-gradient(
+      64% 64% at 36% 66%,
+      color-mix(in oklab, var(--accent-sky) 24%, transparent) 0%,
+      transparent 74%
+    );
+    --mark-shadow-color: rgba(18, 20, 25, 0.2);
+    --mark-glass-bg: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(242, 243, 248, 0.44) 48%,
+      rgba(235, 236, 244, 0.58) 100%
+    );
+    --mark-glass-sheen: linear-gradient(
+      132deg,
+      rgba(255, 255, 255, 0.72) 0%,
+      rgba(255, 255, 255, 0.14) 30%,
+      rgba(255, 255, 255, 0) 56%,
+      rgba(255, 255, 255, 0.22) 100%
+    );
+    --mark-glass-rim-top: linear-gradient(
+      142deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(255, 255, 255, 0.56) 55%,
+      rgba(18, 20, 25, 0.12) 100%
+    );
+    --mark-glass-rim-bottom: linear-gradient(
+      322deg,
+      rgba(18, 20, 25, 0.18) 0%,
+      rgba(255, 255, 255, 0.48) 55%,
+      transparent 100%
+    );
+    --mark-wave-back: rgba(18, 20, 25, 0.26);
+    --mark-wave-front: rgba(18, 20, 25, 0.56);
+    --mark-wave-meniscus: rgba(255, 255, 255, 0.88);
+    --mark-wave-body: linear-gradient(
+      180deg,
+      rgba(18, 20, 25, 0.56) 0%,
+      rgba(18, 20, 25, 0.8) 100%
+    );
+    --mark-glint: linear-gradient(
+      112deg,
+      transparent 22%,
+      rgba(255, 255, 255, 0.56) 48%,
+      rgba(255, 255, 255, 0.14) 56%,
+      transparent 74%
+    );
   }
 
   /*
@@ -777,6 +844,58 @@
     );
     --btn-danger-shadow:
       0 10px 24px -10px rgba(0, 0, 0, 0.64), inset 0 1px 0 rgba(255, 255, 255, 0.34);
+
+    --mark-ambient-warm: radial-gradient(
+      62% 62% at 62% 36%,
+      color-mix(in oklab, var(--lamp) 24%, transparent) 0%,
+      transparent 72%
+    );
+    --mark-ambient-cool: radial-gradient(
+      64% 64% at 36% 66%,
+      color-mix(in oklab, var(--accent-sky) 16%, transparent) 0%,
+      transparent 74%
+    );
+    --mark-shadow-color: rgba(0, 0, 0, 0.74);
+    --mark-glass-bg: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(34, 45, 60, 0.44) 48%,
+      rgba(18, 24, 34, 0.56) 100%
+    );
+    --mark-glass-sheen: linear-gradient(
+      132deg,
+      rgba(255, 255, 255, 0.24) 0%,
+      rgba(255, 255, 255, 0.04) 32%,
+      rgba(255, 255, 255, 0) 56%,
+      rgba(242, 181, 107, 0.12) 100%
+    );
+    --mark-glass-rim-top: linear-gradient(
+      142deg,
+      rgba(255, 255, 255, 0.66) 0%,
+      rgba(255, 255, 255, 0.22) 52%,
+      rgba(255, 255, 255, 0.06) 100%
+    );
+    --mark-glass-rim-bottom: linear-gradient(
+      322deg,
+      rgba(242, 181, 107, 0.36) 0%,
+      rgba(255, 255, 255, 0.18) 52%,
+      transparent 100%
+    );
+    --mark-wave-back: rgba(241, 238, 232, 0.22);
+    --mark-wave-front: rgba(241, 238, 232, 0.46);
+    --mark-wave-meniscus: rgba(255, 255, 255, 0.8);
+    --mark-wave-body: linear-gradient(
+      180deg,
+      rgba(241, 238, 232, 0.46) 0%,
+      color-mix(in oklab, var(--lamp) 20%, rgba(241, 238, 232, 0.72)) 100%
+    );
+    --mark-glint: linear-gradient(
+      112deg,
+      transparent 22%,
+      rgba(255, 255, 255, 0.28) 48%,
+      rgba(242, 181, 107, 0.1) 56%,
+      transparent 74%
+    );
   }
 
   :root.dark[data-weather-ambient="true"] {
@@ -1323,6 +1442,84 @@
 }
 .u-btn-danger:hover {
   opacity: 0.92;
+}
+
+/*
+ * Glassmorphism brand mark (`WaveMark`).
+ * The contour shadow lives on a blurred sibling underlayer so it never triggers an ancestor
+ * `filter` backdrop root that would block `backdrop-filter` on the frosted glass vessel.
+ * Inside the `mark.svg`-masked vessel, two shifted `mask-composite: exclude` layers carve crisp
+ * top-left and bottom-right specular bevels along any `mark.svg` silhouette.
+ */
+.u-mark-glass-ambient {
+  background: var(--mark-ambient-warm), var(--mark-ambient-cool);
+}
+
+.u-mark-glass-shadow {
+  transform: translateY(10px) scale(0.94);
+  filter: blur(18px);
+}
+
+.u-mark-glass-vessel {
+  background: var(--mark-glass-bg);
+  backdrop-filter: blur(var(--blur-glass)) saturate(175%);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(175%);
+}
+
+.u-mark-glass-sheen {
+  background: var(--mark-glass-sheen);
+}
+
+.u-mark-glass-glint {
+  background: var(--mark-glint);
+}
+
+.u-mark-glass-rim-top {
+  background: var(--mark-glass-rim-top);
+  mask-image: url(/mark.svg), url(/mark.svg);
+  -webkit-mask-image: url(/mark.svg), url(/mark.svg);
+  mask-size: contain, contain;
+  -webkit-mask-size: contain, contain;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-position:
+    center,
+    calc(50% + 1.5px) calc(50% + 1.5px);
+  -webkit-mask-position:
+    center,
+    calc(50% + 1.5px) calc(50% + 1.5px);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.u-mark-glass-rim-bottom {
+  background: var(--mark-glass-rim-bottom);
+  mask-image: url(/mark.svg), url(/mark.svg);
+  -webkit-mask-image: url(/mark.svg), url(/mark.svg);
+  mask-size: contain, contain;
+  -webkit-mask-size: contain, contain;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-position:
+    center,
+    calc(50% - 1px) calc(50% - 1px);
+  -webkit-mask-position:
+    center,
+    calc(50% - 1px) calc(50% - 1px);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u-mark-glass-glint {
+    animation: none !important;
+    opacity: 0;
+  }
+}
+
+:root.reduce-motion .u-mark-glass-glint {
+  animation: none;
+  opacity: 0;
 }
 
 /*
