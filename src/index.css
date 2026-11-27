@@ -624,19 +624,9 @@
 
     /*
      * Splash loading mark glassmorphism (`WaveMark` / `SplashScreen`). Sculpted frosted-glass
-     * vessel masked to `mark.svg` with an ambient refraction field behind it, a rising liquid
-     * wave with a specular meniscus, and contour-hugging top-left / bottom-right glass bevels.
+     * vessel masked to `mark.svg` with a rising liquid wave, a specular meniscus, and
+     * contour-hugging top-left / bottom-right glass bevels.
      */
-    --mark-ambient-warm: radial-gradient(
-      62% 62% at 62% 36%,
-      color-mix(in oklab, var(--lamp) 26%, transparent) 0%,
-      transparent 72%
-    );
-    --mark-ambient-cool: radial-gradient(
-      64% 64% at 36% 66%,
-      color-mix(in oklab, var(--accent-sky) 24%, transparent) 0%,
-      transparent 74%
-    );
     --mark-shadow-color: rgba(18, 20, 25, 0.2);
     --mark-glass-bg: linear-gradient(
       155deg,
@@ -845,16 +835,6 @@
     --btn-danger-shadow:
       0 10px 24px -10px rgba(0, 0, 0, 0.64), inset 0 1px 0 rgba(255, 255, 255, 0.34);
 
-    --mark-ambient-warm: radial-gradient(
-      62% 62% at 62% 36%,
-      color-mix(in oklab, var(--lamp) 24%, transparent) 0%,
-      transparent 72%
-    );
-    --mark-ambient-cool: radial-gradient(
-      64% 64% at 36% 66%,
-      color-mix(in oklab, var(--accent-sky) 16%, transparent) 0%,
-      transparent 74%
-    );
     --mark-shadow-color: rgba(0, 0, 0, 0.74);
     --mark-glass-bg: linear-gradient(
       155deg,
@@ -1451,10 +1431,6 @@
  * Inside the `mark.svg`-masked vessel, two shifted `mask-composite: exclude` layers carve crisp
  * top-left and bottom-right specular bevels along any `mark.svg` silhouette.
  */
-.u-mark-glass-ambient {
-  background: var(--mark-ambient-warm), var(--mark-ambient-cool);
-}
-
 .u-mark-glass-shadow {
   transform: translateY(10px) scale(0.94);
   filter: blur(18px);

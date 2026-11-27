@@ -7,10 +7,9 @@
  * its alpha silhouette matters, never its colours.
  *
  * Optical stack (back to front):
- *   1. Soft ambient lamp/mist light field so `backdrop-filter` has real luminance to refract.
- *   2. Blurred contour shadow on a sibling underlayer (never an ancestor `filter`, which would
+ *   1. Blurred contour shadow on a sibling underlayer (never an ancestor `filter`, which would
  *      block `backdrop-filter` in Chromium/WebKit).
- *   3. Frosted-glass vessel masked to `mark.svg` holding the rising two-crest liquid wave with a
+ *   2. Frosted-glass vessel masked to `mark.svg` holding the rising two-crest liquid wave with a
  *      specular meniscus, a diagonal surface sheen + slow glint sweep, and top-left / bottom-right
  *      specular bevels carved via shifted `mask-composite: exclude` copies of `mark.svg`.
  */
@@ -91,12 +90,6 @@ export const WaveMark = ({ level, size = 144, className }: WaveMarkProps) => {
       data-testid="wave-mark"
       data-level={level}
     >
-      {/* Ambient refraction field behind the frosted glass vessel. */}
-      <div
-        aria-hidden="true"
-        className="u-mark-glass-ambient pointer-events-none absolute -inset-16 rounded-full"
-      />
-
       {/* Contour-matching soft floor shadow on a sibling layer so backdrop-filter stays active. */}
       <div aria-hidden="true" className="u-mark-glass-shadow pointer-events-none absolute inset-0">
         <div
