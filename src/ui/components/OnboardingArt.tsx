@@ -232,10 +232,9 @@ export const NotificationArt = () => {
   return (
     <div aria-hidden="true" className="relative w-full max-w-[340px] pb-3">
       {/* Recessed trailing card edge giving subtle lock-screen stack depth. */}
-      <div
-        aria-hidden="true"
-        className="u-schedule-glass-chip pointer-events-none absolute inset-x-4 bottom-0 h-8 rounded-b-xl opacity-55"
-      />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-4 bottom-0 opacity-55">
+        <div className="u-schedule-glass-chip h-8 rounded-b-xl" />
+      </div>
 
       <m.div
         initial={{ opacity: 0, y: reduceMotion ? 0 : -14 }}
