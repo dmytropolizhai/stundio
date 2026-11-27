@@ -1,5 +1,17 @@
 apply plugin: 'com.android.application'
 
+// package.json is the single source of truth for the app version. versionName is its
+// major.minor.patch core ("v2.5.0" -> 2.5.0); versionCode is major*10000 + minor*100 + patch
+// (2.5.0 -> 20500), so it rises with every release and Android always sees an update.
+// Keep minor/patch below 100. Guarded by src/lib/version/__tests__/releaseVersion.test.ts.
+def appVersion = {
+    def raw = new groovy.json.JsonSlurper().parse(file('../../package.json')).version as String
+    def m = (raw =~ /^v?(\d+)(?:\.(\d+))?(?:\.(\d+))?/)
+    if (!m.find()) throw new GradleException("Unparseable version in package.json: ${raw}")
+    def (major, minor, patch) = [m.group(1), m.group(2) ?: '0', m.group(3) ?: '0']*.toInteger()
+    return [name: "${major}.${minor}.${patch}", code: major * 10000 + minor * 100 + patch]
+}()
+
 android {
     namespace "com.dmytropolizhai.stundio"
     compileSdk rootProject.ext.compileSdkVersion

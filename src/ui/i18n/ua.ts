@@ -195,6 +195,8 @@ export const ua: Dict = {
   "day.updatePrompt.dismiss": "Пізніше",
   "day.updatePrompt.handoff":
     "Завантаження завершено. Підтвердьте встановлення у вікні Android або натисніть «Оновити», щоб повторити.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect може написати «Застосунок може бути небезпечним». Це нормально для застосунків поза Play: натисніть «Докладніше» → «Все одно встановити».",
   "day.changesBadge": "{n} змін",
 
   "changes.title": "Зміни",
