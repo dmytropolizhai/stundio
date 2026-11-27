@@ -190,9 +190,9 @@ describe("week-calendar-layout", () => {
   it("filters period ticks that would physically collide with whole-hour ticks on the time rail", () => {
     const hourTicks = [8 * 60, 9 * 60, 10 * 60];
     const periodTicks = [
-      { period: "1", minutes: 8 * 60 + 30, start: "08:30" },
-      { period: "2", minutes: 9 * 60 + 55, start: "09:55" }, // 5 min before 10:00 → collides!
-      { period: "3", minutes: 10 * 60, start: "10:00" }, // exact hour → skipped!
+      { period: "1", minutes: 8 * 60 + 30, start: "08:30", end: "09:10" },
+      { period: "2", minutes: 9 * 60 + 55, start: "09:55", end: "10:35" }, // 5 min before 10:00 → collides!
+      { period: "3", minutes: 10 * 60, start: "10:00", end: "10:40" }, // exact hour → skipped!
     ];
 
     const kept = visiblePeriodTicks(hourTicks, periodTicks, 2.0, 16);

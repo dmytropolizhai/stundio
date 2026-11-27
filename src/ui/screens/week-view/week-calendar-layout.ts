@@ -29,9 +29,12 @@ export type CalendarBounds = {
   endMin: number;
   totalMinutes: number;
   hourTicks: number[];
-  periodTicks: { period: string; minutes: number; start: HHMM }[];
+  periodTicks: PeriodTick[];
   breakBands: CalendarBreakBand[];
 };
+
+/** One lesson-period marker in the time rail. */
+export type PeriodTick = { period: string; minutes: number; start: HHMM; end: HHMM };
 
 export type CalendarEventBlock = {
   /** Stable React key within the day column. */
@@ -81,11 +84,11 @@ export const formatMinuteLabel = (totalMinutes: number): HHMM => {
  */
 export const visiblePeriodTicks = (
   hourTicks: readonly number[],
-  periodTicks: readonly { period: string; minutes: number; start: HHMM }[],
+  periodTicks: readonly PeriodTick[],
   pxPerMin: number,
   minGapPx = 16,
-): { period: string; minutes: number; start: HHMM }[] => {
-  const kept: { period: string; minutes: number; start: HHMM }[] = [];
+): PeriodTick[] => {
+  const kept: PeriodTick[] = [];
   for (const pt of periodTicks) {
     if (pt.minutes % 60 === 0) continue;
     const hitsHour = hourTicks.some((h) => Math.abs(pt.minutes - h) * pxPerMin < minGapPx);
@@ -145,11 +148,11 @@ export const computeCalendarBounds = (
     hourTicks.push(m);
   }
 
-  const periodTicks: { period: string; minutes: number; start: HHMM }[] = [];
+  const periodTicks: PeriodTick[] = [];
   for (const p of periods) {
     const m = minutesOf(p.start);
     if (m !== null && m >= startMin && m <= endMin) {
-      periodTicks.push({ period: p.period, minutes: m, start: p.start });
+      periodTicks.push({ period: p.period, minutes: m, start: p.start, end: p.end });
     }
   }
 

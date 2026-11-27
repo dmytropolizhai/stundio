@@ -14,7 +14,7 @@
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
-import { dayProgress, type RigaClock, type WeekPeriod } from "@/lib/schedule";
+import { dayProgress, minutesOf, type RigaClock, type WeekPeriod } from "@/lib/schedule";
 import { Icon, cn } from "@/ds";
 import { buildingNotice } from "@/ui/theme";
 import { formatWeekdayLong, formatWeekdayShort, useLang, useT } from "@/ui/i18n";
@@ -347,7 +347,6 @@ export const WeekCalendar = ({
               style={headerStyle}
             >
               <span className="relative inline-flex items-center justify-center">
-                <Icon name="clock" size={14} />
                 {showNowLine && (
                   <span
                     aria-hidden="true"
@@ -360,11 +359,9 @@ export const WeekCalendar = ({
           ) : (
             <div
               aria-hidden="true"
-              className="u-week-sticky-corner sticky top-0 left-0 z-30 flex items-center justify-center text-muted/70"
+              className="u-week-sticky-corner sticky top-0 left-0 z-30"
               style={headerStyle}
-            >
-              <Icon name="clock" size={13} />
-            </div>
+            />
           )}
 
           {/* Sticky weekday header cells (Mon–Fri) */}
@@ -437,22 +434,36 @@ export const WeekCalendar = ({
             className="u-week-sticky-rail sticky left-0 z-15 relative select-none"
             style={{ minHeight: `calc(${String(canvasHeight)}px + var(--nav-safe))` }}
           >
-            {/* One tick per period: the school's lesson number stacked over its start time, same right edge, so the two never share a row */}
+            {/* One band per period: the school's lesson number as a big ghost numeral behind the start/end times */}
             {bounds.periodTicks.map((pt) => {
               const top = Math.round((pt.minutes - bounds.startMin) * pxPerMin);
+              const endMin = minutesOf(pt.end) ?? pt.minutes;
+              const bandPx = Math.max(24, Math.round((endMin - pt.minutes) * pxPerMin));
+              // Numeral tracks the band height so a short overview row never clips it to a sliver.
+              const numeralPx =
+                Math.min(52, Math.round(bandPx * 0.92)) * (pt.period.length > 1 ? 0.78 : 1);
               return (
-                <span
+                <div
                   key={`pt-${pt.period}`}
-                  className="u-data absolute right-1.5 flex flex-col items-end gap-0.5 text-micro leading-none"
-                  style={{ top: `${String(top + 4)}px` }}
+                  className="absolute inset-x-0 overflow-hidden"
+                  style={{ top: `${String(top)}px`, height: `${String(bandPx)}px` }}
                 >
-                  <span data-testid="week-period-number" className="font-bold text-strong">
+                  <span
+                    data-testid="week-period-number"
+                    className="pointer-events-none absolute -bottom-[0.12em] -left-0.5 font-display leading-none font-black tracking-[-0.06em] text-strong/14 tabular-nums"
+                    style={{ fontSize: `${String(Math.round(numeralPx))}px` }}
+                  >
                     {pt.period}
                   </span>
-                  <span aria-hidden="true" className="font-medium text-muted">
-                    {pt.start}
+                  <span className="absolute top-1 right-1.5 flex flex-col items-end gap-0.5 font-data text-micro leading-none tabular-nums">
+                    <span aria-hidden="true" className="font-medium text-strong/85">
+                      {pt.start}
+                    </span>
+                    <span aria-hidden="true" className="font-medium text-muted/70">
+                      {pt.end}
+                    </span>
                   </span>
-                </span>
+                </div>
               );
             })}
 
@@ -460,7 +471,7 @@ export const WeekCalendar = ({
             {showNowLine && (
               <span
                 data-testid="week-now-pill"
-                className="u-data absolute right-0.5 left-0.5 z-20 flex -translate-y-1/2 items-center justify-center rounded-pill py-0.5 text-micro leading-none font-bold shadow-card"
+                className="absolute right-0.5 left-0.5 z-20 font-data tabular-nums flex -translate-y-1/2 items-center justify-center rounded-pill py-0.5 text-micro leading-none font-bold shadow-card"
                 style={{
                   top: `${String(nowTopPx)}px`,
                   backgroundColor: "var(--lamp)",
