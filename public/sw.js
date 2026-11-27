@@ -34,6 +34,7 @@ const NAVIGATION_TIMEOUT_MS = 3000;
 const PRECACHE_URLS = [
   SHELL_URL,
   "/manifest.webmanifest",
+  "/favicon.svg",
   "/favicon.png",
   "/favicon.ico",
   "/mark.svg",

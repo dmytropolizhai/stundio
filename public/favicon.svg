@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .g-top { stop-color: #ffffff; stop-opacity: 0.24; }
+      .g-mid { stop-color: #222d3c; stop-opacity: 0.58; }
+      .g-bot { stop-color: #121822; stop-opacity: 0.72; }
+      .w-back { fill: #f1eee8; fill-opacity: 0.24; }
+      .w-top { stop-color: #f1eee8; stop-opacity: 0.56; }
+      .w-bot { stop-color: #f2ce9e; stop-opacity: 0.86; }
+      .w-meniscus { stroke: #ffffff; stroke-opacity: 0.92; }
+      .s-top { stop-color: #ffffff; stop-opacity: 0.34; }
+      .s-mid { stop-color: #ffffff; stop-opacity: 0.06; }
+      .s-bot { stop-color: #f2b56b; stop-opacity: 0.18; }
+      .r-top { stop-color: #ffffff; stop-opacity: 0.82; }
+      .r-mid { stop-color: #ffffff; stop-opacity: 0.22; }
+      .r-bot { stop-color: #f2b56b; stop-opacity: 0.48; }
+      .outer-edge { stroke: #ffffff; stroke-opacity: 0.28; }
+    }
+  </style>
+  <defs>
+    <!-- Exact brand mark path from public/mark.svg, centered and scaled inside 512x512. -->
+    <path
+      id="mark-shape"
+      d="M52.8971 63.3499C18.3191 88.5438 99.209 127.823 63.9113 127.823C28.6137 127.823 0 99.2085 0 63.9113C0 28.6141 28.6137 0 63.9113 0C99.209 0 87.475 38.156 52.8971 63.3499Z"
+      transform="translate(114.6 46.4) scale(3.28)"
+    />
+    <clipPath id="mark-clip">
+      <use href="#mark-shape" />
+    </clipPath>
+
+    <filter id="mark-shadow" x="-12%" y="-10%" width="124%" height="128%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#121419" flood-opacity="0.22" />
+    </filter>
+
+    <linearGradient id="glass-bg" x1="15%" y1="8%" x2="85%" y2="94%">
+      <stop class="g-top" offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop class="g-mid" offset="48%" stop-color="#e8eaf3" stop-opacity="0.62" />
+      <stop class="g-bot" offset="100%" stop-color="#dde0ec" stop-opacity="0.74" />
+    </linearGradient>
+
+    <linearGradient id="wave-body" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop class="w-top" offset="0%" stop-color="#222a38" stop-opacity="0.64" />
+      <stop class="w-bot" offset="100%" stop-color="#121419" stop-opacity="0.88" />
+    </linearGradient>
+
+    <linearGradient id="glass-sheen" x1="10%" y1="6%" x2="90%" y2="92%">
+      <stop class="s-top" offset="0%" stop-color="#ffffff" stop-opacity="0.72" />
+      <stop class="s-mid" offset="30%" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="56%" stop-color="#ffffff" stop-opacity="0" />
+      <stop class="s-bot" offset="100%" stop-color="#ffffff" stop-opacity="0.24" />
+    </linearGradient>
+
+    <linearGradient id="glass-rim" x1="12%" y1="8%" x2="88%" y2="92%">
+      <stop class="r-top" offset="0%" stop-color="#ffffff" stop-opacity="0.96" />
+      <stop class="r-mid" offset="48%" stop-color="#121419" stop-opacity="0.16" />
+      <stop class="r-bot" offset="100%" stop-color="#ffffff" stop-opacity="0.62" />
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#mark-shadow)">
+    <!-- Frosted-glass vessel -->
+    <g clip-path="url(#mark-clip)">
+      <rect x="0" y="0" width="512" height="512" fill="url(#glass-bg)" />
+
+      <!-- Trailing translucent wave crest -->
+      <path
+        class="w-back"
+        d="M60 228 C135 192 215 192 290 228 C365 264 430 264 490 228 V512 H60 Z"
+        fill="#1e2636"
+        fill-opacity="0.26"
+      />
+
+      <!-- Leading liquid-glass wave + body -->
+      <path
+        d="M60 246 C140 282 220 282 300 246 C375 212 435 212 490 246 V512 H60 Z"
+        fill="url(#wave-body)"
+      />
+
+      <!-- Specular liquid meniscus along the leading crest -->
+      <path
+        class="w-meniscus"
+        d="M60 246 C140 282 220 282 300 246 C375 212 435 212 490 246"
+        fill="none"
+        stroke="#ffffff"
+        stroke-opacity="0.92"
+        stroke-width="8"
+        stroke-linecap="round"
+      />
+
+      <!-- Diagonal glass surface sheen -->
+      <rect x="0" y="0" width="512" height="512" fill="url(#glass-sheen)" />
+
+      <!-- Crisp inner specular glass bevel (stroke-width is in mark-shape's 3.28x space) -->
+      <use
+        href="#mark-shape"
+        fill="none"
+        stroke="url(#glass-rim)"
+        stroke-width="4.2"
+      />
+    </g>
+
+    <!-- Delicate outer hairline so the glass silhouette stays crisp on any tab background -->
+    <use
+      class="outer-edge"
+      href="#mark-shape"
+      fill="none"
+      stroke="#121419"
+      stroke-opacity="0.2"
+      stroke-width="1"
+    />
+  </g>
+</svg>
