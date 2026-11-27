@@ -1,7 +1,7 @@
 /**
- * Contextual bottom dock (`NowDock` ↔ `DateDock`): verifies the compact live pill's glass surface,
- * subject progress tones, upcoming fallback, and switching between `NowDock` and `DateDock` inside
- * the phone shell.
+ * Contextual bottom dock (`NowDock` ↔ `DateDock`): verifies the compact live pill's subject field,
+ * horizontal scratch-out reveal, matching gradient glow, upcoming fallback, and switching between
+ * `NowDock` and `DateDock` inside the phone shell.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -48,7 +48,7 @@ afterEach(() => {
 });
 
 describe("NowDock", () => {
-  it("renders the live glass pill with subject progress tones and walk badge", async () => {
+  it("renders the live deep subject pill with dock scratch-out, matching glow, and walk badge", async () => {
     const harness = await bootHarness();
     await harness.store.getState().setSubjectColorOverride("s1", "amber");
     await harness.store.getState().setSubjectColorOverride("s2", "pink");
@@ -65,14 +65,18 @@ describe("NowDock", () => {
 
     const dock = screen.getByTestId("now-dock");
     expect(dock.getAttribute("data-kind")).toBe("live");
-    expect(dock.className).toContain("u-nav-glass");
-    expect(dock.className).not.toContain("u-tone-field-deep");
+    expect(dock.className).toContain("u-tone-field-deep");
     expect(dock.style.getPropertyValue("--tone")).toBe("var(--accent-amber)");
     expect(dock.style.getPropertyValue("--next-tone")).toBe("var(--accent-pink)");
 
-    expect(screen.queryByTestId("now-dock-glow")).toBeNull();
-    expect(screen.queryByTestId("now-dock-scratch-layer")).toBeNull();
-    expect(screen.getByTestId("now-dock-progress")).toBeDefined();
+    const glow = screen.getByTestId("now-dock-glow");
+    expect(glow.className).toContain("u-glance-glow-dock");
+    expect(screen.getByTestId("now-dock-glow-next").style.getPropertyValue("--next-tone")).toBe(
+      "var(--accent-pink)",
+    );
+
+    const scratch = screen.getByTestId("now-dock-scratch-layer");
+    expect(scratch.style.maskImage).toMatch(/^url\("data:image\/svg\+xml,/);
     expect(screen.getByTestId("now-dock-walk").textContent).toContain("TIC");
 
     fireEvent.click(screen.getByTestId("now-dock-date-toggle"));
@@ -83,7 +87,7 @@ describe("NowDock", () => {
     expect(onOpen).toHaveBeenCalledWith(DAY.lessons[0]);
   });
 
-  it("renders the glass pill with break progress between lessons during a mid-day break", async () => {
+  it("scratches the upcoming lesson out from the previous lesson during a mid-day break", async () => {
     const harness = await bootHarness();
     await harness.store.getState().setSubjectColorOverride("s1", "amber");
     await harness.store.getState().setSubjectColorOverride("s2", "pink");
@@ -98,17 +102,20 @@ describe("NowDock", () => {
 
     const dock = screen.getByTestId("now-dock");
     expect(dock.getAttribute("data-kind")).toBe("upcoming");
-    expect(dock.className).toContain("u-nav-glass");
-    expect(dock.className).not.toContain("u-tone-field-deep");
+    expect(dock.className).toContain("u-tone-field-deep");
     expect(dock.style.getPropertyValue("--tone")).toBe("var(--accent-amber)");
     expect(dock.style.getPropertyValue("--next-tone")).toBe("var(--accent-pink)");
-    expect(screen.getByTestId("now-dock-progress")).toBeDefined();
-    expect(screen.queryByTestId("now-dock-glow")).toBeNull();
-    expect(screen.queryByTestId("now-dock-scratch-layer")).toBeNull();
+    expect(screen.getByTestId("now-dock-glow")).toBeDefined();
+    expect(screen.getByTestId("now-dock-glow-next").style.getPropertyValue("--next-tone")).toBe(
+      "var(--accent-pink)",
+    );
+    const scratch = screen.getByTestId("now-dock-scratch-layer");
+    expect(scratch.style.getPropertyValue("--tone")).toBe("var(--accent-pink)");
+    expect(scratch.style.maskImage).toMatch(/^url\("data:image\/svg\+xml,/);
     expect(screen.queryByTestId("now-dock-date-toggle")).toBeNull();
   });
 
-  it("renders the upcoming glass pill without progress bar before the first lesson of the day", async () => {
+  it("renders the upcoming subject field without scratches before the first lesson of the day", async () => {
     const harness = await bootHarness();
     await harness.store.getState().setSubjectColorOverride("s1", "sky");
     const glance = dayGlance(DAY, { date: DAY.date, minutes: 8 * 60 + 15 });
@@ -121,11 +128,9 @@ describe("NowDock", () => {
     );
 
     const dock = screen.getByTestId("now-dock");
-    expect(dock.className).toContain("u-nav-glass");
     expect(dock.style.getPropertyValue("--tone")).toBe("var(--accent-sky)");
-    expect(screen.queryByTestId("now-dock-progress")).toBeNull();
     expect(screen.queryByTestId("now-dock-scratch-layer")).toBeNull();
-    expect(screen.queryByTestId("now-dock-glow")).toBeNull();
+    expect(screen.queryByTestId("now-dock-glow-next")).toBeNull();
   });
 
   it("swaps between NowDock and DateDock in the phone shell and stays visible across tabs", async () => {
@@ -146,7 +151,9 @@ describe("NowDock", () => {
     });
 
     expect(screen.getByTestId("now-dock")).toBeDefined();
-    expect(screen.getByTestId("now-dock").className).not.toContain("u-dock-bimp-from-chip");
+    expect(screen.getByTestId("now-dock").parentElement?.className).not.toContain(
+      "u-dock-bimp-from-chip",
+    );
     expect(screen.queryByTestId("date-dock")).toBeNull();
     expect(screen.queryByTestId("day-glance")).toBeNull();
 
@@ -159,7 +166,9 @@ describe("NowDock", () => {
 
     // Flip back to NowDock via the compact subject chip — expands horizontally from the chip
     fireEvent.click(screen.getByTestId("dock-now-toggle"));
-    expect(screen.getByTestId("now-dock").className).toContain("u-dock-bimp-from-chip");
+    expect(screen.getByTestId("now-dock").parentElement?.className).toContain(
+      "u-dock-bimp-from-chip",
+    );
     await waitFor(() => {
       expect(screen.queryByTestId("date-dock")).toBeNull();
     });
