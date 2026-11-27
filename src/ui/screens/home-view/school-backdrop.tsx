@@ -78,6 +78,9 @@ const usePrefersReducedMotion = (): boolean => {
         attributeFilter: ["class"],
       });
     }
+    /* The setting's class can land between the first render and this effect (settings hydrate
+       after the screen mounts), and nothing observes that gap: read once more now it is watched. */
+    update();
     return () => {
       mq?.removeEventListener("change", update);
       observer?.disconnect();

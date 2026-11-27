@@ -25,7 +25,12 @@ const iconButtonVariants = cva(
           "bg-glass text-on-brand backdrop-blur-(--blur-glass) inset-ring-1 inset-ring-on-brand-border",
         bare: "bg-transparent text-fg hover:bg-sunken",
       },
-      size: { sm: "size-9", md: "size-11", lg: "size-13" },
+      // `sm` is 36 px to look light but keeps a 44 px hit area through an invisible halo.
+      size: {
+        sm: "relative size-9 before:absolute before:-inset-1 before:content-['']",
+        md: "size-11",
+        lg: "size-13",
+      },
     },
     defaultVariants: { variant: "light", size: "md" },
   },

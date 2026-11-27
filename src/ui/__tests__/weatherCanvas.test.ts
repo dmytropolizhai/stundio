@@ -1,4 +1,4 @@
-import { createElement } from "react";
+import { createElement, Fragment, useLayoutEffect } from "react";
 import { act, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { weatherScene, type WeatherCondition, type WeatherHint } from "@/lib/weather";
@@ -184,6 +184,56 @@ describe("WeatherBackdrop", () => {
     rerender(createElement(WeatherBackdrop, { scene, paused: false }));
     expect(getByTestId("weather-backdrop").getAttribute("data-paused")).toBe("false");
     expect(setTransform).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("reduced motion from the app setting", () => {
+  afterEach(() => {
+    document.documentElement.classList.remove("reduce-motion");
+    vi.restoreAllMocks();
+  });
+
+  /* Settings hydrate after Home mounts: the class can land between the first render and the
+     moment the backdrop starts watching `<html>`. The loop must still end up stopped. */
+  const ClassLandsEarly = () => {
+    useLayoutEffect(() => {
+      document.documentElement.classList.add("reduce-motion");
+    }, []);
+    return null;
+  };
+
+  it("stops the weather canvas loop when the class lands before it is observed", () => {
+    const { ctx } = makeMockContext();
+    (ctx as unknown as { setTransform: ReturnType<typeof vi.fn> }).setTransform = vi.fn();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(ctx);
+    const queued = new Map<number, FrameRequestCallback>();
+    let nextId = 0;
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      nextId += 1;
+      queued.set(nextId, cb);
+      return nextId;
+    });
+    vi.spyOn(window, "cancelAnimationFrame").mockImplementation((id) => {
+      queued.delete(id);
+    });
+
+    const scene = weatherScene({ condition: "cloudy", isDay: true, hint: null });
+    render(
+      createElement(
+        Fragment,
+        null,
+        createElement(WeatherBackdrop, { scene, paused: false }),
+        createElement(ClassLandsEarly),
+      ),
+    );
+
+    // Whatever frame was queued before the setting was seen runs once and does not re-queue.
+    const pending = [...queued.values()];
+    queued.clear();
+    pending.forEach((cb) => {
+      cb(1000);
+    });
+    expect(queued.size).toBe(0);
   });
 });
 

@@ -22,7 +22,7 @@ import {
   toneFieldVars,
   type SubjectAccent,
 } from "@/ui/theme";
-import { StatusDot } from "@/ui/components/Badge.tsx";
+import { StatusBadge, StatusDot } from "@/ui/components/Badge.tsx";
 import { lessonHeading } from "@/ui/components/lesson-heading.ts";
 import { useT } from "@/ui/i18n";
 import { useAppStore } from "@/store";
@@ -270,7 +270,6 @@ export const DayGlassLesson = memo(
           !live && filled && "u-schedule-row-tinted",
           !live && !filled && !cancelled && "u-schedule-row-caustic",
           !live && "hover:bg-(--schedule-row-hover)",
-          cancelled && "opacity-55",
           isCover && highlightCoverLessons && "inset-ring-2 inset-ring-warning",
         )}
       >
@@ -333,7 +332,7 @@ export const DayGlassLesson = memo(
             className={cn(
               "m-0 font-display leading-[1.2] font-bold tracking-[-0.02em]",
               half ? "text-[15px]" : "text-[16px]",
-              live ? "text-on-deep" : passed ? "text-fg" : "text-strong",
+              live ? "text-on-deep" : cancelled ? "text-muted" : passed ? "text-fg" : "text-strong",
               cancelled && "line-clamp-2 line-through",
             )}
           >
@@ -377,7 +376,13 @@ export const DayGlassLesson = memo(
         {hasTrailing && (
           <div className="flex shrink-0 items-center gap-2">
             {roomPill}
-            {changed && <StatusDot status={lesson.status} />}
+            {/* A cancelled lesson says so in words: the dot alone is colour-only and 10 px. */}
+            {changed &&
+              (cancelled ? (
+                <StatusBadge status={lesson.status} />
+              ) : (
+                <StatusDot status={lesson.status} />
+              ))}
           </div>
         )}
 

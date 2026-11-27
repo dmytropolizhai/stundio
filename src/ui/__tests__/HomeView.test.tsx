@@ -335,7 +335,7 @@ describe("HomeView", () => {
       const tile = screen.getByTestId("home-brief");
       expect(tile.tagName).toBe("BUTTON");
       expect(tile.getAttribute("aria-expanded")).toBe("false");
-      expect(tile.textContent).toMatch(/^\d+\+līdz$/);
+      expect(tile.textContent).toMatch(/^\d+\+līdz beigām$/);
 
       // Tap expands to h:mm across the full row and marks weather tile inert
       fireEvent.click(tile);
@@ -371,7 +371,7 @@ describe("HomeView", () => {
       vi.setSystemTime(new Date("2026-09-09T04:48:00Z"));
       renderDay(harness);
       const before = screen.getByTestId("home-brief");
-      expect(before.textContent).toBe("42minlīdz");
+      expect(before.textContent).toBe("42minlīdz sākumam");
       fireEvent.click(before);
       expect(before.textContent).toBe("0:42līdz sākumam");
     });
@@ -775,11 +775,7 @@ describe("HomeView", () => {
     const day = harness.store.getState().resolvedDay(FIXTURE_DATE);
     const liveLesson = day?.lessons.find((l) => l.status !== "cancelled");
     expect(liveLesson?.subject).toBeDefined();
-    const key = (
-      liveLesson!.subject!.short ||
-      liveLesson!.subject!.name ||
-      liveLesson!.subject!.id
-    )
+    const key = (liveLesson!.subject!.short || liveLesson!.subject!.name || liveLesson!.subject!.id)
       .trim()
       .toLowerCase();
     await harness.store.getState().setSubjectColorOverride(key, "lime");

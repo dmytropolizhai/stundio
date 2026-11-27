@@ -570,6 +570,8 @@ text, one per screen.
 Home has two blocks, the top always about *today*, the bottom a day browser.
 
 - **Hero tiles:** a 2-column grid of square 22px tiles. `SchoolTile` is a lamp-tinted fluid canvas that rises with `schoolDayProgress` and tilts with `devicemotion` gravity (±28°, one-time iOS permission on tap); `WeatherTile` is the temperature over an animated 2D canvas sky. Tapping either expands it across the grid (`2fr 0fr`), the school tile to an `h:mm` countdown with a damped slosh, the weather tile washing the whole screen through `WeatherAmbient`.
+- **Face names its target:** the collapsed school tile reads "5+ līdz beigām" (or "līdz sākumam"), never a bare "līdz"; its accessible label carries the exact time left.
+- **The live row is never under the dock:** on a phone, when a day opens, the row on now (else the next one) is scrolled clear of the fixed dock stack with `scroll-margin-bottom: var(--nav-safe)` and `scrollIntoView({block: "nearest"})`, re-checked while the weather and tiles settle and ended by the first touch, wheel or key.
 - **Horizon strip (phone):** `DayHeader` collapses the "Today" and long-date rows into one compact row — a `.u-schedule-glass-chip` with time span and lesson/free facts, the browsed-day title when away from today, and a changes shortcut. Wide layouts keep `DatePicker` and chevrons.
 - **Glass slabs:** consecutive lessons in one building share a `.u-schedule-glass` slab split by hairlines and joined by a 1px thread along the left period-jewel spine. Free periods (`DayGap`), building hops (`DayBuildingBridge`) and the between-lesson clock (`DayNowMarker`) split slabs. Each row is three zones: dusk-toned jewel with optional mono times, subject and quiet metadata, and a recessed `.u-schedule-room-pill` with a `StatusDot`.
 - **Live row:** the active lesson lifts onto its subject's deep tone field with a 3px bottom progress filament, matching the featured SubjectCard, glance and NowDock.
@@ -610,7 +612,8 @@ A two-column grid: time rail (start bold mono, end muted, a 4px tone rail) and c
 optional Badge, subject at Title size, room and teacher). **Unfilled** is a card with the tone only on
 the rail; **Filled** takes the tone with its ink and no shadow; **Now** adds a 2px ink inset ring (the
 Home schedule uses the deep field instead); **Cancelled** is 55% opacity with a strikethrough and stays
-in place. Four visual states carry six domain statuses, the exact word arriving as a Badge.
+in place (on the Home schedule it is muted ink with a strikethrough and a visible "Atcelta" word chip instead of
+opacity, so the text keeps AA contrast and the change is not colour-only). Four visual states carry six domain statuses, the exact word arriving as a Badge.
 
 ### Freshness Indicator and Refresh Toast
 
@@ -654,11 +657,11 @@ collapse to 1ms, press scales become 1, and a blanket 0.01ms backstop covers any
 - **Do** express selection as a swap to the theme's inverse — chips, class tiles, filter pills and nav items all do this.
 - **Do** keep the lamp to the lesson on now and a switch that is on, at most two per screen.
 - **Do** compute contrasting text with `readableInk()` for any custom subject colour, and pair every tone with its ink.
-- **Do** keep cancelled lessons in place at 55% opacity with a strikethrough.
+- **Do** keep cancelled lessons in place with a strikethrough, and say so in a word on the Home schedule; never dim text by opacity below AA.
 - **Do** give glass surfaces the shared specular rim and the 20px blur; keep schedule text at 4.5:1 or better over them.
 - **Do** state data freshness on any screen that shows school data.
 - **Do** pair every fade with a small translate.
-- **Do** keep 44px as the floor for any hit target and reserve `--nav-safe` at the end of scrollable content.
+- **Do** keep 44px as the floor for any hit target and reserve `--nav-safe` at the end of scrollable content. A control that looks smaller (the 36px `IconButton` `sm`, the 34px dock calendar toggle, the 28px dock chips) gets an invisible `before:` halo to 44px rather than growing.
 - **Do** re-pull `src/ds/tokens/*.css` from the design system when a token needs to change — `dark.css` and `fonts.css` are the authored-here exceptions.
 
 ### Don't:

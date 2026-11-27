@@ -195,7 +195,7 @@ export const NowDock = ({
 
         <button
           type="button"
-          className="u-dock-bimp-content relative z-[2] flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-2.5 text-left transition-transform duration-(--dur-instant) active:scale-[0.99]"
+          className="u-dock-bimp-content relative z-[2] flex h-full min-w-0 flex-1 cursor-pointer items-center justify-between gap-2.5 text-left transition-transform duration-(--dur-instant) active:scale-[0.99]"
           aria-label={t("day.glance.open", { title, countdown })}
           onClick={() => {
             onOpenLesson(lesson);
@@ -258,7 +258,7 @@ export const NowDock = ({
             aria-label={t("day.openCalendar")}
             title={t("day.openCalendar")}
             onClick={onShowDateDock}
-            className="u-dock-bimp-content relative z-[2] flex size-[34px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-on-deep/15 text-on-deep ring-1 ring-on-deep/20 transition-transform duration-(--dur-instant) ease-standard active:scale-(--press-scale)"
+            className="u-dock-bimp-content relative z-[2] flex size-[34px] shrink-0 before:absolute before:-inset-[5px] before:content-[''] cursor-pointer items-center justify-center rounded-full bg-on-deep/15 text-on-deep ring-1 ring-on-deep/20 transition-transform duration-(--dur-instant) ease-standard active:scale-(--press-scale)"
           >
             <Icon name="calendar-days" size={15} />
           </button>

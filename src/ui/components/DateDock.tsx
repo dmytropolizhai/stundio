@@ -103,7 +103,7 @@ export const DateDock = ({ mode, nav, nowToggle, animateFrom }: DateDockProps) =
               type="button"
               data-testid="dock-today"
               onClick={nav.jumpToToday}
-              className="inline-flex h-7 shrink-0 cursor-pointer items-center rounded-pill bg-sunken px-2.5 font-text text-micro font-bold text-strong transition-colors duration-(--dur-fast) ease-standard active:scale-(--press-scale) active:duration-(--dur-instant)"
+              className="relative inline-flex h-7 shrink-0 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] cursor-pointer items-center rounded-pill bg-sunken px-2.5 font-text text-micro font-bold text-strong transition-colors duration-(--dur-fast) ease-standard active:scale-(--press-scale) active:duration-(--dur-instant)"
             >
               {t("dock.today")}
             </button>
@@ -119,8 +119,8 @@ export const DateDock = ({ mode, nav, nowToggle, animateFrom }: DateDockProps) =
               {...(nowToggle.live && isDarkTone(nowToggle.accent) ? { "data-tone-dark": "" } : {})}
               className={
                 nowToggle.live
-                  ? "u-tone-field u-tone-field-deep inline-flex h-7 shrink-0 cursor-pointer items-center rounded-pill px-2.5 font-data text-[11px] font-semibold tabular-nums text-on-deep transition-transform duration-(--dur-instant) active:scale-(--press-scale)"
-                  : "inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-pill bg-sunken px-2.5 font-data text-[11px] font-semibold tabular-nums text-strong transition-transform duration-(--dur-instant) active:scale-(--press-scale)"
+                  ? "u-tone-field u-tone-field-deep relative inline-flex h-7 shrink-0 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] cursor-pointer items-center rounded-pill px-2.5 font-data text-[11px] font-semibold tabular-nums text-on-deep transition-transform duration-(--dur-instant) active:scale-(--press-scale)"
+                  : "relative inline-flex h-7 shrink-0 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] cursor-pointer items-center gap-1.5 rounded-pill bg-sunken px-2.5 font-data text-[11px] font-semibold tabular-nums text-strong transition-transform duration-(--dur-instant) active:scale-(--press-scale)"
               }
             >
               {!nowToggle.live && (

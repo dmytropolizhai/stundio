@@ -57,6 +57,10 @@ import { LessonSheet } from "@/ui/screens/lesson-sheet";
 const SWIPE_THRESHOLD_PX = 56;
 /** Touches starting this close to a screen edge belong to the OS back gesture, not to paging. */
 const EDGE_GUARD_PX = 24;
+/** How long a freshly opened day keeps its live row clear of the dock while the layout settles. */
+const REVEAL_WINDOW_MS = 4000;
+/** Any of these means the student has taken over the scroll. */
+const TAKEOVER = ["touchstart", "wheel", "keydown", "pointerdown"] as const;
 
 type HomeViewProps = {
   date: ISODate;
@@ -150,6 +154,52 @@ export const HomeView = ({
   const enterDir = useRef<1 | -1>(1);
   const x = useMotionValue(0);
   const opacity = useMotionValue(1);
+
+  /* On a phone the fixed dock and tab bar sit over the bottom of the scroll area, and a lesson
+     that is on now or next can start the screen hidden underneath them. Bring that row clear of
+     the dock when a day opens: `scroll-margin-bottom` is the dock stack's own height, so
+     "nearest" moves the list only when the row is actually covered. The weather and the school
+     tile arrive after the list and push it down, so the check repeats while the layout settles,
+     and ends at the first touch, wheel or key (the student is in charge from then on) or after
+     a few seconds. */
+  const scheduleRef = useRef<HTMLElement | null>(null);
+  const hasDay = day !== null;
+  useEffect(() => {
+    const schedule = scheduleRef.current;
+    if (!dockedGlance || !isToday || !ready || !hasDay || schedule === null) return;
+
+    const reveal = () => {
+      /* The row on now, else the first one still ahead. */
+      const row =
+        schedule.querySelector<HTMLElement>('[role="button"][data-live="true"]') ??
+        schedule.querySelector<HTMLElement>(
+          '[role="button"][data-testid^="lesson-"]:not([data-passed])',
+        );
+      if (row === null) return;
+      row.style.scrollMarginBottom = "var(--nav-safe)";
+      if (typeof row.scrollIntoView === "function") {
+        row.scrollIntoView({ block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
+      }
+    };
+    reveal();
+
+    const host = schedule.parentElement;
+    const observer =
+      host !== null && typeof ResizeObserver === "function" ? new ResizeObserver(reveal) : null;
+    if (host !== null) observer?.observe(host);
+    const stop = () => {
+      observer?.disconnect();
+      window.clearTimeout(timer);
+      TAKEOVER.forEach((type) => {
+        window.removeEventListener(type, stop);
+      });
+    };
+    const timer = window.setTimeout(stop, REVEAL_WINDOW_MS);
+    TAKEOVER.forEach((type) => {
+      window.addEventListener(type, stop, { passive: true });
+    });
+    return stop;
+  }, [dockedGlance, isToday, ready, hasDay, date, reduceMotion]);
 
   useEffect(() => {
     /* Reduced motion keeps the day change legible as a brief cross-fade instead of a slide. */
@@ -341,6 +391,7 @@ export const HomeView = ({
       {top()}
 
       <section
+        ref={scheduleRef}
         aria-labelledby="home-schedule"
         className="mt-3.5 tablet:mt-6"
         data-testid="home-schedule"

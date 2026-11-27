@@ -96,8 +96,15 @@ export const SchoolTile = ({
       break;
   }
 
+  const countdownSpeech =
+    countdown.kind === "until"
+      ? `${formatFullCountdown(countdown)} ${t(
+          countdown.target === "end" ? "home.school.untilEnd" : "home.school.untilStart",
+        )}`
+      : null;
+  const spoken = countdownSpeech === null ? sentence : `${sentence}. ${countdownSpeech}`;
   const ariaLabel = interactive
-    ? `${sentence}. ${t(expanded ? "home.school.collapse" : "home.school.expand")}`
+    ? `${spoken}. ${t(expanded ? "home.school.collapse" : "home.school.expand")}`
     : sentence;
 
   const tileStyle: CSSProperties = {
@@ -124,7 +131,10 @@ export const SchoolTile = ({
         const compact = formatCompactCountdown(countdown);
         figure = compact.value;
         showMinUnit = compact.showMinUnit;
-        sublabel = t("home.school.until");
+        // Name what the countdown runs to: a bare "until" cannot tell the end of school from its start.
+        sublabel = t(
+          countdown.target === "end" ? "home.school.untilEnd" : "home.school.untilStart",
+        );
       }
       break;
     }
