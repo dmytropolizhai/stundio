@@ -387,21 +387,14 @@ describe("Phone top bars and headers", () => {
 
     const week = wrap(
       harness,
-      <WeekTopBar
-        date={FIXTURE_DATE}
-        today={FIXTURE_DATE}
-        isThisWeek={false}
-        firstDay="2026-09-07"
-        lastDay="2026-09-11"
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-        onRefresh={vi.fn()}
-      />,
+      <WeekTopBar date="2026-09-09" onDateChange={vi.fn()} onPickClass={vi.fn()} />,
     );
     expect(screen.queryByTestId("class-badge")).toBeNull();
     expect(screen.queryByTestId("sync-badge")).toBeNull();
+    // Phone week header: the dock steps weeks, so no chevrons, date text or picker up here.
     expect(screen.queryByRole("button", { name: "Previous week" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Next week" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Choose a date" })).toBeNull();
     week.unmount();
 
     wrap(

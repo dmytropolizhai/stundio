@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import type { Timetable } from "@/lib/edupage";
 import type { PersonaSubject } from "@/lib/persona";
 import {
+  PUBLIC_APP_ORIGIN,
   browserHistory,
+  buildShareUrl,
   createMemoryHistory,
   formatRoute,
   parseRoute,
@@ -77,6 +79,34 @@ describe("codec", () => {
       kind: "teacher",
       slug: "baldins-kaspars",
     });
+    expect(parseRoute("/class/dp2-1/week")).toEqual({
+      kind: "class",
+      slug: "dp2-1",
+      view: "week",
+    });
+    expect(parseRoute("/class/DP2-1/week/2026-09-07")).toEqual({
+      kind: "class",
+      slug: "dp2-1",
+      view: "week",
+      date: "2026-09-07",
+    });
+    expect(parseRoute("/teacher/agris-bumanis/week/2026-09-07")).toEqual({
+      kind: "teacher",
+      slug: "agris-bumanis",
+      view: "week",
+      date: "2026-09-07",
+    });
+    // Invalid calendar date degrades gracefully to the week route without a date.
+    expect(parseRoute("/class/dp2-1/week/2026-02-31")).toEqual({
+      kind: "class",
+      slug: "dp2-1",
+      view: "week",
+    });
+    expect(parseRoute("/class/dp2-1/week/not-a-date")).toEqual({
+      kind: "class",
+      slug: "dp2-1",
+      view: "week",
+    });
   });
 
   it("falls back to root for unknown, malformed, or empty paths", () => {
@@ -84,14 +114,29 @@ describe("codec", () => {
     expect(parseRoute("/unknown/dp2-1")).toEqual({ kind: "root" });
     expect(parseRoute("/class")).toEqual({ kind: "root" });
     expect(parseRoute("/class/dp2-1/extra")).toEqual({ kind: "root" });
+    expect(parseRoute("/class/dp2-1/week/2026-09-07/extra")).toEqual({ kind: "root" });
     expect(parseRoute("/class/---")).toEqual({ kind: "root" });
     expect(parseRoute("/class/%E0%A4%A")).toEqual({ kind: "class", slug: "e0-a4-a" });
   });
 
-  it("formats routes back to canonical pathnames", () => {
+  it("formats routes back to canonical pathnames and full share URLs", () => {
     expect(formatRoute({ kind: "root" })).toBe("/");
     expect(formatRoute({ kind: "class", slug: "dp2-1" })).toBe("/class/dp2-1");
+    expect(formatRoute({ kind: "class", slug: "dp2-1", view: "week" })).toBe("/class/dp2-1/week");
+    expect(formatRoute({ kind: "class", slug: "dp2-1", view: "week", date: "2026-09-07" })).toBe(
+      "/class/dp2-1/week/2026-09-07",
+    );
     expect(formatRoute({ kind: "teacher", slug: "agris-bumanis" })).toBe("/teacher/agris-bumanis");
+    expect(
+      formatRoute({ kind: "teacher", slug: "agris-bumanis", view: "week", date: "2026-09-07" }),
+    ).toBe("/teacher/agris-bumanis/week/2026-09-07");
+
+    expect(buildShareUrl({ kind: "class", slug: "dp2-1", view: "week", date: "2026-09-07" })).toBe(
+      `${PUBLIC_APP_ORIGIN}/class/dp2-1/week/2026-09-07`,
+    );
+    expect(buildShareUrl({ kind: "root" }, "https://app.stundio.lv/")).toBe(
+      "https://app.stundio.lv/",
+    );
   });
 
   it("derives canonical routes from PersonaSubject", () => {
@@ -102,6 +147,17 @@ describe("codec", () => {
       class: { id: "-1", ref: null, label: "DP2-1", formTeacher: null },
     };
     expect(routeFromSubject(student)).toEqual({ kind: "class", slug: "dp2-1" });
+    expect(routeFromSubject(student, { view: "week" })).toEqual({
+      kind: "class",
+      slug: "dp2-1",
+      view: "week",
+    });
+    expect(routeFromSubject(student, { view: "week", date: "2026-09-07" })).toEqual({
+      kind: "class",
+      slug: "dp2-1",
+      view: "week",
+      date: "2026-09-07",
+    });
 
     const studentNoLabel: PersonaSubject = {
       persona: "student",

@@ -248,7 +248,12 @@ const Shell = () => {
   // `wireNotificationTaps` rather than acted on directly, since only the shell owns tab/date.
   useEffect(() => {
     if (pendingNavigation === null) return;
-    if (pendingNavigation.tab === "home" || pendingNavigation.tab === "changes") {
+    if (
+      (pendingNavigation.tab === "home" ||
+        pendingNavigation.tab === "changes" ||
+        pendingNavigation.tab === "week") &&
+      pendingNavigation.date !== undefined
+    ) {
       scheduleNav.setDate(pendingNavigation.date);
     }
     setTab(pendingNavigation.tab);
@@ -431,7 +436,7 @@ const Shell = () => {
         className="relative flex h-full flex-col overflow-hidden"
         data-dock={hasDock ? "true" : undefined}
       >
-        <StatusBar />
+        {tab !== "week" && <StatusBar />}
         {screen}
         <div
           className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-nav-inset pb-[calc(var(--space-5)+var(--app-inset-bottom))]"

@@ -31,6 +31,7 @@ describe("resolveShareSubject", () => {
 
     expect(subject?.label).toBe("A1-2");
     expect(subject?.classTeacher).not.toBeNull();
+    expect(subject?.route).toEqual({ kind: "class", slug: "a1-2" });
   });
 
   it("names a teacher by their own name, ignoring a leftover student class", async () => {

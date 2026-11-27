@@ -42,7 +42,9 @@ import type { RouteTarget } from "@/lib/router";
  * doesn't know or care what kind of notification produced it.
  */
 export type NotificationNavigationTarget =
-  { tab: "home" | "changes"; date: ISODate } | { tab: "settings" };
+  | { tab: "home" | "changes"; date: ISODate }
+  | { tab: "week"; date?: ISODate }
+  | { tab: "settings" };
 
 /**
  * Settings whose write has a side effect or keeps another field consistent. Each has a named

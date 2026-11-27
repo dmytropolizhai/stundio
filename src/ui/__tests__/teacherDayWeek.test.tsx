@@ -172,7 +172,7 @@ describe("Teacher Day and Week Views", () => {
     expect(disc.style.backgroundColor).toBe("#123456");
   });
 
-  it("WeekView renders teacher schedule and overview statistics", async () => {
+  it("WeekView renders teacher schedule and per-day counts", async () => {
     const harness = await bootHarness();
     const teachers = listTeachers(Object.values(harness.store.getState().timetables));
 
@@ -203,8 +203,9 @@ describe("Teacher Day and Week Views", () => {
       />,
     );
 
-    // WeekView renders week overview ("Pārskats") and grid
-    expect(screen.getByText("Pārskats")).toBeDefined();
+    // WeekView renders the grid; the lesson counts live in the weekday headers (no overview strip)
+    expect(screen.queryByText("Pārskats")).toBeNull();
+    expect(screen.getAllByTestId("week-day-count").length).toBeGreaterThan(0);
 
     // Calendar cards lead with the teacher's group and include the full subject name
     const resolved = harness.store.getState().resolvedTeacherDay(FIXTURE_DATE)!;

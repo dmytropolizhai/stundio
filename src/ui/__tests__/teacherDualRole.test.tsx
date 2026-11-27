@@ -3,8 +3,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { listTeachers } from "@/lib/edupage";
 import { HomeTopBar } from "../screens/home-view/home-top-bar.tsx";
-import { WeekTopBar } from "../screens/week-view/week-top-bar.tsx";
-import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
+import { WeekTeacherSegment } from "../screens/week-view/week-top-bar.tsx";
+import { bootHarness, clickAndSettle, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
   render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
@@ -97,19 +97,7 @@ describe("Teacher Dual Role (T8)", () => {
       void harness.store.getState().setTeacher(formTeacher.id);
     });
 
-    wrap(
-      harness,
-      <WeekTopBar
-        date={FIXTURE_DATE}
-        today={FIXTURE_DATE}
-        isThisWeek={true}
-        firstDay={FIXTURE_DATE}
-        lastDay={FIXTURE_DATE}
-        onDateChange={vi.fn()}
-        onPickClass={vi.fn()}
-        onRefresh={vi.fn()}
-      />,
-    );
+    wrap(harness, <WeekTeacherSegment />);
 
     expect(screen.getByTestId("form-teacher-segment")).toBeDefined();
   });

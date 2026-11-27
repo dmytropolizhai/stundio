@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { TooltipProvider } from "@/ds";
 import { LAYOUT_QUERIES, type Layout } from "../hooks/useLayout.ts";
@@ -50,7 +50,6 @@ describe("WeekView interactions", () => {
     const calendar = screen.getByTestId("week-calendar");
     const toggle = screen.getByTestId("week-density-toggle");
 
-    expect(calendar.getAttribute("data-density")).toBe("detailed");
     expect(toggle.getAttribute("aria-pressed")).toBe("false");
 
     fireEvent.click(toggle);
@@ -79,7 +78,7 @@ describe("WeekView interactions", () => {
     expect(screen.queryByTestId("week-density-toggle")).toBeNull();
   });
 
-  it("expands WeekOverview to show interactive 5-day workload bars that open a day", async () => {
+  it("shows each day's lesson count in its header and opens that day on tap", async () => {
     const harness = await bootHarness();
     const onOpenDay = vi.fn();
     wrap(
@@ -92,21 +91,88 @@ describe("WeekView interactions", () => {
       />,
     );
 
-    const overview = screen.getByTestId("week-overview");
-    const headerButton = overview.querySelector("button[aria-expanded]");
-    expect(headerButton?.getAttribute("aria-expanded")).toBe("false");
-    expect(screen.queryByTestId("week-overview-bars")).toBeNull();
+    expect(screen.queryByTestId("week-overview")).toBeNull();
+    const counts = screen.getAllByTestId("week-day-count");
+    expect(counts).toHaveLength(5);
 
-    fireEvent.click(headerButton!);
-    expect(headerButton?.getAttribute("aria-expanded")).toBe("true");
-
-    const bars = screen.getByTestId("week-overview-bars");
-    const dayButtons = Array.from(bars.querySelectorAll("button"));
-    expect(dayButtons).toHaveLength(5);
-
-    fireEvent.click(dayButtons[0]!);
-    expect(onOpenDay).toHaveBeenCalledTimes(1);
+    const header = counts[0]!.closest("button")!;
+    expect(header.getAttribute("aria-label")).toMatch(/\d/);
+    fireEvent.click(header);
     expect(onOpenDay).toHaveBeenCalledWith("2026-09-07");
+  });
+
+  it("steps a whole week via the switcher chevrons on wide layouts only", async () => {
+    stubLayout("tablet");
+    const harness = await bootHarness();
+    const onDateChange = vi.fn();
+    const view = wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={onDateChange}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Nākamā nedēļa"));
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-16");
+    fireEvent.click(screen.getByLabelText("Iepriekšējā nedēļa"));
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-02");
+    view.unmount();
+
+    stubLayout("phone");
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={onDateChange}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+    expect(screen.queryByLabelText("Nākamā nedēļa")).toBeNull();
+  });
+
+  it("zooms the canvas continuously with a two-finger pinch on phones", async () => {
+    stubLayout("phone");
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    const scroller = screen.getByTestId("week-calendar-scroll");
+    const grid = scroller.firstElementChild as HTMLElement;
+    const widthBefore = parseInt(grid.style.minWidth, 10);
+
+    const touch = (x: number) => ({ clientX: x, clientY: 100, identifier: x });
+    const fire = (type: string, xs: number[]) => {
+      const ev = new Event(type, { bubbles: true, cancelable: true });
+      Object.defineProperty(ev, "touches", { value: xs.map(touch) });
+      act(() => {
+        scroller.dispatchEvent(ev);
+      });
+    };
+
+    fire("touchstart", [100, 200]);
+    fire("touchmove", [60, 240]);
+    await waitFor(() => {
+      expect(parseInt(grid.style.minWidth, 10)).toBeGreaterThan(widthBefore);
+    });
+    fire("touchend", []);
+
+    // Pinching all the way in past the floor snaps to the fit-all layout.
+    fire("touchstart", [60, 240]);
+    fire("touchmove", [149, 151]);
+    await waitFor(() => {
+      expect(screen.getByTestId("week-calendar").getAttribute("data-density")).toBe("overview");
+    });
   });
 
   it("syncs scroll-depth flags without re-rendering when the 2D canvas scrolls", async () => {

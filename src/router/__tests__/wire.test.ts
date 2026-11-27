@@ -215,6 +215,39 @@ describe("wireRouter", () => {
     sub.dispose();
   });
 
+  it("opens the Week tab (and date) for /class/:slug/week[/:date] and /teacher/:slug/week[/:date]", async () => {
+    const store = makeStore();
+    await store.getState().refresh({ date: DATE });
+    const a12 = findClassByShort(store, "A1-2");
+    const a21 = findClassByShort(store, "A2-1");
+    const teacher = findTeacherByShort(store, "Baldiņš Kaspars");
+
+    const history = createMemoryHistory("/class/A1-2/week/2026-09-07");
+    const sub = wireRouter(store, history);
+
+    expect(store.getState().settings.persona).toBe("student");
+    expect(store.getState().settings.selectedClassId).toBe(a12.id);
+    expect(store.getState().pendingNavigation).toEqual({ tab: "week", date: "2026-09-07" });
+    expect(history.getPathname()).toBe("/class/a1-2/week/2026-09-07");
+
+    // Unrelated store updates do not clobber the active week deep link.
+    await store.getState().updateSettings({ lang: "en" });
+    expect(history.getPathname()).toBe("/class/a1-2/week/2026-09-07");
+
+    // Switching class while on a week URL keeps the week view in the pushed URL.
+    await store.getState().setClass(a21.id);
+    expect(history.getPathname()).toBe("/class/a2-1/week/2026-09-07");
+
+    // Navigating to a teacher week route without a date opens the week tab for that teacher.
+    history.navigate("/teacher/baldiņš-kaspars/week");
+    expect(store.getState().settings.persona).toBe("teacher");
+    expect(store.getState().settings.selectedTeacherId).toBe(teacher.id);
+    expect(store.getState().pendingNavigation).toEqual({ tab: "week" });
+    expect(history.getPathname()).toBe("/teacher/kaspars-baldins/week");
+
+    sub.dispose();
+  });
+
   it("stops reacting to store and history events after dispose", async () => {
     const store = makeStore();
     await store.getState().refresh({ date: DATE });

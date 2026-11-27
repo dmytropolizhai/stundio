@@ -10,16 +10,26 @@
  */
 import { resolveSubject, type ClassEntry, type Identity } from "@/lib/persona";
 import type { Timetable } from "@/lib/edupage";
+import { toSlug, toTeacherSlug, type AppRoute } from "@/lib/router";
 
 export type ShareSubject = {
   /** The card's biggest text, the share-sheet title and the file name's stem. */
   label: string;
   /** Form teacher's name, or `null` when the card has none to credit (a teacher's own week). */
   classTeacher: string | null;
+  /** Base route for the subject being shared (`/class/<slug>` or `/teacher/<slug>`). */
+  route: AppRoute;
 };
 
-const classSubject = ({ label, formTeacher }: ClassEntry): ShareSubject | null =>
-  label === null ? null : { label, classTeacher: formTeacher?.short ?? null };
+const classSubject = ({ label, formTeacher }: ClassEntry): ShareSubject | null => {
+  if (label === null) return null;
+  const slug = toSlug(label);
+  return {
+    label,
+    classTeacher: formTeacher?.short ?? null,
+    route: slug === "" ? { kind: "root" } : { kind: "class", slug },
+  };
+};
 
 export const resolveShareSubject = (
   identity: Identity,
@@ -32,5 +42,11 @@ export const resolveShareSubject = (
     return classSubject(subject.formClass);
   }
   const { label } = subject.teacher;
-  return label === null ? null : { label, classTeacher: null };
+  if (label === null) return null;
+  const slug = toTeacherSlug(label);
+  return {
+    label,
+    classTeacher: null,
+    route: slug === "" ? { kind: "root" } : { kind: "teacher", slug },
+  };
 };

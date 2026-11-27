@@ -279,6 +279,29 @@ describe("the message the image travels with", () => {
     expect(text).toContain("https://bit.ly/stundio");
   });
 
+  it("embeds a group/week deep link in the card QR and share message when supplied", async () => {
+    const url = "https://app.stundio.lv/class/a1-2/week/2026-09-07";
+    const text = weekShareText("A1-2", "07.09.–11.09.", t, url);
+    expect(text).toContain(url);
+    expect(text).not.toContain("https://bit.ly/stundio");
+
+    const { store } = await bootHarness();
+    const classId = classIdOf(store, "A1-2");
+    const dates = weekDates(FIXTURE_DATE);
+    const data = buildWeekImageData({
+      dates,
+      days: dates.map((d) => store.getState().resolvedDay(d, classId)),
+      title: "A1-2",
+      classTeacher: null,
+      theme: shareTheme(),
+      lang: "lv",
+      t,
+      url,
+    });
+    expect(data.link.label).toBe(url);
+    expect(data.link.qr).not.toBeNull();
+  });
+
   it("names the file after the class and the Monday it starts on", () => {
     expect(weekShareFileName("A1-2", "2026-09-07")).toBe("stundio-a1-2-2026-09-07.png");
   });

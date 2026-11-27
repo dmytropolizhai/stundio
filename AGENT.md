@@ -103,10 +103,13 @@ CapacitorHttp → lib/edupage (client → normalize/substitutions → select →
   `hasAppNotifications`, `hasUrlRouting`). Branch on these instead of pairing
   `isNativePlatform()` with `isDesktop()` at the call site.
 - **`src/lib/router/`** & **`src/router/`** — lightweight, zero-dependency URL routing for the
-  web shell: `/class/<slug>` (e.g. `DP2-1` → `/class/dp2-1`) and `/teacher/<slug>` (e.g.
-  `Bumanis Agris` → `/teacher/agris-bumanis`, matched word-order- and diacritic-insensitively).
-  `lib/router/` holds the pure slug/codec/resolver logic and `HistoryAdapter` port; `router/wire.ts`
-  syncs it two-way with the store (wired in `store/boot.ts` when `hasUrlRouting(platform)` is true).
+  web shell: `/class/<slug>[/week[/<YYYY-MM-DD>]]` (e.g. `DP2-1` → `/class/dp2-1`, or
+  `/class/dp2-1/week/2026-09-07` for a shared week) and
+  `/teacher/<slug>[/week[/<YYYY-MM-DD>]]` (e.g. `Bumanis Agris` → `/teacher/agris-bumanis`,
+  matched word-order- and diacritic-insensitively). `lib/router/` holds the pure slug/codec/resolver
+  logic and `HistoryAdapter` port; `router/wire.ts` syncs it two-way with the store (wired in
+  `store/boot.ts` when `hasUrlRouting(platform)` is true), and `ui/share/` embeds the week route
+  URL in the shared week card's QR code and message.
 - **`src/lib/desktop/`**, **`src-tauri/`** — Linux desktop ports and the Tauri shell. Desktop
   HTTP bypasses the web proxy with a school-only capability; image export uses the file portal,
   notifications use the notification portal (falling back to the daemon), and window focus

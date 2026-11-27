@@ -454,10 +454,10 @@ describe("WeekView", () => {
       />,
     );
 
-    expect(screen.queryByTestId("week-buildings")).toBeNull();
+    expect(screen.queryByTestId("week-day-building")).toBeNull();
   });
 
-  it("lists which weekdays are in another building", async () => {
+  it("flags each weekday that is in another building", async () => {
     const harness = await bootHarness({ building: "TIC" });
     wrap(
       harness,
@@ -469,10 +469,10 @@ describe("WeekView", () => {
       />,
     );
 
-    // Every fixture weekday resolves to the pinned annex, so it names them all.
-    const note = screen.getByTestId("week-buildings").textContent ?? "";
-    expect(note).toContain("TIC:");
-    expect(note.split(",").length).toBeGreaterThan(1);
+    // Every fixture weekday resolves to the pinned annex, so each of the five columns is flagged.
+    const flags = screen.getAllByTestId("week-day-building");
+    expect(flags).toHaveLength(5);
+    expect(flags[0]?.textContent).toContain("TIC");
   });
 
   it("colours cells with more than one tone by default", async () => {
@@ -545,7 +545,7 @@ describe("WeekView", () => {
     expect(onOpenDay).toHaveBeenCalledWith("2026-09-07");
   });
 
-  it("steps a whole week at a time via the header arrows", async () => {
+  it("steps a whole week at a time via the arrow keys on the pager", async () => {
     const harness = await bootHarness();
     const onDateChange = vi.fn();
     wrap(
@@ -558,10 +558,11 @@ describe("WeekView", () => {
       />,
     );
 
-    fireEvent.click(screen.getByLabelText("Nākamā nedēļa"));
+    const pager = screen.getByTestId("week-pager");
+    fireEvent.keyDown(pager, { key: "ArrowRight" });
     expect(onDateChange).toHaveBeenCalledWith("2026-09-16");
 
-    fireEvent.click(screen.getByLabelText("Iepriekšējā nedēļa"));
+    fireEvent.keyDown(pager, { key: "ArrowLeft" });
     expect(onDateChange).toHaveBeenCalledWith("2026-09-02");
   });
 
@@ -580,33 +581,6 @@ describe("WeekView", () => {
 
     fireEvent.click(screen.getByTestId("class-badge"));
     expect(onPickClass).toHaveBeenCalled();
-  });
-
-  it("allows navigating between weeks and jumping back to today", async () => {
-    const harness = await bootHarness();
-    const onDateChange = vi.fn();
-    wrap(
-      harness,
-      <WeekView
-        date="2026-01-01" // A different week from today
-        onDateChange={onDateChange}
-        onOpenDay={vi.fn()}
-        onPickClass={vi.fn()}
-      />,
-    );
-
-    // Chevron next week (+7 days)
-    fireEvent.click(screen.getByLabelText("Nākamā nedēļa"));
-    expect(onDateChange).toHaveBeenCalledWith("2026-01-08");
-
-    // Chevron prev week (-7 days)
-    fireEvent.click(screen.getByLabelText("Iepriekšējā nedēļa"));
-    expect(onDateChange).toHaveBeenCalledWith("2025-12-25");
-
-    // Jump today button is visible when not in current week
-    const jumpBtn = screen.getByText("Uz šodienu");
-    fireEvent.click(jumpBtn);
-    expect(onDateChange).toHaveBeenCalled();
   });
 
   it("allows toggling merge-lessons preference directly from WeekView", async () => {
@@ -708,7 +682,7 @@ describe("WeekView", () => {
       expect(drawn.some((text) => text.startsWith("–"))).toBe(true); // a lesson's end time
 
       const sent = share.mock.calls[0]?.[0] as { text: string; files: File[] };
-      expect(sent.text).toContain("https://bit.ly/stundio");
+      expect(sent.text).toContain("https://app.stundio.lv/class/a1-2/week/2026-09-07");
       expect(sent.files[0]?.name).toContain("a1-2");
     });
 

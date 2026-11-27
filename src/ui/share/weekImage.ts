@@ -47,11 +47,11 @@ const APP_URL = "https://bit.ly/stundio";
  * (`encodeQr`); if the URL ever outgrows what that encoder handles, the card silently keeps the
  * words and drops the square rather than failing to render at all.
  */
-const appLink = (): ShareLink => {
+const appLink = (url: string = APP_URL): ShareLink => {
   try {
-    return { label: APP_URL, qr: encodeQr(APP_URL) };
+    return { label: url, qr: encodeQr(url) };
   } catch {
-    return { label: APP_URL, qr: null };
+    return { label: url, qr: null };
   }
 };
 
@@ -66,6 +66,8 @@ export type WeekImageInput = {
   theme: ShareTheme;
   lang: Lang;
   t: Translate;
+  /** Deep link encoded in the card's QR and label; falls back to `APP_URL` when omitted. */
+  url?: string;
   /** Same overrides the day and week views use, so a shared card matches the app on-screen. */
   subjectColorOverrides?: Record<string, string>;
   /** A teacher's per-group overrides — a grid cell takes its group's colour like the app does. */
@@ -194,6 +196,7 @@ export const buildWeekImageData = ({
   theme,
   lang,
   t,
+  url,
   subjectColorOverrides = {},
   groupColorOverrides = {},
   subjectColorCodingEnabled = true,
@@ -249,13 +252,17 @@ export const buildWeekImageData = ({
     ),
     notes: buildingNotes(dates, days, lang, t),
     brand: t("app.title"),
-    link: appLink(),
+    link: appLink(url),
   };
 };
 
-/** The message the image travels with — the school week in words, plus where to get the app. */
-export const weekShareText = (name: string, period: string, t: Translate): string =>
-  `${t("share.message", { name, period })}\n`;
+/** The message the image travels with — the school week in words, plus the deep link to open it. */
+export const weekShareText = (name: string, period: string, t: Translate, url?: string): string => {
+  const message = t("share.message", { name, period });
+  if (url === undefined) return `${message}\n`;
+  const linked = message.includes(APP_URL) ? message.replace(APP_URL, url) : `${message}\n${url}`;
+  return `${linked}\n`;
+};
 
 /** `stundio-A1-2-2026-09-07.png` — a name that still means something in a downloads folder. */
 export const weekShareFileName = (name: string, monday: ISODate | undefined): string => {

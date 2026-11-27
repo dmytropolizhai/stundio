@@ -5,9 +5,14 @@
  * Pure and dependency-free so every other file in `lib/router/` (and tests) depends only on
  * these contracts.
  */
+import type { ISODate } from "@/lib/edupage";
+
+export type RouteView = "home" | "week";
 
 export type AppRoute =
-  { kind: "root" } | { kind: "class"; slug: string } | { kind: "teacher"; slug: string };
+  | { kind: "root" }
+  | { kind: "class"; slug: string; view?: RouteView; date?: ISODate }
+  | { kind: "teacher"; slug: string; view?: RouteView; date?: ISODate };
 
 /** What a route resolves to in EduPage's entity space. */
 export type RouteTarget =

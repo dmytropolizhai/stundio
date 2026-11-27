@@ -8,7 +8,7 @@
  */
 import { memo, type CSSProperties } from "react";
 import type { TeacherResolvedLesson } from "@/lib/edupage";
-import { Icon, cn, type LessonTone } from "@/ds";
+import { Icon, cn } from "@/ds";
 import {
   isChanged,
   isDarkTone,
@@ -24,16 +24,6 @@ import { useT } from "@/ui/i18n";
 import type { CalendarEventBlock } from "./week-calendar-layout.ts";
 
 export type CalendarDensity = "detailed" | "overview";
-
-const JEWEL_TONE: Record<Exclude<LessonTone, "custom">, string> = {
-  amber: "bg-amber text-amber-ink",
-  sky: "bg-sky text-sky-ink",
-  lilac: "bg-lilac text-lilac-ink",
-  pink: "bg-pink text-pink-ink",
-  mint: "bg-mint text-mint-ink",
-  lime: "bg-lime text-lime-ink",
-  brand: "bg-brand text-on-brand",
-};
 
 const accentFillVar = (accent: SubjectAccent): string =>
   accent.tone === "custom" ? accent.fill : `var(--accent-${accent.tone})`;
@@ -87,7 +77,7 @@ export const WeekCalendarEvent = memo(
     onSelect,
   }: WeekCalendarEventProps) => {
     const t = useT();
-    const { lesson, day, live, lane, laneCount, end, periodLabel } = block;
+    const { lesson, day, live, lane, laneCount, end } = block;
 
     const teacherLesson = lesson as Partial<TeacherResolvedLesson>;
     const { isTeacherMode, rooms, title: headingTitle, subtitle } = lessonHeading(lesson);
@@ -116,6 +106,8 @@ export const WeekCalendarEvent = memo(
     const isCompactHeight = heightPx < 58;
 
     const timeRange = `${lesson.start}–${end}`;
+    // The room code leads the short name; its "(…)" floor/wing suffix only truncates at card width.
+    const roomLabel = rooms.replace(/\s*\(.*$/, "").trim() || rooms;
     const styleVars = {
       ...(live ? toneFieldVars(accent) : {}),
       "--row-tone": accentFillVar(accent),
@@ -225,7 +217,7 @@ export const WeekCalendarEvent = memo(
                   cancelled && "line-through",
                 )}
               >
-                {rooms}
+                {roomLabel}
               </span>
             )}
           </div>
@@ -234,29 +226,6 @@ export const WeekCalendarEvent = memo(
             {/* Top utility row: period jewel + NOW/room capsule + status dot */}
             <div className="flex items-center justify-between gap-1.5">
               <div className="flex min-w-0 items-center gap-1.5">
-                <span
-                  className={cn(
-                    "inline-flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-full px-1 font-data text-micro leading-none font-bold tabular-nums",
-                    live
-                      ? "bg-on-deep/18 text-on-deep ring-1 ring-on-deep/25"
-                      : cancelled
-                        ? "bg-sunken text-muted"
-                        : useFilledLook
-                          ? "bg-black/12 text-(--row-ink)"
-                          : accent.tone === "custom"
-                            ? ""
-                            : JEWEL_TONE[accent.tone],
-                    cancelled && "line-through",
-                  )}
-                  style={
-                    !live && !cancelled && !useFilledLook && accent.tone === "custom"
-                      ? { backgroundColor: accent.fill, color: accent.ink }
-                      : undefined
-                  }
-                >
-                  {periodLabel}
-                </span>
-
                 {live && (
                   <span className="inline-flex shrink-0 items-center gap-1 rounded-pill bg-on-deep/18 px-1.5 py-0.5 font-text text-micro leading-none font-bold tracking-[0.08em] text-on-deep uppercase ring-1 ring-on-deep/20">
                     <span
@@ -281,7 +250,7 @@ export const WeekCalendarEvent = memo(
                 {!isTeacherMode && rooms !== "" && (
                   <span
                     className={cn(
-                      "max-w-[4.5rem] truncate rounded-pill px-1.5 py-0.5 font-data text-micro leading-none font-semibold tabular-nums",
+                      "max-w-[4.5rem] shrink-0 truncate rounded-pill px-1.5 py-0.5 font-data text-micro leading-none font-semibold tabular-nums",
                       live
                         ? "bg-on-deep/16 text-on-deep"
                         : cancelled
@@ -292,7 +261,7 @@ export const WeekCalendarEvent = memo(
                       cancelled && "line-through",
                     )}
                   >
-                    {rooms}
+                    {roomLabel}
                   </span>
                 )}
                 {changed && <StatusDot status={lesson.status} />}
@@ -305,7 +274,7 @@ export const WeekCalendarEvent = memo(
                 className={cn(
                   "font-display font-bold tracking-[-0.02em]",
                   isMultiLane ? "text-caption leading-[1.16]" : "text-[13.5px] leading-[1.2]",
-                  isTall ? "line-clamp-3" : "line-clamp-2",
+                  isTall || isMultiLane ? "line-clamp-3" : "line-clamp-2",
                   live
                     ? "text-on-deep"
                     : cancelled
@@ -333,7 +302,7 @@ export const WeekCalendarEvent = memo(
             </div>
 
             {/* Bottom detail line: tabular time + teacher/building when space permits */}
-            {!isCompactHeight && (
+            {!isCompactHeight && !isMultiLane && (
               <div className="flex items-center justify-between gap-1.5">
                 <span
                   className={cn(

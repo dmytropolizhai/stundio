@@ -12,40 +12,52 @@
  *   proportional time heights so the whole week's rhythm compares at a glance.
  * - Desktop: all 5 columns naturally span the wide canvas at full detailed fidelity.
  */
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import type { ISODate, ResolvedDay, ResolvedLesson } from "@/lib/edupage";
 import { dayProgress, type RigaClock, type WeekPeriod } from "@/lib/schedule";
 import { Icon, cn } from "@/ds";
-import { formatWeekdayShort, useLang, useT } from "@/ui/i18n";
+import { buildingNotice } from "@/ui/theme";
+import { formatWeekdayLong, formatWeekdayShort, useLang, useT } from "@/ui/i18n";
 import {
   buildDayEvents,
   computeCalendarBounds,
   dayChangeCount,
   formatMinuteLabel,
-  visiblePeriodTicks,
   type CalendarEventBlock,
 } from "./week-calendar-layout.ts";
 import { WeekCalendarEvent, type CalendarDensity } from "./week-calendar-event.tsx";
 
-const PX_PER_MINUTE: Record<CalendarDensity, number> = {
-  detailed: 2.05,
-  overview: 1.2,
-};
-
-const TIME_RAIL_WIDTH: Record<CalendarDensity, number> = {
-  detailed: 52,
-  overview: 40,
-};
+/** Pixels per minute / column width at zoom 1; the phone canvas scales both continuously. */
+const BASE_PX_PER_MINUTE = 2.05;
+const BASE_COL_WIDTH = 180;
+/** At or below this zoom the canvas stops panning and fits Mon–Fri into the viewport. */
+export const FIT_ZOOM = 0.5;
+export const DEFAULT_ZOOM = 0.8;
+const MAX_ZOOM = 1.5;
+/** Below this zoom columns are too narrow for full cards, so they switch to compact labels. */
+const COMPACT_BELOW_ZOOM = 0.7;
+const FIT_PX_PER_MINUTE = 1.2;
 
 const HEADER_HEIGHT = 54;
-const DETAILED_COL_WIDTH = 180;
+/** The floating action pill sits inside the header's top strip, so the row grows by its height. */
+const HEADER_ROW = `calc(${String(HEADER_HEIGHT)}px + var(--week-float, 0px))`;
+const headerStyle = { height: HEADER_ROW, paddingTop: "var(--week-float, 0px)" };
+
+const clampZoom = (z: number): number => Math.min(MAX_ZOOM, Math.max(FIT_ZOOM, z));
+
+const touchDistance = (t: TouchList): number =>
+  Math.hypot(
+    (t[0]?.clientX ?? 0) - (t[1]?.clientX ?? 0),
+    (t[0]?.clientY ?? 0) - (t[1]?.clientY ?? 0),
+  );
 
 type WeekCalendarProps = {
   dates: readonly ISODate[];
   days: readonly (ResolvedDay | null)[];
   periods: readonly WeekPeriod[];
   now: RigaClock;
-  density: CalendarDensity;
+  zoom: number;
+  onZoomChange: (zoom: number) => void;
   isDesktop: boolean;
   mergeConsecutive: boolean;
   filled: boolean;
@@ -67,7 +79,8 @@ export const WeekCalendar = ({
   days,
   periods,
   now,
-  density,
+  zoom,
+  onZoomChange,
   isDesktop,
   mergeConsecutive,
   filled,
@@ -83,19 +96,19 @@ export const WeekCalendar = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const effectiveDensity: CalendarDensity = isDesktop ? "detailed" : density;
-  const pxPerMin = PX_PER_MINUTE[effectiveDensity];
-  const timeRailWidth = TIME_RAIL_WIDTH[effectiveDensity];
+  const fit = !isDesktop && zoom <= FIT_ZOOM;
+  const isHorizontalPan = !isDesktop && !fit;
+  const effectiveDensity: CalendarDensity =
+    fit || (isHorizontalPan && zoom < COMPACT_BELOW_ZOOM) ? "overview" : "detailed";
+  const pxPerMin = isDesktop
+    ? BASE_PX_PER_MINUTE
+    : fit
+      ? FIT_PX_PER_MINUTE
+      : BASE_PX_PER_MINUTE * zoom;
+  const colWidth = Math.round(BASE_COL_WIDTH * zoom);
+  const timeRailWidth = effectiveDensity === "detailed" ? 50 : 44;
   const bounds = useMemo(() => computeCalendarBounds(days, periods), [days, periods]);
   const canvasHeight = Math.round(bounds.totalMinutes * pxPerMin);
-  const railPeriodTicks = useMemo(
-    () =>
-      effectiveDensity === "detailed"
-        ? visiblePeriodTicks(bounds.hourTicks, bounds.periodTicks, pxPerMin, 16)
-        : [],
-    [bounds.hourTicks, bounds.periodTicks, effectiveDensity, pxPerMin],
-  );
-
   const todayIndex = dates.indexOf(now.date);
   const todayProgress = useMemo(
     () => (todayIndex === -1 ? null : dayProgress(days[todayIndex] ?? null, now)),
@@ -115,9 +128,11 @@ export const WeekCalendar = ({
           date: d,
           dayNumber: dayNumberOf(d),
           weekday: formatWeekdayShort(d, lang),
+          weekdayLong: formatWeekdayLong(d, lang),
           today: d === now.date,
           lessonCount: day?.lessons.filter((l) => l.status !== "cancelled").length ?? 0,
           changeCount: dayChangeCount(day),
+          buildings: day === null ? [] : (buildingNotice(day) ?? []),
           events,
         };
       }),
@@ -146,9 +161,7 @@ export const WeekCalendar = ({
       if (el === null) return;
 
       const targetX =
-        !isDesktop && effectiveDensity === "detailed" && todayIndex > 0
-          ? Math.max(0, todayIndex * DETAILED_COL_WIDTH - 24)
-          : 0;
+        isHorizontalPan && todayIndex > 0 ? Math.max(0, todayIndex * colWidth - 24) : 0;
 
       const targetY =
         todayIndex !== -1 && now.minutes >= bounds.startMin && now.minutes <= bounds.endMin
@@ -166,8 +179,8 @@ export const WeekCalendar = ({
     [
       bounds.endMin,
       bounds.startMin,
-      effectiveDensity,
-      isDesktop,
+      colWidth,
+      isHorizontalPan,
       now.minutes,
       pxPerMin,
       syncScrollFlags,
@@ -181,7 +194,7 @@ export const WeekCalendar = ({
     scrollToNow("auto");
     // Intentionally triggers only on week / density / layout switches, not every minute tick.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weekKey, effectiveDensity, isDesktop]);
+  }, [weekKey, fit, isDesktop]);
 
   // Passive scroll listener keeps sticky header/rail depth shadows synced with zero React re-renders.
   useEffect(() => {
@@ -194,13 +207,93 @@ export const WeekCalendar = ({
     };
   }, [syncScrollFlags]);
 
+  /*
+   * Two-finger pinch zooms the canvas continuously (phones/tablets). Native listeners because the
+   * handler must be non-passive to stop the browser scrolling mid-pinch. The point under the
+   * fingers stays put: `pinch` remembers where it was, and the layout effect below re-derives the
+   * scroll offsets once the new zoom has laid out.
+   */
+  const pinch = useRef<{
+    startZoom: number;
+    startDist: number;
+    scrollLeft: number;
+    scrollTop: number;
+    vx: number;
+    vy: number;
+  } | null>(null);
+  const liveZoom = useRef(zoom);
+  const zoomFrame = useRef(0);
+  const lastRendered = useRef(zoom);
+  liveZoom.current = zoom;
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el === null || isDesktop) return;
+
+    const onStart = (e: globalThis.TouchEvent) => {
+      if (e.touches.length !== 2) return;
+      const rect = el.getBoundingClientRect();
+      const [a, b] = [e.touches[0], e.touches[1]];
+      if (a === undefined || b === undefined) return;
+      pinch.current = {
+        startZoom: liveZoom.current,
+        startDist: Math.max(1, touchDistance(e.touches)),
+        scrollLeft: el.scrollLeft,
+        scrollTop: el.scrollTop,
+        vx: (a.clientX + b.clientX) / 2 - rect.left,
+        vy: (a.clientY + b.clientY) / 2 - rect.top,
+      };
+    };
+
+    const onMove = (e: globalThis.TouchEvent) => {
+      const p = pinch.current;
+      if (p === null || e.touches.length !== 2) return;
+      e.preventDefault();
+      const next = clampZoom((p.startZoom * touchDistance(e.touches)) / p.startDist);
+      cancelAnimationFrame(zoomFrame.current);
+      zoomFrame.current = requestAnimationFrame(() => {
+        if (next !== lastRendered.current) onZoomChange(next);
+      });
+    };
+
+    const onEnd = (e: globalThis.TouchEvent) => {
+      if (e.touches.length < 2) pinch.current = null;
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd, { passive: true });
+    el.addEventListener("touchcancel", onEnd, { passive: true });
+    return () => {
+      cancelAnimationFrame(zoomFrame.current);
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+      el.removeEventListener("touchcancel", onEnd);
+    };
+  }, [isDesktop, onZoomChange]);
+
+  useLayoutEffect(() => {
+    lastRendered.current = zoom;
+    const p = pinch.current;
+    const el = scrollRef.current;
+    if (p === null || el === null || fit) return;
+    const ratio = zoom / p.startZoom;
+    /* Rail and header are fixed-size; only the grid area scales around the pinch centre. */
+    el.scrollLeft = Math.max(
+      0,
+      timeRailWidth + (p.scrollLeft + p.vx - timeRailWidth) * ratio - p.vx,
+    );
+    el.scrollTop = Math.max(0, HEADER_HEIGHT + (p.scrollTop + p.vy - HEADER_HEIGHT) * ratio - p.vy);
+    syncScrollFlags();
+  }, [zoom, fit, timeRailWidth, syncScrollFlags]);
+
   const showNowLine =
     todayIndex !== -1 && now.minutes >= bounds.startMin && now.minutes <= bounds.endMin;
   const nowTopPx = showNowLine ? Math.round((now.minutes - bounds.startMin) * pxPerMin) : 0;
 
-  const isHorizontalPan = !isDesktop && effectiveDensity === "detailed";
   const gridTemplateColumns = isHorizontalPan
-    ? `${String(timeRailWidth)}px repeat(${String(dates.length)}, ${String(DETAILED_COL_WIDTH)}px)`
+    ? `${String(timeRailWidth)}px repeat(${String(dates.length)}, ${String(colWidth)}px)`
     : `${String(timeRailWidth)}px repeat(${String(dates.length)}, minmax(0, 1fr))`;
 
   const handleSelectEvent = useCallback(
@@ -217,7 +310,7 @@ export const WeekCalendar = ({
       ref={containerRef}
       data-testid="week-calendar"
       data-density={effectiveDensity}
-      className="u-week-canvas flex min-h-0 w-full flex-1 flex-col overflow-hidden border-t border-hairline/70"
+      className="u-week-canvas flex min-h-0 w-full flex-1 flex-col overflow-hidden"
     >
       <div
         ref={scrollRef}
@@ -234,9 +327,10 @@ export const WeekCalendar = ({
           style={{
             gridTemplateColumns,
             minWidth: isHorizontalPan
-              ? `${String(timeRailWidth + dates.length * DETAILED_COL_WIDTH)}px`
+              ? `${String(timeRailWidth + dates.length * colWidth)}px`
               : "100%",
-            paddingBottom: "var(--nav-safe)",
+            minHeight: "100%",
+            gridTemplateRows: `${HEADER_ROW} minmax(calc(${String(canvasHeight)}px + var(--nav-safe)), 1fr)`,
           }}
         >
           {/* Sticky top-left corner cell: recenter on Today/Now when viewing this week */}
@@ -250,7 +344,7 @@ export const WeekCalendar = ({
                 scrollToNow("smooth");
               }}
               className="u-week-sticky-corner sticky top-0 left-0 z-30 flex cursor-pointer items-center justify-center border-0 text-muted transition-colors duration-(--dur-fast) hover:text-strong focus-visible:z-40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus-ring)"
-              style={{ height: `${String(HEADER_HEIGHT)}px` }}
+              style={headerStyle}
             >
               <span className="relative inline-flex items-center justify-center">
                 <Icon name="clock" size={14} />
@@ -267,37 +361,47 @@ export const WeekCalendar = ({
             <div
               aria-hidden="true"
               className="u-week-sticky-corner sticky top-0 left-0 z-30 flex items-center justify-center text-muted/70"
-              style={{ height: `${String(HEADER_HEIGHT)}px` }}
+              style={headerStyle}
             >
               <Icon name="clock" size={13} />
             </div>
           )}
 
           {/* Sticky weekday header cells (Mon–Fri) */}
-          {dayColumns.map((col) => (
+          {dayColumns.map((col, colIdx) => (
             <button
               key={col.date}
               type="button"
               {...(col.today ? { "aria-current": "date" as const } : {})}
+              aria-label={`${col.weekdayLong}: ${t("week.overview.lessons", { n: col.lessonCount })}${col.changeCount > 0 ? ` · ${t("week.overview.changes", { n: col.changeCount })}` : ""}`}
               onClick={() => {
                 onOpenDay(col.date);
               }}
-              style={{ height: `${String(HEADER_HEIGHT)}px` }}
+              style={headerStyle}
               className={cn(
-                "u-week-sticky-header sticky top-0 z-20 flex min-w-0 cursor-pointer flex-col items-center justify-center gap-0.5 border-0 border-l border-hairline/55 px-1.5",
+                "u-week-sticky-header sticky top-0 z-20 flex min-w-0 cursor-pointer flex-col items-center justify-center gap-0.5 border-0 px-1.5",
+                colIdx > 0 && "border-l border-hairline/55",
                 "transition-colors duration-(--dur-fast) hover:bg-(--schedule-row-hover)",
                 "focus-visible:z-30 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--focus-ring)",
                 // Preserve `tracking-label` so assistive styling and weekday-header selectors agree.
                 "tracking-label",
               )}
             >
-              <span
-                className={cn(
-                  "max-w-full truncate font-text text-[10.5px] leading-none font-bold uppercase",
-                  col.today ? "text-strong" : "text-muted",
-                )}
-              >
-                {col.weekday}
+              <span className="flex max-w-full items-baseline gap-1 leading-none">
+                <span
+                  className={cn(
+                    "truncate font-text text-[10.5px] font-bold uppercase",
+                    col.today ? "text-strong" : "text-muted",
+                  )}
+                >
+                  {col.weekday}
+                </span>
+                <span
+                  data-testid="week-day-count"
+                  className="shrink-0 font-data text-micro font-medium text-muted/80 tabular-nums"
+                >
+                  {col.lessonCount}
+                </span>
               </span>
               <span className="relative inline-flex items-center justify-center">
                 <span
@@ -331,36 +435,23 @@ export const WeekCalendar = ({
           {/* Sticky left time rail */}
           <div
             className="u-week-sticky-rail sticky left-0 z-15 relative select-none"
-            style={{ height: `${String(canvasHeight)}px` }}
+            style={{ minHeight: `calc(${String(canvasHeight)}px + var(--nav-safe))` }}
           >
-            {bounds.hourTicks.map((minutes) => {
-              const top = Math.round((minutes - bounds.startMin) * pxPerMin);
-              return (
-                <span
-                  key={`h-${String(minutes)}`}
-                  className={cn(
-                    "u-data absolute -translate-y-1/2 leading-none font-medium text-muted",
-                    effectiveDensity === "overview"
-                      ? "right-1 text-[9.5px]"
-                      : "right-1.5 text-[10.5px]",
-                  )}
-                  style={{ top: `${String(top)}px` }}
-                >
-                  {formatMinuteLabel(minutes)}
-                </span>
-              );
-            })}
-
-            {railPeriodTicks.map((pt) => {
+            {/* One tick per period: the school's lesson number stacked over its start time, same right edge, so the two never share a row */}
+            {bounds.periodTicks.map((pt) => {
               const top = Math.round((pt.minutes - bounds.startMin) * pxPerMin);
               return (
                 <span
                   key={`pt-${pt.period}`}
-                  aria-hidden="true"
-                  className="u-data absolute right-1.5 -translate-y-1/2 text-micro leading-none text-muted/55"
-                  style={{ top: `${String(top)}px` }}
+                  className="u-data absolute right-1.5 flex flex-col items-end gap-0.5 text-micro leading-none"
+                  style={{ top: `${String(top + 4)}px` }}
                 >
-                  {pt.start}
+                  <span data-testid="week-period-number" className="font-bold text-strong">
+                    {pt.period}
+                  </span>
+                  <span aria-hidden="true" className="font-medium text-muted">
+                    {pt.start}
+                  </span>
                 </span>
               );
             })}
@@ -369,7 +460,7 @@ export const WeekCalendar = ({
             {showNowLine && (
               <span
                 data-testid="week-now-pill"
-                className="u-data absolute right-0.5 left-0.5 z-20 flex -translate-y-1/2 items-center justify-center rounded-pill py-0.5 text-[9.5px] leading-none font-bold shadow-card"
+                className="u-data absolute right-0.5 left-0.5 z-20 flex -translate-y-1/2 items-center justify-center rounded-pill py-0.5 text-micro leading-none font-bold shadow-card"
                 style={{
                   top: `${String(nowTopPx)}px`,
                   backgroundColor: "var(--lamp)",
@@ -386,33 +477,36 @@ export const WeekCalendar = ({
             <div
               key={`col-${col.date}`}
               className={cn(
-                "relative border-l border-hairline/55",
+                "relative",
+                colIdx > 0 && "border-l border-hairline/55",
                 col.today && "u-week-today-col",
               )}
-              style={{ height: `${String(canvasHeight)}px` }}
+              style={{ minHeight: `calc(${String(canvasHeight)}px + var(--nav-safe))` }}
             >
-              {/* Whole-hour horizontal guide lines */}
-              {bounds.hourTicks.map((minutes) => {
-                const top = Math.round((minutes - bounds.startMin) * pxPerMin);
-                return (
+              {/* Other-building flag, pinned just under the weekday header */}
+              {col.buildings.length > 0 && (
+                <div
+                  className="pointer-events-none sticky z-20 h-0"
+                  style={{ top: `calc(var(--week-float, 0px) + ${String(HEADER_HEIGHT)}px)` }}
+                >
                   <span
-                    key={`line-h-${String(minutes)}`}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 h-px bg-hairline/70"
-                    style={{ top: `${String(top)}px` }}
-                  />
-                );
-              })}
+                    data-testid="week-day-building"
+                    className="u-schedule-glass-chip absolute top-1 left-1/2 inline-flex max-w-[calc(100%-8px)] -translate-x-1/2 items-center gap-1 rounded-pill px-2 py-0.5 font-text text-micro leading-none font-semibold text-strong"
+                  >
+                    <Icon name="building-2" size={10} className="shrink-0 text-muted" />
+                    <span className="truncate">{col.buildings.join(" · ")}</span>
+                  </span>
+                </div>
+              )}
 
-              {/* Subtle period-start hairlines */}
+              {/* Period-start guide lines, aligned with the numbers in the time rail */}
               {bounds.periodTicks.map((pt) => {
-                if (pt.minutes % 60 === 0) return null;
                 const top = Math.round((pt.minutes - bounds.startMin) * pxPerMin);
                 return (
                   <span
                     key={`line-p-${pt.period}`}
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 h-px bg-hairline/30"
+                    className="pointer-events-none absolute inset-x-0 h-px bg-hairline/45"
                     style={{ top: `${String(top)}px` }}
                   />
                 );

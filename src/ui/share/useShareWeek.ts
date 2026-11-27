@@ -9,6 +9,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useAppStore, useSettingSetter } from "@/store";
 import type { ISODate } from "@/lib/edupage";
 import { identityKey as identityKeyOf } from "@/lib/persona";
+import { buildShareUrl, type AppRoute } from "@/lib/router";
 import { weekDates } from "@/lib/schedule";
 import { dataUrlToBase64, renderShareImage, shareImage } from "@/lib/share";
 import { translate, useLang } from "@/ui/i18n";
@@ -81,6 +82,16 @@ export const useShareWeek = (
       // correct, just possibly in a fallback face.
       await document.fonts?.ready;
 
+      const weekRoute: AppRoute =
+        subject.route.kind === "root"
+          ? { kind: "root" }
+          : {
+              ...subject.route,
+              view: "week",
+              ...(dates[0] === undefined ? {} : { date: dates[0] }),
+            };
+      const shareUrl = buildShareUrl(weekRoute);
+
       const theme = shareTheme();
       const data = buildWeekImageData({
         dates,
@@ -93,6 +104,7 @@ export const useShareWeek = (
         subjectColorCodingEnabled,
         lang: effectiveLang,
         t: shareT,
+        url: shareUrl,
       });
 
       const { dataUrl } = renderShareImage(data, { palette: theme.palette });
@@ -101,7 +113,7 @@ export const useShareWeek = (
         base64: dataUrlToBase64(dataUrl),
         fileName: weekShareFileName(subject.label, dates[0]),
         title: shareT("share.title", { name: subject.label }),
-        text: weekShareText(subject.label, data.period, shareT),
+        text: weekShareText(subject.label, data.period, shareT, shareUrl),
       });
 
       trackEvent("share_week");
