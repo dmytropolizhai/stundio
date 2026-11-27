@@ -15,6 +15,8 @@ export {
 export {
   classEntry,
   dayFor,
+  findClass,
+  findTeacher,
   planClassDay,
   planDay,
   planTeacherDay,

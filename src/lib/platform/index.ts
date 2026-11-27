@@ -31,3 +31,17 @@ export const reachesSchoolDirectly = (platform: Platform): boolean => {
  * has Web Push instead, sent by the server.
  */
 export const hasAppNotifications = (platform: Platform): boolean => reachesSchoolDirectly(platform);
+
+/**
+ * Syncs the active class/teacher with the browser address bar (`/class/:slug`, `/teacher/:slug`).
+ * Only the web build has a user-visible URL bar; Capacitor and Tauri shells stay on `/`.
+ */
+export const hasUrlRouting = (platform: Platform): boolean => {
+  switch (platform) {
+    case "web":
+      return true;
+    case "android":
+    case "desktop":
+      return false;
+  }
+};

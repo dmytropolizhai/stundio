@@ -120,6 +120,34 @@ export const teacherEntry = (timetables: Iterable<Timetable>, teacherId: string)
   return { id: teacherId, ref, label, feedKey: label === null ? null : teacherKey(label) };
 };
 
+/**
+ * Finds the first class ref across cached timetables matching `predicate`.
+ * Keeps timetable traversal centralized here (AGENT.md) while letting callers supply their own
+ * matching rule (e.g. URL slug matching in `lib/router`).
+ */
+export const findClass = (
+  timetables: Iterable<Timetable>,
+  predicate: (cls: ClassRef) => boolean,
+): ClassRef | null => {
+  for (const timetable of timetables) {
+    const match = timetable.classes.find(predicate);
+    if (match !== undefined) return match;
+  }
+  return null;
+};
+
+/** Finds the first teacher ref across cached timetables matching `predicate`. */
+export const findTeacher = (
+  timetables: Iterable<Timetable>,
+  predicate: (teacher: TeacherRef) => boolean,
+): TeacherRef | null => {
+  for (const timetable of timetables) {
+    const match = timetable.teachers.find(predicate);
+    if (match !== undefined) return match;
+  }
+  return null;
+};
+
 /** The resolved subject of the active role, or `null` while nothing is picked. */
 export const resolveSubject = (
   identity: Identity,

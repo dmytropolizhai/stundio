@@ -34,6 +34,7 @@ import {
   type PersonaSubject,
 } from "@/lib/persona";
 import type { FetchForecast, WeatherForecast } from "@/lib/weather";
+import type { RouteTarget } from "@/lib/router";
 
 /**
  * Where a tapped notification wants the app to go. Set by the notification-tap listener
@@ -103,6 +104,11 @@ export type AppState = {
   setClass: (classId: string | null) => Promise<void>;
   setWeatherEnabled: (enabled: boolean) => Promise<void>;
   setTeacher: (teacherId: string | null) => Promise<void>;
+  /**
+   * Atomically switches persona + selection for an incoming URL route.
+   * Preserves `subgroup` / `teacherView` when the selected id has not changed (e.g. reload).
+   */
+  applyRouteTarget: (target: RouteTarget) => Promise<void>;
   toggleFavorite: (classId: string) => Promise<void>;
   /** `tone` of `null` clears the override, returning the subject to its auto-assigned tone. */
   setSubjectColorOverride: (
@@ -354,6 +360,25 @@ export const createAppStore = ({
         if (weatherEnabled) await refreshWeather(false);
       },
       setTeacher: (selectedTeacherId) => persist({ selectedTeacherId, teacherView: "own" }),
+      applyRouteTarget: (target) => {
+        const current = get().settings;
+        if (target.persona === "teacher") {
+          const sameTeacher = current.selectedTeacherId === target.teacherId;
+          if (current.persona === "teacher" && sameTeacher) return Promise.resolve();
+          return persist({
+            persona: "teacher",
+            selectedTeacherId: target.teacherId,
+            ...(sameTeacher ? {} : { teacherView: "own" }),
+          });
+        }
+        const sameClass = current.selectedClassId === target.classId;
+        if (current.persona === "student" && sameClass) return Promise.resolve();
+        return persist({
+          persona: "student",
+          selectedClassId: target.classId,
+          ...(sameClass ? {} : { subgroup: null }),
+        });
+      },
       setSubjectColorOverride: (subjectKey, tone) => {
         const next = { ...get().settings.subjectColorOverrides };
         if (tone === null) delete next[subjectKey];

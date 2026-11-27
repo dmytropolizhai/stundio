@@ -8,7 +8,9 @@ import { createAppStore } from "./useAppStore.ts";
 import type { Store } from "./context.ts";
 import { createCache } from "@/db";
 import { defaultHttp } from "@/lib/edupage";
-import { currentPlatform, hasAppNotifications } from "@/lib/platform";
+import { currentPlatform, hasAppNotifications, hasUrlRouting } from "@/lib/platform";
+import { browserHistory } from "@/lib/router";
+import { wireRouter } from "@/router";
 import { nativeNetwork } from "@/lib/network";
 import { createSyncEngine, watchAppResume, watchConnectivity } from "@/sync";
 import {
@@ -54,6 +56,9 @@ export const bootApp: Boot = async () => {
 
   const notifications = appNotifications ? wireNotifications(store) : { dispose: () => {} };
   const notificationTaps = isNative ? wireNotificationTaps(store) : { dispose: () => {} };
+  const router = hasUrlRouting(platform)
+    ? wireRouter(store, browserHistory)
+    : { dispose: () => {} };
   // The home-screen tile follows the store, so a finished sync (or a class change) redraws it
   // immediately — the plugin pokes AppWidgetManager rather than waiting for the 30-min tick.
   const widget = wireWidget(store);
@@ -155,6 +160,7 @@ export const bootApp: Boot = async () => {
     notifications.dispose();
     if (platform === "desktop") clearDesktopReminders();
     notificationTaps.dispose();
+    router.dispose();
     widget.dispose();
   };
   return { store, dispose };
