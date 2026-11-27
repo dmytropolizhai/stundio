@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/ds";
 import { Sheet } from "../../components/Sheet.tsx";
 import { formatReleaseDate, useLang, useT, type ChangelogEntry } from "@/ui/i18n";
@@ -10,6 +11,24 @@ import { formatReleaseDate, useLang, useT, type ChangelogEntry } from "@/ui/i18n
  * version label so the eye lands on what is actually new. Opened from Settings there is
  * nothing unread, so the newest release takes that top slot instead of an empty one.
  */
+/** Fixed aspect ratio reserves the space, so the sheet doesn't jump when the image decodes. */
+const Visual = ({ visual }: { visual: NonNullable<ChangelogEntry["visual"]> }) => {
+  const lang = useLang();
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+
+  return (
+    <img
+      src={visual.src}
+      alt={visual.alt[lang]}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className="mt-3 aspect-[4/3] w-full rounded-lg border border-hairline object-cover"
+    />
+  );
+};
+
 const Entry = ({ entry, dimmed }: { entry: ChangelogEntry; dimmed: boolean }) => {
   const lang = useLang();
   const t = useT();
@@ -26,7 +45,8 @@ const Entry = ({ entry, dimmed }: { entry: ChangelogEntry; dimmed: boolean }) =>
           {formatReleaseDate(entry.date, lang)}
         </span>
       </div>
-      <ul className="mt-2">
+      {entry.visual && !dimmed && <Visual visual={entry.visual} />}
+      <ul className="mt-3">
         {entry.lines[lang].map((line) => (
           <li key={line} className="flex gap-2.5 not-first:mt-1.5">
             <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-link" />

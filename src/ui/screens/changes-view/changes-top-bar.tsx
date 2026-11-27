@@ -1,12 +1,19 @@
-import { useState } from "react";
-import { Button, IconButton, TopBar } from "@/ds";
-import { addDays } from "@/sync";
+/**
+ * Header for the Changes screen.
+ *
+ * Matches the Home (Day) view's date selector: on phones, `DateDock` owns day stepping, the
+ * calendar picker, and the "Today" jump, so the top bar shows just the screen title (and the
+ * browsed day eyebrow when away from today). Wide layouts keep `ClassBadge` + `SyncBadge` in the
+ * top bar and render the shared `DayDateBar` underneath.
+ */
+import { TopBar } from "@/ds";
 import type { ISODate } from "@/lib/edupage";
 import { ClassBadge } from "@/ui/components/ClassBadge.tsx";
+import { DayDateBar } from "@/ui/components/DayDateBar.tsx";
 import { SyncBadge } from "@/ui/components/SyncBadge.tsx";
-import { DatePicker } from "@/ui/components/DatePicker.tsx";
 import { useLayout } from "@/ui/hooks/useLayout.ts";
-import { useT } from "@/ui/i18n";
+import { dayTitle } from "@/ui/lib/dayTitle.ts";
+import { useLang, useT } from "@/ui/i18n";
 
 type ChangesTopBarProps = {
   date: ISODate;
@@ -28,45 +35,14 @@ export const ChangesTopBar = ({
   onNavigate,
 }: ChangesTopBarProps) => {
   const t = useT();
+  const lang = useLang();
   const wide = useLayout() !== "phone";
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   return (
     <>
       <TopBar
-        title={
-          <div className="flex items-center gap-0.5">
-            <IconButton
-              icon="chevron-left"
-              label={t("day.previousDay")}
-              variant="bare"
-              size="sm"
-              onClick={() => {
-                onNavigate(-1);
-                onDateChange(addDays(date, -1));
-              }}
-            />
-
-            <DatePicker
-              date={date}
-              today={today}
-              open={calendarOpen}
-              onOpenChange={setCalendarOpen}
-              onSelect={onDateChange}
-            />
-
-            <IconButton
-              icon="chevron-right"
-              label={t("day.nextDay")}
-              variant="bare"
-              size="sm"
-              onClick={() => {
-                onNavigate(1);
-                onDateChange(addDays(date, 1));
-              }}
-            />
-          </div>
-        }
+        title={t("changes.title")}
+        eyebrow={!wide && !isToday ? dayTitle(date, today, t, lang) : undefined}
         actions={
           wide ? (
             <>
@@ -77,17 +53,15 @@ export const ChangesTopBar = ({
         }
       />
 
-      {!isToday && (
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              onDateChange(today);
-            }}
-          >
-            {t("day.jumpToday")}
-          </Button>
+      {wide && (
+        <div className="mt-3">
+          <DayDateBar
+            date={date}
+            today={today}
+            isToday={isToday}
+            onDateChange={onDateChange}
+            onNavigate={onNavigate}
+          />
         </div>
       )}
     </>

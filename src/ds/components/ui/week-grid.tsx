@@ -385,7 +385,7 @@ export const WeekGrid = <K extends string>({
                 onSelect === undefined ? "cursor-default" : "cursor-pointer",
               )}
             >
-              {c.short} | {c.sibling?.short}
+              {c.short}
             </button>
           );
           if (cell.sibling === undefined) return renderCell(cell);

@@ -234,4 +234,25 @@ describe("WeekView interactions", () => {
       vi.useRealTimers();
     }
   });
+
+  it("omits the visible time range on subject cards while keeping it in aria-label", async () => {
+    stubLayout("desktop");
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <WeekView
+        date={FIXTURE_DATE}
+        onDateChange={vi.fn()}
+        onOpenDay={vi.fn()}
+        onPickClass={vi.fn()}
+      />,
+    );
+
+    const cells = screen.getAllByTestId("week-cell");
+    expect(cells.length).toBeGreaterThan(0);
+    for (const cell of cells) {
+      expect(cell.textContent).not.toMatch(/\d{1,2}:\d{2}–\d{1,2}:\d{2}/);
+      expect(cell.getAttribute("aria-label")).toMatch(/\d{1,2}:\d{2}–\d{1,2}:\d{2}/);
+    }
+  });
 });

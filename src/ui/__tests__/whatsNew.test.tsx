@@ -8,7 +8,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { StoreContext } from "@/store";
 import { WhatsNewSheet } from "../screens/sheets/WhatsNewSheet.tsx";
 import { useWhatsNew } from "../hooks/useWhatsNew.ts";
-import { CHANGELOG } from "@/ui/i18n";
+import { CHANGELOG, type ChangelogEntry, type ChangelogVisual } from "@/ui/i18n";
 import { bootHarness, type Harness } from "./harness.tsx";
 
 const Probe = () => {
@@ -135,5 +135,39 @@ describe("changelog content", () => {
 
   it("documents the version this build ships as", () => {
     expect(CHANGELOG.some((e) => e.version === __APP_VERSION__)).toBe(true);
+  });
+});
+
+describe("what's new visual", () => {
+  const alt = Object.fromEntries(
+    Object.keys(CHANGELOG[0]!.lines).map((lang) => [lang, "Before and after"]),
+  ) as ChangelogVisual["alt"];
+  const plain: ChangelogEntry = { ...CHANGELOG[0]! };
+  const pictured: ChangelogEntry = { ...plain, visual: { src: "/whats-new/test.webp", alt } };
+
+  const mountSheet = async (unread: ChangelogEntry[], history: ChangelogEntry[]) => {
+    const harness = await bootHarness({ lastSeenChangelogVersion: __APP_VERSION__ });
+    await act(async () => {
+      render(
+        <StoreContext.Provider value={harness.store}>
+          <WhatsNewSheet open unread={unread} history={history} onClose={() => {}} />
+        </StoreContext.Provider>,
+      );
+      await Promise.resolve();
+    });
+  };
+
+  it("draws the image above the unread entry and hides it if the file fails to load", async () => {
+    await mountSheet([pictured], [pictured]);
+    const img = screen.getByAltText("Before and after");
+    expect(img.getAttribute("src")).toBe("/whats-new/test.webp");
+
+    fireEvent.error(img);
+    expect(screen.queryByAltText("Before and after")).toBeNull();
+  });
+
+  it("never draws the image for entries in the history list", async () => {
+    await mountSheet([], [plain, pictured]);
+    expect(screen.queryByAltText("Before and after")).toBeNull();
   });
 });

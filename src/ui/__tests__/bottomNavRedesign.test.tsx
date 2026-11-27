@@ -327,7 +327,8 @@ describe("StatusBar", () => {
     wrap(harness, <StatusBar />);
 
     const bar = screen.getByTestId("status-bar");
-    expect(bar.textContent).toContain(harness.store.getState().selectedClassShort() ?? "");
+    // Whose schedule is active lives in the Home greeting; the bar only reports sync freshness.
+    expect(bar.textContent).not.toContain(harness.store.getState().selectedClassShort() ?? "\0");
     expect(within(bar).getByRole("status")).toBeDefined();
     expect(bar.querySelectorAll("button, a, input, select, textarea, [tabindex]")).toHaveLength(0);
   });
@@ -415,8 +416,9 @@ describe("Phone top bars and headers", () => {
     );
     expect(screen.queryByTestId("class-badge")).toBeNull();
     expect(screen.queryByTestId("sync-badge")).toBeNull();
-    // Changes keeps its own date handling since the dock does not mount there.
-    expect(screen.getByRole("button", { name: "Previous day" })).toBeDefined();
-    expect(screen.getByRole("button", { name: "Next day" })).toBeDefined();
+    // Changes uses the same DateDock as Home on phones, so no inline chevrons or picker up here.
+    expect(screen.queryByRole("button", { name: "Previous day" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Next day" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Choose a date" })).toBeNull();
   });
 });

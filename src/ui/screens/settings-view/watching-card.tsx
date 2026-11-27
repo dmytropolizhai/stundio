@@ -84,12 +84,6 @@ export const WatchingCard = ({
         aria-label={`${spoken}. ${t("settings.change")}`}
         className="flex min-h-18 w-full cursor-pointer items-center gap-3.5 border-0 bg-transparent p-4 text-left transition-colors duration-(--dur-fast) ease-(--ease-standard) active:bg-sunken"
       >
-        <span
-          aria-hidden="true"
-          className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-squircle bg-inverse px-1 text-center font-display text-body leading-none font-semibold whitespace-nowrap text-on-inverse"
-        >
-          {label ?? "?"}
-        </span>
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="font-text text-caption text-muted">{t(profile.roleLabel)}</span>
           <span className="truncate font-display text-title font-semibold text-strong">

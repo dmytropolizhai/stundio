@@ -6,7 +6,7 @@
  * Martian Mono time rail on the left.
  *
  * - Detailed mode (default on phones/tablets): wide ~172px day columns so every lesson displays
- *   its full subject name, room capsule, time range, teacher/group, and building pill; smoothly
+ *   its full subject name, room capsule, teacher/group, and building pill; smoothly
  *   auto-centers on Today and the live time on mount or week change.
  * - Overview mode (toggleable on phones/tablets): fits all 5 columns side-by-side while keeping
  *   proportional time heights so the whole week's rhythm compares at a glance.

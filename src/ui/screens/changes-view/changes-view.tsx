@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { animate, m, useMotionValue, useReducedMotion } from "framer-motion";
 import { useAppStore } from "@/store";
 import { usePersona } from "@/ui/persona";
-import { addDays } from "@/sync";
+import { stepSchoolDay } from "@/sync";
 import type { ISODate, ResolvedLesson } from "@/lib/edupage";
 import { Button, Card, Icon, SegmentedTabs } from "@/ds";
 import { PullToRefresh } from "@/ui/components/PullToRefresh.tsx";
@@ -99,14 +99,14 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
     if (started && dx <= -SWIPE_THRESHOLD_PX) {
       enterDir.current = 1;
       x.set(0);
-      onDateChange(addDays(date, 1));
+      onDateChange(stepSchoolDay(date, 1));
       return;
     }
 
     if (started && dx >= SWIPE_THRESHOLD_PX) {
       enterDir.current = -1;
       x.set(0);
-      onDateChange(addDays(date, -1));
+      onDateChange(stepSchoolDay(date, -1));
       return;
     }
 
@@ -224,12 +224,14 @@ export const ChangesView = ({ date, onDateChange, onPickClass }: ChangesViewProp
           onTouchEnd={onSwipeEnd}
           onTouchCancel={onSwipeEnd}
           onKeyDown={(e) => {
+            /* Arrow keys inside a child control (search input, date picker, buttons) belong to that control. */
+            if (e.target !== e.currentTarget) return;
             if (e.key === "ArrowRight") {
               enterDir.current = 1;
-              onDateChange(addDays(date, 1));
+              onDateChange(stepSchoolDay(date, 1));
             } else if (e.key === "ArrowLeft") {
               enterDir.current = -1;
-              onDateChange(addDays(date, -1));
+              onDateChange(stepSchoolDay(date, -1));
             }
           }}
         >

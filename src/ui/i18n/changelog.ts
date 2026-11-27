@@ -16,15 +16,153 @@
 import type { Lang } from "./format.ts";
 import type { ISODate } from "@/lib/edupage";
 
+/**
+ * An image shown above an entry's notes, for releases a list of bullets undersells (a redesign).
+ * `src` is an absolute path under `public/whats-new/` so it ships inside the APK and works
+ * offline; keep it small (a WebP, ~800px wide). It is only drawn for the unread/headline
+ * entry, never in the history list, and disappears quietly if the file is missing.
+ */
+export type ChangelogVisual = {
+  src: string;
+  alt: Record<Lang, string>;
+};
+
 export type ChangelogEntry = {
   /** The release tag, exactly as it appears in `package.json` and on GitHub. */
   version: string;
   date: ISODate;
   lines: Record<Lang, readonly string[]>;
+  visual?: ChangelogVisual;
 };
 
 /** Newest first by convention; `sortByVersionDesc` does not rely on it. */
 export const CHANGELOG: readonly ChangelogEntry[] = [
+  {
+    version: "v3.0.0",
+    date: "2026-11-28",
+    lines: {
+      lv: [
+        "Stundio ir pilnīgi jauns izskats: šķidrā stikla virsmas, dzīva debess aiz tavas dienas un Nakts un Dienas motīvi.",
+        "Peldošā apakšējā josla un jaunā datuma josla ļauj ātrāk pārvietoties starp dienām.",
+        "Pārslēdzies starp skolēnu un skolotāju pārveidotajā lomu pārslēgā sadaļā “Vairāk”.",
+        "Dalies ar savu nedēļu, nosūtot saiti, ko var atvērt ikviens.",
+      ],
+      en: [
+        "Stundio has a brand-new look: liquid-glass surfaces, a living sky behind your day, and Night and Day themes.",
+        "A floating bottom bar and a new date bar make moving between days faster.",
+        "Switch between student and teacher in the redesigned role switcher, found under More.",
+        "Share your week with a link anyone can open.",
+      ],
+      ua: [
+        "Stundio отримав зовсім новий вигляд: поверхні з рідкого скла, жива панорама неба за твоїм днем і теми «Ніч» та «День».",
+        "Плаваюча нижня панель і нова панель дати пришвидшують перехід між днями.",
+        "Перемикайся між учнем і вчителем у переробленому перемикачі ролі в розділі «Ще».",
+        "Ділися тижнем за допомогою посилання, яке може відкрити будь-хто.",
+      ],
+      ru: [
+        "У Stundio совершенно новый вид: поверхности из жидкого стекла, живое небо за твоим днём и темы «Ночь» и «День».",
+        "Плавающая нижняя панель и новая панель даты ускоряют переход между днями.",
+        "Переключайся между учеником и учителем в переработанном переключателе роли в разделе «Ещё».",
+        "Делись неделей по ссылке, которую может открыть любой.",
+      ],
+      lt: [
+        "„Stundio“ turi visiškai naują išvaizdą: skysto stiklo paviršiai, gyvas dangus už tavo dienos ir Nakties bei Dienos temos.",
+        "Plūduriuojanti apatinė juosta ir nauja datos juosta leidžia greičiau judėti tarp dienų.",
+        "Perjunk mokinį ir mokytoją atnaujintame vaidmens perjungiklyje skiltyje „Daugiau“.",
+        "Dalykis savo savaite nuoroda, kurią gali atidaryti bet kas.",
+      ],
+      et: [
+        "Stundiol on täiesti uus ilme: vedelklaasist pinnad, elav taevas sinu päeva taustal ning Öö ja Päeva teemad.",
+        "Ujuv alariba ja uus kuupäevariba muudavad päevade vahel liikumise kiiremaks.",
+        "Vaheta õpilase ja õpetaja vahel ümber kujundatud rollivahetajas jaotises „Veel“.",
+        "Jaga oma nädalat lingiga, mille saab avada igaüks.",
+      ],
+      pl: [
+        "Stundio ma zupełnie nowy wygląd: powierzchnie z płynnego szkła, żywe niebo za Twoim dniem oraz motywy Noc i Dzień.",
+        "Pływający dolny pasek i nowy pasek daty przyspieszają przechodzenie między dniami.",
+        "Przełączaj się między uczniem a nauczycielem w przeprojektowanym przełączniku roli w sekcji „Więcej”.",
+        "Udostępnij swój tydzień za pomocą linku, który otworzy każdy.",
+      ],
+      de: [
+        "Stundio hat ein völlig neues Design: Flächen aus flüssigem Glas, ein lebendiger Himmel hinter deinem Tag und die Themes Nacht und Tag.",
+        "Eine schwebende untere Leiste und eine neue Datumsleiste machen den Wechsel zwischen den Tagen schneller.",
+        "Wechsle im neu gestalteten Rollenwechsler unter „Mehr“ zwischen Schüler und Lehrer.",
+        "Teile deine Woche mit einem Link, den jeder öffnen kann.",
+      ],
+      fr: [
+        "Stundio fait peau neuve : surfaces en verre liquide, un ciel vivant derrière votre journée et les thèmes Nuit et Jour.",
+        "Une barre inférieure flottante et une nouvelle barre de date rendent la navigation entre les jours plus rapide.",
+        "Passez d'élève à enseignant avec le sélecteur de rôle repensé, dans « Plus ».",
+        "Partagez votre semaine avec un lien que tout le monde peut ouvrir.",
+      ],
+      es: [
+        "Stundio estrena un diseño totalmente nuevo: superficies de cristal líquido, un cielo vivo detrás de tu día y los temas Noche y Día.",
+        "Una barra inferior flotante y una nueva barra de fecha hacen más rápido moverse entre días.",
+        "Cambia entre alumno y profesor con el selector de rol rediseñado, en «Más».",
+        "Comparte tu semana con un enlace que cualquiera puede abrir.",
+      ],
+      it: [
+        "Stundio ha un aspetto completamente nuovo: superfici in vetro liquido, un cielo vivo dietro la tua giornata e i temi Notte e Giorno.",
+        "Una barra inferiore fluttuante e una nuova barra della data rendono più veloce spostarsi tra i giorni.",
+        "Passa da studente a insegnante con il selettore di ruolo ridisegnato, sotto «Altro».",
+        "Condividi la tua settimana con un link che chiunque può aprire.",
+      ],
+      pt: [
+        "O Stundio tem um visual totalmente novo: superfícies de vidro líquido, um céu vivo por trás do seu dia e os temas Noite e Dia.",
+        "Uma barra inferior flutuante e uma nova barra de data tornam mais rápido mudar de dia.",
+        "Alterne entre aluno e professor no seletor de função redesenhado, em «Mais».",
+        "Partilhe a sua semana com um link que qualquer pessoa pode abrir.",
+      ],
+      nl: [
+        "Stundio heeft een compleet nieuwe look: vloeibaar-glas oppervlakken, een levendige lucht achter je dag en de thema's Nacht en Dag.",
+        "Een zwevende onderbalk en een nieuwe datumbalk maken wisselen tussen dagen sneller.",
+        "Wissel tussen leerling en docent met de vernieuwde rolwisselaar onder 'Meer'.",
+        "Deel je week met een link die iedereen kan openen.",
+      ],
+      sv: [
+        "Stundio har helt ny design: ytor av flytande glas, en levande himmel bakom din dag och temana Natt och Dag.",
+        "Ett svävande bottenfält och ett nytt datumfält gör det snabbare att röra sig mellan dagar.",
+        "Växla mellan elev och lärare i den omgjorda rollväljaren under ”Mer”.",
+        "Dela din vecka med en länk som vem som helst kan öppna.",
+      ],
+      fi: [
+        "Stundiolla on täysin uusi ilme: nestemäisen lasin pinnat, elävä taivas päiväsi taustalla sekä Yö- ja Päivä-teemat.",
+        "Kelluva alapalkki ja uusi päivämääräpalkki nopeuttavat siirtymistä päivien välillä.",
+        "Vaihda oppilaan ja opettajan välillä uudistetulla roolinvaihtajalla kohdassa ”Lisää”.",
+        "Jaa viikkosi linkillä, jonka kuka tahansa voi avata.",
+      ],
+      no: [
+        "Stundio har et helt nytt utseende: flater av flytende glass, en levende himmel bak dagen din og temaene Natt og Dag.",
+        "En flytende bunnlinje og en ny datolinje gjør det raskere å bevege seg mellom dager.",
+        "Bytt mellom elev og lærer i den omdesignede rollebryteren under «Mer».",
+        "Del uken din med en lenke som hvem som helst kan åpne.",
+      ],
+      da: [
+        "Stundio har et helt nyt udseende: flader af flydende glas, en levende himmel bag din dag og temaerne Nat og Dag.",
+        "En svævende bundlinje og en ny datolinje gør det hurtigere at bevæge sig mellem dage.",
+        "Skift mellem elev og lærer i den redesignede rollevælger under »Mere«.",
+        "Del din uge med et link, som alle kan åbne.",
+      ],
+      cs: [
+        "Stundio má zcela nový vzhled: plochy z tekutého skla, živou oblohu za tvým dnem a motivy Noc a Den.",
+        "Plovoucí spodní lišta a nová lišta data zrychlují přecházení mezi dny.",
+        "Přepínej mezi žákem a učitelem v přepracovaném přepínači role v sekci „Více“.",
+        "Sdílej svůj týden odkazem, který může otevřít kdokoli.",
+      ],
+      sk: [
+        "Stundio má úplne nový vzhľad: plochy z tekutého skla, živú oblohu za tvojím dňom a motívy Noc a Deň.",
+        "Plávajúca spodná lišta a nová lišta dátumu zrýchľujú prechod medzi dňami.",
+        "Prepínaj medzi žiakom a učiteľom v prepracovanom prepínači roly v sekcii „Viac“.",
+        "Zdieľaj svoj týždeň odkazom, ktorý môže otvoriť ktokoľvek.",
+      ],
+      hu: [
+        "A Stundio vadonatúj külsőt kapott: folyékony üveg felületek, élő égbolt a napod mögött, valamint Éjszaka és Nappal témák.",
+        "A lebegő alsó sáv és az új dátumsáv gyorsabbá teszi a napok közötti lépkedést.",
+        "Válts diák és tanár között az újratervezett szerepváltóval a „Több” menüben.",
+        "Oszd meg a heted egy linkkel, amelyet bárki megnyithat.",
+      ],
+    },
+  },
   {
     version: "v2.1.0",
     date: "2026-10-09",

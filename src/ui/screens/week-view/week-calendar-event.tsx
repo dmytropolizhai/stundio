@@ -301,51 +301,43 @@ export const WeekCalendarEvent = memo(
               )}
             </div>
 
-            {/* Bottom detail line: tabular time + teacher/building when space permits */}
-            {!isCompactHeight && !isMultiLane && (
-              <div className="flex items-center justify-between gap-1.5">
-                <span
-                  className={cn(
-                    "u-data shrink-0 text-micro leading-none whitespace-nowrap",
-                    live ? "text-on-deep/82" : useFilledLook ? "text-(--row-ink)/80" : "text-muted",
-                    cancelled && "line-through",
+            {/* Bottom detail line: teacher/building when space permits */}
+            {!isCompactHeight &&
+              !isMultiLane &&
+              ((!isTall && secondaryMeta !== "") || building !== undefined) && (
+                <div className="flex items-center justify-between gap-1.5">
+                  {!isTall && secondaryMeta !== "" && (
+                    <span
+                      className={cn(
+                        "min-w-0 truncate font-text text-micro leading-none",
+                        live
+                          ? "text-on-deep/78"
+                          : useFilledLook
+                            ? "text-(--row-ink)/78"
+                            : "text-muted",
+                      )}
+                    >
+                      {secondaryMeta}
+                    </span>
                   )}
-                >
-                  {timeRange}
-                </span>
 
-                {!isTall && secondaryMeta !== "" && !isMultiLane && (
-                  <span
-                    className={cn(
-                      "min-w-0 truncate font-text text-micro leading-none",
-                      live
-                        ? "text-on-deep/78"
-                        : useFilledLook
-                          ? "text-(--row-ink)/78"
-                          : "text-muted",
-                    )}
-                  >
-                    {secondaryMeta}
-                  </span>
-                )}
-
-                {building !== undefined && !isMultiLane && (
-                  <span
-                    className={cn(
-                      "inline-flex max-w-[5rem] shrink-0 items-center gap-0.5 truncate rounded-pill px-1.5 py-0.5 font-text text-micro leading-none font-semibold",
-                      live
-                        ? "bg-on-deep/18 text-on-deep"
-                        : useFilledLook
-                          ? "bg-black/10 text-(--row-ink)"
-                          : "bg-(--schedule-room-bg) text-strong",
-                    )}
-                  >
-                    <Icon name="building-2" size={10} className="shrink-0" />
-                    <span className="truncate">{building}</span>
-                  </span>
-                )}
-              </div>
-            )}
+                  {building !== undefined && (
+                    <span
+                      className={cn(
+                        "inline-flex max-w-[5rem] shrink-0 items-center gap-0.5 truncate rounded-pill px-1.5 py-0.5 font-text text-micro leading-none font-semibold",
+                        live
+                          ? "bg-on-deep/18 text-on-deep"
+                          : useFilledLook
+                            ? "bg-black/10 text-(--row-ink)"
+                            : "bg-(--schedule-room-bg) text-strong",
+                      )}
+                    >
+                      <Icon name="building-2" size={10} className="shrink-0" />
+                      <span className="truncate">{building}</span>
+                    </span>
+                  )}
+                </div>
+              )}
           </div>
         )}
 

@@ -173,9 +173,13 @@ describe("NowDock", () => {
       expect(screen.queryByTestId("date-dock")).toBeNull();
     });
 
-    // Switch to Changes tab — NowDock stays docked above TabBar without the calendar toggle
+    // Switch to Changes tab — NowDock stays docked with the calendar toggle, matching Home
     fireEvent.click(screen.getByRole("button", { name: /Changes/ }));
     expect(screen.getByTestId("now-dock")).toBeDefined();
-    expect(screen.queryByTestId("now-dock-date-toggle")).toBeNull();
+    fireEvent.click(screen.getByTestId("now-dock-date-toggle"));
+    expect(screen.getByTestId("date-dock")).toBeDefined();
+    await waitFor(() => {
+      expect(screen.queryByTestId("now-dock")).toBeNull();
+    });
   });
 });

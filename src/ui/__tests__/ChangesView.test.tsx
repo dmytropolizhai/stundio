@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { StoreContext } from "@/store";
 import { ChangesView } from "../screens/changes-view";
@@ -6,6 +6,21 @@ import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harne
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
   render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
+
+const stubWideLayout = () => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+};
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("ChangesView", () => {
   it("renders changed lessons for the selected class on fixture date", async () => {
@@ -70,7 +85,8 @@ describe("ChangesView", () => {
     expect(screen.getByPlaceholderText("Meklēt grupu, priekšmetu vai skolotāju…")).toBeDefined();
   });
 
-  it("handles day navigation with chevrons", async () => {
+  it("handles day navigation with the shared DayDateBar on wide layouts", async () => {
+    stubWideLayout();
     const harness = await bootHarness();
     const onDateChange = vi.fn();
     wrap(
@@ -78,11 +94,37 @@ describe("ChangesView", () => {
       <ChangesView date={FIXTURE_DATE} onDateChange={onDateChange} onPickClass={vi.fn()} />,
     );
 
+    expect(screen.getByRole("button", { name: "Izvēlēties datumu" })).toBeDefined();
+
     fireEvent.click(screen.getByLabelText("Iepriekšējā diena"));
     expect(onDateChange).toHaveBeenCalledWith("2026-09-08");
 
     fireEvent.click(screen.getByLabelText("Nākamā diena"));
     expect(onDateChange).toHaveBeenCalledWith("2026-09-10");
+  });
+
+  it("skips weekends when stepping school days on wide layouts", async () => {
+    stubWideLayout();
+    const harness = await bootHarness();
+    const onDateChange = vi.fn();
+    // 2026-09-11 is a Friday
+    wrap(
+      harness,
+      <ChangesView date="2026-09-11" onDateChange={onDateChange} onPickClass={vi.fn()} />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Nākamā diena"));
+    expect(onDateChange).toHaveBeenCalledWith("2026-09-14");
+  });
+
+  it("defers date controls to DateDock on phones", async () => {
+    vi.stubGlobal("matchMedia", undefined);
+    const harness = await bootHarness();
+    wrap(harness, <ChangesView date={FIXTURE_DATE} onDateChange={vi.fn()} onPickClass={vi.fn()} />);
+
+    expect(screen.queryByLabelText("Iepriekšējā diena")).toBeNull();
+    expect(screen.queryByLabelText("Nākamā diena")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Izvēlēties datumu" })).toBeNull();
   });
 
   it("shows empty state when no class is selected", async () => {

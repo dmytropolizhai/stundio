@@ -1,8 +1,9 @@
 /**
- * Compact date-stepping dock floating directly above the phone bottom bar on Home and Week.
- * Puts previous/next stepping, the calendar picker and the "Today" jump into the thumb zone,
- * reading and writing through the shell's shared `ScheduleNavigation` so Home and Week stay in
- * sync. Hidden while the soft keyboard is open so small viewports keep their content area.
+ * Compact date-stepping dock floating directly above the phone bottom bar on Home, Week, and
+ * Changes. Puts previous/next stepping, the calendar picker and the "Today" jump into the thumb
+ * zone, reading and writing through the shell's shared `ScheduleNavigation` so Home, Week, and
+ * Changes stay in sync. Hidden while the soft keyboard is open so small viewports keep their
+ * content area.
  */
 import { useEffect, useState } from "react";
 import { IconButton } from "@/ds";

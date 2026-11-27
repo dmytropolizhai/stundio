@@ -387,32 +387,15 @@ describe("WeekView", () => {
       fireEvent.touchEnd(el);
     };
 
-    it("pages to the next week on a left swipe, and back on a right swipe", async () => {
+    it("does not page weeks on horizontal swipes", async () => {
       const { onDateChange, pager } = await renderWeek();
 
-      swipe(pager, [300, 400], [200, 400]);
-      expect(onDateChange).toHaveBeenLastCalledWith(addDays(FIXTURE_DATE, 7));
-
-      swipe(pager, [200, 400], [300, 400]);
-      expect(onDateChange).toHaveBeenLastCalledWith(addDays(FIXTURE_DATE, -7));
-    });
-
-    it("ignores a short drag and a mostly-vertical one", async () => {
-      const { onDateChange, pager } = await renderWeek();
-
-      swipe(pager, [300, 400], [280, 400]);
-      swipe(pager, [300, 400], [260, 600]);
+      swipe(pager, [300, 400], [100, 400]);
+      swipe(pager, [100, 400], [300, 400]);
       expect(onDateChange).not.toHaveBeenCalled();
     });
 
-    it("leaves touches that start at the screen edge to the OS back gesture", async () => {
-      const { onDateChange, pager } = await renderWeek();
-
-      swipe(pager, [4, 400], [150, 400]);
-      expect(onDateChange).not.toHaveBeenCalled();
-    });
-
-    it("steps a week with the arrow keys, for anyone who can't swipe", async () => {
+    it("steps a week with the arrow keys", async () => {
       const { onDateChange, pager } = await renderWeek();
 
       fireEvent.keyDown(pager, { key: "ArrowRight" });

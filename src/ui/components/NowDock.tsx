@@ -6,7 +6,7 @@
  * beneath. Both during a live lesson (`current → following`) and during a break between lessons
  * (`previous → upcoming`), the next subject's field scratches itself lengthwise across the pill as
  * the 3 px bottom progress filament approaches the bell. Tapping the pill opens `LessonSheet` from
- * any tab; on Home and Week a trailing calendar button flips the slot over to `DateDock`.
+ * any tab; on Home, Week, and Changes a trailing calendar button flips the slot over to `DateDock`.
  */
 import { useMemo, type CSSProperties } from "react";
 import type { DayGlance as Glance } from "@/lib/schedule";
@@ -28,7 +28,7 @@ type NowDockProps = {
   day: ResolvedDay;
   glance: Exclude<Glance, { kind: "finished" }>;
   onOpenLesson: (lesson: ResolvedLesson) => void;
-  /** When provided (Home and Week), renders a trailing button to flip the dock to `DateDock`. */
+  /** When provided (Home, Week, and Changes), renders a trailing button to flip the dock to `DateDock`. */
   onShowDateDock?: () => void;
   /** Runs the horizontal Apple-style spring "bimp" expansion from the `DateDock` Now chip. */
   animateFrom?: "chip";

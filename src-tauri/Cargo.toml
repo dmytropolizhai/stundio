@@ -1,6 +1,6 @@
 [package]
 name = "stundio"
-version = "2.1.0"
+version = "3.0.0"
 description = "Offline timetable companion for Rīgas Valsts tehnikums"
 authors = ["Dmytro Polizhai", "Stundio contributors"]
 license = "MIT"

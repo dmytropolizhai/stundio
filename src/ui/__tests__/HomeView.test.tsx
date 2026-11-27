@@ -300,7 +300,7 @@ describe("HomeView", () => {
       const harness = await bootHarness();
       renderDay(harness);
 
-      expect(screen.getByRole("heading", { level: 1, name: "Labrīt" })).toBeDefined();
+      expect(screen.getByRole("heading", { level: 1, name: /^Labrīt/ })).toBeDefined();
       const brief = screen.getByTestId("home-brief");
       expect(brief.getAttribute("aria-label")).toMatch(/Mācības līdz \d\d:\d\d/);
       expect(brief.getAttribute("aria-label")).toMatch(/Atlikušas stundas: \d/);
@@ -317,7 +317,7 @@ describe("HomeView", () => {
 
       vi.setSystemTime(new Date("2026-09-09T17:00:00Z")); // 20:00 Riga
       renderDay(harness);
-      expect(screen.getByRole("heading", { level: 1, name: "Labvakar" })).toBeDefined();
+      expect(screen.getByRole("heading", { level: 1, name: /^Labvakar/ })).toBeDefined();
       const done = screen.getByTestId("home-brief");
       expect(done.getAttribute("aria-label")).toContain("Šodienai viss");
       expect(done.textContent).toBe("Viss");

@@ -42,7 +42,8 @@ export const StatusBar = () => {
               size={14}
               className={cn("shrink-0", syncVisual.className)}
             />
-            <span className="truncate">{syncLabel}</span>
+            {/* The quiet "Updated 14:32" is a courtesy, so it is visually hidden (still announced). */}
+            <span className={cn("truncate", state === "synced" && "sr-only")}>{syncLabel}</span>
           </div>
         </div>
       </div>

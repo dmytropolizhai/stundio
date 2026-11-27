@@ -3,7 +3,7 @@
  *
  * Replaces the fixed 3-letter period matrix with a free 2D-pannable calendar field (X across
  * Mon–Fri, Y along real wall-clock minutes) where every lesson displays its full subject name,
- * room capsule, time range, teacher/group, and live/change states. Users on phones and tablets
+ * room capsule, teacher/group, and live/change states. Users on phones and tablets
  * can toggle between Detailed 2D pan and 5-day Full-Week overview with one tap.
  */
 import {
@@ -13,9 +13,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type TouchEvent,
+  type KeyboardEvent,
 } from "react";
-import { m } from "framer-motion";
 import { useAppStore } from "@/store";
 import { addDays } from "@/sync";
 import { usePersona } from "@/ui/persona";
@@ -26,7 +25,6 @@ import { DaySkeleton } from "@/ui/components/Skeleton.tsx";
 import { LessonSheet } from "@/ui/screens/lesson-sheet";
 import { useLayout } from "@/ui/hooks/useLayout.ts";
 import { useNow } from "@/ui/hooks/useNow.ts";
-import { useSwipePager } from "@/ui/hooks/useSwipePager.ts";
 import { useShareWeek } from "@/ui/share/useShareWeek.ts";
 import { ShareLanguageDialog } from "@/ui/share/ShareLanguageDialog.tsx";
 import { useT } from "@/ui/i18n";
@@ -85,9 +83,14 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
 
   const dates = useMemo(() => weekDates(date), [date]);
 
-  const pager = useSwipePager(dates[0] ?? date, (dir) => {
-    onDateChange(addDays(date, dir * 7));
-  });
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (e.target !== e.currentTarget) return;
+      if (e.key === "ArrowRight") onDateChange(addDays(date, 7));
+      else if (e.key === "ArrowLeft") onDateChange(addDays(date, -7));
+    },
+    [date, onDateChange],
+  );
 
   const days = useMemo(
     () => dates.map((d) => resolvedDay(d)),
@@ -105,51 +108,6 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
     hasIdentity &&
     !(isFuture && days.every((d) => d === null || d.stale)) &&
     periods.length > 0;
-
-  /*
-   * Detailed mode on a phone pans the canvas sideways, so touches inside it normally belong to the
-   * canvas. The exception is a drag that *starts* with the canvas already at its left/right edge
-   * and pulls further past it: nothing is left to pan, so it pages the week instead. Touch start
-   * and end always reach the pager; only mid-gesture moves are withheld.
-   */
-  const canvasEdge = useRef<{ x: number; left: boolean; right: boolean } | null>(null);
-
-  const scrollerOf = (e: TouchEvent<HTMLDivElement>): HTMLElement | null =>
-    (e.target as HTMLElement | null)?.closest<HTMLElement>(
-      "[data-testid='week-calendar-scroll']",
-    ) ?? null;
-
-  const trackCanvasTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
-    const scroller = scrollerOf(e);
-    const touch = e.touches[0];
-    if (e.touches.length > 1) {
-      canvasEdge.current = null;
-      return;
-    }
-    if (scroller === null || touch === undefined || scroller.scrollWidth <= scroller.clientWidth) {
-      canvasEdge.current = null;
-      return;
-    }
-    canvasEdge.current = {
-      x: touch.clientX,
-      left: scroller.scrollLeft <= 1,
-      right: scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1,
-    };
-  }, []);
-
-  const guardCanvasMove = useCallback((e: TouchEvent<HTMLDivElement>) => {
-    const edge = canvasEdge.current;
-    const touch = e.touches[0];
-    /* Two fingers is a pinch-zoom of the canvas, never a week swipe. */
-    if (e.touches.length > 1) {
-      e.stopPropagation();
-      return;
-    }
-    if (edge === null || touch === undefined) return;
-    const dx = touch.clientX - edge.x;
-    const pagesOut = (dx > 0 && edge.left) || (dx < 0 && edge.right);
-    if (!pagesOut) e.stopPropagation();
-  }, []);
 
   const handleSelectLesson = useCallback((lesson: ResolvedLesson, day: ResolvedDay) => {
     setOpen({ lesson, day });
@@ -198,29 +156,23 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
     }
 
     return (
-      <div
-        className="flex min-h-0 flex-1 flex-col"
-        onTouchStart={trackCanvasTouchStart}
-        onTouchMove={guardCanvasMove}
-      >
-        <WeekCalendar
-          dates={dates}
-          days={days}
-          periods={periods}
-          now={now}
-          zoom={zoom}
-          onZoomChange={setZoom}
-          isDesktop={isDesktop}
-          mergeConsecutive={mergeConsecutive}
-          filled={lessonCardStyle === "filled"}
-          subjectColorOverrides={subjectColorOverrides}
-          groupColorOverrides={groupColorOverrides}
-          colorCodingEnabled={colorCodingEnabled}
-          highlightCoverLessons={highlightCoverLessons}
-          onOpenDay={onOpenDay}
-          onSelectLesson={handleSelectLesson}
-        />
-      </div>
+      <WeekCalendar
+        dates={dates}
+        days={days}
+        periods={periods}
+        now={now}
+        zoom={zoom}
+        onZoomChange={setZoom}
+        isDesktop={isDesktop}
+        mergeConsecutive={mergeConsecutive}
+        filled={lessonCardStyle === "filled"}
+        subjectColorOverrides={subjectColorOverrides}
+        groupColorOverrides={groupColorOverrides}
+        colorCodingEnabled={colorCodingEnabled}
+        highlightCoverLessons={highlightCoverLessons}
+        onOpenDay={onOpenDay}
+        onSelectLesson={handleSelectLesson}
+      />
     );
   };
 
@@ -277,16 +229,10 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
         role="group"
         tabIndex={0}
         aria-label={t("week.pageHint")}
-        style={{ touchAction: "pan-y" }}
         data-testid="week-pager"
-        {...pager.gesture}
+        onKeyDown={handleKeyDown}
       >
-        <m.div
-          className="flex min-h-0 flex-1 flex-col"
-          style={{ ...pager.slide, willChange: pager.dragging ? "transform" : "auto" }}
-        >
-          {body()}
-        </m.div>
+        {body()}
       </div>
 
       <LessonSheet

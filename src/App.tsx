@@ -406,7 +406,7 @@ const Shell = () => {
   // bottom stack holding the contextual dock (`NowDock` or `DateDock`) above the single-surface
   // nav bar. Wide windows put the nav in a rail beside the screen instead.
   if (layout === "phone") {
-    const dockMode = tab === "home" ? "day" : tab === "week" ? "week" : null;
+    const dockMode = tab === "home" || tab === "changes" ? "day" : tab === "week" ? "week" : null;
     const onCurrent = dockMode === "day" ? scheduleNav.isToday : scheduleNav.isThisWeek;
     const showNowDock =
       activeGlance !== null &&
