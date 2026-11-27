@@ -165,7 +165,7 @@ describe("useSettingSetter", () => {
     const theme = useAppStore((s) => s.settings.theme);
     onRender(setTheme);
     return (
-      <button type="button" onClick={() => void setTheme("dark")}>
+      <button type="button" onClick={() => void setTheme("light")}>
         theme:{theme}
       </button>
     );
@@ -180,13 +180,13 @@ describe("useSettingSetter", () => {
       </AppStoreProvider>,
     );
 
-    const button = await screen.findByText("theme:system");
+    const button = await screen.findByText("theme:dark");
     act(() => {
       button.click();
     });
 
-    expect(await screen.findByText("theme:dark")).toBeDefined();
-    expect(store.getState().settings.theme).toBe("dark");
+    expect(await screen.findByText("theme:light")).toBeDefined();
+    expect(store.getState().settings.theme).toBe("light");
     expect(setters.length).toBeGreaterThan(1);
     expect(new Set(setters).size).toBe(1);
   });

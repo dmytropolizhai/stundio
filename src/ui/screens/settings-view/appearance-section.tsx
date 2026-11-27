@@ -69,7 +69,7 @@ export const AppearanceSection = ({ onOpenCustomization }: AppearanceSectionProp
   const [languageOpen, setLanguageOpen] = useState(false);
   const hintId = useId();
 
-  // Night is the signature theme, but "follow the phone" stays first: it is the default.
+  // Night is the signature and default theme.
   const themeOptions: readonly ThemePickerOption<Settings["theme"]>[] = [
     { key: "system", label: t("theme.system"), preview: "split" },
     { key: "light", label: t("theme.light"), preview: "light" },

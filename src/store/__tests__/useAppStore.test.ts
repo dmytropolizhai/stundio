@@ -320,7 +320,7 @@ describe("settings", () => {
     const classId = classIdOf(store, "A1-2");
     await store.getState().setClass(classId);
     await store.getState().updateSettings({ lang: "en" });
-    await store.getState().updateSettings({ theme: "dark" });
+    await store.getState().updateSettings({ theme: "light" });
     await store.getState().setNote("Matemātika", "Piezīme");
 
     expect(store.getState().settings.selectedClassId).toBe(classId);
@@ -332,7 +332,7 @@ describe("settings", () => {
 
     expect(store.getState().settings.selectedClassId).toBeNull();
     expect(store.getState().settings.lang).toBe("lv");
-    expect(store.getState().settings.theme).toBe("system");
+    expect(store.getState().settings.theme).toBe("dark");
     expect(store.getState().notes).toEqual({});
     expect(await cache.listNoteSubjects()).toEqual([]);
     // Timetables and metas are preserved so class picker works immediately

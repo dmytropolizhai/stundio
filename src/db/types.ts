@@ -199,7 +199,7 @@ export const DEFAULT_SETTINGS: Settings = {
   selectedTeacherId: null,
   teacherView: "own",
   highlightCoverLessons: true,
-  theme: "system",
+  theme: "dark",
   lang: "lv",
   mergeConsecutiveLessons: false,
   showMovedOnTargetDay: true,
