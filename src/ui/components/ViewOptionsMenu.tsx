@@ -41,7 +41,7 @@ export const ViewOptionsMenu = ({ options }: { options: ViewOption[] }) => {
               onClick={() => {
                 option.onChange(!option.checked);
               }}
-              className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl border-0 bg-transparent px-3 text-left hover:bg-sunken"
+              className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl border-0 bg-transparent px-3 text-left transition-colors duration-(--dur-fast) hover:bg-(--btn-ghost-hover)"
             >
               <Icon
                 name={option.icon}

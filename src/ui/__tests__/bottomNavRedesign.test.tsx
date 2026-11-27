@@ -313,7 +313,11 @@ describe("DateDock", () => {
     expect(screen.getByTestId("current-date").textContent).toBe(FIXTURE_DATE);
 
     fireEvent.click(screen.getByRole("button", { name: "Choose a date" }));
-    expect(screen.getByTestId("calendar-jump-today")).toBeDefined();
+    const jumpToday = screen.getByTestId("calendar-jump-today");
+    expect(jumpToday).toBeDefined();
+    const slab = screen.getByTestId("calendar-grid-slab");
+    expect(slab.className).toContain("u-sheet-slab");
+    expect(slab.closest(".u-popover-glass")).not.toBeNull();
   });
 });
 

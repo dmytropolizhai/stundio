@@ -20,14 +20,16 @@ export const PopoverContent = ({
   className,
   align = "start",
   sideOffset = 8,
+  collisionPadding = 12,
   ...props
 }: PopoverContentProps) => (
   <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
       align={align}
       sideOffset={sideOffset}
+      collisionPadding={collisionPadding}
       className={cn(
-        "z-40 w-max animate-popover-in rounded-2xl bg-card p-4 shadow-raised",
+        "u-popover-glass z-40 w-max animate-popover-in rounded-2xl p-4",
         "outline-hidden",
         className,
       )}

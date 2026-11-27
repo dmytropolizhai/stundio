@@ -94,6 +94,10 @@ export const DateDock = ({ mode, nav, nowToggle, animateFrom }: DateDockProps) =
             onOpenChange={setCalendarOpen}
             onSelect={nav.setDate}
             title={isDay ? dayTitle : weekTitle}
+            {...(!isDay && nav.firstDay !== undefined && nav.lastDay !== undefined
+              ? { range: [nav.firstDay, nav.lastDay] as const }
+              : {})}
+            align="center"
             iconSize={16}
             className="min-h-9 max-w-full px-2 font-text text-caption font-bold text-strong"
           />

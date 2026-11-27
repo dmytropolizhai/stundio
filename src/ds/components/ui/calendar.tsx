@@ -30,6 +30,8 @@ export type CalendarProps = {
   value: DateString;
   /** Today's date — gets the ring treatment, distinct from `value`. */
   today: DateString;
+  /** Optional inclusive `[start, end]` range to softly highlight (e.g. active week period). */
+  range?: readonly [DateString, DateString];
   onSelect: (date: DateString) => void;
   /** BCP-47 tag for month and weekday names — Chrome is translated, so this is a prop, not a default. */
   locale: string;
@@ -40,12 +42,14 @@ export type CalendarProps = {
 
 /**
  * A month grid, styled but domain-free: it knows nothing about lessons, classes or substitutions,
- * only the calendar. `DayView`'s popover supplies the locale and the "today" jump; everything else
- * is this component's own state, so it forgets which month it was showing every time it closes.
+ * only the calendar. `DatePicker`'s liquid-glass popover supplies the locale and the "today" jump;
+ * everything else is this component's own state, so it forgets which month it was showing every
+ * time it closes.
  */
 export const Calendar = ({
   value,
   today,
+  range,
   onSelect,
   locale,
   prevMonthLabel,
@@ -85,7 +89,7 @@ export const Calendar = ({
 
   return (
     <div className={cn("w-74", className)}>
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between gap-2 px-0.5">
         <IconButton
           icon="chevron-left"
           label={prevMonthLabel}
@@ -95,7 +99,7 @@ export const Calendar = ({
             goToMonth(-1);
           }}
         />
-        <span className="font-text text-body font-bold text-strong capitalize">
+        <span className="font-display text-title leading-none font-bold tracking-[-0.02em] text-strong first-letter:uppercase">
           {monthFmt.format(new Date(Date.UTC(view.y, view.m, 1, 12)))}
         </span>
         <IconButton
@@ -109,46 +113,60 @@ export const Calendar = ({
         />
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
-        {weekdayLabels.map((label, i) => (
-          <div
-            key={i}
-            className="flex h-6 items-center justify-center font-text text-micro font-bold text-muted"
-          >
-            {label}
-          </div>
-        ))}
-
-        {cells.map((cell, i) => {
-          if (cell === null) return <div key={i} aria-hidden="true" />;
-
-          const isToday = cell.date === today;
-          const isSelected = cell.date === value;
-
-          return (
-            <button
-              key={cell.date}
-              type="button"
-              aria-current={isToday ? "date" : undefined}
-              aria-pressed={isSelected}
-              onClick={() => {
-                onSelect(cell.date);
-              }}
+      <div data-testid="calendar-grid-slab" className="u-sheet-slab rounded-xl p-2">
+        <div className="mb-1.5 grid grid-cols-7 gap-1 border-b border-(--schedule-divider) pb-1.5">
+          {weekdayLabels.map((label, i) => (
+            <div
+              key={i}
               className={cn(
-                "u-data flex size-10 items-center justify-center rounded-pill font-bold",
-                "transition-[background-color,color,box-shadow] duration-(--dur-fast) ease-standard",
-                "active:scale-(--press-scale)",
-                isSelected
-                  ? "bg-inverse text-on-inverse"
-                  : isToday
-                    ? "text-brand-strong inset-ring-2 inset-ring-brand hover:bg-sunken"
-                    : "text-fg hover:bg-sunken",
+                "flex h-6 items-center justify-center font-text text-micro font-bold tracking-label uppercase",
+                i >= 5 ? "text-muted/70" : "text-muted",
               )}
             >
-              {toDate(cell.date).getUTCDate()}
-            </button>
-          );
-        })}
+              {label}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {cells.map((cell, i) => {
+            if (cell === null) return <div key={i} aria-hidden="true" />;
+
+            const isToday = cell.date === today;
+            const isSelected = cell.date === value;
+            const isWeekend = i % 7 >= 5;
+            const inRange = range !== undefined && cell.date >= range[0] && cell.date <= range[1];
+
+            return (
+              <button
+                key={cell.date}
+                type="button"
+                aria-current={isToday ? "date" : undefined}
+                aria-pressed={isSelected}
+                onClick={() => {
+                  onSelect(cell.date);
+                }}
+                className={cn(
+                  "u-data relative flex size-9.5 cursor-pointer items-center justify-center rounded-pill text-[14px] font-semibold",
+                  "before:absolute before:-inset-0.5 before:content-['']",
+                  "transition-[background-color,color,box-shadow,transform] duration-(--dur-fast) ease-standard",
+                  "active:scale-(--press-scale) active:duration-(--dur-instant)",
+                  isSelected
+                    ? "bg-inverse font-bold text-on-inverse shadow-(--btn-primary-shadow)"
+                    : isToday
+                      ? "bg-(--schedule-chip-bg) font-bold text-strong inset-ring-[1.5px] inset-ring-strong/40 hover:bg-(--btn-ghost-hover)"
+                      : inRange
+                        ? "bg-(--btn-ghost-hover) text-strong hover:bg-(--schedule-chip-bg)"
+                        : isWeekend
+                          ? "text-muted hover:bg-(--btn-ghost-hover) hover:text-strong"
+                          : "text-fg hover:bg-(--btn-ghost-hover) hover:text-strong",
+                )}
+              >
+                {toDate(cell.date).getUTCDate()}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

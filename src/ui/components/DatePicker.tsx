@@ -11,6 +11,8 @@ export const DatePicker = ({
   onOpenChange,
   onSelect,
   title,
+  range,
+  align = "start",
   iconSize = 22,
   className,
 }: {
@@ -20,6 +22,9 @@ export const DatePicker = ({
   onOpenChange: (open: boolean) => void;
   onSelect: (date: ISODate) => void;
   title?: React.ReactNode;
+  /** Optional inclusive `[start, end]` range to highlight in the calendar (e.g. active week). */
+  range?: readonly [ISODate, ISODate];
+  align?: "start" | "center" | "end";
   iconSize?: number;
   className?: string;
 }) => {
@@ -52,10 +57,11 @@ export const DatePicker = ({
         </button>
       </PopoverTrigger>
 
-      <PopoverContent>
+      <PopoverContent align={align} className="p-3.5">
         <Calendar
           value={date}
           today={today}
+          {...(range !== undefined ? { range } : {})}
           locale={localeTag(lang)}
           prevMonthLabel={t("day.previousMonth")}
           nextMonthLabel={t("day.nextMonth")}
@@ -65,10 +71,11 @@ export const DatePicker = ({
           }}
         />
 
-        <div className="mt-2 flex justify-center">
+        <div className="mt-3">
           <Button
-            variant="ghost"
+            variant={date === today ? "ghost" : "outline"}
             size="sm"
+            block
             data-testid="calendar-jump-today"
             onClick={() => {
               onSelect(today);
