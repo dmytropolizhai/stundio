@@ -1,39 +1,58 @@
 ---
 name: Stundio
-description: A confident, offline-first timetable companion built on the Studio Design System — electric blue, generously rounded, colour-indexed by subject.
+description: A confident, offline-first timetable companion built on the Night / Day design system — slate and lamplight, liquid-glass chrome, dusk-toned by subject.
 colors:
-  studio-electric: "#1e3aff"
-  electric-strong: "#1730d6"
-  electric-deep: "#060b3d"
-  electric-tint: "#edf0ff"
-  focus-ring: "#4a5cff"
-  app-ground: "#f6f7fa"
-  surface-card: "#ffffff"
-  surface-sunken: "#edeff4"
-  surface-inverse: "#0b0c10"
-  surface-overlay: "rgba(11, 12, 16, 0.56)"
-  surface-glass: "rgba(255, 255, 255, 0.14)"
-  text-strong: "#0b0c10"
-  text-body: "#2a2d36"
-  text-muted: "#5b6070"
-  border-hairline: "#dde1ea"
-  border-strong: "#b9bfce"
-  status-success: "#0b8a4e"
-  status-warning: "#ffb552"
-  status-danger: "#d92020"
-  status-offline: "#5b6070"
-  accent-amber: "#ffb552"
-  accent-amber-ink: "#5a3703"
-  accent-sky: "#9cc8f7"
-  accent-sky-ink: "#0c3560"
-  accent-lilac: "#b79cff"
-  accent-lilac-ink: "#2c1470"
-  accent-pink: "#ffa3e0"
-  accent-pink-ink: "#611349"
-  accent-mint: "#9fe3c0"
-  accent-mint-ink: "#0b4a32"
-  accent-lime: "#d7f53c"
-  accent-lime-ink: "#2e3a00"
+  lamp: "#f2b56b"
+  lamp-ink: "#2a1700"
+  lamp-mark-day: "#b5680f"
+  lamp-text-day: "#8f4d07"
+  lamp-text-night: "#f4bd7a"
+  lamp-glow-day: "rgba(181, 104, 15, 0.2)"
+  lamp-glow-night: "rgba(242, 181, 107, 0.26)"
+  day-ground: "#ebeaee"
+  day-card: "#f8f8fa"
+  day-raised: "#ffffff"
+  day-sunken: "#e0dfe5"
+  day-panel: "#dedce6"
+  day-ink: "#121419"
+  day-body: "#2e3038"
+  day-muted: "#5d606b"
+  day-hairline: "#d3d2da"
+  day-border-strong: "#7c7f8b"
+  night-ground: "#0d1117"
+  night-card: "#161c24"
+  night-raised: "#1c232d"
+  night-sunken: "#0a0e13"
+  night-panel: "#1a222c"
+  night-ink: "#f1eee8"
+  night-body: "#c4c1bb"
+  night-muted: "#8e959f"
+  night-inverse: "#ece8e1"
+  night-hairline: "#252d38"
+  night-border-strong: "#69717e"
+  on-deep: "#f6f4f0"
+  shade: "#05070a"
+  tone-sage: "#b3cfa1"
+  tone-sage-ink: "#1f3415"
+  tone-mist: "#a9bfe6"
+  tone-mist-ink: "#162a4d"
+  tone-lavender: "#c3b4ea"
+  tone-lavender-ink: "#2b1e52"
+  tone-rose: "#eeaeb8"
+  tone-rose-ink: "#4f1621"
+  tone-teal: "#8fd0c8"
+  tone-teal-ink: "#0f3733"
+  tone-indigo: "#5a5fb0"
+  tone-indigo-ink: "#f3f2ff"
+  positive-day: "#1d7a49"
+  positive-night: "#7fd1a1"
+  caution-fill: "#e6cf7a"
+  caution-text-day: "#7a6200"
+  caution-ink: "#2b2300"
+  danger-day: "#c0352a"
+  danger-night: "#ff8a7a"
+  on-danger-day: "#ffffff"
+  on-danger-night: "#200604"
 typography:
   wordmark:
     fontFamily: "Moho Condensed, Archivo Narrow, Arial Narrow, system-ui, sans-serif"
@@ -42,67 +61,67 @@ typography:
     lineHeight: 0.9
     letterSpacing: "0.005em"
   hero:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
     fontSize: "56px"
-    fontWeight: 800
+    fontWeight: 700
     lineHeight: 0.95
     letterSpacing: "-0.035em"
   display:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
     fontSize: "40px"
-    fontWeight: 800
+    fontWeight: 700
     lineHeight: 1
-    letterSpacing: "-0.025em"
-  display-2:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
-    fontSize: "30px"
+    letterSpacing: "-0.03em"
+  headline:
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
+    fontSize: "24px"
     fontWeight: 700
     lineHeight: 1.05
-    letterSpacing: "-0.025em"
+    letterSpacing: "-0.03em"
   title:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
-    fontSize: "22px"
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
+    fontSize: "18px"
     fontWeight: 700
     lineHeight: 1.15
-    letterSpacing: "-0.025em"
+    letterSpacing: "-0.03em"
   body-lg:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
     fontSize: "17px"
     fontWeight: 500
     lineHeight: 1.45
     letterSpacing: "normal"
   body:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
     fontSize: "15px"
     fontWeight: 500
     lineHeight: 1.5
     letterSpacing: "normal"
   caption:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
     fontSize: "13px"
     fontWeight: 500
     lineHeight: 1.4
     letterSpacing: "normal"
   label:
-    fontFamily: "Manrope, system-ui, -apple-system, sans-serif"
+    fontFamily: "Onest, system-ui, -apple-system, sans-serif"
     fontSize: "11px"
     fontWeight: 700
     lineHeight: 1.2
-    letterSpacing: "0.14em"
+    letterSpacing: "0.02em"
   data:
-    fontFamily: "JetBrains Mono, ui-monospace, SFMono-Regular, monospace"
+    fontFamily: "Martian Mono, ui-monospace, SFMono-Regular, monospace"
     fontSize: "15px"
     fontWeight: 500
     lineHeight: 1.3
     letterSpacing: "0.01em"
     fontFeature: "tabular-nums"
 rounded:
-  xs: "8px"
-  sm: "12px"
-  md: "18px"
-  lg: "24px"
-  xl: "28px"
-  2xl: "36px"
+  xs: "10px"
+  sm: "16px"
+  md: "22px"
+  lg: "30px"
+  xl: "22px"
+  2xl: "30px"
   pill: "999px"
   squircle: "30%"
 spacing:
@@ -120,199 +139,161 @@ spacing:
   card-gap: "12px"
   section: "28px"
   topbar: "56px"
+  status-bar: "36px"
   nav-height: "64px"
+  nav-inset: "16px"
   tap-min: "44px"
-  screen-max: "420px"
+  screen-max: "430px"
 components:
   button-primary:
-    backgroundColor: "{colors.surface-inverse}"
-    textColor: "#ffffff"
-    typography: "{typography.body}"
-    rounded: "{rounded.pill}"
-    padding: "0 20px"
-    height: "44px"
-  button-primary-hover:
-    backgroundColor: "{colors.text-body}"
-    textColor: "#ffffff"
-  button-inverse:
-    backgroundColor: "{colors.surface-inverse}"
-    textColor: "#ffffff"
+    backgroundColor: "{colors.day-ink}"
+    textColor: "{colors.on-deep}"
     typography: "{typography.body}"
     rounded: "{rounded.pill}"
     padding: "0 20px"
     height: "44px"
   button-outline:
-    backgroundColor: "transparent"
-    textColor: "{colors.text-strong}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-ink}"
     typography: "{typography.body}"
     rounded: "{rounded.pill}"
     padding: "0 20px"
     height: "44px"
   button-ghost:
     backgroundColor: "transparent"
-    textColor: "{colors.electric-strong}"
+    textColor: "{colors.day-ink}"
+    typography: "{typography.body}"
+    rounded: "{rounded.pill}"
+    padding: "0 20px"
+    height: "44px"
+  button-danger:
+    backgroundColor: "{colors.danger-day}"
+    textColor: "{colors.on-danger-day}"
     typography: "{typography.body}"
     rounded: "{rounded.pill}"
     padding: "0 20px"
     height: "44px"
   card:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-body}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-body}"
     rounded: "{rounded.xl}"
     padding: "16px"
-  card-tinted:
-    backgroundColor: "{colors.accent-sky}"
-    textColor: "{colors.accent-sky-ink}"
-    rounded: "{rounded.xl}"
-    padding: "16px"
+  subject-card-deep:
+    backgroundColor: "{colors.tone-indigo}"
+    textColor: "{colors.on-deep}"
+    rounded: "{rounded.2xl}"
+    padding: "12px"
   lesson-card:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-strong}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-ink}"
     typography: "{typography.title}"
     rounded: "{rounded.xl}"
     padding: "16px"
   chip:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-body}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-body}"
     typography: "{typography.caption}"
     rounded: "{rounded.pill}"
-    padding: "0 14px"
     height: "32px"
   chip-selected:
-    backgroundColor: "{colors.surface-inverse}"
-    textColor: "#ffffff"
+    backgroundColor: "{colors.day-ink}"
+    textColor: "{colors.on-deep}"
     typography: "{typography.caption}"
     rounded: "{rounded.pill}"
-    padding: "0 14px"
     height: "32px"
   badge:
-    backgroundColor: "{colors.studio-electric}"
-    textColor: "#ffffff"
+    backgroundColor: "{colors.day-ink}"
+    textColor: "{colors.on-deep}"
+    typography: "{typography.label}"
+    rounded: "{rounded.pill}"
+    padding: "0 9px"
+    height: "22px"
+  badge-lamp:
+    backgroundColor: "{colors.lamp}"
+    textColor: "{colors.lamp-ink}"
     typography: "{typography.label}"
     rounded: "{rounded.pill}"
     padding: "0 9px"
     height: "22px"
   text-field:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-strong}"
-    typography: "{typography.body}"
-    rounded: "{rounded.pill}"
-    padding: "0 18px"
-    height: "52px"
-  select-field:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-strong}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-ink}"
     typography: "{typography.body}"
     rounded: "{rounded.pill}"
     padding: "0 18px"
     height: "52px"
   icon-button:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-strong}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-ink}"
     rounded: "{rounded.pill}"
     size: "44px"
-  icon-button-glass:
-    backgroundColor: "{colors.surface-glass}"
-    textColor: "#ffffff"
-    rounded: "{rounded.pill}"
-    size: "44px"
-  day-tile:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-body}"
-    rounded: "{rounded.lg}"
-    height: "74px"
-    width: "46px"
-  day-tile-active:
-    backgroundColor: "{colors.studio-electric}"
-    textColor: "#ffffff"
-    rounded: "{rounded.lg}"
-    height: "74px"
-    width: "46px"
   segmented-track:
-    backgroundColor: "{colors.surface-sunken}"
-    textColor: "{colors.text-muted}"
+    backgroundColor: "{colors.day-sunken}"
+    textColor: "{colors.day-muted}"
     rounded: "{rounded.pill}"
     padding: "4px"
   segmented-item-active:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-strong}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-ink}"
     typography: "{typography.caption}"
     rounded: "{rounded.pill}"
-    padding: "0 18px"
     height: "36px"
   switch-track:
-    backgroundColor: "#dde1ea"
+    backgroundColor: "{colors.day-sunken}"
     rounded: "{rounded.pill}"
     height: "30px"
     width: "50px"
   switch-track-on:
-    backgroundColor: "{colors.studio-electric}"
+    backgroundColor: "{colors.lamp}"
     rounded: "{rounded.pill}"
     height: "30px"
     width: "50px"
   week-grid-cell:
-    backgroundColor: "{colors.accent-sky}"
-    textColor: "{colors.surface-inverse}"
+    backgroundColor: "{colors.tone-mist}"
+    textColor: "{colors.tone-mist-ink}"
     typography: "{typography.caption}"
-    rounded: "{rounded.sm}"
-    padding: "0 6px"
+    rounded: "{rounded.xs}"
     height: "40px"
   week-grid-cell-empty:
-    backgroundColor: "{colors.surface-sunken}"
-    rounded: "{rounded.sm}"
+    backgroundColor: "{colors.day-sunken}"
+    rounded: "{rounded.xs}"
     height: "40px"
   bottom-nav:
-    backgroundColor: "{colors.surface-inverse}"
-    textColor: "#ffffff"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-ink}"
     rounded: "{rounded.pill}"
     padding: "6px"
     height: "64px"
-  bottom-nav-item-active:
-    backgroundColor: "#ffffff"
-    textColor: "{colors.surface-inverse}"
-    typography: "{typography.body}"
+  date-dock:
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-ink}"
+    typography: "{typography.caption}"
     rounded: "{rounded.pill}"
-    padding: "0 20px"
+    padding: "0 6px"
+    height: "44px"
+  now-dock:
+    backgroundColor: "{colors.tone-indigo}"
+    textColor: "{colors.on-deep}"
+    rounded: "{rounded.pill}"
     height: "52px"
   bottom-sheet:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-body}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-body}"
     rounded: "{rounded.2xl}"
     padding: "10px 20px 24px"
   sync-status:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-muted}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-muted}"
     typography: "{typography.caption}"
     rounded: "{rounded.pill}"
     padding: "0 12px"
     height: "30px"
   empty-state:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.text-muted}"
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.day-muted}"
     rounded: "{rounded.xl}"
     padding: "36px 24px"
 ---
-
-> **Revision: Night / Day (supersedes the colour and type values below).** The design system was
-> replaced by the Claude Design "Stundio" project. Where this file's front matter and prose still
-> say electric blue, Manrope or JetBrains Mono, the values in `src/ds/tokens/*.css` win:
->
-> - **Themes:** Night (`.dark`, the signature) and Day. Semantic aliases (`--bg-app`, `--surface-card`,
->   `--text-strong`, …) keep their names and are re-pointed per theme; `colors.css` holds Day,
->   `dark.css` holds Night.
-> - **One lamp:** `--lamp` (+ `lamp-ink`, `lamp-mark`, `lamp-text`, `lamp-glow`) is the lesson on now
->   and a switch that is on — at most two lamp things per screen, never a button or heading. Only the
->   live glance panel glows (`shadow-brand` is the glow).
-> - **Brand is ink:** selected states and primary buttons use `inverse` / `on-inverse`
->   (`bg-inverse text-on-inverse`), never a fixed `ink-900`, which is Day-only.
-> - **Subject tones:** six dusk tones (sage, mist, lavender, rose, teal, indigo). The persisted keys
->   did not change, so they map `amber→sage, sky→mist, lilac→lavender, pink→rose, mint→teal,
->   lime→indigo`. Signals: `positive`, `caution` (straw, apart from lamp), `danger` + `on-danger`.
-> - **Type:** Onest for words, Martian Mono for every time and the glance countdown; sentence case.
-> - **Subject card:** banner version (grainy tone field, overlapping mark, mono stats); the subject on
->   now becomes the "deep" card, the whole card its darkened field with `on-deep` text. Day `lamp-text`
->   is `#8f4d07` (the design's `#9a5208` is 4.32:1 on the panel).
-> - **Shape:** radii 10 / 16 / 22 / 30 (no square corners); depth is light, not lines.
 
 # Design System: Stundio
 
@@ -322,533 +303,377 @@ components:
 
 Stundio is a pocket-sized assistant with a strong voice. It does not present the school's timetable
 apologetically or neutrally — it takes a position on what matters right now, sets it large, and gets
-out of the way. Electric blue, black pills, and display type at 40px on a 420px-wide phone are not
-restraint; they are the sound of an app that is certain about the answer it is giving. The
-personality comes entirely from decisiveness, never from ornament: there is no illustration, no
-gradient mesh, no texture, no mascot. What reads as character is scale, roundness, and the
-willingness to commit to a single accent.
+out of the way. Its signature is Night: a deep slate ground, soft graphite surfaces and warm
+off-white ink, like lamplight on grey cotton, with one warm lamp (`#f2b56b`) marking the lesson on
+now. Day is the same system turned over: lilac-grey paper, ink-dark text, the same lamp deepened to
+stay legible. The personality still comes from decisiveness — scale, roundness, and the willingness
+to commit to a single light — not from ornament, mascots or illustration.
 
-The system is dense with information but generous with form. Cards are 28px-rounded and unbordered;
-everything interactive is a pill; the six subject accents are pastel fills carrying dark ink pairs
-so a colour-coded card is still full-contrast text. The ground is a cool near-white (#f6f7fa) that
-never appears as pure white — white is reserved for cards, so a surface reading as white is always
-*a thing*, not the page. Dark mode is a first-class user setting, not a media query: only the
-semantic aliases re-point under `.dark`, never a base palette step.
+The system is dense with information but generous with form. Cards are 22px-rounded and unbordered;
+everything interactive is a pill; the chrome is liquid glass (frosted, saturated, edged with a 1px
+specular rim) so content passes visibly beneath it; and the six subject tones are dusk colours
+carrying their own ink so a colour-coded surface is still full-contrast text. Brand is ink, not
+colour: the selected state and the primary button flip to the theme's inverse. Theme is a first-class
+user setting (`.dark` on `<html>`, "system" follows the OS), not a media query: only semantic aliases
+re-point, never a base step.
 
-It is built for one hand in a corridor. Every measurement in the system assumes a 420px design width,
-a 44px minimum hit target, and a reader who has about two seconds. Confirmed anti-references:
-**EduPage's own UI** (dense grey tables, server-supplied subject colours with no contrast guarantee,
-information buried behind taps), **Material 3 and stock Android** (the Studio DS has its own form
-language and does not drift toward Material components, elevation, or colour roles), and **generic
-dashboard SaaS** (slate-and-indigo Tailwind defaults, hairline-bordered rectangles, desktop
-data-table density).
+It is built for one hand in a corridor: a 430px phone design width, a 44px minimum hit target, and a
+reader who has about two seconds. Confirmed anti-references: **EduPage's own UI** (dense grey tables,
+server-supplied subject colours with no contrast guarantee, information buried behind taps),
+**Material 3 and stock Android** (the system has its own form language and does not drift toward
+Material components, elevation, or colour roles), and **generic dashboard SaaS** (slate-and-indigo
+Tailwind defaults, hairline-bordered rectangles, desktop data-table density).
 
 **Key Characteristics:**
 
-- Electric blue as a single, sparing voice against cool neutral paper.
-- Nothing is square: 28px cards, pill controls, 8px as the smallest radius in the system.
-- Selection is a fill swap to solid black — never a border, underline, or indicator line.
-- Six pastel subject accents used strictly as an index, each with a dark ink pair.
-- Times and countdowns set in tabular mono so digits never jitter.
-- Structural elevation: soft, blue-tinted, and ranked.
-- Dark mode is a setting, and it re-points aliases only.
+- Two themes, one system: Night (signature) and Day, alias-driven.
+- One lamp: the lesson on now and a switch that is on, nothing else.
+- Brand is ink: selection and the primary button use inverse / on-inverse.
+- Six dusk subject tones used strictly as an index, each with its own ink.
+- Liquid-glass chrome and schedule slabs with a shared specular rim.
+- Nothing is square: radii 10 / 16 / 22 / 30, pills for anything pressable.
+- Times and countdowns in tabular Martian Mono; sentence case throughout.
+- Depth is light, not lines: soft shadows by day, a faint rim and black float shadow at night.
 
 ## Colors
 
-A cool, blue-leaning system: one electric accent, a neutral family that never goes warm, six pastel
-subject indices, and four reserved status colours.
+A cool slate-and-paper system lit by a single warm lamp, with six muted dusk subject tones and three signals.
 
 ### Primary
 
-- **Studio Electric** (`#1e3aff`): the single accent. It fills the "now" ring on the current lesson,
-  the active day tile, and the subjects-view initial wells — and almost nothing else. Buttons
-  (`Button`, `IconButton`) are deliberately excluded — see The Neutral Button Rule. Its `-strong`
-  step (`#1730d6`) is the link/underline colour; `-deep` (`#060b3d`) is the navy that tints every
-  shadow in the system; `-tint` (`#edf0ff`) is the pale wash behind the subjects-view wells.
+- **Lamp** (`#f2b56b`, `--lamp`): the one light. It marks the lesson on now and the switch that is on
+  (and the `lamp` badge). Its companions: **Lamp Ink** (`#2a1700`) for text on a lamp fill; **Lamp
+  Mark** (Day `#b5680f`, Night `#f2b56b`) for thin marks on a surface, deepened in Day to keep 3:1;
+  **Lamp Text** (Day `#8f4d07`, Night `#f4bd7a`) for lamp-coloured words (Day is darker than the
+  design's `#9a5208`, which measures 4.32:1 on the panel); **Lamp Glow** (Day `rgba(181,104,15,.2)`,
+  Night `rgba(242,181,107,.26)`) for the soft light under the live glance panel.
 
-### Neutral
+### Neutral — Day
 
-- **Cool Paper** (`#f6f7fa`): the app ground. Never pure white, so that a white surface always reads
-  as a card.
-- **Card White** (`#ffffff`): every card, chip, input, and floating pill.
-- **Sunken** (`#edeff4`): recessed tracks — the segmented-tab rail, quiet badges, skeleton base.
-- **Near-Black Ink** (`#0b0c10`): headings, and the fill of the floating nav and every selected chip.
-- **Reading Ink** (`#2a2d36`): body text.
-- **Muted Ink** (`#5b6070`): secondary metadata — room, teacher, timestamps, eyebrows.
-- **Hairline** (`#dde1ea`) and **Strong Border** (`#b9bfce`): separation where a shadow would be too
-  loud, applied as inset rings rather than borders.
+- **Day Ground** (`#ebeaee`): the app ground; never pure white, so a lighter surface always reads as a thing.
+- **Day Card** (`#f8f8fa`) and **Day Raised** (`#ffffff`): cards and the highest surface.
+- **Day Sunken** (`#e0dfe5`) and **Day Panel** (`#dedce6`): recessed tracks, quiet badges, skeleton base, and the panel wash.
+- **Day Ink** (`#121419`): headings and the inverse fill; **Day Body** (`#2e3038`); **Day Muted** (`#5d606b`).
+- **Day Hairline** (`#d3d2da`) and **Strong Border** (`#7c7f8b`): inset-ring separation and the off-switch ring.
 
-### Tertiary — the subject index
+### Neutral — Night
 
-Six pastel accents, each shipped with a dark ink pair: **Amber** (`#ffb552` / `#5a3703`), **Sky**
-(`#9cc8f7` / `#0c3560`), **Lilac** (`#b79cff` / `#2c1470`), **Pink** (`#ffa3e0` / `#611349`),
-**Mint** (`#9fe3c0` / `#0b4a32`), **Lime** (`#d7f53c` / `#2e3a00`). A subject is assigned one by default
-by hashing its code (`subjectTone()`), so the same subject is the same colour on every screen and device.
+- **Night Ground** (`#0d1117`), **Night Card** (`#161c24`), **Night Raised** (`#1c232d`), **Night Sunken** (`#0a0e13`), **Night Panel** (`#1a222c`): surface contrast replaces shadow.
+- **Night Ink** (`#f1eee8`), **Night Body** (`#c4c1bb`), **Night Muted** (`#8e959f`): warm off-white text.
+- **Night Inverse** (`#ece8e1`): the brand/selected fill at night (ink flips to `#0d1117`).
+- **Night Hairline** (`#252d38`) and **Strong Border** (`#69717e`).
+- **On Deep** (`#f6f4f0`) and **Shade** (`#05070a`): theme-independent text and darkening ink for the full-colour subject field.
 
-**Custom Tones & Color Wheel:** Users can customize subject colors via `CustomizationSheet`. An
-interactive SVG **Color Wheel** (`ColorWheel` component) allows selecting arbitrary RGB/HSV hues
-alongside the 6 preset pastel accents. Whenever a custom accent is chosen, high-contrast readable
-text ink is dynamically calculated via `readableInk()`. Users can also toggle monochrome mode to
-turn off subject color-coding entirely (falling back to a uniform neutral tone).
+### Tertiary — the subject tones
 
-**Group colours (teachers):** a teacher meets many groups, often for the same subject, so the
-sheet also lists the groups they teach (`useSubjects().groups`) with the same picker. A group's
-override (`Settings.groupColorOverrides`, keyed by `groupToneKey` — the lowercased class short)
-wins over the subject's colour on that group's lessons; every render site reads a lesson's colour
-through `lessonAccent()`, which falls back to `subjectAccent()`. A lesson taught to several groups
-takes the first listed group with an override. Students never see the section, and their lessons
-carry no `classes`, so group colours can never leak into a student's day.
+Six dusk tones, identical in both themes, each with its ink pair: **Sage** (`#b3cfa1` / `#1f3415`),
+**Mist** (`#a9bfe6` / `#162a4d`), **Lavender** (`#c3b4ea` / `#2b1e52`), **Rose** (`#eeaeb8` / `#4f1621`),
+**Teal** (`#8fd0c8` / `#0f3733`), **Indigo** (`#5a5fb0` / `#f3f2ff` — the one dark tone). The persisted
+settings keys did not change, so they map `amber→sage, sky→mist, lilac→lavender, pink→rose, mint→teal,
+lime→indigo` (in code the utilities are still `bg-amber`, `bg-sky`, …). A subject gets one by hashing
+its code (`subjectTone()`), so it is the same colour on every screen and device.
 
-### Status
+**Custom tones & colour wheel.** Users can recolour subjects in `CustomizationSheet` with the SVG
+`ColorWheel` beside the six presets; the ink for any custom fill is computed by `readableInk()`.
+Monochrome mode turns subject colour-coding off. **Group colours (teachers):** the sheet also lists
+the groups a teacher teaches (`useSubjects().groups`); `Settings.groupColorOverrides`, keyed by
+`groupToneKey` (lowercased class short), wins over the subject's colour on that group's lessons via
+`lessonAccent()`, falling back to `subjectAccent()`. Students carry no `classes`, so group colours
+never leak into a student's day.
 
-- **Success** (`#0b8a4e`), **Warning** (`#ffb552`), **Danger** (`#d92020`), **Offline** (`#5b6070`).
-  These four mean sync state and lesson state and nothing else. Warning carries the amber *ink*
-  pair, not white, because the amber is too light to hold white text at 4.5:1.
+### Signals
+
+- **Positive** (Day `#1d7a49`, Night `#7fd1a1`), **Caution** (fill `#e6cf7a`, text Day `#7a6200` / Night `#e6cf7a`, ink `#2b2300`; a straw, deliberately apart from the lamp), **Danger** (Day `#c0352a`, Night `#ff8a7a`, with `on-danger` `#ffffff` / `#200604`). Offline reuses muted ink. These mean sync state and lesson state and nothing else.
 
 ### Named Rules
 
-**The Index Rule.** The six subject accents are an index, not decoration. They exist to make a
-subject recognisable at a glance and to stay bound to it forever. They carry no meaning, no ranking,
-and no mood — using an accent to signal importance, urgency, or status is a misuse. Status has its
-own four colours; use those.
+**The One Lamp Rule.** The lamp appears on at most two things per screen — the lesson on now and a switch that is on — and never on a button or a heading. Only the live glance panel glows (`shadow-brand` is that glow).
 
-**The Contrast Invariant Rule.** Any custom subject color selected through the Color Wheel must
-always be paired with a contrast-checked ink via `readableInk()`. An arbitrary user-selected
-background tint never renders with fixed unverified text contrast; it dynamically binds either
-dark ink (`#0b0c10`) or light ink (`#ffffff`) to guarantee legibility.
+**The Index Rule.** The six subject tones are an index, not decoration: they make a subject recognisable and stay bound to it. They carry no meaning, ranking or mood; status has its own signals.
 
-**The One Voice Rule.** Studio Electric appears on at most one or two elements per screen. Its
-rarity is what makes the "now" ring read as *now*. A screen with three blue things has no primary
-action.
+**The Contrast Invariant Rule.** Any custom subject colour is paired with a contrast-checked ink through `readableInk()`; a user tint never renders with fixed unverified text.
 
-**The Alias-Only Rule.** Dark mode re-points semantic aliases (`--bg-app`, `--surface-card`,
-`--text-muted`, …) and never a base palette step (`--blue-*`, `--ink-*`, `--accent-*`). A component
-that reaches for a base step directly will be wrong in one of the two themes. In dark mode, `--brand`
-flips to `--ink-100` with `--text-on-brand` as `--ink-900`, giving dark mode its own black/white
-brand identity.
+**The Alias-Only Rule.** Night re-points semantic aliases (`--bg-app`, `--surface-card`, `--text-muted`, `--bg-inverse`, …) and never a base step (`--ink-*`, `--accent-*`). The Day ink ramp is Day-only; reaching for a fixed `ink-900` is wrong at night.
 
-**The Neutral Button Rule.** Every `Button` and `IconButton` variant, and every text-styled button
-control (e.g. the sync badge's retry action), is near-black, white, or transparent — none of them
-fill with or colour their text in Studio Electric. A pressable control earns attention from its
-position and its pill shape, not from being the one blue thing on the screen; that rarity budget
-(see The One Voice Rule) is spent entirely on the "now" ring, the active day tile, and the
-subjects-view wells. A text-only control that drops its colour still needs a non-colour affordance,
-so it carries an underline instead.
+**The Brand-Is-Ink Rule.** Selected states and primary buttons use `bg-inverse text-on-inverse` (`--brand` is ink, not a hue). Every `Button` and `IconButton` variant, and every text-styled control, is inverse, neutral glass, transparent, or danger — none fills with the lamp.
 
-**The Server-Colour Rule.** EduPage ships its own per-subject hex. It is never used. It carries no
-contrast guarantee, and it breaks the promise that a subject looks the same on every device.
+**The Server-Colour Rule.** EduPage's per-subject hex is never used: no contrast guarantee, and it breaks cross-device consistency.
 
 ## Typography
 
-**Display Font:** Manrope (with `system-ui`, `-apple-system`, sans-serif)
-**Body Font:** Manrope (same family — the hierarchy is carried by weight, size, and tracking, not by
-a second face)
-**Data Font:** JetBrains Mono (with `ui-monospace`, `SFMono-Regular`, monospace)
-**Wordmark:** Moho Condensed Black — licensed, shipped with the app, and used for exactly one string:
-the `studio.` wordmark. It renders nowhere else.
+**Display Font:** Onest (with `system-ui`, `-apple-system`, sans-serif)
+**Body Font:** Onest (same family — hierarchy is weight, size and tracking, not a second face)
+**Data Font:** Martian Mono (with `ui-monospace`, `SFMono-Regular`, monospace)
+**Wordmark:** Moho Condensed Black — licensed, shipped with the app, used for the `studio.` wordmark and the side rail's brand string only.
 
-All faces are self-hosted and bundled: the app runs in a Capacitor WebView with no guaranteed
-network, and the `latin-ext` subset is load-bearing because subject names arrive in Latvian
-(*Programmēšana*, *Angļu valoda*) and the diacritics must not fall back.
+All faces are self-hosted: the app runs in a Capacitor WebView with no guaranteed network, and the
+`latin-ext` subset is load-bearing because subject names arrive in Latvian (*Programmēšana*, *Angļu
+valoda*).
 
-**Character:** One geometric humanist sans, set heavy and tight at the top of the scale and calm in
-the middle of it. Display sizes run at weight 800 with −0.025em to −0.035em tracking and line-heights
-below 1 — the headline is a block, not a line of text. Body sizes sit at weight 500, which reads as
-"confident default" rather than the apologetic 400 most apps use.
+**Character:** One humanist sans set heavy and tight at the top of the scale and calm in the middle,
+paired with a wide monospace for anything that ticks. Sentence case everywhere; uppercase exists only
+for the micro Label.
 
 ### Hierarchy
 
-- **Hero** (800, 56px, 0.95, −0.035em): the one-per-screen statement. Used sparingly.
-- **Display 1** (800, 40px, 1.0, −0.025em): screen titles (`h1`).
-- **Display 2** (700, 30px, 1.05, −0.025em): section headings (`h2`).
-- **Title** (700, 22px, 1.15, −0.025em): the subject name on a lesson card, card headings (`h3`).
-- **Body Large** (500, 17px, 1.45): the lead paragraph and sheet body.
+- **Hero** (700, 56px, 0.95, −0.035em): the one-per-screen statement (`u-hero`).
+- **Display** (700, 40px, 1.0, −0.03em): screen titles (`h1`).
+- **Headline** (700, 24px, 1.05, −0.03em): section headings and the top-bar title. Resized from the vendored 30px in the `index.css` mapping layer.
+- **Title** (700, 18px, 1.15, −0.03em): the subject name on a card. Resized from the vendored 22px likewise.
+- **Body Large** (500, 17px, 1.45): lead paragraph, sheet body.
 - **Body** (500, 15px, 1.5): default UI text.
 - **Caption** (500, 13px, 1.4): room, teacher, hints, chip labels.
-- **Label / Micro** (700, 11px, 1.2, 0.14em, uppercase): eyebrows, period numbers, badge text.
-- **Data** (JetBrains Mono, 500, 15px, 1.3, 0.01em, `tabular-nums`): every time, countdown, and
-  period boundary.
+- **Label** (700, 11px, 1.2, 0.02em, uppercase): eyebrows, badge text (`u-eyebrow`).
+- **Data** (Martian Mono 500, 15px, 1.3, 0.01em, `tabular-nums`): every time, countdown and period boundary (`u-data`); the glance countdown is larger at 17px semibold.
 
 ### Named Rules
 
-**The Tabular Time Rule.** Anything that is a time, a countdown, or a number that ticks is set in
-JetBrains Mono with `font-variant-numeric: tabular-nums` (the `u-data` utility). A clock that
-reflows as its digits change is a broken clock.
+**The Tabular Time Rule.** Anything that is a time, a countdown, or a number that ticks is Martian Mono with `tabular-nums` (`u-data`). A clock that reflows as its digits change is a broken clock.
 
-**The Tight Display Rule.** Display type is always set BIG and tight — never above 1.05 line-height,
-never with positive tracking. If a heading needs to be small to fit, it is a Title, not a shrunken
-Display.
+**The Tight Display Rule.** Display type is set big and tight — line-height at most 1.05, tracking never positive. If a heading must be small to fit, it is a Title.
 
-**The Eyebrow Rule.** Uppercase appears only at Label size with 0.14em tracking (the `u-eyebrow`
-utility). Uppercase at body size or larger does not exist in this system.
+**The Eyebrow Rule.** Uppercase appears only at Label size (11px) via `u-eyebrow`. Uppercase at body size or larger does not exist here.
 
 ## Layout
 
-A single-column phone stack, capped at a 420px design width (`--screen-max`) and centred on anything
-wider. Side padding is a constant 20px gutter (`--gutter-screen`); stacked cards sit 12px apart
-(`--gap-card`); screen sections are separated by 28px (`--gap-section`). The spacing base is 4px, but
-the product deliberately leans on the larger steps — 16, 20, 24, 28 — which is where the "generous"
-feel comes from.
+A single-column phone stack capped at `--screen-max` (430px on phones, centred beyond that) with a
+constant 20px gutter, 12px between stacked cards and 28px between sections. Spacing is a 4px base
+that leans on the larger steps (16, 20, 24, 28). Safe-area insets are read at the root as
+`--app-inset-top` / `--app-inset-bottom` because the app runs full-bleed in the WebView; `--nav-safe`
+(nav height 64 + inset 16 + 20 + safe inset, growing by 60px when a dock is mounted) reserves the end
+of scrollable content.
 
-Chrome is asymmetric on purpose. The **top bar** (56px min-height) is *not* sticky: it scrolls away
-with the content, consistent with the Day screen's swipe paging the whole block — header included —
-rather than a fixed chrome piece sitting above a scrolling list. The **bottom nav** is the only
-fixed element — a floating 64px pill inset 16px from the screen edges, sitting above
-`env(safe-area-inset-bottom)`. Content that could slide under it reserves that height plus the inset.
+Responsive: **phone** is the reference and takes no prefix. **Tablet** (≥768px wide and ≥500px tall)
+raises `--screen-max` to 720px; **desktop** (≥1024px) to 880px. A phone in landscape stays on the phone
+layout (the height floor). On tablet and desktop `SideNav` replaces the bottom stack (icon rail 84px
+on tablet, 232px expanded on desktop), the status bar height is 0 and neither `StatusBar` nor
+`DateDock` mounts; Home gains its `HomeSide` column and the glance banner.
 
-One horizontal scroller remains — the class list — and hides its scrollbar (`no-scrollbar`); on a
-phone the bar is pure noise. Safe-area insets are read at the root as
-`--app-inset-top` / `--app-inset-bottom`, because the app runs full-bleed edge-to-edge inside the
-WebView. There are no desktop breakpoints: this is a phone design that centres, not a responsive
-grid that reflows.
+**Phone chrome.** Two fixed layers frame the viewport: a read-only **StatusBar** (36px under the top
+inset, sync freshness only, no interactive controls) and the **bottom stack** — `DateDock` (Home and
+Week) or `NowDock` (a live or upcoming lesson), sitting 8px above the single-surface frosted `TabBar`.
+Everything else scrolls, including each screen's own header (the 56px top bar is not sticky). The only
+horizontal scroller is the class list, hiding its scrollbar (`no-scrollbar`).
 
-**The Fixed Chrome Rule (amends the former One Fixed Thing Rule).** On phone layouts, two fixed layers frame the viewport: the thin read-only **status bar** at the top (class or teacher name + sync freshness, no interactive controls) and the **bottom stack** (the compact date dock on Home and Week, sitting 8px above the single-surface bottom nav bar). Everything else scrolls, including each screen's own header. On wide layouts (tablet and desktop), `SideNav` replaces the bottom stack and neither the status bar nor the date dock mounts.
+**The Fixed Chrome Rule.** On phones exactly the StatusBar and the bottom stack are fixed; nothing else is. Wide layouts mount neither.
 
 ## Elevation & Depth
 
-Depth is **structural layering**: shadow depth encodes rank, and reading the shadow tells you where
-something sits in the stack. The vocabulary is deliberately small, soft, and blue-tinted — every
-shadow is built from the deep navy `#060b3d` at low alpha with a large negative spread, never a grey
-or black drop shadow. The result is diffuse and low-contrast: surfaces look lit rather than cut out.
-
-The stack, bottom to top: flat ground → sunken track → card → raised (bottom sheet) → nav.
+Depth is **light, not lines**, and the model differs by theme. In **Day**, shadows are soft, ink-tinted
+(`rgba(18,20,25,…)`) and ranked: flat ground → sunken track → card → raised (sheet) → float (tab bar).
+In **Night**, a shadow is invisible, so surface contrast does the work (`#0d1117` ground → `#161c24`
+card → `#1c232d` raised), cards get only a faint top rim, and floating chrome drops to plain black. The
+chrome itself is liquid glass: frosted, saturated, and edged with a 1px directional specular rim.
 
 ### Shadow Vocabulary
 
-- **Card** (`0 2px 6px rgba(6,11,61,.05), 0 12px 28px -12px rgba(6,11,61,.12)`): the resting state of
-  every white card, chip, input, and pill.
-- **Raised** (`0 4px 10px rgba(6,11,61,.06), 0 24px 48px -20px rgba(6,11,61,.2)`): the bottom sheet —
-  the only thing that sits above content.
-- **Nav** (`0 8px 24px rgba(6,11,61,.24)`): the floating black nav pill, the top of the stack.
-- **Brand** (`0 12px 32px -12px rgba(30,58,255,.55)`): the coloured glow under the primary button
-  only. It is the button's identity, not an elevation step.
-- **Inset Hairline** (`inset 0 0 0 1px var(--border-hairline)`): the one inner shadow the system
-  allows, standing in for a border on white-on-white controls.
+- **Card** (Day `0 1px 2px rgba(18,20,25,.05), 0 8px 20px -12px rgba(18,20,25,.14)`; Night `inset 0 1px 0 rgba(255,255,255,.05)`): resting cards, chips, inputs.
+- **Raised** / **Nav** (Day `0 16px 36px -12px rgba(18,20,25,.24)`; Night `0 16px 40px -8px rgba(0,0,0,.7)`): bottom sheet, `NowDock`, featured deep fields.
+- **Brand / glow** (Day `0 20px 44px -20px rgba(181,104,15,.32)`; Night `0 24px 60px -20px rgba(242,181,107,.32)`): the live glance panel only — the lamp's light, not an elevation step.
+- **Inset Hairline** (`inset 0 0 0 1px var(--border-hairline)`): stands in for a border on card-on-card controls.
+- **Glass chrome** (`--nav-glass-shadow`, Day `0 14px 36px -10px rgba(18,20,25,.18), 0 2px 10px -2px rgba(18,20,25,.08), inset 0 1px 0 rgba(255,255,255,.78)`): `.u-nav-glass` capsules; the schedule slabs, room capsules and live row have sibling `--schedule-*-shadow` tokens.
+
+### Glass
+
+`.u-nav-glass` (TabBar, DateDock, glass buttons) is a 180° white-to-grey gradient fill (Night: slate) with
+`blur(20px) saturate(165%)` and a `::before` 1px rim drawn by `mask-composite: exclude` at 148°, bright
+on the top-left and bottom-right curves. `.u-schedule-glass` (+ `-live`, `-chip`) shares that grammar at
+`blur(20px) saturate(168%)`, rising to `24px / 190%` while the weather tile's ambient sky is expanded so
+the slabs refract it. Glass blur is also used by the glass `IconButton` variant (`--blur-glass`) and the
+sheet scrim (`--blur-scrim`, 8px).
+
+### Tone fields
+
+`.u-tone-field` is the subject's grainy field: three radial gradients mixed only from the subject's tone,
+its ink, `on-deep` and `shade`, plus an SVG fractal-noise grain at 32% overlay. `.u-tone-field-deep`
+darkens the whole card toward `shade` so `on-deep` text holds 4.5:1; Indigo (`data-tone-dark`) darkens
+toward `shade` instead of toward its light ink. These are the only gradients that carry colour in the
+system (glass, buttons and tab bar use neutral sheen gradients), and no text sits on a bare gradient.
 
 ### Named Rules
 
-**The Tinted-Card Rule.** A card filled with a subject accent gets **no shadow**. Its colour already
-separates it from the page, and stacking a navy shadow under a pastel fill muddies the tint.
+**The Tinted-Card Rule.** A card filled with a subject tone gets no shadow; its colour already separates it. (The one featured deep field, the subject on now, takes `shadow-raised` as the lifted live object.)
 
-**The Blue-Shadow Rule.** Shadows are navy-tinted, never grey or black — in light mode. In dark mode
-a navy shadow is invisible, so the system drops to plain black shadows for floating chrome and
-otherwise conveys depth through surface contrast (`#0b0c10` ground → `#16181f` card).
+**The Night Shadow Rule.** At night nothing is navy or blurred-grey: cards carry a faint rim, and floating chrome uses plain black. Depth comes from the surface ladder.
 
-**The Two Blurs Rule.** Backdrop blur exists in exactly two places: glass chrome over the blue hero
-(18px) and the modal scrim (8px). Blur over a white surface does not exist.
+**The Glass Edge Rule.** Every glass surface gets its edge from the shared specular rim, never from a border.
 
 ## Shapes
 
-Generously round, never sharp. The radius scale runs 8 / 12 / 18 / 24 / 28 / 36 / pill, with **28px
-(`--radius-xl`) as the standard card** and 36px reserved for the hero card and the bottom sheet's top
-corners. 8px is the *smallest* radius in the system — there is no 4px, and there is no 0.
+Generously round, never sharp. The radius scale is **10 / 16 / 22 / 30px** plus pill: `xs` 10 (week
+cells), `sm` 16 (tiles), `md`/`xl` 22 (the standard card and rows), `lg`/`2xl` 30 (the glance panel,
+subject cards and the bottom sheet's top corners). There is no square corner and nothing below 10px.
+User settings can move the standard card radius to another step of the same scale (`.radius-*`).
 
-Anything that can be pressed is a pill: buttons, chips, badges, inputs, the nav, the segmented track,
-the active nav item, the freshness indicator. The one deliberate exception is `--radius-squircle`
-(30%), used for app-icon-style tiles like the empty-state icon well.
+Anything pressable is a pill: buttons, chips, badges, inputs, the tab bar, docks, the segmented track,
+room capsules. The deliberate exceptions are `--radius-squircle` (30%) for app-icon tiles, circles for
+period jewels and icon buttons, and the two square hero tiles on Home at the 22px card radius.
+Borders are rare; separation on card-over-card uses an inset ring (`shadow-hairline`, `inset-ring-2`
+for focus and error) so a control's box never shifts between states. The one structural border is the
+side rail's right hairline.
 
-Borders are rare. Where separation is needed on white-over-white, the system uses an **inset ring**
-(`shadow-hairline`, or `inset-ring-2` for focus and error) rather than a border, so the control's box
-size never shifts between states.
-
-**The No-Square Rule.** Nothing in this system has a square corner. If a new element needs one, the
-element is wrong, not the rule.
+**The No-Square Rule.** If a new element needs a square corner, the element is wrong, not the rule.
 
 ## Components
 
 Rounded, tactile, decisive. Everything is a pill or a generous radius; press is a real scale-down;
-selection is a full fill swap to solid black, never a border or an underline. The system commits
-rather than hints.
+selection is a swap to the theme's inverse, never a border or underline.
 
 ### Buttons
 
-- **Shape:** always a pill (`999px`). Three heights: 36 / 44 / 54px (`sm` / `md` / `lg`). Set in
-  semibold body (`font-semibold`).
-- **Primary:** Night / Day tactile ink fill (`.u-btn-primary`, subtle top-lit gradient over `--bg-inverse` with `--text-on-inverse`, directional top specular highlight, and grounded shadow) — neutral by design, no brand glow or lamp fill. `inverse` shares the identical treatment for callers on a light hero.
-- **Variants:** `outline` (`.u-btn-outline` — frosted translucent fill with a 1px hairline + top highlight), `glass` (`.u-nav-glass` — liquid-glass pill with directional specular rim for floating chrome such as the welcome tour's Skip/Back controls), `ghost` (`.u-btn-ghost` — transparent, tinting softly on hover), `onBrand` (`.u-btn-on-brand` — light fill with ink text), `danger` (`.u-btn-danger` — `--status-danger` with `--on-danger` text and top highlight, reserved for destructive actions). None of the variants carry the brand blue or lamp fill — see The Neutral Button Rule.
-- **Press:** transform only — `scale(0.97)` over 90ms on `--ease-out`. Colour does not change on
-  press. Hover tints exist for desktop previews but the device has no hover.
-- **Disabled:** 38% opacity, pointer events off.
-- **Icon sizes are bound to the button size:** 16 / 18 / 20px. Never a free choice.
+- **Shape:** a pill; heights 36 / 44 / 54px (`sm` / `md` / `lg`); icon sizes bound to size (16 / 18 / 20px); label semibold.
+- **Primary:** `.u-btn-primary` — a top-lit neutral gradient over `--bg-inverse` with `--text-on-inverse`, specular top highlight, grounded shadow. `inverse` is identical.
+- **Variants:** `outline` (frosted translucent fill, hairline, top highlight), `glass` (`.u-nav-glass` pill for floating controls such as the tour's Skip/Back), `ghost` (transparent, soft tint on hover), `onBrand` (light fill, ink text), `danger` (`--status-danger` with `on-danger` text, destructive only).
+- **Press:** `scale(0.97)` over 90ms on `--ease-out`; colour does not change on press. Disabled: 38% opacity, no pointer events.
 
-### Chips
+### Chips and Badges
 
-- **Style:** 32px pill, caption-size bold text, white fill with a hairline inset ring.
-- **Selected:** a full override to a solid near-black fill with white text — the ring is removed, not
-  layered on. `aria-pressed` carries the state.
-- **Behaviour:** renders as a `<button>` when it does something and a `<span>` when it doesn't, so a
-  decorative chip never lands in the tab order.
+- **Chip:** 32px pill, caption bold, card fill with a hairline inset ring. **Selected:** solid inverse with on-inverse text, ring removed. Renders `<button>` when pressable and `<span>` otherwise.
+- **Badge:** 22px pill, micro label; tones `brand`, `ink`, `lamp`, `success`, `warning` (caution ink on straw), `danger`, `quiet`. The exact status word (*Atcelta*, *Pārcelta*, …) is a Badge.
 
 ### Cards / Containers
 
-- **Corner style:** 28px (`--radius-xl`) by default; 36px for hero and sheet.
-- **Background:** white on the cool paper ground; ten tones available (surface, sunken, brand, ink,
-  and the six subject accents, each with its ink pair), plus custom tones with dynamic readable ink.
-- **Shadow strategy:** `shadow-card` at rest; tinted tones get none (see The Tinted-Card Rule).
-- **Border:** none. Ever.
-- **Internal padding:** 16px default.
-- **Press:** a card that has an `onClick` scales to `0.94` — tiles press deeper than buttons do.
+- **Corner:** 22px (`--radius-xl`) default; 30px for the glance panel, subject cards and sheets.
+- **Background:** `surface`, sunken, brand, and the six subject tones each with its ink, plus custom tones with computed ink.
+- **Shadow:** `shadow-card` at rest (a faint rim at night); tinted tones get none. **Border:** none. **Padding:** 16px default (12px on subject cards).
+- **Press:** an interactive card scales to `0.97` (`--press-scale-tile`); both press scales collapse to 1 under reduced motion.
+
+### Subject Card
+
+A banner card: a grainy `.u-tone-field` (88px, `md` radius) with the overlapping subject mark, the
+name with code and teachers, and a stats row in Martian Mono; the whole card opens the subject sheet.
+The subject on now becomes the **deep** card — the entire card is its darkened tone field with `on-deep`
+text, one per screen.
 
 ### Icon Buttons
 
-- **Shape:** a circle — `size-9` / `size-11` / `size-13` (36 / 44 / 48px) at the pill radius, with
-  the glyph bound to the size (16 / 20 / 22px).
-- **Variants:** `light` (white with a hairline inset ring — the default), `solid` (near-black),
-  `brand` (an alias of `solid`, kept for callsites that want to say "the emphasized one" — it no
-  longer carries the electric fill, see The Neutral Button Rule), `bare` (transparent, tinting to
-  sunken on hover), and `glass`.
-- **Glass is conditional.** The `glass` variant — 14% white over an 18px backdrop blur with a
-  28%-white inset ring — is legal **only over the blue hero**. Never over white, never as a frosted
-  card on the app ground (see The Two Blurs Rule).
-- **A label is mandatory.** An icon-only control has no accessible name without one; the label
-  serves as both `aria-label` and `title`.
+- **Shape:** circles at 36 / 44 / 48px with glyphs at 16 / 20 / 22px. **Variants:** `light` (card with hairline ring, default), `solid` (inverse), `brand` (alias of `solid`), `bare` (transparent), `glass` (translucent glass fill, `--blur-glass` 20px, inset ring).
+- A label is mandatory: it is both `aria-label` and `title`.
 
 ### Inputs / Fields
 
-- **Style:** 52px white pill, optional leading icon at 18px, hairline inset ring, no border.
-- **Focus:** a 2px `--focus-ring` outline offset 2px, applied globally via `:focus-visible`.
-- **Error:** the hairline is swapped for a 2px danger inset ring; the hint doubles as the error
-  message and is wired through `aria-describedby`.
-- **Label:** an uppercase eyebrow above the field, never a floating or inline placeholder-label.
-- **Select** shares the same 52px pill, set in **bold** body with an 18px muted chevron at the
-  trailing edge. It is a native `<select>` with `appearance: none`, not a custom listbox: on Android
-  the native element opens the OS picker, which is the correct control on a touch device and keeps
-  working while JS is busy.
-- **Switch:** a 50×30 track with a 24px white thumb travelling 20px, electric when on and hairline
-  when off (darkened under `.dark`, since the DS off-track is a fixed light step that would glow).
-  The thumb travel is the *third* sanctioned spring, alongside the sheet and the nav pill.
+- **Style:** 52px card pill, optional 18px leading icon, hairline inset ring, no border. **Focus:** a global 2px `--focus-ring` (ink in Day, off-white in Night) outline, offset 2px, on `:focus-visible`. **Error:** hairline swapped for a 2px danger inset ring, hint wired through `aria-describedby`.
+- **Label:** an eyebrow above the field. **Select:** the same pill, bold body, 18px muted chevron, a native `<select>` so Android opens the OS picker.
+- **Switch:** 50×30 track, 24px thumb; off is a sunken fill with a 2px strong-border ring, on is the **lamp** with a `lamp-ink` thumb (one of the lamp's two sanctioned uses).
 
 ### Navigation
 
-- **Bottom nav:** a single floating frosted-glass capsule (`.u-nav-glass`), 64px tall, inset 16px
-  from the screen edges, sitting above `env(safe-area-inset-bottom)` with a `20px` backdrop blur
-  and a 1px directional specular rim catching light along its top-left and bottom-right curves.
-  Inactive slots stay compact icon-only (`flex-grow: 1`, minimum 48px touch target each); the
-  selected slot expands (`flex-grow: 1.9`) to reveal its label beside the icon.
-- **Primary tabs and More:** the schedule tabs (Home, Week, Changes — with a count badge capped at
-  `9+` when changes exist) occupy the primary slots. Personal tabs (Subjects, Transit, Settings)
-  fold into a single **More** slot that opens `MoreSheet` (a `BottomSheet` holding the class/teacher
-  identity row at the top followed by the personal destinations). When a role has only one visible
-  personal tab (e.g. a teacher's lone Settings tab, or a student who turned off Subjects and
-  Transit), that tab is promoted directly to a bar slot with no More sheet.
-- **Active state:** a translucent inner frosted glass lens (`.u-nav-pill`) glides beneath the tabs
-  on `--ease-spring` while the selected slot widens and smoothly reveals its label beside the
-  `--text-strong` active icon (`2.25px` stroke) via a `0fr → 1fr` grid-column expansion (exiting
-  faster on `--dur-fast`, entering with a 35ms lead-in so the label opens as the pill arrives).
-  When the active tab lives inside `MoreSheet`, the More slot holds the active pill and
-  `aria-current="page"`.
-- **Date dock & Now dock:** on Home and Week (phone layout), the contextual slot floating 8px above
-  the bottom bar morphs between `NowDock` (52px deep grainy subject capsule with live progress
-  filament and next-subject scratch-through when a lesson is live or upcoming) and `DateDock` (44px
-  frosted-glass pill `.u-nav-glass` holding previous/next stepping, the calendar `DatePicker`, a
-  "Today" jump when away, and a countdown chip to flip back to `NowDock`).
-- **Status bar:** on phone layout, a fixed 36px read-only strip below the top safe-area inset shows
-  the active class/teacher on the left and sync freshness (`role="status"`) on the right over
-  `bg-app` with a soft fade-out skirt. No interactive controls live in the status bar; manual
-  refresh is pull-to-refresh and identity switching lives in `MoreSheet`.
-- **Top bar:** 56px, scrolls with content, Display-2 title, with `app` and `brand` tones. The title
-  is a real `<h1>`, not styled text — a screen with no heading has an empty heading list.
-- **Segmented tabs:** a sunken pill track (4px padding) with a 36px white pill on the selected
-  segment, carrying `shadow-card` so the selection lifts out of its groove; unselected labels are
-  muted bold. Exposed as a **`radiogroup` with roving tabindex**, not a tablist — the segments pick a
-  value (theme, language, building) rather than swapping a panel, and arrow keys move between them.
+- **TabBar (phone):** one frosted `.u-nav-glass` capsule (`BottomNav`), 64px tall, inset 16px above the safe area. Inactive slots are icon-only (min 48px, 22px icon at 1.75 stroke); the selected slot grows to weight 1.9 and reveals its label beside a 2.25-stroke icon via a `0fr → 1fr` grid expansion, while a translucent `.u-nav-pill` lens glides beneath on `--ease-spring`. Schedule tabs (Home, Week, Changes with a `9+`-capped danger count) take the primary slots; personal tabs fold into a **More** slot that opens `MoreSheet` (identity row plus Subjects / Transit / Settings). A single visible personal tab is promoted straight into the bar. When the active tab lives in More, the More slot holds the lens and `aria-current`.
+- **DateDock / NowDock:** the contextual slot 8px above the bar, morphing on a Framer spring. `DateDock` is a 44px `.u-nav-glass` pill with previous/next, the calendar `DatePicker`, a "Today" jump and a countdown chip back to `NowDock`; `NowDock` is a 52px capsule on the subject's deep grainy field with a live progress filament, a soft glow beneath, and the next subject scratching through.
+- **StatusBar:** fixed 36px strip with sync freshness (`role="status"`) on the app ground and a 12px fade skirt that dissolves into the ambient weather sky. Nothing interactive.
+- **SideNav (tablet/desktop):** a card-filled rail with a hairline right border, wordmark, Schedule and Personal groups with eyebrow headings (expanded on desktop), 22px icons.
+- **Top bar:** 56px, scrolls with content, Headline title as a real `<h1>`.
+- **Segmented tabs:** sunken pill track (4px padding), 36px card pill on the selected segment with `shadow-card`; a `radiogroup` with roving tabindex.
 
-### Home Day Schedule (Liquid-Glass Slabs)
+### Home
 
-On the Home screen, the Day schedule uses continuous frosted-glass slabs (`.u-schedule-glass`) cut
-from the same `1px` directional specular-rim grammar (`mask-composite: exclude`) as `BottomNav` and
-`DateDock`, opening up to refract `WeatherAmbient` when the weather tile expands:
+Home has two blocks, the top always about *today*, the bottom a day browser.
 
-- **Collapsed phone horizon strip:** because `DateDock` and `SchoolTile` already show today's date
-  and countdown on phones, `DayHeader` collapses redundant "Today" and long-date rows into a single
-  compact horizon row holding the unified time-span + lesson/free-time capsule (`.u-schedule-glass-chip`),
-  the browsed day title when away from today, and the changes shortcut — pulling lessons high into
-  the first viewport. Wide layouts keep the inline `DatePicker` and day-stepping chevrons.
-- **Continuous slabs & connectors:** consecutive lessons in the same building share one glass slab
-  divided by hairlines and linked along the left period-jewel spine by a `1px` optical thread. Free
-  periods (`DayGap`), building switches (`DayBuildingBridge`), and the between-lesson clock
-  (`DayNowMarker`) split the glass into separate slabs; the active lesson lifts out onto its
-  subject's deep grainy tone field (`.u-tone-field u-tone-field-deep`, matching the featured
-  `SubjectCard`, `DayGlance`, and `NowDock`) with a bottom `3px` progress filament.
-- **Three-zone corridor scan:** each row pairs a dusk-toned period jewel (+ optional Martian Mono
-  times) on the left with the subject heading and quiet metadata in the center, and a recessed
-  liquid-glass room capsule (`.u-schedule-room-pill`) + accessible `StatusDot` on the right edge.
+- **Hero tiles:** a 2-column grid of square 22px tiles. `SchoolTile` is a lamp-tinted fluid canvas that rises with `schoolDayProgress` and tilts with `devicemotion` gravity (±28°, one-time iOS permission on tap); `WeatherTile` is the temperature over an animated 2D canvas sky. Tapping either expands it across the grid (`2fr 0fr`), the school tile to an `h:mm` countdown with a damped slosh, the weather tile washing the whole screen through `WeatherAmbient`.
+- **Horizon strip (phone):** `DayHeader` collapses the "Today" and long-date rows into one compact row — a `.u-schedule-glass-chip` with time span and lesson/free facts, the browsed-day title when away from today, and a changes shortcut. Wide layouts keep `DatePicker` and chevrons.
+- **Glass slabs:** consecutive lessons in one building share a `.u-schedule-glass` slab split by hairlines and joined by a 1px thread along the left period-jewel spine. Free periods (`DayGap`), building hops (`DayBuildingBridge`) and the between-lesson clock (`DayNowMarker`) split slabs. Each row is three zones: dusk-toned jewel with optional mono times, subject and quiet metadata, and a recessed `.u-schedule-room-pill` with a `StatusDot`.
+- **Live row:** the active lesson lifts onto its subject's deep tone field with a 3px bottom progress filament, matching the featured SubjectCard, glance and NowDock.
+- **Wide:** the glance banner and `HomeSide` (changes column) appear; tomorrow's preview shows once the day is over. Swipe/arrow paging moves the bottom block only.
 
-### Class Selector & Subgroup Picker (Liquid-Glass Matrix)
+### Class Selector & Subgroup Picker
 
-Shared by first-run onboarding (`mode="onboarding"`, anchored by the top-left `mark.svg`) and the
-in-app class switcher (`mode="switch"`, anchored by a glass Back button), `ClassSelector` and
-`SubgroupPicker` extend the Night / Day liquid-glass grammar over `bg-app` with a soft top `--lamp`
-ambient wash:
-
-- **Frosted search & dynamic filters:** a `.u-schedule-glass-chip` search capsule with one-tap clear
-  sits above a horizontal strip of dynamic Year (`1`–`4`) and Building filter pills derived from the
-  cached timetable (never hard-coded). Active filter pills swap to `bg-inverse text-on-inverse`.
-- **Department-indexed glass slabs:** pinned Favorites sit in their own `.u-schedule-glass` slab
-  above department-grouped slabs (`A`, `ATK`, `AV`, `DP`, `DT`…) holding a 2-column (3-column on
-  tablet/desktop) matrix of tactile class tiles (`min-h-15`) with class code, building caption, and
-  a trailing star toggle. Selecting a tile performs a full inverse ink swap (`bg-inverse
-  text-on-inverse`).
-- **Select-then-Continue & Subgroup step:** a bottom gradient-skirt CTA (`Continue · <class>`)
-  confirms the highlighted class, either committing immediately or stepping into the matching
-  liquid-glass `SubgroupPicker` (continuous `.u-schedule-glass` list slab + glass Skip button).
+Shared by onboarding (anchored by `mark.svg`) and the in-app switcher (glass Back button), over `bg-app`
+with a soft top lamp wash. A `.u-schedule-glass-chip` search capsule sits above Year and Building filter
+pills derived from the cached timetable; active pills are inverse. Favorites and department-grouped
+`.u-schedule-glass` slabs hold a 2-column (3 on tablet/desktop) matrix of class tiles; selecting one is a
+full inverse swap. A bottom-skirt `Continue · <class>` button commits or steps into the glass
+`SubgroupPicker`.
 
 ### Week Grid
 
-The whole week at a glance: a `36px + n` column grid with 6px gutters, mono period start-times down
-the left edge, and one 40px cell per lesson at the 12px radius.
+A `36px + n` column grid with 6px gutters, mono start-times on the left, and 40px cells at the 10px
+radius. Cells carry the subject tone with its ink pair and the short code in bold caption — the only
+place abbreviation is allowed; the full name rides along for assistive tech. Multi-period lessons span
+rows (`grid-row: span N`). Tone fills are the same in both themes. Empty cells are sunken blocks;
+cancelled cells are 40% opacity with a strikethrough. Today's header uses `brand-strong` ink, the rest
+are muted.
 
-- **Cells** carry the subject's accent as a full fill with the short subject code in bold caption —
-  **the only place in the system where abbreviation is allowed.** The unabbreviated name rides along
-  for assistive tech so a three-letter code is never the only thing announced.
-- **Cell Spanning:** When a lesson spans multiple consecutive periods, cells structurally span
-  across multiple period rows via `grid-row: span N`, preserving vertical time alignment while
-  eliminating redundant repeated cells.
-- **Cells keep their dark ink in both themes.** The accent fills are light pastels in dark mode too,
-  so near-black text stays the correct pairing. Custom colors adapt ink via `readableInk()`.
-- **Empty cells** are sunken blocks — a non-text grey, never a place for a string like "—" or
-  "free".
-- **Cancelled** cells are 40% opacity with a strikethrough, matching the day view.
-- **Today's column header** is electric; the others are muted. Headers are inert text by default and
-  become tappable shortcuts into that day only when a handler is supplied.
+### Colour Wheel & Custom Tone Controls
 
-### Color Wheel & Custom Tone Controls
-
-Interactive SVG color picker component (`ColorWheel`) used in `CustomizationSheet`:
-- **Wheel:** 220px circular SVG with radial hue and saturation gradients, controlled by touch or mouse drag.
-- **Value Slider:** Horizontal brightness track beneath the wheel.
-- **Swatches:** every colour option (subject tones, the custom-wheel dot, the app accent) is a
-  26px dot in a 44px hit area, spread across the row so the dots line up with the row's text
-  edge. Selection is a 2px `ring-strong` *offset* from the dot, never an inset ring, so it reads
-  on any fill — including the near-black "default" accent dot. A reset ("Auto") sits beside the
-  row's heading, never at the end of the swatch row, where it overflowed a 390px phone.
-- **Contrast Pair:** Dynamically updates `--subject-accent` and computes `--subject-ink` via `readableInk()`
-  so contrast is guaranteed before the tone is applied to cards, rows, and grid cells.
+A 220px SVG wheel with a brightness slider writes `--subject-accent` and computes `--subject-ink` via
+`readableInk()` before a tone is applied. Swatches are 26px dots in 44px hit areas; selection is a 2px
+offset ring, never an inset ring; reset ("Auto") sits beside the row heading.
 
 ### Skeleton
 
-A shimmer placeholder built as a 200%-wide linear gradient travelling right-to-left over 1.2s,
-sunken → hairline → sunken, at the 12px radius. It is built from **surface aliases, not base
-palette steps** — a literal `--ink-100 → --ink-200` gradient would flash bright on a dark card. It
-is `aria-hidden`; loading is announced by the screen, not by the placeholder.
+A 200%-wide gradient moving right-to-left over 1.2s, built from surface aliases (sunken → hairline →
+sunken) so it never flashes on a dark card; `aria-hidden`.
 
-### Lesson Card — the signature component
+### Lesson Card — the day-list component
 
-The one component the whole product is built around. A two-column grid: a time rail on the left
-(start time bold in tabular mono, end time smaller and muted, with a 4px pill-rounded colour rail
-beside them) and the content on the right (uppercase period eyebrow, an optional status badge, the
-subject at Title size, then room and teacher with 14px icons).
+A two-column grid: time rail (start bold mono, end muted, a 4px tone rail) and content (period eyebrow,
+optional Badge, subject at Title size, room and teacher). **Unfilled** is a card with the tone only on
+the rail; **Filled** takes the tone with its ink and no shadow; **Now** adds a 2px ink inset ring (the
+Home schedule uses the deep field instead); **Cancelled** is 55% opacity with a strikethrough and stays
+in place. Four visual states carry six domain statuses, the exact word arriving as a Badge.
 
-- **Unfilled (default):** white card, `shadow-card`, and the subject's accent appears *only* as that
-  4px rail. This is the normal density for a day's list.
-- **Filled:** the whole card takes the subject accent with its ink pair, and the shadow is dropped.
-- **Now:** a 2px electric inset ring around the unfilled card. No fill, no glow, no animation —
-  the ring alone.
-- **Cancelled:** 55% opacity plus a strikethrough on the start time and the subject name. The lesson
-  stays in place and stays readable; it is never removed from the list.
-- The visual treatment is deliberately four states while the domain has six. The exact word
-  (*Atcelta*, *Pārcelta*, *Aizvietota*, …) arrives as a `Badge`, so no domain meaning is lost to the
-  visual vocabulary.
+### Freshness Indicator and Refresh Toast
 
-### Freshness Indicator (Sync Status)
-
-A 30px white pill with an icon and a translated label: cloud/success when synced, a spinning
-refresh in brand when syncing, wifi-off in offline grey, triangle-alert in danger when failed, with
-an optional tabular "12 min ago" detail. Every data screen carries one. Saying where the data came
-from and how old it is is a content rule of this system, not decoration.
-
-### Refresh Toast
-
-An app-level (`ui/components/RefreshToast.tsx`, not a DS primitive) card pill with a success check
-and "Updated", floating 12px above the bottom nav. It appears for ~2.2s only after a *manual*
-refresh (pull-to-refresh, the top-bar button, Settings) that finished without errors; routine
-refreshes (open, resume, reconnect) and failures stay silent, since the freshness pill already
-turns red on failure. Non-modal, `pointer-events-none`, announced as a polite `role="status"`, and
-never stacked — a second refresh restarts the timer. It is the single sanctioned deviation from the
-"no Toast" rule below, and must not grow into a general notification system.
+A 30px card pill with icon and translated label (check, spinning refresh, wifi-off, triangle-alert) and
+an optional tabular age; every data screen carries one. `RefreshToast` (app-level, not a DS primitive)
+is a card pill that shows "Updated" for ~2.2s after a manual refresh only, polite `role="status"`,
+`pointer-events-none`, never stacked.
 
 ### Bottom Sheet & Feedback Sheet
 
-The only modal surface in the system — the DS ships no Dialog or Tooltip, and none should be added.
-36px top corners, white, `shadow-raised`, entering with a 24px rise on the spring easing over 240ms;
-the scrim is navy at 56% over an 8px blur, fading in over 160ms. Bottom padding reserves the safe-area
-inset.
-
-- **Height:** the sheet is a flex column capped at
-  `calc(var(--app-viewport-height) - var(--app-inset-top) - 12px)`, with the grab handle, title row
-  and footer pinned and the body scrolling between them. Callers hand it plain content — **never a
-  `vh`-sized scroller of their own.** iOS Safari resolves `vh` against the *large* viewport (address
-  bar and toolbar retracted), so a `vh`-sized sheet anchored to `bottom: 0` is taller than the screen
-  really is: it climbs over the app header and carries its own handle, title and close button off the
-  top. `--app-viewport-height` is `100dvh` where the engine has it (`src/index.css`), `100vh`
-  otherwise; the 12px keeps a strip of scrim visible under the status bar.
-
-- **Full-bleed root on iPhone.** Installed to the Home Screen (`display-mode: standalone`), iOS
-  resolves `100%`/`dvh` to a viewport that stops short of the home-indicator strip and leaves a black
-  band under the tab bar. `html`, `body` and `#root` are therefore pinned `position: fixed; inset: 0`
-  in standalone mode (`src/index.css`).
-
-- **FeedbackSheet:** Used for in-app suggestions and bug reporting. Houses segmented chip toggles
-  ("suggestion" / "issue"), a clean textarea with character counter, and a pill submit button with
-  `send` and `check` feedback states.
+The one modal surface. 30px top corners, card fill, `shadow-raised`, entering with a 24px rise on the
+spring easing over 240ms; the scrim is `--surface-overlay` over an 8px blur. The sheet is a flex column
+capped at `calc(var(--app-viewport-height) - var(--app-inset-top) - 12px)` with handle, title and
+footer pinned and the body scrolling — callers never add a `vh` scroller (iOS resolves `vh` against the
+large viewport; `--app-viewport-height` is `100dvh` where available). In iOS standalone mode `html`,
+`body` and `#root` are `position: fixed; inset: 0` to remove the black band under the bar.
+`FeedbackSheet` adds segmented toggles, a counted textarea and a pill submit with send/check states.
+The DS also exports a Radix `Tooltip` primitive (mounted via `TooltipProvider` in `App.tsx`) that no
+screen currently uses; the bottom sheet remains the only modal.
 
 ### Empty State
 
-The only centred surface in the system; everything else is a full-width stack or a grid. A white
-28px card with a squircle brand-tint icon well, a Title heading, and at most 260px of muted body
-copy. **Copy rule: empty states stay flat.** "Saturday is clear. Enjoy it." — no apology, no
-cheerleading, no exclamation mark.
+The one centred surface: a 22px card with a squircle icon well, Title heading and at most 260px of
+muted copy. Empty states stay flat: "Saturday is clear. Enjoy it." — no apology, no exclamation.
 
 ### Motion
 
-Four durations (90 / 160 / 240 / 380ms) and one default easing (`cubic-bezier(.2,.8,.2,1)`). A fade
-is always paired with a small translate — never a fade alone. The spring easing
-(`cubic-bezier(.34,1.4,.64,1)`) is permitted in exactly three places: the bottom sheet's entrance,
-the nav's active pill growing, and the switch thumb's travel. Nothing else bounces. (The DS's own
-comments say "two"; the switch predates that note and is the third. Three is the shipped truth.) Press is `scale(0.97)` on controls and
-`scale(0.94)` on tiles, at the 90ms instant duration. Under `prefers-reduced-motion` the duration
-tokens collapse to 1ms and the press scales become 1, with a blanket transition/animation backstop
-for anything animating outside the tokens.
+Four durations (90 / 160 / 240 / 380ms) and one default easing `cubic-bezier(.2,.8,.2,1)`; a fade is
+always paired with a small translate. The spring easing `cubic-bezier(.34,1.4,.64,1)` is used on the
+sheet entrance, the TabBar lens and slot growth, and the switch thumb; the dock morph uses a Framer
+spring (stiffness 460, damping 24) and the dock content unblurs in over 200ms. Nothing else bounces.
+Under `prefers-reduced-motion` (and the explicit `.reduce-motion` setting) the fast/base/slow durations
+collapse to 1ms, press scales become 1, and a blanket 0.01ms backstop covers anything outside the tokens.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** use the semantic aliases (`bg-card`, `text-muted`, `shadow-card`, `rounded-xl`) rather than
-  base palette steps, so both themes follow without a `dark:` override.
-- **Do** set every time, countdown, and period boundary in the `u-data` utility with tabular figures.
-- **Do** express selection as a fill swap to solid near-black — chips, day tiles, and nav items all
-  do this and should keep doing it.
-- **Do** give the current lesson the 2px electric inset ring and nothing more.
-- **Do** keep cancelled lessons in place at 55% opacity with a strikethrough; they are information,
-  not clutter.
-- **Do** compute contrasting text color via `readableInk()` whenever custom user subject colors are rendered.
-- **Do** support structural row spanning in `WeekGrid` for multi-period combined lessons.
-- **Do** set button label weight to semibold (`font-semibold`).
+- **Do** use semantic aliases (`bg-card`, `text-muted`, `shadow-card`, `rounded-xl`, `bg-inverse text-on-inverse`) so both themes follow without a `dark:` override.
+- **Do** set every time, countdown and period boundary in `u-data` with tabular figures.
+- **Do** express selection as a swap to the theme's inverse — chips, class tiles, filter pills and nav items all do this.
+- **Do** keep the lamp to the lesson on now and a switch that is on, at most two per screen.
+- **Do** compute contrasting text with `readableInk()` for any custom subject colour, and pair every tone with its ink.
+- **Do** keep cancelled lessons in place at 55% opacity with a strikethrough.
+- **Do** give glass surfaces the shared specular rim and the 20px blur; keep schedule text at 4.5:1 or better over them.
 - **Do** state data freshness on any screen that shows school data.
 - **Do** pair every fade with a small translate.
-- **Do** keep 44px as the floor for any hit target, and reserve the 64px nav height plus its 16px
-  inset at the bottom of scrollable content.
-- **Do** re-pull `src/ds/tokens/*.css` from the design system when a token needs to change —
-  `dark.css` and `fonts.css` are the two authored-here exceptions and say so in place.
+- **Do** keep 44px as the floor for any hit target and reserve `--nav-safe` at the end of scrollable content.
+- **Do** re-pull `src/ds/tokens/*.css` from the design system when a token needs to change — `dark.css` and `fonts.css` are the authored-here exceptions.
 
 ### Don't:
 
-- **Don't** use a subject accent to mean anything. It is an index (see The Index Rule); status has
-  its own four colours.
-- **Don't** render a custom subject background color without verifying ink contrast via `readableInk()`.
-- **Don't** use EduPage's server-supplied subject hex, raw hex of any kind, or stock Tailwind palette
-  colours (`slate-500`, `amber-100`).
-- **Don't** put a shadow under a tinted card, or a navy-tinted shadow anywhere in dark mode.
-- **Don't** give anything a square corner, or a radius below 8px.
-- **Don't** draw a border where an inset ring will do, and don't add borders to cards at all.
-- **Don't** add a second modal surface — no Dialog, no Tooltip. The bottom sheet is it. The one
-  non-modal exception is the "updated" confirmation (see Refresh Toast).
-- **Don't** make the top bar sticky; the bottom nav is the only fixed element.
-- **Don't** let anything bounce except the bottom sheet's entrance, the nav's active pill, and the
-  switch thumb.
-- **Don't** use blur over a white surface.
-- **Don't** put emoji or unicode-as-icon (`★`, `✓`, `→`) in the UI; use `<Icon>`, which is bundled
-  Lucide at 2px stroke on a 24px grid.
+- **Don't** use a subject tone to mean anything; status has its own signals.
+- **Don't** render a custom subject colour without verifying ink contrast via `readableInk()`.
+- **Don't** use EduPage's server-supplied subject hex or stock Tailwind palette colours (`slate-500`, `amber-100`); use the aliases and tokens.
+- **Don't** put a lamp fill on a button, heading or any text-styled control.
+- **Don't** put a shadow under a tinted card, or a navy-tinted or grey shadow at night.
+- **Don't** give anything a square corner or a radius below 10px.
+- **Don't** draw a border where an inset ring will do, and don't border cards.
+- **Don't** add a second modal surface; the bottom sheet is it. The one non-modal exception is the "Updated" toast.
+- **Don't** add fixed chrome beyond the StatusBar and bottom stack on phones, and don't make the top bar sticky.
+- **Don't** bounce anything beyond the sheet entrance, TabBar lens and slots, switch thumb and dock morph.
+- **Don't** put blur on content cards or the page ground; blur belongs to glass chrome, schedule slabs, glass icon buttons and the scrim.
+- **Don't** put emoji or unicode-as-icon (`★`, `✓`, `→`) in the UI; use `<Icon>` (bundled Lucide, 24px grid).
 - **Don't** set uppercase above 11px Label size.
-- **Don't** drift toward Material 3 components, Material elevation, or Material colour roles.
+- **Don't** drift toward Material 3 components, elevation or colour roles.

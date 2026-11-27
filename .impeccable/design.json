@@ -1,230 +1,839 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-14T23:00:00Z",
+  "generatedAt": "2026-11-27T19:54:40.000Z",
   "title": "Design System: Stundio",
   "extensions": {
     "colorMeta": {
-      "studio-electric": {
+      "lamp": {
         "role": "primary",
-        "displayName": "Studio Electric",
-        "canonical": "#1e3aff",
+        "displayName": "Lamp",
+        "canonical": "#f2b56b",
         "tonalRamp": [
-          "#060b3d",
-          "#0a1568",
-          "#0f1fa0",
-          "#1730d6",
-          "#1e3aff",
-          "#4a5cff",
-          "#7a8aff",
-          "#adb9ff"
+          "#2e0000",
+          "#4d1a00",
+          "#6d3900",
+          "#8f5800",
+          "#b2792b",
+          "#d69a50",
+          "#fbbd73",
+          "#ffe197"
         ]
       },
-      "electric-strong": {
+      "lamp-ink": {
         "role": "primary",
-        "displayName": "Electric Strong",
-        "canonical": "#1730d6"
-      },
-      "electric-deep": {
-        "role": "primary",
-        "displayName": "Deep Navy Ink",
-        "canonical": "#060b3d"
-      },
-      "electric-tint": {
-        "role": "primary",
-        "displayName": "Electric Tint",
-        "canonical": "#edf0ff"
-      },
-      "app-ground": {
-        "role": "neutral",
-        "displayName": "Cool Paper",
-        "canonical": "#f6f7fa",
+        "displayName": "Lamp Ink",
+        "canonical": "#2a1700",
         "tonalRamp": [
-          "#0b0c10",
-          "#2a2d36",
-          "#5b6070",
-          "#868c9e",
-          "#b9bfce",
-          "#dde1ea",
-          "#edeff4",
-          "#f6f7fa"
+          "#1f0d00",
+          "#3b270d",
+          "#59432a",
+          "#786147",
+          "#9a8166",
+          "#bca387",
+          "#e0c6a9",
+          "#ffeacc"
         ]
       },
-      "surface-card": {
+      "lamp-mark-day": {
+        "role": "primary",
+        "displayName": "Lamp Mark (Day)",
+        "canonical": "#b5680f",
+        "tonalRamp": [
+          "#340000",
+          "#560c00",
+          "#782f00",
+          "#9a5000",
+          "#be711e",
+          "#e39247",
+          "#ffb56b",
+          "#ffd98f"
+        ]
+      },
+      "lamp-text-day": {
+        "role": "primary",
+        "displayName": "Lamp Text (Day)",
+        "canonical": "#8f4d07",
+        "tonalRamp": [
+          "#310000",
+          "#521300",
+          "#733300",
+          "#955312",
+          "#b97339",
+          "#dd955c",
+          "#ffb87e",
+          "#ffdca1"
+        ]
+      },
+      "lamp-text-night": {
+        "role": "primary",
+        "displayName": "Lamp Text (Night)",
+        "canonical": "#f4bd7a",
+        "tonalRamp": [
+          "#2b0100",
+          "#4a1d00",
+          "#6a3b00",
+          "#8b5a0c",
+          "#ae7a37",
+          "#d19c59",
+          "#f6bf7c",
+          "#ffe39f"
+        ]
+      },
+      "day-ground": {
         "role": "neutral",
-        "displayName": "Card White",
-        "canonical": "#ffffff"
+        "displayName": "Day Ground",
+        "canonical": "#ebeaee",
+        "tonalRamp": [
+          "#121114",
+          "#2c2b2e",
+          "#48474a",
+          "#666569",
+          "#868589",
+          "#a8a7ab",
+          "#cbcace",
+          "#efeef2"
+        ]
       },
-      "surface-sunken": {
+      "day-card": {
         "role": "neutral",
-        "displayName": "Sunken",
-        "canonical": "#edeff4"
+        "displayName": "Day Card",
+        "canonical": "#f8f8fa",
+        "tonalRamp": [
+          "#111113",
+          "#2b2b2d",
+          "#474749",
+          "#666667",
+          "#868688",
+          "#a7a7a9",
+          "#cacacc",
+          "#eeeef0"
+        ]
       },
-      "surface-inverse": {
+      "day-raised": {
         "role": "neutral",
-        "displayName": "Near-Black Ink",
-        "canonical": "#0b0c10"
+        "displayName": "Day Raised",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#121212",
+          "#2b2b2b",
+          "#484848",
+          "#666666",
+          "#868686",
+          "#a8a8a8",
+          "#cacaca",
+          "#eeeeee"
+        ]
       },
-      "text-body": {
+      "day-sunken": {
         "role": "neutral",
-        "displayName": "Reading Ink",
-        "canonical": "#2a2d36"
+        "displayName": "Day Sunken",
+        "canonical": "#e0dfe5",
+        "tonalRamp": [
+          "#121115",
+          "#2b2b2f",
+          "#48474c",
+          "#66656a",
+          "#86858b",
+          "#a8a7ac",
+          "#cacacf",
+          "#eeedf4"
+        ]
       },
-      "text-muted": {
+      "day-panel": {
         "role": "neutral",
-        "displayName": "Muted Ink",
-        "canonical": "#5b6070"
+        "displayName": "Day Panel",
+        "canonical": "#dedce6",
+        "tonalRamp": [
+          "#121017",
+          "#2c2a32",
+          "#48464e",
+          "#66656d",
+          "#86858e",
+          "#a8a6b0",
+          "#cbc9d3",
+          "#efedf7"
+        ]
       },
-      "border-hairline": {
+      "day-ink": {
         "role": "neutral",
-        "displayName": "Hairline",
-        "canonical": "#dde1ea"
+        "displayName": "Day Ink",
+        "canonical": "#121419",
+        "tonalRamp": [
+          "#101116",
+          "#292b31",
+          "#45484e",
+          "#63666c",
+          "#83868d",
+          "#a5a8af",
+          "#c7cad2",
+          "#ebeef6"
+        ]
       },
-      "status-success": {
-        "role": "tertiary",
-        "displayName": "Reserved Success Green",
-        "canonical": "#0b8a4e"
+      "day-body": {
+        "role": "neutral",
+        "displayName": "Day Body",
+        "canonical": "#2e3038",
+        "tonalRamp": [
+          "#101118",
+          "#292b33",
+          "#454750",
+          "#63666f",
+          "#83868f",
+          "#a5a7b1",
+          "#c7cad4",
+          "#ebeef9"
+        ]
       },
-      "status-danger": {
-        "role": "tertiary",
-        "displayName": "Reserved Danger Red",
-        "canonical": "#d92020"
+      "day-muted": {
+        "role": "neutral",
+        "displayName": "Day Muted",
+        "canonical": "#5d606b",
+        "tonalRamp": [
+          "#0f111a",
+          "#282b34",
+          "#444752",
+          "#636671",
+          "#828691",
+          "#a4a7b3",
+          "#c6cad7",
+          "#eaeefb"
+        ]
       },
-      "accent-amber": {
-        "role": "tertiary",
-        "displayName": "Subject Amber",
-        "canonical": "#ffb552",
-        "tonalRamp": ["#5a3703", "#ffb552"]
+      "day-hairline": {
+        "role": "neutral",
+        "displayName": "Day Hairline",
+        "canonical": "#d3d2da",
+        "tonalRamp": [
+          "#121116",
+          "#2b2a30",
+          "#48474d",
+          "#66656c",
+          "#86858c",
+          "#a7a7ae",
+          "#cac9d1",
+          "#eeedf5"
+        ]
       },
-      "accent-sky": {
-        "role": "tertiary",
-        "displayName": "Subject Sky",
-        "canonical": "#9cc8f7",
-        "tonalRamp": ["#0c3560", "#9cc8f7"]
+      "day-border-strong": {
+        "role": "neutral",
+        "displayName": "Day Strong Border",
+        "canonical": "#7c7f8b",
+        "tonalRamp": [
+          "#0f111a",
+          "#282b35",
+          "#444752",
+          "#636571",
+          "#838692",
+          "#a4a7b4",
+          "#c7cad7",
+          "#eaeefb"
+        ]
       },
-      "accent-lilac": {
-        "role": "tertiary",
-        "displayName": "Subject Lilac",
-        "canonical": "#b79cff",
-        "tonalRamp": ["#2c1470", "#b79cff"]
+      "night-ground": {
+        "role": "neutral",
+        "displayName": "Night Ground",
+        "canonical": "#0d1117",
+        "tonalRamp": [
+          "#0e1218",
+          "#272c32",
+          "#43484f",
+          "#61666e",
+          "#81878f",
+          "#a2a8b1",
+          "#c5cbd4",
+          "#e9eff8"
+        ]
       },
-      "accent-pink": {
-        "role": "tertiary",
-        "displayName": "Subject Pink",
-        "canonical": "#ffa3e0",
-        "tonalRamp": ["#611349", "#ffa3e0"]
+      "night-card": {
+        "role": "neutral",
+        "displayName": "Night Card",
+        "canonical": "#161c24",
+        "tonalRamp": [
+          "#0c121a",
+          "#252c34",
+          "#414852",
+          "#5f6771",
+          "#7f8791",
+          "#a0a8b3",
+          "#c3cbd6",
+          "#e7effb"
+        ]
       },
-      "accent-mint": {
-        "role": "tertiary",
-        "displayName": "Subject Mint",
-        "canonical": "#9fe3c0",
-        "tonalRamp": ["#0b4a32", "#9fe3c0"]
+      "night-raised": {
+        "role": "neutral",
+        "displayName": "Night Raised",
+        "canonical": "#1c232d",
+        "tonalRamp": [
+          "#0b121b",
+          "#252c36",
+          "#404854",
+          "#5e6773",
+          "#7e8793",
+          "#9fa8b6",
+          "#c2cbd9",
+          "#e6effd"
+        ]
       },
-      "accent-lime": {
+      "night-sunken": {
+        "role": "neutral",
+        "displayName": "Night Sunken",
+        "canonical": "#0a0e13",
+        "tonalRamp": [
+          "#0e1217",
+          "#272c32",
+          "#43484e",
+          "#61676d",
+          "#81878e",
+          "#a2a8b0",
+          "#c5cbd3",
+          "#e9eff7"
+        ]
+      },
+      "night-panel": {
+        "role": "neutral",
+        "displayName": "Night Panel",
+        "canonical": "#1a222c",
+        "tonalRamp": [
+          "#0b121b",
+          "#242c36",
+          "#404954",
+          "#5e6773",
+          "#7d8794",
+          "#9ea9b6",
+          "#c1ccd9",
+          "#e5f0fe"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Ink",
+        "canonical": "#f1eee8",
+        "tonalRamp": [
+          "#13110d",
+          "#2d2b27",
+          "#4a4743",
+          "#686661",
+          "#888680",
+          "#aaa7a2",
+          "#cdcac4",
+          "#f1eee8"
+        ]
+      },
+      "night-body": {
+        "role": "neutral",
+        "displayName": "Night Body",
+        "canonical": "#c4c1bb",
+        "tonalRamp": [
+          "#13110d",
+          "#2d2b26",
+          "#4a4742",
+          "#686660",
+          "#898680",
+          "#aaa7a1",
+          "#cdcac4",
+          "#f1eee8"
+        ]
+      },
+      "night-muted": {
+        "role": "neutral",
+        "displayName": "Night Muted",
+        "canonical": "#8e959f",
+        "tonalRamp": [
+          "#0d1219",
+          "#262c34",
+          "#424851",
+          "#606770",
+          "#808791",
+          "#a1a8b3",
+          "#c4cbd6",
+          "#e7effa"
+        ]
+      },
+      "night-inverse": {
+        "role": "neutral",
+        "displayName": "Night Inverse",
+        "canonical": "#ece8e1",
+        "tonalRamp": [
+          "#14110c",
+          "#2e2b26",
+          "#4a4742",
+          "#696660",
+          "#89867f",
+          "#aba7a1",
+          "#cecac3",
+          "#f2eee7"
+        ]
+      },
+      "night-hairline": {
+        "role": "neutral",
+        "displayName": "Night Hairline",
+        "canonical": "#252d38",
+        "tonalRamp": [
+          "#0b121c",
+          "#242c37",
+          "#404854",
+          "#5e6774",
+          "#7d8794",
+          "#9fa9b6",
+          "#c1cbda",
+          "#e5f0fe"
+        ]
+      },
+      "night-border-strong": {
+        "role": "neutral",
+        "displayName": "Night Strong Border",
+        "canonical": "#69717e",
+        "tonalRamp": [
+          "#0c121c",
+          "#252c37",
+          "#414854",
+          "#5f6773",
+          "#7e8794",
+          "#a0a8b6",
+          "#c2cbda",
+          "#e6effe"
+        ]
+      },
+      "on-deep": {
+        "role": "neutral",
+        "displayName": "On Deep",
+        "canonical": "#f6f4f0",
+        "tonalRamp": [
+          "#13110f",
+          "#2d2b28",
+          "#494744",
+          "#686662",
+          "#888682",
+          "#a9a7a4",
+          "#cccac6",
+          "#f0eeea"
+        ]
+      },
+      "shade": {
+        "role": "neutral",
+        "displayName": "Shade",
+        "canonical": "#05070a",
+        "tonalRamp": [
+          "#0f1215",
+          "#282c30",
+          "#44484c",
+          "#63666b",
+          "#83878b",
+          "#a4a8ad",
+          "#c7cbd0",
+          "#eaeff4"
+        ]
+      },
+      "tone-sage": {
         "role": "tertiary",
-        "displayName": "Subject Lime",
-        "canonical": "#d7f53c",
-        "tonalRamp": ["#2e3a00", "#d7f53c"]
+        "displayName": "Sage (amber key)",
+        "canonical": "#b3cfa1",
+        "tonalRamp": [
+          "#041700",
+          "#1d320a",
+          "#385027",
+          "#566f45",
+          "#769064",
+          "#96b285",
+          "#b9d5a7",
+          "#dcf9ca"
+        ]
+      },
+      "tone-sage-ink": {
+        "role": "tertiary",
+        "displayName": "Sage Ink",
+        "canonical": "#1f3415",
+        "tonalRamp": [
+          "#041700",
+          "#1d3213",
+          "#394f2f",
+          "#576e4c",
+          "#768f6c",
+          "#97b18c",
+          "#b9d4ae",
+          "#ddf8d1"
+        ]
+      },
+      "tone-mist": {
+        "role": "tertiary",
+        "displayName": "Mist (sky key)",
+        "canonical": "#a9bfe6",
+        "tonalRamp": [
+          "#03102c",
+          "#1a2b49",
+          "#354868",
+          "#536689",
+          "#7287ab",
+          "#93a8cf",
+          "#b5cbf3",
+          "#d9f0ff"
+        ]
+      },
+      "tone-mist-ink": {
+        "role": "tertiary",
+        "displayName": "Mist Ink",
+        "canonical": "#162a4d",
+        "tonalRamp": [
+          "#010f2f",
+          "#162a4d",
+          "#32486d",
+          "#4f668e",
+          "#6e87b0",
+          "#8fa9d4",
+          "#b1ccf9",
+          "#d4f0ff"
+        ]
+      },
+      "tone-lavender": {
+        "role": "tertiary",
+        "displayName": "Lavender (lilac key)",
+        "canonical": "#c3b4ea",
+        "tonalRamp": [
+          "#17062e",
+          "#30214c",
+          "#4c3e6c",
+          "#6b5c8d",
+          "#8b7caf",
+          "#ad9ed3",
+          "#d0c1f7",
+          "#f4e4ff"
+        ]
+      },
+      "tone-lavender-ink": {
+        "role": "tertiary",
+        "displayName": "Lavender Ink",
+        "canonical": "#2b1e52",
+        "tonalRamp": [
+          "#140335",
+          "#2d2054",
+          "#483d74",
+          "#665c96",
+          "#867cb9",
+          "#a79edd",
+          "#cac1ff",
+          "#eee5ff"
+        ]
+      },
+      "tone-rose": {
+        "role": "tertiary",
+        "displayName": "Rose (pink key)",
+        "canonical": "#eeaeb8",
+        "tonalRamp": [
+          "#2a000b",
+          "#491824",
+          "#6a353f",
+          "#8b535d",
+          "#ae737d",
+          "#d2949e",
+          "#f7b7c1",
+          "#ffdae4"
+        ]
+      },
+      "tone-rose-ink": {
+        "role": "tertiary",
+        "displayName": "Rose Ink",
+        "canonical": "#4f1621",
+        "tonalRamp": [
+          "#2d0007",
+          "#4d141f",
+          "#6e323b",
+          "#905058",
+          "#b37078",
+          "#d89199",
+          "#fdb4bb",
+          "#ffd8df"
+        ]
+      },
+      "tone-teal": {
+        "role": "tertiary",
+        "displayName": "Teal (mint key)",
+        "canonical": "#8fd0c8",
+        "tonalRamp": [
+          "#001a16",
+          "#003530",
+          "#09534d",
+          "#32736c",
+          "#54948c",
+          "#75b6ae",
+          "#98d9d1",
+          "#bbfef5"
+        ]
+      },
+      "tone-teal-ink": {
+        "role": "tertiary",
+        "displayName": "Teal Ink",
+        "canonical": "#0f3733",
+        "tonalRamp": [
+          "#001814",
+          "#09322f",
+          "#29504b",
+          "#486f6a",
+          "#678f8a",
+          "#88b1ac",
+          "#abd5cf",
+          "#cef9f3"
+        ]
+      },
+      "tone-indigo": {
+        "role": "tertiary",
+        "displayName": "Indigo (lime key)",
+        "canonical": "#5a5fb0",
+        "tonalRamp": [
+          "#0e0047",
+          "#221c67",
+          "#3b3c89",
+          "#575cad",
+          "#767dd1",
+          "#969ff6",
+          "#b8c2ff",
+          "#dbe6ff"
+        ]
+      },
+      "tone-indigo-ink": {
+        "role": "tertiary",
+        "displayName": "Indigo Ink",
+        "canonical": "#f3f2ff",
+        "tonalRamp": [
+          "#111019",
+          "#2b2a34",
+          "#474651",
+          "#666570",
+          "#868590",
+          "#a7a6b2",
+          "#cac9d5",
+          "#eeedfa"
+        ]
+      },
+      "positive-day": {
+        "role": "tertiary",
+        "displayName": "Positive (Day)",
+        "canonical": "#1d7a49",
+        "tonalRamp": [
+          "#001d00",
+          "#003a0d",
+          "#00592a",
+          "#1b7948",
+          "#449a67",
+          "#67bd88",
+          "#8ae1aa",
+          "#aeffcd"
+        ]
+      },
+      "positive-night": {
+        "role": "tertiary",
+        "displayName": "Positive (Night)",
+        "canonical": "#7fd1a1",
+        "tonalRamp": [
+          "#001d00",
+          "#003913",
+          "#00582f",
+          "#21784d",
+          "#47996c",
+          "#6abc8d",
+          "#8de0af",
+          "#b1ffd2"
+        ]
+      },
+      "caution-fill": {
+        "role": "tertiary",
+        "displayName": "Caution Straw",
+        "canonical": "#e6cf7a",
+        "tonalRamp": [
+          "#210c00",
+          "#3d2800",
+          "#5a4500",
+          "#7a6400",
+          "#9b852d",
+          "#bda752",
+          "#e1ca75",
+          "#ffee98"
+        ]
+      },
+      "caution-text-day": {
+        "role": "tertiary",
+        "displayName": "Caution Text (Day)",
+        "canonical": "#7a6200",
+        "tonalRamp": [
+          "#220b00",
+          "#3e2700",
+          "#5c4400",
+          "#7b6303",
+          "#9c8433",
+          "#bfa657",
+          "#e3c979",
+          "#ffed9d"
+        ]
+      },
+      "caution-ink": {
+        "role": "tertiary",
+        "displayName": "Caution Ink",
+        "canonical": "#2b2300",
+        "tonalRamp": [
+          "#191100",
+          "#332b07",
+          "#504825",
+          "#6f6643",
+          "#8f8762",
+          "#b1a882",
+          "#d4cba4",
+          "#f9efc7"
+        ]
+      },
+      "danger-day": {
+        "role": "tertiary",
+        "displayName": "Danger (Day)",
+        "canonical": "#c0352a",
+        "tonalRamp": [
+          "#450000",
+          "#6a0000",
+          "#900000",
+          "#b62a21",
+          "#dd5143",
+          "#ff7564",
+          "#ff9885",
+          "#ffbda8"
+        ]
+      },
+      "danger-night": {
+        "role": "tertiary",
+        "displayName": "Danger (Night)",
+        "canonical": "#ff8a7a",
+        "tonalRamp": [
+          "#3d0000",
+          "#600000",
+          "#841711",
+          "#a93d31",
+          "#cf5f51",
+          "#f58171",
+          "#ffa493",
+          "#ffc8b6"
+        ]
+      },
+      "lamp-glow-day": {
+        "role": "primary",
+        "displayName": "Lamp Glow (Day)",
+        "canonical": "rgba(181, 104, 15, 0.2)"
+      },
+      "lamp-glow-night": {
+        "role": "primary",
+        "displayName": "Lamp Glow (Night)",
+        "canonical": "rgba(242, 181, 107, 0.26)"
       }
     },
     "typographyMeta": {
       "wordmark": {
         "displayName": "Wordmark",
-        "purpose": "Moho Condensed Black, licensed and bundled. Sets the 'studio.' wordmark and nothing else."
+        "purpose": "The studio. wordmark and side-rail brand string only."
       },
       "hero": {
         "displayName": "Hero",
-        "purpose": "One-per-screen statement type. Set BIG and tight; used sparingly."
+        "purpose": "One per screen; Onest 700 at 56px."
       },
       "display": {
-        "displayName": "Display 1",
-        "purpose": "Screen titles (h1). Weight 800 at 40px with negative tracking."
+        "displayName": "Display",
+        "purpose": "Screen titles (h1)."
       },
-      "display-2": {
-        "displayName": "Display 2",
-        "purpose": "Section headings (h2)."
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings and the top-bar title; 24px via index.css mapping."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "The subject name on a lesson card, and card headings (h3)."
+        "purpose": "Subject name on a card; 18px via index.css mapping."
       },
       "body-lg": {
         "displayName": "Body Large",
-        "purpose": "Lead paragraphs and bottom-sheet body."
+        "purpose": "Lead paragraph and sheet body."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Default UI text at weight 500, never 400."
+        "purpose": "Default UI text."
       },
       "caption": {
         "displayName": "Caption",
         "purpose": "Room, teacher, hints, chip labels."
       },
       "label": {
-        "displayName": "Label / Micro",
-        "purpose": "Uppercase eyebrows, period numbers, badge text. The only place uppercase is allowed."
+        "displayName": "Label",
+        "purpose": "Eyebrows and badge text; the only uppercase."
       },
       "data": {
         "displayName": "Data",
-        "purpose": "Every time, countdown and period boundary. Tabular figures so digits never jitter."
+        "purpose": "Every time and countdown in Martian Mono, tabular."
       }
     },
     "shadows": [
       {
-        "name": "card",
-        "value": "0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12)",
-        "purpose": "Resting state of every white card, chip, input and pill. Navy-tinted, never grey."
+        "name": "card-day",
+        "value": "0 1px 2px rgba(18,20,25,.05), 0 8px 20px -12px rgba(18,20,25,.14)",
+        "purpose": "Resting cards, chips and inputs in Day."
       },
       {
-        "name": "raised",
-        "value": "0 4px 10px rgba(6,11,61,0.06), 0 24px 48px -20px rgba(6,11,61,0.2)",
-        "purpose": "The bottom sheet — the only surface that sits above content."
+        "name": "card-night",
+        "value": "inset 0 1px 0 rgba(255,255,255,.05)",
+        "purpose": "Night cards get a faint top rim; surface contrast carries depth."
       },
       {
-        "name": "nav",
-        "value": "0 8px 24px rgba(6,11,61,0.24)",
-        "purpose": "The floating black nav pill, top of the elevation stack."
+        "name": "raised-day",
+        "value": "0 16px 36px -12px rgba(18,20,25,.24)",
+        "purpose": "Bottom sheet, NowDock, featured deep field (also --shadow-nav)."
       },
       {
-        "name": "brand",
-        "value": "0 12px 32px -12px rgba(30,58,255,0.55)",
-        "purpose": "The coloured glow under the primary button only. Identity, not an elevation step."
+        "name": "raised-night",
+        "value": "0 16px 40px -8px rgba(0,0,0,.7)",
+        "purpose": "Night floating chrome: plain black."
+      },
+      {
+        "name": "glow-day",
+        "value": "0 20px 44px -20px rgba(181,104,15,.32)",
+        "purpose": "Live glance panel lamp glow only (--shadow-brand)."
+      },
+      {
+        "name": "glow-night",
+        "value": "0 24px 60px -20px rgba(242,181,107,.32)",
+        "purpose": "Live glance panel lamp glow at night."
       },
       {
         "name": "inset-hairline",
-        "value": "inset 0 0 0 1px #dde1ea",
-        "purpose": "The one inner shadow the system allows: stands in for a border on white-on-white controls."
+        "value": "inset 0 0 0 1px var(--border-hairline)",
+        "purpose": "Stands in for a border on card-on-card controls."
       },
       {
-        "name": "card-dark",
-        "value": "0 2px 6px rgba(0,0,0,0.4), 0 12px 28px -12px rgba(0,0,0,0.6)",
-        "purpose": "Dark-mode card shadow. A navy shadow is invisible on a dark ground, so dark drops to plain black."
+        "name": "glass-chrome-day",
+        "value": "0 14px 36px -10px rgba(18,20,25,.18), 0 2px 10px -2px rgba(18,20,25,.08), inset 0 1px 0 rgba(255,255,255,.78)",
+        "purpose": "TabBar, DateDock and glass buttons (.u-nav-glass)."
+      },
+      {
+        "name": "glass-blur",
+        "value": "blur(20px) saturate(165%); schedule slabs blur(20px) saturate(168%), 24px/190% under ambient weather",
+        "purpose": "Backdrop treatment of liquid-glass chrome and schedule slabs; scrim blur is 8px."
       }
     ],
     "motion": [
       {
         "name": "dur-instant",
         "value": "90ms",
-        "purpose": "Press scale-down."
+        "purpose": "Press scale."
       },
       {
         "name": "dur-fast",
         "value": "160ms",
-        "purpose": "Colour and state transitions; scrim fade."
+        "purpose": "Colour and small state changes."
       },
       {
         "name": "dur-base",
         "value": "240ms",
-        "purpose": "Sheet entrance; nav active-pill growth."
+        "purpose": "Sheet entrance, tab slot growth."
       },
       {
         "name": "dur-slow",
         "value": "380ms",
-        "purpose": "The longest permitted transition."
+        "purpose": "Tile expansion, glass transitions."
       },
       {
         "name": "ease-standard",
         "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
-        "purpose": "Default easing everywhere except the two spring exceptions."
+        "purpose": "Default easing; every fade pairs with a small translate."
       },
       {
         "name": "ease-out",
@@ -232,26 +841,38 @@
         "purpose": "Press transforms."
       },
       {
+        "name": "ease-in",
+        "value": "cubic-bezier(0.5, 0, 0.9, 0.3)",
+        "purpose": "Exits."
+      },
+      {
         "name": "ease-spring",
         "value": "cubic-bezier(0.34, 1.4, 0.64, 1)",
-        "purpose": "Permitted in exactly three places: the bottom sheet entrance, the nav active pill, and the switch thumb travel. Nothing else bounces."
+        "purpose": "Sheet entrance, TabBar lens and slots, switch thumb."
+      },
+      {
+        "name": "dock-spring",
+        "value": "spring stiffness 460, damping 24, mass 0.82",
+        "purpose": "Framer Motion NowDock/DateDock morph."
       },
       {
         "name": "press-scale",
         "value": "0.97",
-        "purpose": "Controls press this far; colour never changes on press."
-      },
-      {
-        "name": "press-scale-tile",
-        "value": "0.94",
-        "purpose": "Tiles and cards press deeper."
+        "purpose": "Controls and tiles; 1 under reduced motion."
       }
     ],
     "breakpoints": [
       {
-        "name": "screen-max",
-        "value": "420px",
-        "purpose": "The phone design width. Content caps here and centres on anything wider; there are no desktop breakpoints."
+        "name": "phone",
+        "value": "< 768px (reference layout; screen-max 430px)"
+      },
+      {
+        "name": "tablet",
+        "value": "768px (min-height 500px; screen-max 720px, SideNav rail)"
+      },
+      {
+        "name": "desktop",
+        "value": "1024px (min-height 500px; screen-max 880px, expanded SideNav)"
       }
     ]
   },
@@ -260,214 +881,196 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Neutral near-black pill with shadow-card, flipping to light ink in dark mode. Never electric blue per The Neutral Button Rule.",
-      "html": "<button class=\"ds-btn-primary\">Uz šodienu</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--brand, #0b0c10); color: var(--text-on-brand, #fff); font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-btn-primary:hover { background: var(--ink-700, #2a2d36); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+      "description": "Top-lit ink pill; the only emphasised action, never lamp.",
+      "html": "<button class=\"ds-btn-primary\">Continue</button>",
+      "css": ".ds-btn-primary{height:44px;padding:0 20px;border:0;border-radius:999px;font:500 15px/1.5 Onest,system-ui,sans-serif;color:#f6f4f0;background:linear-gradient(180deg,#2e3038 0%,#121419 100%);box-shadow:0 8px 20px -8px rgba(18,20,25,.4),inset 0 1px 0 rgba(255,255,255,.18);cursor:pointer;transition:transform 90ms cubic-bezier(0,.7,.2,1),background 160ms}.ds-btn-primary:hover{background:linear-gradient(180deg,#3a3d47 0%,#1b1e25 100%)}.ds-btn-primary:active{transform:scale(.97)}.ds-btn-primary:focus-visible{outline:2px solid #121419;outline-offset:2px}"
     },
     {
       "name": "Chip",
       "kind": "chip",
       "refersTo": "chip",
-      "description": "Filter and value pill. Selection is a full fill swap to solid near-black, never a border.",
-      "html": "<button class=\"ds-chip\">Visas klases</button>\n<button class=\"ds-chip ds-chip--selected\">Izlase</button>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--surface-card, #fff); color: var(--text-body, #2a2d36); font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), color 160ms cubic-bezier(0.2,0.8,0.2,1); } .ds-chip:active { transform: scale(0.97); } .ds-chip--selected { background: var(--ink-900, #0b0c10); color: #fff; box-shadow: none; } .ds-chip:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+      "description": "32px pill; selected swaps to the theme inverse.",
+      "html": "<button class=\"ds-chip\">3. kurss</button> <button class=\"ds-chip ds-chip-on\">ATK</button>",
+      "css": ".ds-chip{height:32px;padding:0 14px;border:0;border-radius:999px;font:700 13px/1.4 Onest,system-ui,sans-serif;background:#f8f8fa;color:#2e3038;box-shadow:inset 0 0 0 1px #d3d2da;cursor:pointer;transition:background 160ms,color 160ms}.ds-chip:hover{background:#e0dfe5}.ds-chip-on{background:#121419;color:#f6f4f0;box-shadow:none}.ds-chip:focus-visible{outline:2px solid #121419;outline-offset:2px}"
     },
     {
       "name": "Search Field",
       "kind": "input",
       "refersTo": "text-field",
-      "description": "Pill input with a leading icon and a hairline inset ring instead of a border.",
-      "html": "<span class=\"ds-field\"><svg class=\"ds-field__icon\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input class=\"ds-field__input\" type=\"search\" placeholder=\"Meklēt klasi…\" /></span>",
-      "css": ".ds-field { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px; border-radius: 999px; background: var(--surface-card, #fff); color: var(--text-muted, #5b6070); box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); } .ds-field__icon { flex: none; } .ds-field__input { min-width: 0; flex: 1; border: 0; background: transparent; outline: none; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 500; color: var(--text-strong, #0b0c10); } .ds-field__input::placeholder { color: var(--text-muted, #5b6070); } .ds-field:focus-within { box-shadow: inset 0 0 0 2px var(--focus-ring, #4a5cff); }"
+      "description": "52px card pill with a hairline inset ring.",
+      "html": "<label class=\"ds-input-search\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><input placeholder=\"Search classes\" /></label>",
+      "css": ".ds-input-search{display:flex;align-items:center;gap:10px;height:52px;padding:0 18px;border-radius:999px;background:#f8f8fa;color:#5d606b;box-shadow:inset 0 0 0 1px #d3d2da}.ds-input-search input{flex:1;border:0;outline:0;background:transparent;font:500 15px/1.5 Onest,system-ui,sans-serif;color:#121419}.ds-input-search:focus-within{outline:2px solid #121419;outline-offset:2px}"
+    },
+    {
+      "name": "Bottom Nav (TabBar)",
+      "kind": "nav",
+      "refersTo": "bottom-nav",
+      "description": "Single frosted liquid-glass capsule; the selected slot widens to show its label inside a translucent lens.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main\"><span class=\"ds-nav-lens\"></span><button class=\"ds-nav-slot ds-nav-on\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10.5 12 3l9 7.5V21H3z\"/></svg><span>Home</span></button><button class=\"ds-nav-slot\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></button><button class=\"ds-nav-slot\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\"><circle cx=\"5\" cy=\"12\" r=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/></svg></button></nav>",
+      "css": ".ds-nav{position:relative;isolation:isolate;display:flex;align-items:center;gap:0;height:64px;width:320px;padding:6px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.76),rgba(242,243,247,.64));backdrop-filter:blur(20px) saturate(165%);box-shadow:0 14px 36px -10px rgba(18,20,25,.18),0 2px 10px -2px rgba(18,20,25,.08),inset 0 1px 0 rgba(255,255,255,.78)}.ds-nav::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(148deg,rgba(255,255,255,.96),rgba(18,20,25,.12) 32%,rgba(18,20,25,.08) 60%,rgba(255,255,255,.88));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none}.ds-nav-lens{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)*1.9/3.8);border-radius:999px;background:linear-gradient(180deg,rgba(18,20,25,.1),rgba(18,20,25,.065));box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 0 0 1px rgba(18,20,25,.06)}.ds-nav-slot{position:relative;z-index:1;flex:1 1 0;min-width:48px;height:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;background:transparent;color:rgba(18,20,25,.52);font:600 13px/1 Onest,system-ui,sans-serif;cursor:pointer;transition:color 160ms,transform 90ms}.ds-nav-slot:hover{color:rgba(18,20,25,.82)}.ds-nav-slot:active{transform:scale(.97)}.ds-nav-slot:focus-visible{outline:2px solid #121419;outline-offset:2px}.ds-nav-on{flex-grow:1.9;color:#121419}"
+    },
+    {
+      "name": "Subject Card (Deep)",
+      "kind": "card",
+      "refersTo": "subject-card-deep",
+      "description": "The subject on now: the whole card is its darkened grainy tone field with on-deep text.",
+      "html": "<div class=\"ds-subject\"><span class=\"ds-subject-code\">MAT</span><div class=\"ds-subject-name\">Mathematics</div><div class=\"ds-subject-stats\">12 lessons · 2 teachers</div></div>",
+      "css": ".ds-subject{--tone:#a9bfe6;--tone-ink:#162a4d;--on-deep:#f6f4f0;--shade:#05070a;position:relative;isolation:isolate;width:220px;padding:12px;border-radius:30px;color:var(--on-deep);background-color:color-mix(in oklab,var(--tone-ink) 78%,var(--shade));background-image:radial-gradient(70% 55% at 85% 8%,color-mix(in oklab,var(--tone) 70%,transparent),transparent 70%),radial-gradient(55% 45% at 8% 22%,color-mix(in oklab,color-mix(in oklab,var(--tone) 55%,var(--on-deep)) 55%,transparent),transparent 70%);box-shadow:0 16px 36px -12px rgba(18,20,25,.24);font-family:Onest,system-ui,sans-serif}.ds-subject-code{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--tone);color:var(--tone-ink);font:700 11px/1.2 Onest,sans-serif}.ds-subject-name{margin-top:48px;font:700 18px/1.15 Onest,sans-serif;letter-spacing:-.03em}.ds-subject-stats{margin-top:4px;font:500 11px/1.3 'Martian Mono',ui-monospace,monospace;opacity:.8}"
+    },
+    {
+      "name": "Glass Schedule Slab",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Liquid-glass lesson slab with period jewel, subject, and a recessed room capsule.",
+      "html": "<div class=\"ds-slab\"><div class=\"ds-row\"><span class=\"ds-jewel\">2</span><div class=\"ds-row-main\"><div class=\"ds-row-title\">Programmēšana</div><div class=\"ds-row-meta\">08:55 – 09:35</div></div><span class=\"ds-room\">A-214</span></div><div class=\"ds-row\"><span class=\"ds-jewel\">3</span><div class=\"ds-row-main\"><div class=\"ds-row-title\">Angļu valoda</div><div class=\"ds-row-meta\">09:45 – 10:25</div></div><span class=\"ds-room\">A-108</span></div></div>",
+      "css": ".ds-slab{position:relative;isolation:isolate;width:320px;border-radius:22px;overflow:hidden;background:linear-gradient(165deg,rgba(255,255,255,.8),rgba(250,250,253,.68) 46%,rgba(244,245,250,.62));backdrop-filter:blur(20px) saturate(168%);box-shadow:0 10px 28px -14px rgba(18,20,25,.2);font-family:Onest,system-ui,sans-serif}.ds-slab::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(148deg,rgba(255,255,255,.96),rgba(18,20,25,.1) 40%,rgba(255,255,255,.85));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none}.ds-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid rgba(18,20,25,.08)}.ds-row:first-child{border-top:0}.ds-jewel{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#a9bfe6;color:#162a4d;font:700 13px 'Martian Mono',ui-monospace,monospace}.ds-row-main{flex:1;min-width:0}.ds-row-title{font:700 15px/1.2 Onest,sans-serif;color:#121419}.ds-row-meta{margin-top:2px;font:500 11px/1.3 'Martian Mono',ui-monospace,monospace;color:#5d606b}.ds-room{padding:4px 10px;border-radius:999px;background:rgba(18,20,25,.06);box-shadow:inset 0 1px 2px rgba(18,20,25,.08);font:600 12px 'Martian Mono',ui-monospace,monospace;color:#121419}"
     },
     {
       "name": "Lesson Card",
-      "kind": "custom",
+      "kind": "card",
       "refersTo": "lesson-card",
-      "description": "The signature component: mono time rail, 4px subject-accent rail, subject at Title size, room and teacher below.",
-      "html": "<div class=\"ds-lesson\"><div class=\"ds-lesson__rail\"><div class=\"ds-lesson__times\"><span class=\"ds-lesson__start\">10:15</span><span class=\"ds-lesson__end\">11:35</span></div><span class=\"ds-lesson__bar\"></span></div><div class=\"ds-lesson__body\"><div class=\"ds-lesson__top\"><span class=\"ds-lesson__period\">3. stunda</span><span class=\"ds-badge ds-badge--brand\">Tagad</span></div><h3 class=\"ds-lesson__subject\">Programmēšana</h3><div class=\"ds-lesson__meta\"><span class=\"ds-lesson__metaitem\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg>314</span><span class=\"ds-lesson__metaitem\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/></svg>Bērziņa Anna</span></div></div></div>",
-      "css": ".ds-lesson { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 16px; border-radius: 28px; background: var(--surface-card, #fff); color: var(--text-strong, #0b0c10); box-shadow: inset 0 0 0 2px var(--brand, #1e3aff), 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); transition: transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-lesson:active { transform: scale(0.94); } .ds-lesson__rail { display: flex; gap: 12px; } .ds-lesson__times { display: flex; min-width: 46px; flex-direction: column; align-items: flex-start; font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; } .ds-lesson__start { font-size: 15px; font-weight: 700; } .ds-lesson__end { font-size: 12px; font-weight: 500; color: var(--text-muted, #5b6070); } .ds-lesson__bar { width: 4px; border-radius: 999px; background: var(--accent-sky, #9cc8f7); } .ds-lesson__body { display: flex; min-width: 0; flex-direction: column; gap: 8px; } .ds-lesson__top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; } .ds-lesson__period { font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted, #5b6070); } .ds-lesson__subject { margin: 0; font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; } .ds-lesson__meta { display: flex; flex-wrap: wrap; gap: 14px; font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted, #5b6070); } .ds-lesson__metaitem { display: inline-flex; align-items: center; gap: 6px; } .ds-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; } .ds-badge--brand { background: var(--brand, #1e3aff); color: #fff; }"
+      "description": "Time rail with a 4px tone bar, subject at Title size, room and teacher.",
+      "html": "<article class=\"ds-lesson\"><div class=\"ds-lesson-time\"><b>09:45</b><span>10:25</span></div><i class=\"ds-lesson-rail\"></i><div><div class=\"ds-lesson-eyebrow\">3. STUNDA</div><div class=\"ds-lesson-title\">Fizika</div><div class=\"ds-lesson-meta\">A-108 · J. Bērziņš</div></div></article>",
+      "css": ".ds-lesson{display:grid;grid-template-columns:auto 4px 1fr;gap:14px;width:320px;padding:16px;border-radius:22px;background:#f8f8fa;color:#121419;box-shadow:0 1px 2px rgba(18,20,25,.05),0 8px 20px -12px rgba(18,20,25,.14);font-family:Onest,system-ui,sans-serif;transition:transform 90ms cubic-bezier(0,.7,.2,1)}.ds-lesson:active{transform:scale(.97)}.ds-lesson-time{display:flex;flex-direction:column;font-family:'Martian Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}.ds-lesson-time b{font-size:15px;font-weight:700}.ds-lesson-time span{font-size:11px;color:#5d606b}.ds-lesson-rail{border-radius:999px;background:#c3b4ea}.ds-lesson-eyebrow{font:700 11px/1.2 Onest,sans-serif;letter-spacing:.02em;color:#5d606b}.ds-lesson-title{font:700 18px/1.15 Onest,sans-serif;letter-spacing:-.03em}.ds-lesson-meta{margin-top:4px;font:500 13px/1.4 Onest,sans-serif;color:#2e3038}"
     },
     {
       "name": "Status Badge",
       "kind": "chip",
       "refersTo": "badge",
-      "description": "The lesson- and sync-state word. Status colour is reserved; warning carries the amber ink pair, not white.",
-      "html": "<span class=\"ds-badge2 ds-badge2--danger\">Atcelta</span>\n<span class=\"ds-badge2 ds-badge2--warning\">Pārcelta</span>\n<span class=\"ds-badge2 ds-badge2--quiet\">Cits kabinets</span>",
-      "css": ".ds-badge2 { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; margin-right: 6px; border-radius: 999px; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; } .ds-badge2--danger { background: var(--status-danger, #d92020); color: #fff; } .ds-badge2--warning { background: var(--status-warning, #ffb552); color: var(--accent-amber-ink, #5a3703); } .ds-badge2--quiet { background: var(--surface-sunken, #edeff4); color: var(--text-muted, #5b6070); }"
-    },
-    {
-      "name": "Bottom Nav",
-      "kind": "nav",
-      "refersTo": "bottom-nav",
-      "description": "The floating black pill. The active tab is a fill swap that grows to include its label — one of only two places spring easing is allowed.",
-      "html": "<nav class=\"ds-nav\"><button class=\"ds-nav__item ds-nav__item--active\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/></svg><span>Diena</span></button><button class=\"ds-nav__item\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/></svg></button><button class=\"ds-nav__item\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 2v2\"/><path d=\"M14 2v2\"/><path d=\"M6 2v2\"/><path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/></svg></button></nav>",
-      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; height: 64px; padding: 6px; border-radius: 999px; background: var(--ink-900, #0b0c10); box-shadow: 0 8px 24px rgba(6,11,61,0.24); } .ds-nav__item { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; flex: 1 1 0; padding: 0; border: 0; border-radius: 999px; background: transparent; color: rgba(255,255,255,0.62); font-family: Manrope, system-ui, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color 240ms cubic-bezier(0.34,1.4,0.64,1), color 240ms cubic-bezier(0.34,1.4,0.64,1), padding 240ms cubic-bezier(0.34,1.4,0.64,1), flex 240ms cubic-bezier(0.34,1.4,0.64,1); } .ds-nav__item--active { flex: none; padding: 0 20px; background: #fff; color: var(--ink-900, #0b0c10); } .ds-nav__item:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
-    },
-    {
-      "name": "Freshness Indicator",
-      "kind": "custom",
-      "refersTo": "sync-status",
-      "description": "Every data screen says where its data came from and how old it is. That honesty is a content rule, not decoration.",
-      "html": "<div class=\"ds-sync\"><svg class=\"ds-sync__icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\"/></svg><span>Atjaunināts</span><span class=\"ds-sync__detail\">pirms 12 min</span></div>",
-      "css": ".ds-sync { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--surface-card, #fff); color: var(--text-muted, #5b6070); font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); } .ds-sync__icon { color: var(--status-success, #0b8a4e); } .ds-sync__detail { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 12px; }"
-    },
-    {
-      "name": "Empty State",
-      "kind": "card",
-      "refersTo": "empty-state",
-      "description": "The only centred surface in the system. Copy stays flat — no apology, no cheerleading, no exclamation mark.",
-      "html": "<div class=\"ds-empty\"><span class=\"ds-empty__well\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 2v2\"/><path d=\"M14 2v2\"/><path d=\"M6 2v2\"/><path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/></svg></span><h3 class=\"ds-empty__title\">Stundu nav</h3><p class=\"ds-empty__body\">Brīvdiena vai svētku diena?</p></div>",
-      "css": ".ds-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 36px 24px; border-radius: 28px; background: var(--surface-card, #fff); text-align: center; box-shadow: 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); } .ds-empty__well { display: inline-flex; width: 56px; height: 56px; align-items: center; justify-content: center; border-radius: 30%; background: var(--brand-tint, #edf0ff); color: var(--brand-strong, #1730d6); } .ds-empty__title { margin: 0; font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; color: var(--text-strong, #0b0c10); } .ds-empty__body { margin: 0; max-width: 260px; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 500; line-height: 1.5; color: var(--text-muted, #5b6070); }"
-    },
-    {
-      "name": "Subject Card (tinted)",
-      "kind": "card",
-      "refersTo": "card-tinted",
-      "description": "A card filled with a subject accent and its ink pair. It gets no shadow — the colour already separates it from the page.",
-      "html": "<div class=\"ds-card-tinted\"><span class=\"ds-card-tinted__eyebrow\">6 stundas nedēļā</span><h3 class=\"ds-card-tinted__title\">Angļu valoda</h3></div>",
-      "css": ".ds-card-tinted { padding: 16px; border-radius: 28px; background: var(--accent-mint, #9fe3c0); color: var(--accent-mint-ink, #0b4a32); box-shadow: none; transition: transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-card-tinted:active { transform: scale(0.94); } .ds-card-tinted__eyebrow { font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; } .ds-card-tinted__title { margin: 4px 0 0; font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; }"
-    },
-    {
-      "name": "Day Strip",
-      "kind": "nav",
-      "refersTo": "day-tile",
-      "description": "The horizontal week pager. Selection is a fill swap to electric with the brand glow; the 5px dot is the only change signal and always holds its space.",
-      "html": "<div class=\"ds-daystrip\"><button class=\"ds-day\"><span class=\"ds-day__wd\">Pr</span><span class=\"ds-day__num\">8</span><span class=\"ds-day__dot\"></span></button><button class=\"ds-day ds-day--active\"><span class=\"ds-day__wd\">Ot</span><span class=\"ds-day__num\">9</span><span class=\"ds-day__dot ds-day__dot--on\"></span></button><button class=\"ds-day\"><span class=\"ds-day__wd\">Tr</span><span class=\"ds-day__num\">10</span><span class=\"ds-day__dot ds-day__dot--on\"></span></button><button class=\"ds-day\"><span class=\"ds-day__wd\">Ce</span><span class=\"ds-day__num\">11</span><span class=\"ds-day__dot\"></span></button><button class=\"ds-day\"><span class=\"ds-day__wd\">Pk</span><span class=\"ds-day__num\">12</span><span class=\"ds-day__dot\"></span></button></div>",
-      "css": ".ds-daystrip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; } .ds-daystrip::-webkit-scrollbar { display: none; } .ds-day { display: flex; height: 74px; min-width: 46px; flex: 1 0 46px; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 0; border-radius: 24px; background: var(--surface-card, #fff); color: var(--text-body, #2a2d36); cursor: pointer; box-shadow: inset 0 0 0 1px var(--border-hairline, #dde1ea); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), color 160ms cubic-bezier(0.2,0.8,0.2,1), transform 90ms cubic-bezier(0,0.7,0.2,1); } .ds-day:active { transform: scale(0.97); } .ds-day--active { background: var(--brand, #1e3aff); color: #fff; box-shadow: 0 12px 32px -12px rgba(30,58,255,0.55); } .ds-day__wd { font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.55; } .ds-day--active .ds-day__wd { opacity: 0.85; } .ds-day__num { font-family: Manrope, system-ui, sans-serif; font-size: 22px; font-weight: 800; line-height: 1; } .ds-day__dot { width: 5px; height: 5px; border-radius: 999px; background: transparent; } .ds-day__dot--on { background: var(--brand, #1e3aff); } .ds-day--active .ds-day__dot--on { background: #fff; } .ds-day:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
-    },
-    {
-      "name": "Segmented Tabs",
-      "kind": "nav",
-      "refersTo": "segmented-item-active",
-      "description": "Sunken pill track with a white pill on the selected segment. A radiogroup with roving tabindex, not a tablist: the segments pick a value, they do not swap a panel.",
-      "html": "<div class=\"ds-seg\" role=\"radiogroup\" aria-label=\"Tēma\"><button class=\"ds-seg__item ds-seg__item--active\" role=\"radio\" aria-checked=\"true\">Gaišs</button><button class=\"ds-seg__item\" role=\"radio\" aria-checked=\"false\" tabindex=\"-1\">Tumšs</button><button class=\"ds-seg__item\" role=\"radio\" aria-checked=\"false\" tabindex=\"-1\">Sistēma</button></div>",
-      "css": ".ds-seg { display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--surface-sunken, #edeff4); } .ds-seg__item { height: 36px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: var(--text-muted, #5b6070); font-family: Manrope, system-ui, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1), color 160ms cubic-bezier(0.2,0.8,0.2,1); } .ds-seg__item--active { background: var(--surface-card, #fff); color: var(--text-strong, #0b0c10); box-shadow: 0 2px 6px rgba(6,11,61,0.05), 0 12px 28px -12px rgba(6,11,61,0.12); } .ds-seg__item:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+      "description": "22px micro-label pill; ink by default, lamp only for the live lesson.",
+      "html": "<span class=\"ds-badge\">Atcelta</span> <span class=\"ds-badge ds-badge-lamp\">Tagad</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#121419;color:#f6f4f0;font:700 11px/1 Onest,system-ui,sans-serif}.ds-badge-lamp{background:#f2b56b;color:#2a1700}"
     },
     {
       "name": "Switch",
       "kind": "input",
-      "refersTo": "switch-track",
-      "description": "50x30 track, 24px white thumb travelling 20px, electric when on. The thumb travel is the third sanctioned spring.",
-      "html": "<label class=\"ds-switch-row\"><span class=\"ds-switch ds-switch--on\"><span class=\"ds-switch__thumb\"></span></span>Tumšais režīms</label><label class=\"ds-switch-row\"><span class=\"ds-switch\"><span class=\"ds-switch__thumb\"></span></span>Paziņojumi</label>",
-      "css": ".ds-switch-row { display: inline-flex; align-items: center; gap: 12px; margin-right: 16px; font-family: Manrope, system-ui, sans-serif; font-size: 15px; font-weight: 500; color: var(--text-strong, #0b0c10); cursor: pointer; } .ds-switch { position: relative; display: block; width: 50px; height: 30px; flex: none; border-radius: 999px; background: var(--border-hairline, #dde1ea); transition: background-color 160ms cubic-bezier(0.2,0.8,0.2,1); } .ds-switch--on { background: var(--brand, #1e3aff); } .ds-switch__thumb { position: absolute; top: 3px; left: 0; display: block; width: 24px; height: 24px; border-radius: 999px; background: #fff; box-shadow: 0 2px 6px rgba(6,11,61,0.24); transform: translateX(3px); transition: transform 160ms cubic-bezier(0.34,1.4,0.64,1); } .ds-switch--on .ds-switch__thumb { transform: translateX(23px); }"
+      "refersTo": "switch-track-on",
+      "description": "50x30 track; on is the lamp with a lamp-ink thumb.",
+      "html": "<button class=\"ds-switch\" role=\"switch\" aria-checked=\"true\"><span></span></button>",
+      "css": ".ds-switch{position:relative;width:50px;height:30px;border:0;border-radius:999px;background:#f2b56b;cursor:pointer;transition:background 160ms}.ds-switch span{position:absolute;top:3px;left:23px;width:24px;height:24px;border-radius:50%;background:#2a1700;transition:left 160ms cubic-bezier(.34,1.4,.64,1)}.ds-switch:focus-visible{outline:2px solid #121419;outline-offset:2px}"
     },
     {
-      "name": "Week Grid",
-      "kind": "custom",
-      "refersTo": "week-grid-cell",
-      "description": "The whole week at a glance. Accent-filled cells carry the short subject code (the only sanctioned abbreviation); empty slots are sunken blocks, never a string.",
-      "html": "<div class=\"ds-week\"><span></span><span class=\"ds-week__h ds-week__h--today\">Pr</span><span class=\"ds-week__h\">Ot</span><span class=\"ds-week__h\">Tr</span><span class=\"ds-week__h\">Ce</span><span class=\"ds-week__h\">Pk</span><span class=\"ds-week__t\">08:30</span><button class=\"ds-week__c\" style=\"background:var(--accent-sky,#9cc8f7)\">PRG</button><button class=\"ds-week__c\" style=\"background:var(--accent-mint,#9fe3c0)\">ANG</button><span class=\"ds-week__e\"></span><button class=\"ds-week__c\" style=\"background:var(--accent-lilac,#b79cff)\">MAT</button><button class=\"ds-week__c\" style=\"background:var(--accent-sky,#9cc8f7)\">PRG</button><span class=\"ds-week__t\">10:15</span><button class=\"ds-week__c\" style=\"background:var(--accent-amber,#ffb552)\">FIZ</button><button class=\"ds-week__c ds-week__c--off\" style=\"background:var(--accent-sky,#9cc8f7)\">PRG</button><button class=\"ds-week__c\" style=\"background:var(--accent-pink,#ffa3e0)\">VĒS</button><span class=\"ds-week__e\"></span><button class=\"ds-week__c\" style=\"background:var(--accent-lime,#d7f53c)\">SPO</button></div>",
-      "css": ".ds-week { display: grid; grid-template-columns: 36px repeat(5, minmax(0,1fr)); gap: 6px; } .ds-week__h { border-radius: 12px; text-align: center; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted, #5b6070); } .ds-week__h--today { color: var(--brand-strong, #1730d6); } .ds-week__t { align-self: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 11px; color: var(--text-muted, #5b6070); } .ds-week__c { height: 40px; padding: 0 6px; border: 0; border-radius: 12px; font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 700; color: #0b0c10; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-week__c--off { opacity: 0.4; text-decoration: line-through; } .ds-week__e { height: 40px; border-radius: 12px; background: var(--surface-sunken, #edeff4); } .ds-week__c:focus-visible { outline: 2px solid var(--focus-ring, #4a5cff); outline-offset: 2px; }"
+      "name": "Segmented Tabs",
+      "kind": "nav",
+      "refersTo": "segmented-track",
+      "description": "Sunken pill track with a card pill on the selected segment.",
+      "html": "<div class=\"ds-seg\" role=\"radiogroup\"><button role=\"radio\" aria-checked=\"true\" class=\"ds-seg-on\">Day</button><button role=\"radio\" aria-checked=\"false\">Night</button><button role=\"radio\" aria-checked=\"false\">System</button></div>",
+      "css": ".ds-seg{display:inline-flex;gap:2px;padding:4px;border-radius:999px;background:#e0dfe5}.ds-seg button{height:36px;padding:0 18px;border:0;border-radius:999px;background:transparent;color:#5d606b;font:700 13px/1 Onest,system-ui,sans-serif;cursor:pointer}.ds-seg .ds-seg-on{background:#f8f8fa;color:#121419;box-shadow:0 1px 2px rgba(18,20,25,.05),0 8px 20px -12px rgba(18,20,25,.14)}.ds-seg button:focus-visible{outline:2px solid #121419;outline-offset:2px}"
     }
   ],
   "narrative": {
     "northStar": "The Confident Companion",
-    "overview": "Stundio is a pocket-sized assistant with a strong voice. It does not present the school's timetable apologetically or neutrally — it takes a position on what matters right now, sets it large, and gets out of the way. Electric blue, black pills, and display type at 40px on a 420px-wide phone are not restraint; they are the sound of an app that is certain about the answer it is giving. The personality comes entirely from decisiveness, never from ornament: there is no illustration, no gradient mesh, no texture, no mascot. What reads as character is scale, roundness, and the willingness to commit to a single accent.\n\nThe system is dense with information but generous with form. Cards are 28px-rounded and unbordered; everything interactive is a pill; the six subject accents are pastel fills carrying dark ink pairs so a colour-coded card is still full-contrast text. The ground is a cool near-white (#f6f7fa) that never appears as pure white — white is reserved for cards, so a surface reading as white is always a thing, not the page. Dark mode is a first-class user setting, not a media query: only the semantic aliases re-point under .dark, never a base palette step.\n\nIt is built for one hand in a corridor. Every measurement in the system assumes a 420px design width, a 44px minimum hit target, and a reader who has about two seconds. Confirmed anti-references: EduPage's own UI (dense grey tables, server-supplied subject colours with no contrast guarantee, information buried behind taps), Material 3 and stock Android (the Studio DS has its own form language and does not drift toward Material components, elevation, or colour roles), and generic dashboard SaaS (slate-and-indigo Tailwind defaults, hairline-bordered rectangles, desktop data-table density).",
+    "overview": "Stundio is a pocket-sized assistant with a strong voice. It does not present the school's timetable\napologetically or neutrally — it takes a position on what matters right now, sets it large, and gets\nout of the way. Its signature is Night: a deep slate ground, soft graphite surfaces and warm\noff-white ink, like lamplight on grey cotton, with one warm lamp (`#f2b56b`) marking the lesson on\nnow. Day is the same system turned over: lilac-grey paper, ink-dark text, the same lamp deepened to\nstay legible. The personality still comes from decisiveness — scale, roundness, and the willingness\nto commit to a single light — not from ornament, mascots or illustration.\n\nThe system is dense with information but generous with form. Cards are 22px-rounded and unbordered;\neverything interactive is a pill; the chrome is liquid glass (frosted, saturated, edged with a 1px\nspecular rim) so content passes visibly beneath it; and the six subject tones are dusk colours\ncarrying their own ink so a colour-coded surface is still full-contrast text. Brand is ink, not\ncolour: the selected state and the primary button flip to the theme's inverse. Theme is a first-class\nuser setting (`.dark` on `<html>`, \"system\" follows the OS), not a media query: only semantic aliases\nre-point, never a base step.\n\nIt is built for one hand in a corridor: a 430px phone design width, a 44px minimum hit target, and a\nreader who has about two seconds. Confirmed anti-references: **EduPage's own UI** (dense grey tables,\nserver-supplied subject colours with no contrast guarantee, information buried behind taps),\n**Material 3 and stock Android** (the system has its own form language and does not drift toward\nMaterial components, elevation, or colour roles), and **generic dashboard SaaS** (slate-and-indigo\nTailwind defaults, hairline-bordered rectangles, desktop data-table density).",
     "keyCharacteristics": [
-      "Electric blue as a single, sparing voice against cool neutral paper.",
-      "Nothing is square: 28px cards, pill controls, 8px as the smallest radius in the system.",
-      "Selection is a fill swap to solid black — never a border, underline, or indicator line.",
-      "Six pastel subject accents used strictly as an index, each with a dark ink pair.",
-      "Times and countdowns set in tabular mono so digits never jitter.",
-      "Structural elevation: soft, blue-tinted, and ranked.",
-      "Dark mode is a setting, and it re-points aliases only."
+      "Two themes, one system: Night (signature) and Day, alias-driven.",
+      "One lamp: the lesson on now and a switch that is on, nothing else.",
+      "Brand is ink: selection and the primary button use inverse / on-inverse.",
+      "Six dusk subject tones used strictly as an index, each with its own ink.",
+      "Liquid-glass chrome and schedule slabs with a shared specular rim.",
+      "Nothing is square: radii 10 / 16 / 22 / 30, pills for anything pressable.",
+      "Times and countdowns in tabular Martian Mono; sentence case throughout.",
+      "Depth is light, not lines: soft shadows by day, a faint rim and black float shadow at night."
     ],
     "rules": [
       {
+        "name": "The One Lamp Rule",
+        "body": "The lamp appears on at most two things per screen — the lesson on now and a switch that is on — and never on a button or a heading. Only the live glance panel glows (`shadow-brand` is that glow).",
+        "section": "colors"
+      },
+      {
         "name": "The Index Rule",
-        "body": "The six subject accents are an index, not decoration. They exist to make a subject recognisable at a glance and to stay bound to it forever. They carry no meaning, no ranking, and no mood — using an accent to signal importance, urgency, or status is a misuse. Status has its own four colours; use those.",
+        "body": "The six subject tones are an index, not decoration: they make a subject recognisable and stay bound to it. They carry no meaning, ranking or mood; status has its own signals.",
         "section": "colors"
       },
       {
         "name": "The Contrast Invariant Rule",
-        "body": "Any custom subject color selected through the Color Wheel must always be paired with a contrast-checked ink via readableInk(). An arbitrary user-selected background tint never renders with fixed unverified text contrast; it dynamically binds either dark ink (#0b0c10) or light ink (#ffffff) to guarantee legibility.",
-        "section": "colors"
-      },
-      {
-        "name": "The One Voice Rule",
-        "body": "Studio Electric appears on at most one or two elements per screen. Its rarity is what makes the \"now\" ring read as now. A screen with three blue things has no primary action.",
+        "body": "Any custom subject colour is paired with a contrast-checked ink through `readableInk()`; a user tint never renders with fixed unverified text.",
         "section": "colors"
       },
       {
         "name": "The Alias-Only Rule",
-        "body": "Dark mode re-points semantic aliases (--bg-app, --surface-card, --text-muted, …) and never a base palette step (--blue-*, --ink-*, --accent-*). A component that reaches for a base step directly will be wrong in one of the two themes. In dark mode, --brand flips to --ink-100 with --text-on-brand as --ink-900, giving dark mode its own black/white brand identity.",
+        "body": "Night re-points semantic aliases (`--bg-app`, `--surface-card`, `--text-muted`, `--bg-inverse`, …) and never a base step (`--ink-*`, `--accent-*`). The Day ink ramp is Day-only; reaching for a fixed `ink-900` is wrong at night.",
+        "section": "colors"
+      },
+      {
+        "name": "The Brand-Is-Ink Rule",
+        "body": "Selected states and primary buttons use `bg-inverse text-on-inverse` (`--brand` is ink, not a hue). Every `Button` and `IconButton` variant, and every text-styled control, is inverse, neutral glass, transparent, or danger — none fills with the lamp.",
         "section": "colors"
       },
       {
         "name": "The Server-Colour Rule",
-        "body": "EduPage ships its own per-subject hex. It is never used. It carries no contrast guarantee, and it breaks the promise that a subject looks the same on every device.",
+        "body": "EduPage's per-subject hex is never used: no contrast guarantee, and it breaks cross-device consistency.",
         "section": "colors"
       },
       {
         "name": "The Tabular Time Rule",
-        "body": "Anything that is a time, a countdown, or a number that ticks is set in JetBrains Mono with font-variant-numeric: tabular-nums (the u-data utility). A clock that reflows as its digits change is a broken clock.",
+        "body": "Anything that is a time, a countdown, or a number that ticks is Martian Mono with `tabular-nums` (`u-data`). A clock that reflows as its digits change is a broken clock.",
         "section": "typography"
       },
       {
         "name": "The Tight Display Rule",
-        "body": "Display type is always set BIG and tight — never above 1.05 line-height, never with positive tracking. If a heading needs to be small to fit, it is a Title, not a shrunken Display.",
+        "body": "Display type is set big and tight — line-height at most 1.05, tracking never positive. If a heading must be small to fit, it is a Title.",
         "section": "typography"
       },
       {
         "name": "The Eyebrow Rule",
-        "body": "Uppercase appears only at Label size with 0.14em tracking (the u-eyebrow utility). Uppercase at body size or larger does not exist in this system.",
+        "body": "Uppercase appears only at Label size (11px) via `u-eyebrow`. Uppercase at body size or larger does not exist here.",
         "section": "typography"
       },
       {
-        "name": "The One Fixed Thing Rule",
-        "body": "Exactly one element is fixed to the viewport: the bottom nav. Everything else scrolls, including the header.",
-        "section": "layout"
-      },
-      {
         "name": "The Tinted-Card Rule",
-        "body": "A card filled with a subject accent gets no shadow. Its colour already separates it from the page, and stacking a navy shadow under a pastel fill muddies the tint.",
+        "body": "A card filled with a subject tone gets no shadow; its colour already separates it. (The one featured deep field, the subject on now, takes `shadow-raised` as the lifted live object.)",
         "section": "elevation"
       },
       {
-        "name": "The Blue-Shadow Rule",
-        "body": "Shadows are navy-tinted, never grey or black — in light mode. In dark mode a navy shadow is invisible, so the system drops to plain black shadows for floating chrome and otherwise conveys depth through surface contrast (#0b0c10 ground → #16181f card).",
+        "name": "The Night Shadow Rule",
+        "body": "At night nothing is navy or blurred-grey: cards carry a faint rim, and floating chrome uses plain black. Depth comes from the surface ladder.",
         "section": "elevation"
       },
       {
-        "name": "The Two Blurs Rule",
-        "body": "Backdrop blur exists in exactly two places: glass chrome over the blue hero (18px) and the modal scrim (8px). Blur over a white surface does not exist.",
+        "name": "The Glass Edge Rule",
+        "body": "Every glass surface gets its edge from the shared specular rim, never from a border.",
         "section": "elevation"
       },
       {
         "name": "The No-Square Rule",
-        "body": "Nothing in this system has a square corner. If a new element needs one, the element is wrong, not the rule.",
+        "body": "If a new element needs a square corner, the element is wrong, not the rule.",
         "section": "shapes"
+      },
+      {
+        "name": "The Fixed Chrome Rule",
+        "body": "On phones exactly the StatusBar and the bottom stack are fixed; nothing else is. Wide layouts mount neither.",
+        "section": "layout"
       }
     ],
     "dos": [
-      "Do use the semantic aliases (bg-card, text-muted, shadow-card, rounded-xl) rather than base palette steps, so both themes follow without a dark: override.",
-      "Do set every time, countdown, and period boundary in the u-data utility with tabular figures.",
-      "Do express selection as a fill swap to solid near-black — chips, day tiles, and nav items all do this and should keep doing it.",
-      "Do give the current lesson the 2px electric inset ring and nothing more.",
-      "Do keep cancelled lessons in place at 55% opacity with a strikethrough; they are information, not clutter.",
-      "Do compute contrasting text color via readableInk() whenever custom user subject colors are rendered.",
-      "Do support structural row spanning in WeekGrid for multi-period combined lessons.",
-      "Do set button label weight to semibold (font-semibold).",
-      "Do state data freshness on any screen that shows school data.",
-      "Do pair every fade with a small translate.",
-      "Do keep 44px as the floor for any hit target, and reserve the 64px nav height plus its 16px inset at the bottom of scrollable content.",
-      "Do re-pull src/ds/tokens/*.css from the design system when a token needs to change — dark.css and fonts.css are the two authored-here exceptions and say so in place."
+      "**Do** use semantic aliases (`bg-card`, `text-muted`, `shadow-card`, `rounded-xl`, `bg-inverse text-on-inverse`) so both themes follow without a `dark:` override.",
+      "**Do** set every time, countdown and period boundary in `u-data` with tabular figures.",
+      "**Do** express selection as a swap to the theme's inverse — chips, class tiles, filter pills and nav items all do this.",
+      "**Do** keep the lamp to the lesson on now and a switch that is on, at most two per screen.",
+      "**Do** compute contrasting text with `readableInk()` for any custom subject colour, and pair every tone with its ink.",
+      "**Do** keep cancelled lessons in place at 55% opacity with a strikethrough.",
+      "**Do** give glass surfaces the shared specular rim and the 20px blur; keep schedule text at 4.5:1 or better over them.",
+      "**Do** state data freshness on any screen that shows school data.",
+      "**Do** pair every fade with a small translate.",
+      "**Do** keep 44px as the floor for any hit target and reserve `--nav-safe` at the end of scrollable content.",
+      "**Do** re-pull `src/ds/tokens/*.css` from the design system when a token needs to change — `dark.css` and `fonts.css` are the authored-here exceptions."
     ],
     "donts": [
-      "Don't use a subject accent to mean anything. It is an index (see The Index Rule); status has its own four colours.",
-      "Don't render a custom subject background color without verifying ink contrast via readableInk().",
-      "Don't use EduPage's server-supplied subject hex, raw hex of any kind, or stock Tailwind palette colours (slate-500, amber-100).",
-      "Don't put a shadow under a tinted card, or a navy-tinted shadow anywhere in dark mode.",
-      "Don't give anything a square corner, or a radius below 8px.",
-      "Don't draw a border where an inset ring will do, and don't add borders to cards at all.",
-      "Don't add a second modal surface — no Dialog, no Toast, no Tooltip. The bottom sheet is it.",
-      "Don't make the top bar sticky; the bottom nav is the only fixed element.",
-      "Don't let anything bounce except the bottom sheet's entrance, the nav's active pill, and the switch thumb.",
-      "Don't use blur over a white surface.",
-      "Don't put emoji or unicode-as-icon (★, ✓, →) in the UI; use <Icon>, which is bundled Lucide at 2px stroke on a 24px grid.",
-      "Don't set uppercase above 11px Label size.",
-      "Don't drift toward Material 3 components, Material elevation, or Material colour roles."
+      "**Don't** use a subject tone to mean anything; status has its own signals.",
+      "**Don't** render a custom subject colour without verifying ink contrast via `readableInk()`.",
+      "**Don't** use EduPage's server-supplied subject hex or stock Tailwind palette colours (`slate-500`, `amber-100`); use the aliases and tokens.",
+      "**Don't** put a lamp fill on a button, heading or any text-styled control.",
+      "**Don't** put a shadow under a tinted card, or a navy-tinted or grey shadow at night.",
+      "**Don't** give anything a square corner or a radius below 10px.",
+      "**Don't** draw a border where an inset ring will do, and don't border cards.",
+      "**Don't** add a second modal surface; the bottom sheet is it. The one non-modal exception is the \"Updated\" toast.",
+      "**Don't** add fixed chrome beyond the StatusBar and bottom stack on phones, and don't make the top bar sticky.",
+      "**Don't** bounce anything beyond the sheet entrance, TabBar lens and slots, switch thumb and dock morph.",
+      "**Don't** put blur on content cards or the page ground; blur belongs to glass chrome, schedule slabs, glass icon buttons and the scrim.",
+      "**Don't** put emoji or unicode-as-icon (`★`, `✓`, `→`) in the UI; use `<Icon>` (bundled Lucide, 24px grid).",
+      "**Don't** set uppercase above 11px Label size.",
+      "**Don't** drift toward Material 3 components, elevation or colour roles."
     ]
   }
 }
