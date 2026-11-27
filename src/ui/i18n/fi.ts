@@ -275,7 +275,6 @@ export const fi: Dict = {
   "transit.tab.destination": "Määränpää",
   "transit.tab.saved": "Tallennetut osoitteet",
   "settings.transitMap.show": "Näytä Rīgas satiksme -kartta",
-  "settings.transitMap.hide": "Piilota Rīgas satiksme -kartta",
   "transit.live.title": "Riian joukkoliikenne livenä",
   "transit.live.description":
     "Näe joukkoliikennevälineet kartalla ja pysäkkien reaaliaikaiset saapumisajat.",

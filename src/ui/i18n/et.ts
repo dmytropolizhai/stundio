@@ -274,7 +274,6 @@ export const et: Dict = {
   "transit.tab.destination": "Sihtkoht",
   "transit.tab.saved": "Salvestatud aadressid",
   "settings.transitMap.show": "Näita Rīgas satiksme kaarti",
-  "settings.transitMap.hide": "Peida Rīgas satiksme kaart",
   "transit.live.title": "Riia ühistransport reaalajas",
   "transit.live.description": "Vaata ühissõidukeid kaardil ja reaalajas saabumisaegu peatustes.",
   "transit.live.source": "Reaalajas kaart allikast Rīgas satiksme",

@@ -276,7 +276,6 @@ export const nl: Dict = {
   "transit.tab.destination": "Bestemming",
   "transit.tab.saved": "Opgeslagen adressen",
   "settings.transitMap.show": "Rīgas satiksme-kaart tonen",
-  "settings.transitMap.hide": "Rīgas satiksme-kaart verbergen",
   "transit.live.title": "OV in Riga live",
   "transit.live.description":
     "Bekijk voertuigen van het openbaar vervoer op de kaart en actuele vertrektijden bij haltes.",

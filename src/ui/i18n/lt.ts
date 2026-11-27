@@ -278,7 +278,6 @@ export const lt: Dict = {
   "transit.tab.destination": "Kelionės tikslas",
   "transit.tab.saved": "Išsaugoti adresai",
   "settings.transitMap.show": "Rodyti „Rīgas satiksme“ žemėlapį",
-  "settings.transitMap.hide": "Slėpti „Rīgas satiksme“ žemėlapį",
   "transit.live.title": "Rygos transportas tiesiogiai",
   "transit.live.description":
     "Matykite viešojo transporto priemones žemėlapyje ir tikslų atvykimo laiką stotelėse.",

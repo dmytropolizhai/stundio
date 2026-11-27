@@ -281,7 +281,6 @@ export const de: Dict = {
   "transit.tab.destination": "Ziel",
   "transit.tab.saved": "Gespeicherte Adressen",
   "settings.transitMap.show": "Rīgas satiksme-Karte anzeigen",
-  "settings.transitMap.hide": "Rīgas satiksme-Karte ausblenden",
   "transit.live.title": "Riga Nahverkehr live",
   "transit.live.description":
     "Sieh öffentliche Verkehrsmittel auf der Karte und Live-Abfahrtszeiten an Haltestellen.",

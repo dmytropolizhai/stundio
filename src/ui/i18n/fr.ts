@@ -281,7 +281,6 @@ export const fr: Dict = {
   "transit.tab.destination": "Destination",
   "transit.tab.saved": "Adresses enregistrées",
   "settings.transitMap.show": "Afficher la carte Rīgas satiksme",
-  "settings.transitMap.hide": "Masquer la carte Rīgas satiksme",
   "transit.live.title": "Transports à Riga en direct",
   "transit.live.description":
     "Consultez les véhicules de transport en commun sur la carte et les horaires d'arrivée en direct aux arrêts.",

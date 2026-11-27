@@ -251,29 +251,28 @@ describe("Commute settings", () => {
     expect((await harness.cache.getSettings()).commuteHome).toBe("");
   });
 
-  it("toggles the Rīgas satiksme map from the Settings top bar and persists it", async () => {
-    const harness = await setup();
-    wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
-    expect(harness.store.getState().settings.transitMapEnabled).toBe(true);
+  it("switches the Rīgas satiksme map on the Transit tab, labelled, and persists it", async () => {
+    const harness = await setup("Home");
+    wrap(harness);
+    const toggle = screen.getByRole("switch", { name: "Show Rīgas satiksme map" });
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByText("Show Rīgas satiksme map")).toBeDefined();
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Hide Rīgas satiksme map" }));
+      fireEvent.click(toggle);
     });
     expect(harness.store.getState().settings.transitMapEnabled).toBe(false);
     expect((await harness.cache.getSettings()).transitMapEnabled).toBe(false);
-    const show = screen.getByRole("button", { name: "Show Rīgas satiksme map" });
-    expect(show.getAttribute("aria-pressed")).toBe("false");
+    expect(screen.queryByTitle("Rīgas satiksme live transit map")).toBeNull();
+    // The switch stays while the map is off: it is the way back.
     await clickAndSettle(() => {
-      fireEvent.click(show);
+      fireEvent.click(screen.getByRole("switch", { name: "Show Rīgas satiksme map" }));
     });
     expect(harness.store.getState().settings.transitMapEnabled).toBe(true);
   });
 
-  it("hides the map toggle for roles without the transit tab", async () => {
+  it("no longer puts an unlabelled map button in the Settings top bar", async () => {
     const harness = await setup();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
-    await clickAndSettle(() => {
-      void harness.store.getState().updateSettings({ persona: "teacher" });
-    });
     expect(screen.queryByRole("button", { name: /Rīgas satiksme map/ })).toBeNull();
   });
 

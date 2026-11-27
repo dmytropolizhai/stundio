@@ -276,7 +276,6 @@ export const pl: Dict = {
   "transit.tab.destination": "Cel podróży",
   "transit.tab.saved": "Zapisane adresy",
   "settings.transitMap.show": "Pokaż mapę Rīgas satiksme",
-  "settings.transitMap.hide": "Ukryj mapę Rīgas satiksme",
   "transit.live.title": "Komunikacja w Rydze na żywo",
   "transit.live.description":
     "Zobacz pojazdy komunikacji miejskiej na mapie i aktualne czasy przyjazdów na przystankach.",

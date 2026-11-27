@@ -279,7 +279,6 @@ export const it: Dict = {
   "transit.tab.destination": "Destinazione",
   "transit.tab.saved": "Indirizzi salvati",
   "settings.transitMap.show": "Mostra mappa Rīgas satiksme",
-  "settings.transitMap.hide": "Nascondi mappa Rīgas satiksme",
   "transit.live.title": "Trasporti di Riga in tempo reale",
   "transit.live.description":
     "Vedi i mezzi pubblici sulla mappa e gli orari di arrivo in tempo reale alle fermate.",

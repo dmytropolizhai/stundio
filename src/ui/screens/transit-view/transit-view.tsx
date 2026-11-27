@@ -1,11 +1,11 @@
 /**
  * Two tabs: "Destination" (which campus to head for, from home or the current location, plus the
- * public live map unless switched off in Settings) and "Saved addresses" (route origins). Campus
+ * public live map, with its own switch right above it) and "Saved addresses" (route origins). Campus
  * choices come from cached EduPage data; Google Maps handles routing through ordinary external
  * links, without API keys or device GPS.
  */
 import { useState, type FormEvent } from "react";
-import { Button, Card, Icon, SegmentedTabs, TopBar } from "@/ds";
+import { Button, Card, Icon, SegmentedTabs, Switch, TopBar } from "@/ds";
 import type { TransitDestination } from "@/db";
 import { selectTimetables } from "@/lib/edupage";
 import { dayProgress } from "@/lib/schedule";
@@ -40,6 +40,7 @@ export const TransitView = () => {
   const destinations = useAppStore((s) => s.settings.transitDestinations);
   const setDestinations = useSettingSetter("transitDestinations");
   const mapEnabled = useAppStore((s) => s.settings.transitMapEnabled);
+  const setMapEnabled = useSettingSetter("transitMapEnabled");
   const home = useAppStore((s) => s.settings.commuteHome);
   const pinnedBuilding = useAppStore((s) => s.settings.building);
   const classId = useAppStore((s) => s.settings.selectedClassId);
@@ -150,6 +151,15 @@ export const TransitView = () => {
                   </Button>
                 )}
               </div>
+            </Card>
+            {/* The switch stays when the map is off: it is the way back. */}
+            <Card className="mb-4 px-5 py-3.5">
+              <Switch
+                label={t("settings.transitMap.show")}
+                checked={mapEnabled}
+                onChange={(checked) => void setMapEnabled(checked)}
+                className="w-full justify-between flex-row-reverse"
+              />
             </Card>
             {mapEnabled && <LiveMapCard />}
           </>

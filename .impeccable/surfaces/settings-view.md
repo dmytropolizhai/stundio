@@ -14,4 +14,4 @@ STORY: identity and its two filters at the top, one status line (calm unless ale
 
 FIRST VIEWPORT: the identity card with subgroup and building chips, the status line, and the start of Notifications; no sheet is needed for any choice of two or three.
 
-STATES: no class picked; teacher (no subgroups); single building (no building chips); alerts blocked (caution line, button on native); offline (muted); desktop and iPhone-in-browser notification variants; Subjects and Transit tabs present or absent.
+STATES: the Rīgas satiksme map switch lives on the Transit tab (labelled, right above the map), not in Settings; no class picked; teacher (no subgroups); single building (no building chips); alerts blocked (caution line, button on native); offline (muted); desktop and iPhone-in-browser notification variants; Subjects and Transit tabs present or absent.

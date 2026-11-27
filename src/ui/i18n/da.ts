@@ -275,7 +275,6 @@ export const da: Dict = {
   "transit.tab.destination": "Destination",
   "transit.tab.saved": "Gemte adresser",
   "settings.transitMap.show": "Vis Rīgas satiksme-kort",
-  "settings.transitMap.hide": "Skjul Rīgas satiksme-kort",
   "transit.live.title": "Riga trafik live",
   "transit.live.description":
     "Se offentlig transport på kortet og live ankomsttider ved stoppesteder.",

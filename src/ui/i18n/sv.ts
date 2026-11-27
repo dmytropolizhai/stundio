@@ -276,7 +276,6 @@ export const sv: Dict = {
   "transit.tab.destination": "Destination",
   "transit.tab.saved": "Sparade adresser",
   "settings.transitMap.show": "Visa Rīgas satiksme-karta",
-  "settings.transitMap.hide": "Dölj Rīgas satiksme-karta",
   "transit.live.title": "Rigas kollektivtrafik live",
   "transit.live.description":
     "Se kollektivtrafikens fordon på kartan och avgångstider i realtid vid hållplatser.",

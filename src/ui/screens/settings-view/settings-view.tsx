@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { useAppStore, useSettingSetter } from "@/store";
+import { useAppStore } from "@/store";
 import { listBuildings, listSubgroups } from "@/lib/edupage";
-import { Icon, IconButton, TopBar, type IconName } from "@/ds";
+import { Icon, TopBar, type IconName } from "@/ds";
 import { useSelectedClass } from "@/ui/hooks/useClasses.ts";
 import { CustomizationSheet } from "@/ui/screens/sheets/CustomizationSheet.tsx";
 import { IdentitySheet } from "@/ui/screens/sheets/IdentitySheet.tsx";
@@ -63,8 +63,6 @@ export const SettingsView = ({
   });
 
   const { persona } = useIdentity();
-  const mapEnabled = useAppStore((s) => s.settings.transitMapEnabled);
-  const setMapEnabled = useSettingSetter("transitMapEnabled");
   const hasTransit = PERSONA_PROFILES[persona].nav.personal.includes("transit");
   const identityLabel = useIdentityLabel();
   const selectedClass = useSelectedClass();
@@ -81,20 +79,7 @@ export const SettingsView = ({
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
       <div className="mx-auto w-full max-w-screen px-gutter pt-safe-top pb-nav-safe">
-        <TopBar
-          title={t("settings.title")}
-          actions={
-            hasTransit && (
-              <IconButton
-                icon="bus-front"
-                variant={mapEnabled ? "brand" : "light"}
-                aria-pressed={mapEnabled}
-                label={t(mapEnabled ? "settings.transitMap.hide" : "settings.transitMap.show")}
-                onClick={() => void setMapEnabled(!mapEnabled)}
-              />
-            )
-          }
-        />
+        <TopBar title={t("settings.title")} />
 
         <WatchingCard
           persona={persona}

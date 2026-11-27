@@ -277,7 +277,6 @@ export const hu: Dict = {
   "transit.tab.destination": "Úti cél",
   "transit.tab.saved": "Mentett címek",
   "settings.transitMap.show": "Rīgas satiksme térkép mutatása",
-  "settings.transitMap.hide": "Rīgas satiksme térkép elrejtése",
   "transit.live.title": "Rigai élő közlekedés",
   "transit.live.description":
     "Kövesd a tömegközlekedési járműveket a térképen és a megállók élő érkezési idejét.",
