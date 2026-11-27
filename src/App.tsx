@@ -33,6 +33,7 @@ import { useWhatsNew } from "./ui/hooks/useWhatsNew.ts";
 import { TeacherAnnouncementSheet } from "./ui/screens/sheets/TeacherAnnouncementSheet.tsx";
 import { useTeacherAnnouncement } from "./ui/hooks/useTeacherAnnouncement.ts";
 import { IphoneInstallSheet } from "./ui/screens/sheets/IphoneInstallSheet.tsx";
+import { IdentitySheet } from "./ui/screens/sheets/IdentitySheet.tsx";
 import { useIphoneInstallPrompt } from "./ui/hooks/useIphoneInstallPrompt.ts";
 import { useScheduleNavigation } from "./ui/hooks/useScheduleNavigation.ts";
 import { RefreshToast } from "./ui/components/RefreshToast.tsx";
@@ -200,6 +201,7 @@ const Shell = () => {
   const groupColorOverrides = useAppStore((s) => s.settings.groupColorOverrides);
   const colorCodingEnabled = useAppStore((s) => s.settings.subjectColorCodingEnabled);
   const [picking, setPicking] = useState<"class" | "teacher" | null>(null);
+  const [identitySheetOpen, setIdentitySheetOpen] = useState(false);
   const [dockOverride, setDockOverride] = useState<"now" | "date" | null>(null);
   const [dockMorph, setDockMorph] = useState<"to-date" | "to-now" | null>(null);
   const [prevNavDate, setPrevNavDate] = useState(scheduleNav.date);
@@ -385,6 +387,18 @@ const Shell = () => {
           setDockLesson(null);
         }}
       />
+      <IdentitySheet
+        open={identitySheetOpen}
+        onClose={() => {
+          setIdentitySheetOpen(false);
+        }}
+        onPickClass={() => {
+          setPicking("class");
+        }}
+        onPickTeacher={() => {
+          setPicking("teacher");
+        }}
+      />
     </>
   );
 
@@ -516,7 +530,7 @@ const Shell = () => {
               tab={tab}
               onChange={setTab}
               onPickIdentity={() => {
-                setPicking(profile.picker);
+                setIdentitySheetOpen(true);
               }}
             />
           </div>

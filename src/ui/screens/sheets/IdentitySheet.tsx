@@ -30,6 +30,7 @@ import {
 } from "@/lib/persona";
 import { rigaClock } from "@/lib/schedule";
 import { useAppStore, useSettingSetter } from "@/store";
+import { useBackButton } from "@/ui/hooks/useBackButton.ts";
 import { formatRange, useT } from "@/ui/i18n";
 import { PERSONA_PROFILES, useIdentity } from "@/ui/persona";
 
@@ -113,6 +114,15 @@ export const IdentitySheet = ({
       setDraftPersona(activeIdentity.persona);
     }
   }, [open, activeIdentity.persona]);
+
+  // Priority 20: closes the sheet before the shell's picker (15) and "back to Home" (5) handlers.
+  useBackButton(
+    () => {
+      onClose();
+      return true;
+    },
+    { enabled: open, priority: 20 },
+  );
 
   const summaries = useMemo<Record<Persona, RoleSummary>>(() => {
     const timetableList = Object.values(timetables);

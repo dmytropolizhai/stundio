@@ -54,7 +54,7 @@ export const MoreSheet = ({
         <button
           type="button"
           data-testid="more-identity-row"
-          aria-label={t(profile.changeIdentityLabel)}
+          aria-label={t("settings.identity.sheetTitle")}
           onClick={() => {
             onClose();
             onPickIdentity();
@@ -70,7 +70,7 @@ export const MoreSheet = ({
             </span>
             <span className="min-w-0">
               <span className="block font-text text-caption text-muted">
-                {t(profile.subjectLabel)}
+                {t(profile.roleLabel)}
               </span>
               <span className="block truncate font-text text-body font-bold text-strong">
                 {identityValue ?? t("settings.change")}
