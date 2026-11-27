@@ -110,6 +110,9 @@ describe("IdentitySheet", () => {
 
     // Default persona is student
     expect(screen.getByText("Mana grupa")).toBeDefined();
+    expect(screen.getByTestId("identity-current-card").className).toContain(
+      "u-schedule-glass-live",
+    );
     fireEvent.click(screen.getByText("Mainīt"));
     expect(onClose).toHaveBeenCalled();
     expect(onPickClass).toHaveBeenCalled();

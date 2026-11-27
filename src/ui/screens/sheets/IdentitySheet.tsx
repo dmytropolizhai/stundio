@@ -55,9 +55,22 @@ export const IdentitySheet = ({
         />
 
         <div className="flex flex-col gap-3">
-          <div className="rounded-xl border border-hairline bg-card p-4">
-            <span className="font-text text-caption text-muted">{t(profile.subjectLabel)}</span>
-            <p className="mt-1 font-text text-body font-bold text-strong">
+          <div
+            data-testid="identity-current-card"
+            className="u-schedule-glass-live overflow-hidden rounded-xl p-4"
+          >
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(85% 110% at 100% 0%, color-mix(in oklab, var(--lamp) 26%, transparent) 0%, transparent 70%)",
+              }}
+            />
+            <span className="relative z-1 font-text text-caption text-muted">
+              {t(profile.subjectLabel)}
+            </span>
+            <p className="relative z-1 mt-1 font-text text-body font-bold text-strong">
               {identityLabel ?? t(profile.noneSelected)}
             </p>
           </div>
