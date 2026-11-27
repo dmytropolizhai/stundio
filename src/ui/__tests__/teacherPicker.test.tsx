@@ -121,56 +121,33 @@ describe("OnboardingPersona", () => {
 });
 
 describe("IdentitySheet", () => {
-  it("allows switching persona and triggering pickers", async () => {
+  it("renders both student and teacher cards simultaneously with live context", async () => {
     const harness = await bootHarness();
-    const onPickClass = vi.fn();
-    const onPickTeacher = vi.fn();
-    const onClose = vi.fn();
+    // Remember a teacher (Alksne Santa, form teacher) alongside the default student class
+    await harness.store.getState().setTeacher("-17");
+    await harness.store.getState().updateSettings({ persona: "student", subgroup: "1" });
 
-    const { rerender } = wrap(
+    wrap(
       harness,
-      <IdentitySheet
-        open={true}
-        onClose={onClose}
-        onPickClass={onPickClass}
-        onPickTeacher={onPickTeacher}
-      />,
+      <IdentitySheet open={true} onClose={vi.fn()} onPickClass={vi.fn()} onPickTeacher={vi.fn()} />,
     );
 
     expect(screen.getByText("Izvēlies lomu")).toBeDefined();
 
-    // Default persona is student
-    expect(screen.getByText("Mana grupa")).toBeDefined();
-    expect(screen.getByTestId("identity-current-card").className).toContain(
-      "u-schedule-glass-live",
-    );
-    fireEvent.click(screen.getByText("Mainīt"));
-    expect(onClose).toHaveBeenCalled();
-    expect(onPickClass).toHaveBeenCalled();
+    const studentCard = screen.getByTestId("identity-role-card-student");
+    const teacherCard = screen.getByTestId("identity-role-card-teacher");
+    expect(studentCard.getAttribute("data-selected")).toBe("true");
+    expect(teacherCard.getAttribute("data-selected")).toBe("false");
 
-    // Switch to teacher
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Skolotājs"));
-    });
-    expect(harness.store.getState().settings.persona).toBe("teacher");
-
-    rerender(
-      <StoreContext.Provider value={harness.store}>
-        <IdentitySheet
-          open={true}
-          onClose={onClose}
-          onPickClass={onPickClass}
-          onPickTeacher={onPickTeacher}
-        />
-      </StoreContext.Provider>,
-    );
-
-    expect(screen.getByText("Izvēlies skolotāju")).toBeDefined();
-    fireEvent.click(screen.getByText("Mainīt"));
-    expect(onPickTeacher).toHaveBeenCalled();
+    // Both saved identities and their metadata are visible at once
+    expect(screen.getByText("Skolēns")).toBeDefined();
+    expect(screen.getByText("Skolotājs")).toBeDefined();
+    expect(screen.getByText("Pusgrupa 1")).toBeDefined();
+    expect(screen.getByTestId("identity-role-today-student")).toBeDefined();
+    expect(screen.getByTestId("identity-role-today-teacher")).toBeDefined();
   });
 
-  it("confirms persona selection and closes or opens picker if identity missing", async () => {
+  it("stages role switches inside the sheet and only commits on confirm", async () => {
     const harness = await bootHarness();
     const onPickClass = vi.fn();
     const onPickTeacher = vi.fn();
@@ -186,10 +163,14 @@ describe("IdentitySheet", () => {
       />,
     );
 
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Skolotājs"));
-    });
+    // Selecting teacher stages it without mutating the store yet
+    fireEvent.click(screen.getByRole("radio", { name: /Skolotājs/ }));
+    expect(screen.getByTestId("identity-role-card-teacher").getAttribute("data-selected")).toBe(
+      "true",
+    );
+    expect(harness.store.getState().settings.persona).toBe("student");
 
+    // Confirming commits teacher persona and opens teacher picker because no teacher is picked yet
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("button", { name: "Apstiprināt" }));
     });
@@ -197,5 +178,53 @@ describe("IdentitySheet", () => {
     expect(onClose).toHaveBeenCalled();
     expect(onPickTeacher).toHaveBeenCalled();
     expect(harness.store.getState().settings.persona).toBe("teacher");
+  });
+
+  it("routes inline Change buttons directly to each role's picker", async () => {
+    const harness = await bootHarness();
+    const onPickClass = vi.fn();
+    const onPickTeacher = vi.fn();
+    const onClose = vi.fn();
+
+    wrap(
+      harness,
+      <IdentitySheet
+        open={true}
+        onClose={onClose}
+        onPickClass={onPickClass}
+        onPickTeacher={onPickTeacher}
+      />,
+    );
+
+    // Active student card's Change button
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Mainīt" }));
+    });
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onPickClass).toHaveBeenCalledTimes(1);
+
+    // Inactive teacher card's Change button switches persona and opens teacher picker
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Mainīt · Skolotājs" }));
+    });
+    expect(onClose).toHaveBeenCalledTimes(2);
+    expect(onPickTeacher).toHaveBeenCalledTimes(1);
+    expect(harness.store.getState().settings.persona).toBe("teacher");
+  });
+
+  it("supports keyboard arrow navigation between role cards", async () => {
+    const harness = await bootHarness();
+    wrap(
+      harness,
+      <IdentitySheet open={true} onClose={vi.fn()} onPickClass={vi.fn()} onPickTeacher={vi.fn()} />,
+    );
+
+    const studentRadio = screen.getByRole("radio", { name: /Skolēns/ });
+    await clickAndSettle(() => {
+      fireEvent.keyDown(studentRadio, { key: "ArrowDown" });
+    });
+    expect(screen.getByTestId("identity-role-card-teacher").getAttribute("data-selected")).toBe(
+      "true",
+    );
   });
 });

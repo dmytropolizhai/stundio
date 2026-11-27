@@ -663,6 +663,14 @@ screen currently uses; the bottom sheet remains the only modal.
   rows and a recessed `.u-schedule-room-pill` for unchanged rooms, verbatim school notes in a
   matching `.u-schedule-glass` slab, and a pinned tactile Close button in the sheet footer.
 
+- **IdentitySheet:** Dual-lens liquid-glass role switcher (`.u-sheet-glass` + `.u-sheet-glass-caustic`)
+  showing both remembered Student (group) and Teacher identities simultaneously in an accessible
+  `radiogroup`. A Framer Motion spring lens (`.u-identity-active-lens`) glides between the recessed
+  `.u-sheet-slab` cards as roles are staged, shifting the ambient caustic between cool Mist (student)
+  and warm Lamp (teacher) alongside a backlit 40px role jewel and an inverse check orb. Each card
+  surfaces live cached context for today (lesson count, tabular Martian Mono time span, changes,
+  subgroup or form-class badge) plus an inline Change pill and a pinned inverse Confirm button.
+
 ### Empty State
 
 The one centred surface: a 22px card with a squircle icon well, Title heading and at most 260px of
