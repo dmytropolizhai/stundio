@@ -186,6 +186,28 @@ describe("ClassPicker", () => {
     fireEvent.click(screen.getByRole("button", { name: "Atpakaļ" }));
     expect(onBack).toHaveBeenCalled();
   });
+
+  it("reveals the sticky search blur backdrop only once the list scrolls down", async () => {
+    const harness = await bootHarness();
+    const { container } = wrap(harness, <ClassSelector />);
+
+    const backdrop = container.querySelector<HTMLElement>("[data-scrolled]");
+    expect(backdrop).not.toBeNull();
+    expect(backdrop?.getAttribute("data-scrolled")).toBe("false");
+
+    const scroller = container.querySelector<HTMLElement>(".overflow-y-auto");
+    expect(scroller).not.toBeNull();
+
+    if (scroller !== null) {
+      scroller.scrollTop = 24;
+      fireEvent.scroll(scroller);
+      expect(backdrop?.getAttribute("data-scrolled")).toBe("true");
+
+      scroller.scrollTop = 0;
+      fireEvent.scroll(scroller);
+      expect(backdrop?.getAttribute("data-scrolled")).toBe("false");
+    }
+  });
 });
 
 describe("WeekGrid merge", () => {

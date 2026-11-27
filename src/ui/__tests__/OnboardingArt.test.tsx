@@ -125,9 +125,9 @@ describe("OnboardingIntro", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Choose your institution");
-    expect(
-      screen.getByRole("radio", { name: /Rīgas Valsts tehnikums/ }).getAttribute("aria-checked"),
-    ).toBe("true");
+    const rvtRadio = screen.getByRole("radio", { name: /Rīgas Valsts tehnikums/ });
+    expect(rvtRadio.getAttribute("aria-checked")).toBe("true");
+    expect(rvtRadio.querySelector("img")?.getAttribute("src")).toContain("rvt-logo.png");
 
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(

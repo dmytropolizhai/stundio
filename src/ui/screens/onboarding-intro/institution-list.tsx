@@ -1,3 +1,4 @@
+import rvtLogo from "@/assets/onboarding/rvt-logo.png";
 import { Icon } from "@/ds";
 
 export type InstitutionId = "rvt";
@@ -6,6 +7,7 @@ type Institution = {
   id: InstitutionId;
   name: string;
   meta: string;
+  logo: string;
 };
 
 /**
@@ -17,6 +19,7 @@ const INSTITUTIONS: readonly Institution[] = [
     id: "rvt",
     name: "Rīgas Valsts tehnikums",
     meta: "RVT · pikcrvt.edupage.org",
+    logo: rvtLogo,
   },
 ];
 
@@ -54,11 +57,12 @@ export const InstitutionList = ({ label, hint, selectedId, onSelect }: Instituti
               }`}
             >
               <div className="flex min-w-0 items-center gap-3.5">
+                {/* Light emblem backing keeps the crest's black strokes legible on dark glass. */}
                 <span
                   aria-hidden="true"
-                  className="u-schedule-room-pill flex size-10 shrink-0 items-center justify-center rounded-sm text-strong"
+                  className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-white/95 p-1 shadow-[inset_0_0_0_1px_rgba(18,20,25,0.08)]"
                 >
-                  <Icon name="building-2" size={18} />
+                  <img src={inst.logo} alt="" className="size-full object-contain" />
                 </span>
 
                 <div className="flex min-w-0 flex-col gap-0.5">
