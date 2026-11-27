@@ -1,14 +1,15 @@
 import { useId, useState } from "react";
-import { cn, ThemePicker, type ThemePickerOption } from "@/ds";
+import { BottomSheet, cn, ThemePicker, type ThemePickerOption } from "@/ds";
 import type { Settings } from "@/db";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useSubjects } from "@/ui/hooks/useSubjects.ts";
-import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
+import { useT } from "@/ui/i18n";
+import { LanguageList } from "@/ui/screens/onboarding-language";
 import { SUBJECT_TONES, SUBJECT_TONE_BG, subjectAccent, subjectTone } from "@/ui/theme";
 import { Section } from "./settings-section.tsx";
 import { usePersona } from "@/ui/persona";
 import { SettingsRow } from "./settings-row.tsx";
-import { ChoiceSheet } from "./settings-sheet.tsx";
+import { SheetDescription, SheetTitle } from "./settings-sheet.tsx";
 
 const PREVIEW_COUNT = 3;
 
@@ -144,20 +145,23 @@ export const AppearanceSection = ({ onOpenCustomization }: AppearanceSectionProp
         />
       )}
 
-      <ChoiceSheet
+      <BottomSheet
         open={languageOpen}
         onClose={() => setLanguageOpen(false)}
-        icon="globe"
-        title={t("settings.language")}
-        description={t("settings.languageHint")}
-        options={LANGS.map((key) => ({
-          key,
-          label: LANG_NAMES[key],
-          detail: key.toUpperCase(),
-        }))}
-        value={lang}
-        onChange={(value) => void setLang(value)}
-      />
+        title={<SheetTitle icon="globe">{t("settings.language")}</SheetTitle>}
+      >
+        <SheetDescription>{t("settings.languageHint")}</SheetDescription>
+        <div className="pb-1">
+          <LanguageList
+            label={t("settings.language")}
+            selectedLang={lang}
+            onSelect={(value) => {
+              void setLang(value);
+              setLanguageOpen(false);
+            }}
+          />
+        </div>
+      </BottomSheet>
     </Section>
   );
 };

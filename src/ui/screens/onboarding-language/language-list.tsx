@@ -1,10 +1,38 @@
+import type { KeyboardEvent, ReactNode } from "react";
 import { Icon, cn } from "@/ds";
 import { LANGS, LANG_NAMES, type Lang } from "@/ui/i18n";
 
+export type LanguageLeadingOption = {
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+};
+
 type LanguageListProps = {
   label: string;
-  selectedLang: Lang;
+  selectedLang: Lang | null;
   onSelect: (lang: Lang) => void;
+  /** Optional first option above the languages (e.g. "Same as app" in Share language settings). */
+  leadingOption?: LanguageLeadingOption | undefined;
+  className?: string | undefined;
+};
+
+const NEXT_KEYS = new Set(["ArrowDown", "ArrowRight"]);
+const PREV_KEYS = new Set(["ArrowUp", "ArrowLeft"]);
+
+/** Roving focus for the radiogroup: arrows, Home and End move between options without committing. */
+const moveFocus = (event: KeyboardEvent<HTMLDivElement>) => {
+  const radios = [...event.currentTarget.querySelectorAll<HTMLElement>('[role="radio"]')];
+  const current = radios.indexOf(document.activeElement as HTMLElement);
+  const last = radios.length - 1;
+  let next: number;
+  if (NEXT_KEYS.has(event.key)) next = current >= last ? 0 : current + 1;
+  else if (PREV_KEYS.has(event.key)) next = current <= 0 ? last : current - 1;
+  else if (event.key === "Home") next = 0;
+  else if (event.key === "End") next = last;
+  else return;
+  event.preventDefault();
+  radios[next]?.focus();
 };
 
 /**
@@ -196,57 +224,115 @@ const LangFlag = ({ lang }: { lang: Lang }) => {
   }
 };
 
+type LanguageOptionRowProps = {
+  leading: ReactNode;
+  label: string;
+  active: boolean;
+  tabIndex: 0 | -1;
+  onSelect: () => void;
+};
+
+const LanguageOptionRow = ({
+  leading,
+  label,
+  active,
+  tabIndex,
+  onSelect,
+}: LanguageOptionRowProps) => (
+  <button
+    type="button"
+    role="radio"
+    aria-checked={active}
+    tabIndex={tabIndex}
+    onClick={onSelect}
+    className={cn(
+      "group flex min-h-14 w-full cursor-pointer items-center justify-between gap-3 px-4.5 py-3.5 text-left",
+      "transition-[background-color,transform] duration-(--dur-fast) ease-(--ease-standard)",
+      "hover:bg-(--schedule-row-hover) active:scale-[0.99] active:duration-(--dur-instant)",
+      "focus-visible:z-10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus",
+      active && "bg-(--schedule-row-hover)",
+    )}
+  >
+    <div className="flex items-center gap-3.5">
+      {leading}
+      <span className={cn("font-text text-body font-bold", active ? "text-strong" : "text-fg")}>
+        {label}
+      </span>
+    </div>
+
+    <span
+      aria-hidden="true"
+      className={cn(
+        "flex size-6 shrink-0 items-center justify-center rounded-full transition-[background-color,box-shadow,transform] duration-(--dur-fast) ease-(--ease-standard)",
+        active
+          ? "bg-inverse text-on-inverse"
+          : "bg-transparent inset-ring inset-ring-strong-border/50",
+      )}
+    >
+      {active && <Icon name="check" size={14} />}
+    </span>
+  </button>
+);
+
 /**
  * Continuous liquid-glass radio slab matching the Home schedule and welcome specimens.
  * Each option is rendered in its own native language name paired with its flag.
  */
-export const LanguageList = ({ label, selectedLang, onSelect }: LanguageListProps) => {
+export const LanguageList = ({
+  label,
+  selectedLang,
+  onSelect,
+  leadingOption,
+  className,
+}: LanguageListProps) => {
+  const hasSelectedLang = selectedLang !== null && LANGS.includes(selectedLang);
+  const leadingTabStop =
+    leadingOption !== undefined && (leadingOption.selected || !hasSelectedLang);
+  const langTabStop = leadingTabStop ? null : hasSelectedLang ? selectedLang : LANGS[0];
+
   return (
     <div
       role="radiogroup"
       aria-label={label}
-      className="u-schedule-glass flex min-h-0 w-full flex-col divide-y divide-(--schedule-divider) overflow-y-auto rounded-xl"
+      onKeyDown={moveFocus}
+      className={cn(
+        "u-schedule-glass flex min-h-0 w-full flex-col divide-y divide-(--schedule-divider) overflow-y-auto rounded-xl",
+        className,
+      )}
     >
-      {LANGS.map((key: Lang) => {
-        const active = key === selectedLang;
-        return (
-          <button
-            key={key}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            onClick={() => {
-              onSelect(key);
-            }}
-            className={cn(
-              "group flex min-h-14 w-full cursor-pointer items-center justify-between gap-3 px-4.5 py-3.5 text-left",
-              "transition-[background-color,transform] duration-(--dur-fast) ease-(--ease-standard)",
-              "hover:bg-(--schedule-row-hover) active:scale-[0.99] active:duration-(--dur-instant)",
-              "focus-visible:z-10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus",
-              active && "bg-(--schedule-row-hover)",
-            )}
-          >
-            <div className="flex items-center gap-3.5">
-              <LangFlag lang={key} />
-              <span
-                className={cn("font-text text-body font-bold", active ? "text-strong" : "text-fg")}
-              >
-                {LANG_NAMES[key]}
-              </span>
-            </div>
-
+      {leadingOption !== undefined && (
+        <LanguageOptionRow
+          leading={
             <span
               aria-hidden="true"
               className={cn(
-                "flex size-6 shrink-0 items-center justify-center rounded-full transition-[background-color,box-shadow,transform] duration-(--dur-fast) ease-(--ease-standard)",
-                active
-                  ? "bg-inverse text-on-inverse"
-                  : "bg-transparent inset-ring inset-ring-strong-border/50",
+                "flex h-5 w-7 shrink-0 items-center justify-center rounded-[4px]",
+                leadingOption.selected ? "text-strong" : "text-muted",
               )}
             >
-              {active && <Icon name="check" size={14} />}
+              <Icon name="globe" size={18} />
             </span>
-          </button>
+          }
+          label={leadingOption.label}
+          active={leadingOption.selected}
+          tabIndex={leadingTabStop ? 0 : -1}
+          onSelect={leadingOption.onSelect}
+        />
+      )}
+
+      {LANGS.map((key: Lang) => {
+        const active = key === selectedLang;
+        return (
+          <LanguageOptionRow
+            key={key}
+            leading={<LangFlag lang={key} />}
+            label={LANG_NAMES[key]}
+            active={active}
+            tabIndex={key === langTabStop ? 0 : -1}
+            onSelect={() => {
+              onSelect(key);
+            }}
+          />
         );
       })}
     </div>

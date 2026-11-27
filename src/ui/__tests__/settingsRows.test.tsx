@@ -289,6 +289,41 @@ describe("Settings rows", () => {
     expect(harness.store.getState().settings.shareLangSyncWithApp).toBe(true);
   });
 
+  it("renders both language sheets with the onboarding glass list and flags", async () => {
+    const harness = await bootHarness();
+    renderSettings(harness);
+
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: /^Valoda/ }));
+    });
+    const appSheet = screen.getByRole("dialog");
+    const appGroup = within(appSheet).getByRole("radiogroup", { name: "Valoda" });
+    expect(appGroup.className).toContain("u-schedule-glass");
+    const lvRadio = within(appGroup).getByRole("radio", { name: /Latviešu/ });
+    expect(lvRadio.querySelector('svg[viewBox="0 0 28 20"]')).not.toBeNull();
+
+    // Close app language sheet by picking the active language, then open Share language.
+    await clickAndSettle(() => {
+      fireEvent.click(lvRadio);
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Papildu iestatījumi" }));
+    });
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: /^Kopīgotā attēla valoda/ }));
+    });
+    const shareSheet = screen.getByRole("dialog");
+    const shareGroup = within(shareSheet).getByRole("radiogroup", {
+      name: "Kopīgotā attēla valoda",
+    });
+    expect(shareGroup.className).toContain("u-schedule-glass");
+    const shareRadios = within(shareGroup).getAllByRole("radio");
+    expect(shareRadios[0]?.textContent).toContain("Kā lietotnē");
+    expect(shareRadios[0]?.tabIndex).toBe(0);
+    expect(shareRadios[1]?.tabIndex).toBe(-1);
+    expect(shareRadios[1]?.querySelector('svg[viewBox="0 0 28 20"]')).not.toBeNull();
+  });
+
   it("shows the subject swatch preview even before a class is picked", async () => {
     const harness = await bootHarness({ selectedClassId: null, subjectColorCodingEnabled: false });
     renderSettings(harness);
