@@ -176,6 +176,8 @@ export const lv = {
   "day.updatePrompt.dismiss": "Vēlāk",
   "day.updatePrompt.handoff":
     "Lejupielāde pabeigta. Apstiprini instalēšanu Android logā vai nospied “Atjaunināt”, lai mēģinātu vēlreiz.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect var rādīt “Šī lietotne var būt kaitīga”. Tas ir normāli lietotnēm ārpus Play: nospied “Plašāka informācija” → “Tomēr instalēt”.",
   "day.changesBadge": "{n} izmaiņas",
 
   "changes.title": "Izmaiņas",
