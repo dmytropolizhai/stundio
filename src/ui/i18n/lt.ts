@@ -237,6 +237,10 @@ export const lt: Dict = {
   "week.overview.lightestLabel": "Lengviausia diena",
 
   "share.week": "Bendrinti šią savaitę",
+  "share.link": "Bendrinti nuorodą",
+  "share.image": "Bendrinti kaip paveikslėlį",
+  "share.linkCopied": "Nuoroda nukopijuota",
+  "share.linkError": "Nepavyko bendrinti nuorodos",
   "share.working": "Kuriamas paveikslėlis…",
   "share.error": "Nepavyko sukurti paveikslėlio",
   "share.title": "{name} tvarkaraštis",

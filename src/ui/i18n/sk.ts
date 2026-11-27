@@ -235,6 +235,10 @@ export const sk: Dict = {
   "week.overview.lightestLabel": "Najľahší deň",
 
   "share.week": "Zdieľať tento týždeň",
+  "share.link": "Zdieľať odkaz",
+  "share.image": "Zdieľať ako obrázok",
+  "share.linkCopied": "Odkaz skopírovaný",
+  "share.linkError": "Odkaz sa nepodarilo zdieľať",
   "share.working": "Vytvára sa obrázok…",
   "share.error": "Nepodarilo sa vytvoriť obrázok",
   "share.title": "Rozvrh {name}",

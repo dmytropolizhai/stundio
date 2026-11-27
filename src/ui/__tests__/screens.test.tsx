@@ -595,11 +595,9 @@ describe("WeekView", () => {
       />,
     );
 
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: "Skata opcijas" }));
-    });
-    const toggle = screen.getByRole("switch", { name: "Apvienot vienādas stundas" });
-    expect(toggle).toBeDefined();
+    const toggle = screen.getByRole("button", { name: "Apvienot vienādas stundas" });
+    expect(toggle.getAttribute("aria-pressed")).toBe("false");
+    expect(screen.queryByTestId("view-options")).toBeNull();
     expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(false);
 
     await clickAndSettle(() => {
@@ -607,6 +605,7 @@ describe("WeekView", () => {
     });
 
     expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(true);
+    expect(toggle.getAttribute("aria-pressed")).toBe("true");
   });
 
   /*
@@ -672,6 +671,7 @@ describe("WeekView", () => {
 
       renderWeek(harness);
       fireEvent.click(screen.getByTestId("share-week"));
+      fireEvent.click(screen.getByTestId("share-week-image"));
 
       await waitFor(() => {
         expect(share).toHaveBeenCalled();
@@ -686,12 +686,62 @@ describe("WeekView", () => {
       expect(sent.files[0]?.name).toContain("a1-2");
     });
 
+    it("copies the /class/<group>/week link to the clipboard when sharing the current week by link", async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      vi.setSystemTime(new Date(`${FIXTURE_DATE}T09:00:00Z`));
+      try {
+        const harness = await bootHarness();
+        const writeText = vi.fn().mockResolvedValue(undefined);
+        vi.stubGlobal("navigator", { clipboard: { writeText } });
+
+        renderWeek(harness);
+        fireEvent.click(screen.getByTestId("share-week"));
+        fireEvent.click(screen.getByTestId("share-week-link"));
+
+        await waitFor(() => {
+          expect(writeText).toHaveBeenCalledWith("https://app.stundio.lv/class/a1-2/week");
+        });
+        expect(await screen.findByText("Saite nokopēta")).toBeDefined();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("shares the /class/<group>/week/<YYYY-MM-DD> link via Web Share for another week", async () => {
+      const harness = await bootHarness();
+      const share = vi.fn().mockResolvedValue(undefined);
+      vi.stubGlobal("navigator", { share });
+
+      renderWeek(harness);
+      fireEvent.click(screen.getByTestId("share-week"));
+      fireEvent.click(screen.getByTestId("share-week-link"));
+
+      await waitFor(() => {
+        expect(share).toHaveBeenCalledWith({
+          title: "A1-2 stundu saraksts",
+          url: "https://app.stundio.lv/class/a1-2/week/2026-09-07",
+        });
+      });
+    });
+
+    it("tells the user when sharing a link is not supported", async () => {
+      const harness = await bootHarness();
+      vi.stubGlobal("navigator", {});
+
+      renderWeek(harness);
+      fireEvent.click(screen.getByTestId("share-week"));
+      fireEvent.click(screen.getByTestId("share-week-link"));
+
+      expect(await screen.findByText("Neizdevās kopīgot saiti")).toBeDefined();
+    });
+
     it("tells the user when the card cannot be drawn at all", async () => {
       const harness = await bootHarness({ shareLangPromptShown: true });
       stubCanvas(null);
 
       renderWeek(harness);
       fireEvent.click(screen.getByTestId("share-week"));
+      fireEvent.click(screen.getByTestId("share-week-image"));
 
       expect(await screen.findByText("Neizdevās sagatavot attēlu")).toBeDefined();
     });
@@ -706,6 +756,7 @@ describe("WeekView", () => {
 
       renderWeek(harness);
       fireEvent.click(screen.getByTestId("share-week"));
+      fireEvent.click(screen.getByTestId("share-week-image"));
 
       await waitFor(() => {
         expect(share).toHaveBeenCalled();

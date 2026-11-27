@@ -3,7 +3,13 @@
  * fallbacks are what make `npm run dev` on a phone or a laptop usable — so all three are pinned.
  */
 import { describe, expect, it, vi } from "vitest";
-import { base64ToBlob, shareImage, type ShareEnvironment } from "../share.ts";
+import {
+  base64ToBlob,
+  shareImage,
+  shareLink,
+  type ShareEnvironment,
+  type ShareLinkEnvironment,
+} from "../share.ts";
 
 /** "ABC" — small enough to assert on byte for byte. */
 const PAYLOAD = {
@@ -77,5 +83,74 @@ describe("shareImage", () => {
     await expect(shareImage(PAYLOAD, environment({ navigator }))).rejects.toMatchObject({
       name: "AbortError",
     });
+  });
+});
+
+const LINK_PAYLOAD = {
+  url: "https://app.stundio.lv/class/a1-2/week",
+  title: "A1-2 stundu saraksts",
+};
+
+const linkEnvironment = (overrides: Partial<ShareLinkEnvironment> = {}): ShareLinkEnvironment => ({
+  navigator: null,
+  copyFallback: null,
+  ...overrides,
+});
+
+describe("shareLink", () => {
+  it("uses the Web Share API with title and url when available", async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+
+    await expect(
+      shareLink(
+        { ...LINK_PAYLOAD, text: "Check this week" },
+        linkEnvironment({ navigator: { share } }),
+      ),
+    ).resolves.toBe("web-share");
+
+    expect(share).toHaveBeenCalledWith({
+      title: LINK_PAYLOAD.title,
+      text: "Check this week",
+      url: LINK_PAYLOAD.url,
+    });
+  });
+
+  it("copies the URL to the clipboard when navigator.share is unavailable", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+
+    await expect(
+      shareLink(LINK_PAYLOAD, linkEnvironment({ navigator: { clipboard: { writeText } } })),
+    ).resolves.toBe("clipboard");
+
+    expect(writeText).toHaveBeenCalledWith(LINK_PAYLOAD.url);
+  });
+
+  it("falls back to copyFallback when clipboard.writeText rejects", async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error("denied"));
+    const copyFallback = vi.fn().mockReturnValue(true);
+
+    await expect(
+      shareLink(
+        LINK_PAYLOAD,
+        linkEnvironment({ navigator: { clipboard: { writeText } }, copyFallback }),
+      ),
+    ).resolves.toBe("clipboard");
+
+    expect(copyFallback).toHaveBeenCalledWith(LINK_PAYLOAD.url);
+  });
+
+  it("throws when neither Web Share nor clipboard is available", async () => {
+    await expect(
+      shareLink(LINK_PAYLOAD, linkEnvironment({ copyFallback: () => false })),
+    ).rejects.toThrow(/not supported/);
+  });
+
+  it("propagates AbortError when the share sheet is dismissed", async () => {
+    const abort = Object.assign(new Error("cancelled"), { name: "AbortError" });
+    const share = vi.fn().mockRejectedValue(abort);
+
+    await expect(
+      shareLink(LINK_PAYLOAD, linkEnvironment({ navigator: { share } })),
+    ).rejects.toMatchObject({ name: "AbortError" });
   });
 });

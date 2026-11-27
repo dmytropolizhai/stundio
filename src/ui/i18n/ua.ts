@@ -233,6 +233,10 @@ export const ua: Dict = {
   "week.overview.lightestLabel": "Найлегший день",
 
   "share.week": "Поділитися тижнем",
+  "share.link": "Поділитися посиланням",
+  "share.image": "Поділитися зображенням",
+  "share.linkCopied": "Посилання скопійовано",
+  "share.linkError": "Не вдалося поділитися посиланням",
   "share.working": "Створюємо зображення…",
   "share.error": "Не вдалося створити зображення",
   "share.title": "Розклад {name}",

@@ -234,6 +234,10 @@ export const fi: Dict = {
   "week.overview.lightestLabel": "Kevyin päivä",
 
   "share.week": "Jaa tämä viikko",
+  "share.link": "Jaa linkki",
+  "share.image": "Jaa kuvana",
+  "share.linkCopied": "Linkki kopioitu",
+  "share.linkError": "Linkin jakaminen epäonnistui",
   "share.working": "Luodaan kuvaa…",
   "share.error": "Kuvaa ei voitu luoda",
   "share.title": "{name} lukujärjestys",

@@ -234,6 +234,10 @@ export const da: Dict = {
   "week.overview.lightestLabel": "Letteste dag",
 
   "share.week": "Del denne uge",
+  "share.link": "Del link",
+  "share.image": "Del som billede",
+  "share.linkCopied": "Link kopieret",
+  "share.linkError": "Kunne ikke dele linket",
   "share.working": "Laver billede…",
   "share.error": "Kunne ikke oprette billedet",
   "share.title": "{name} skema",

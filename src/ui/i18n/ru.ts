@@ -233,6 +233,10 @@ export const ru: Dict = {
   "week.overview.lightestLabel": "Самый лёгкий день",
 
   "share.week": "Поделиться неделей",
+  "share.link": "Поделиться ссылкой",
+  "share.image": "Поделиться изображением",
+  "share.linkCopied": "Ссылка скопирована",
+  "share.linkError": "Не удалось поделиться ссылкой",
   "share.working": "Создаём изображение…",
   "share.error": "Не удалось создать изображение",
   "share.title": "Расписание {name}",

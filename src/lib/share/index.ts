@@ -27,9 +27,14 @@ export {
 export {
   base64ToBlob,
   browserShareEnvironment,
+  browserShareLinkEnvironment,
   shareImage,
+  shareLink,
   type NativeSharePayload,
   type ShareCapableNavigator,
   type ShareEnvironment,
+  type ShareLinkEnvironment,
+  type ShareLinkOutcome,
+  type ShareLinkPayload,
   type ShareOutcome,
 } from "./share.ts";

@@ -235,6 +235,10 @@ export const sv: Dict = {
   "week.overview.lightestLabel": "Lugnaste dag",
 
   "share.week": "Dela denna vecka",
+  "share.link": "Dela länk",
+  "share.image": "Dela som bild",
+  "share.linkCopied": "Länk kopierad",
+  "share.linkError": "Kunde inte dela länken",
   "share.working": "Skapar bild…",
   "share.error": "Kunde inte skapa bilden",
   "share.title": "Schema för {name}",

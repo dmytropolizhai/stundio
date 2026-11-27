@@ -231,6 +231,10 @@ export const en: Dict = {
   "week.overview.lightestLabel": "Lightest day",
 
   "share.week": "Share this week",
+  "share.link": "Share link",
+  "share.image": "Share as image",
+  "share.linkCopied": "Link copied",
+  "share.linkError": "Could not share the link",
   "share.working": "Making the image…",
   "share.error": "Could not create the image",
   "share.title": "{name} timetable",

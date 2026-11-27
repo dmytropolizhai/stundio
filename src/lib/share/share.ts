@@ -11,16 +11,33 @@ import { nativeShare, type NativeSharePayload } from "./native.ts";
 
 export type ShareOutcome = "native" | "web-share" | "download";
 
+export type ShareLinkOutcome = "web-share" | "clipboard";
+
+export type ShareLinkPayload = {
+  /** The canonical shareable URL (e.g. `https://app.stundio.lv/class/dp2-1/week`). */
+  url: string;
+  /** The chooser's title when using the Web Share API. */
+  title: string;
+  /** Optional body text alongside the link. */
+  text?: string;
+};
+
 /** The slice of `navigator` the Web Share path needs; absent in a WebView and on desktop. */
 export type ShareCapableNavigator = {
-  share?: (data: { title?: string; text?: string; files?: File[] }) => Promise<void>;
+  share?: (data: { title?: string; text?: string; url?: string; files?: File[] }) => Promise<void>;
   canShare?: (data: { files?: File[] }) => boolean;
+  clipboard?: { writeText: (text: string) => Promise<void> };
 };
 
 export type ShareEnvironment = {
   native: ((payload: NativeSharePayload) => Promise<void>) | null;
   navigator: ShareCapableNavigator | null;
   download: ((blob: Blob, fileName: string) => void) | null;
+};
+
+export type ShareLinkEnvironment = {
+  navigator: ShareCapableNavigator | null;
+  copyFallback: ((text: string) => boolean) | null;
 };
 
 const PNG = "image/png";
@@ -42,10 +59,32 @@ const saveToDisk = (blob: Blob, fileName: string): void => {
   URL.revokeObjectURL(url);
 };
 
+const copyViaTextarea = (text: string): boolean => {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    return document.execCommand("copy");
+  } catch {
+    return false;
+  } finally {
+    document.body.removeChild(textarea);
+  }
+};
+
 export const browserShareEnvironment = (): ShareEnvironment => ({
   native: nativeShare(),
   navigator: typeof navigator === "undefined" ? null : navigator,
   download: typeof document === "undefined" ? null : saveToDisk,
+});
+
+export const browserShareLinkEnvironment = (): ShareLinkEnvironment => ({
+  navigator: typeof navigator === "undefined" ? null : navigator,
+  copyFallback: typeof document === "undefined" ? null : copyViaTextarea,
 });
 
 export const shareImage = async (
@@ -76,6 +115,41 @@ export const shareImage = async (
   }
 
   throw new Error("Sharing is not supported here");
+};
+
+/**
+ * Shares a timetable URL via the Web Share API when available, falling back to copying the link
+ * to the clipboard on desktop browsers and WebViews where `navigator.share` does not exist.
+ */
+export const shareLink = async (
+  payload: ShareLinkPayload,
+  environment: ShareLinkEnvironment = browserShareLinkEnvironment(),
+): Promise<ShareLinkOutcome> => {
+  const nav = environment.navigator;
+
+  if (nav?.share !== undefined) {
+    await nav.share({
+      title: payload.title,
+      ...(payload.text === undefined ? {} : { text: payload.text }),
+      url: payload.url,
+    });
+    return "web-share";
+  }
+
+  if (nav?.clipboard !== undefined) {
+    try {
+      await nav.clipboard.writeText(payload.url);
+      return "clipboard";
+    } catch {
+      // Non-HTTPS dev origins or denied permissions — fall through to the legacy copy fallback.
+    }
+  }
+
+  if (environment.copyFallback?.(payload.url) === true) {
+    return "clipboard";
+  }
+
+  throw new Error("Sharing a link is not supported here");
 };
 
 export type { NativeSharePayload };

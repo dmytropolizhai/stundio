@@ -233,6 +233,10 @@ export const et: Dict = {
   "week.overview.lightestLabel": "Kergem päev",
 
   "share.week": "Jaga seda nädalat",
+  "share.link": "Jaga linki",
+  "share.image": "Jaga pildina",
+  "share.linkCopied": "Link kopeeritud",
+  "share.linkError": "Linki ei õnnestunud jagada",
   "share.working": "Pildi loomine…",
   "share.error": "Pildi loomine ebaõnnestus",
   "share.title": "{name} tunniplaan",

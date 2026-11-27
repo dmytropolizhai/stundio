@@ -239,6 +239,10 @@ export const lv = {
   "week.overview.lightestLabel": "Vieglākā diena",
 
   "share.week": "Dalīties ar nedēļu",
+  "share.link": "Kopīgot saiti",
+  "share.image": "Kopīgot kā attēlu",
+  "share.linkCopied": "Saite nokopēta",
+  "share.linkError": "Neizdevās kopīgot saiti",
   "share.working": "Sagatavo attēlu…",
   "share.error": "Neizdevās sagatavot attēlu",
   "share.title": "{name} stundu saraksts",

@@ -236,6 +236,10 @@ export const hu: Dict = {
   "week.overview.lightestLabel": "Legkönnyebb nap",
 
   "share.week": "Hét megosztása",
+  "share.link": "Link megosztása",
+  "share.image": "Megosztás képként",
+  "share.linkCopied": "Link másolva",
+  "share.linkError": "Nem sikerült megosztani a linket",
   "share.working": "Kép készítése…",
   "share.error": "Nem sikerült elkészíteni a képet",
   "share.title": "{name} órarendje",

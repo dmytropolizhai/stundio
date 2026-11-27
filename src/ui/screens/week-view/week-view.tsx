@@ -96,7 +96,7 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
   );
 
   const periods = useMemo(() => weekPeriods(days), [days]);
-  const shareWeek = useShareWeek(date);
+  const shareWeek = useShareWeek(date, now.date);
 
   const firstDay = dates[0];
   const isFuture = firstDay !== undefined && firstDay > now.date;
@@ -235,7 +235,9 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
       showShare={hasSchedule}
       shareDisabled={shareWeek.disabled}
       shareWorking={shareWeek.status === "working"}
+      shareCopied={shareWeek.status === "copied"}
       onShare={shareWeek.share}
+      onShareLink={shareWeek.shareLink}
       onPickClass={onPickClass}
     />
   );
@@ -254,9 +256,14 @@ export const WeekView = ({ date, onDateChange, onOpenDay, onPickClass }: WeekVie
           {!isPhone && actions}
           <WeekTeacherSegment />
 
-          {shareWeek.status === "error" && (
+          {shareWeek.status === "copied" && (
+            <p role="status" className="py-1.5 text-center font-text text-caption text-strong">
+              {t("share.linkCopied")}
+            </p>
+          )}
+          {(shareWeek.status === "error" || shareWeek.status === "link-error") && (
             <p role="status" className="py-1.5 text-center font-text text-caption text-danger">
-              {t("share.error")}
+              {shareWeek.status === "link-error" ? t("share.linkError") : t("share.error")}
             </p>
           )}
         </div>

@@ -235,6 +235,10 @@ export const nl: Dict = {
   "week.overview.lightestLabel": "Rustigste dag",
 
   "share.week": "Deel deze week",
+  "share.link": "Link delen",
+  "share.image": "Delen als afbeelding",
+  "share.linkCopied": "Link gekopieerd",
+  "share.linkError": "Kan de link niet delen",
   "share.working": "Afbeelding maken…",
   "share.error": "Kon de afbeelding niet maken",
   "share.title": "Rooster van {name}",

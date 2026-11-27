@@ -9,7 +9,9 @@ import { bootHarness, classIdOf, FIXTURE_DATE } from "./harness.tsx";
 import { findClassTeacher, type ResolvedDay } from "@/lib/edupage";
 import { weekDates } from "@/lib/schedule";
 import { shareTheme } from "../share/palette.ts";
+import { weekShareLinkRoute } from "../share/useShareWeek.ts";
 import { buildWeekImageData, weekShareFileName, weekShareText } from "../share/weekImage.ts";
+import { buildShareUrl } from "@/lib/router";
 import { translate } from "@/ui/i18n";
 import type { Translate } from "@/ui/i18n";
 
@@ -325,5 +327,31 @@ describe("shareTheme", () => {
 
     expect(theme.palette.background).toBe("#ebeaee");
     expect(theme.tones.sky).toEqual({ fill: "#a9bfe6", ink: "#162a4d" });
+  });
+});
+
+describe("weekShareLinkRoute", () => {
+  it("builds /class/<group>/week for the current week", () => {
+    const dates = weekDates("2026-09-09");
+    const route = weekShareLinkRoute({ kind: "class", slug: "a1-2" }, dates, "2026-09-09");
+    expect(route).toEqual({ kind: "class", slug: "a1-2", view: "week" });
+    expect(buildShareUrl(route)).toBe("https://app.stundio.lv/class/a1-2/week");
+  });
+
+  it("includes the Monday date when sharing a non-current week", () => {
+    const dates = weekDates("2026-09-16");
+    const route = weekShareLinkRoute({ kind: "class", slug: "a1-2" }, dates, "2026-09-09");
+    expect(route).toEqual({ kind: "class", slug: "a1-2", view: "week", date: "2026-09-14" });
+    expect(buildShareUrl(route)).toBe("https://app.stundio.lv/class/a1-2/week/2026-09-14");
+  });
+
+  it("builds /teacher/<slug>/week for a teacher's current week and preserves root", () => {
+    const dates = weekDates("2026-09-09");
+    expect(
+      buildShareUrl(
+        weekShareLinkRoute({ kind: "teacher", slug: "agris-bumanis" }, dates, "2026-09-09"),
+      ),
+    ).toBe("https://app.stundio.lv/teacher/agris-bumanis/week");
+    expect(weekShareLinkRoute({ kind: "root" }, dates, "2026-09-09")).toEqual({ kind: "root" });
   });
 });

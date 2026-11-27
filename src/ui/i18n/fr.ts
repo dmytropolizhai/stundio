@@ -240,6 +240,10 @@ export const fr: Dict = {
   "week.overview.lightestLabel": "Jour le plus léger",
 
   "share.week": "Partager cette semaine",
+  "share.link": "Partager le lien",
+  "share.image": "Partager en image",
+  "share.linkCopied": "Lien copié",
+  "share.linkError": "Impossible de partager le lien",
   "share.working": "Création de l'image…",
   "share.error": "Impossible de créer l'image",
   "share.title": "Emploi du temps de {name}",

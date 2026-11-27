@@ -234,6 +234,10 @@ export const no: Dict = {
   "week.overview.lightestLabel": "Roligste dag",
 
   "share.week": "Del denne uken",
+  "share.link": "Del lenke",
+  "share.image": "Del som bilde",
+  "share.linkCopied": "Lenke kopiert",
+  "share.linkError": "Kunne ikke dele lenken",
   "share.working": "Lager bilde…",
   "share.error": "Kunne ikke lage bildet",
   "share.title": "Timeplan for {name}",
