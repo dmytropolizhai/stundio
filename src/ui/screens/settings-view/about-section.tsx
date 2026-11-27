@@ -139,6 +139,7 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
         icon="sparkles"
         label={t("settings.whatsNew")}
         description={t("settings.whatsNewHint")}
+        quiet
         onClick={onShowWhatsNew}
       />
       {isNative ? (
@@ -154,6 +155,7 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
           icon="info"
           label={t("settings.version")}
           description={t(isDesktop() ? "settings.desktopUpdatesHint" : "settings.versionHint")}
+          quiet
           value={__APP_VERSION__}
         />
       )}
@@ -161,12 +163,14 @@ export const AboutSection = ({ onShowWhatsNew, onOpenFeedback }: AboutSectionPro
         icon="bug"
         label={t("settings.reportIssueRow")}
         description={t("settings.reportIssueHint")}
+        quiet
         onClick={() => onOpenFeedback("bug")}
       />
       <SettingsRow
         icon="lightbulb"
         label={t("settings.suggestFeatureRow")}
         description={t("settings.suggestFeatureHint")}
+        quiet
         onClick={() => onOpenFeedback("suggestion")}
       />
 

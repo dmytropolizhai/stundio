@@ -387,7 +387,6 @@ export const nl: Dict = {
   "widget.noData": "Open Stundio om te vernieuwen",
   "widget.minutesLeft": "nog {minutes} min",
   "widget.minutesUntil": "over {minutes} min",
-  "settings.data": "Gegevens",
   "settings.analytics": "Anonieme gebruiksstatistieken",
   "settings.analyticsHint":
     "Helpt te begrijpen welke functies worden gebruikt. Geen cookies, geen persoonsgegevens.",
@@ -512,9 +511,8 @@ export const nl: Dict = {
   "settings.iphoneInstall": "Zet op beginscherm",
   "settings.iphoneInstallHint": "Installeer Stundio als app op je iPhone",
 
-  "settings.group.tabs": "Tabbladen",
-  "settings.group.schedule": "Rooster",
   "settings.group.appearance": "Weergave en taal",
+  "settings.advanced": "Meer instellingen",
   "settings.identityHint": "Wiens rooster Home, Week en de widget tonen.",
   "settings.subgroupHint": "Verbergt de lessen van de andere subgroep op de dag en in de week.",
   "settings.buildingHint": "Toon het rooster van één gebouw of van beide.",
@@ -524,7 +522,6 @@ export const nl: Dict = {
   "settings.customizationHint": "Vakkleuren, accent, kaartstijl en hoekafronding.",
   "settings.shareLanguageHint": "De taal van de weekafbeelding en het bericht dat je deelt.",
   "settings.shareLangFollowApp": "Zelfde als app",
-  "settings.calendar": "Agenda",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Opent in de agenda van iPhone, iPad of Mac.",

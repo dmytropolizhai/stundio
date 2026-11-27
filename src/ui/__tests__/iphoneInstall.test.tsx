@@ -276,7 +276,8 @@ describe("iPhone install prompt & platform detection", () => {
         );
       });
 
-      expect(screen.getByText("Instalēt Stundio kā lietotni savā iPhone")).toBeDefined();
+      // One install row, in the notifications group: the share group no longer repeats it.
+      expect(screen.getAllByRole("button", { name: /Pievienot sākuma ekrānam/i })).toHaveLength(1);
       const installBtn = screen.getAllByRole("button", { name: /Pievienot sākuma ekrānam/i })[0];
       expect(installBtn).toBeDefined();
 

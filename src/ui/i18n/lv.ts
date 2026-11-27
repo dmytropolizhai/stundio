@@ -387,7 +387,6 @@ export const lv = {
   "widget.noData": "Atver Stundio, lai atjaunotu",
   "widget.minutesLeft": "vēl {minutes} min",
   "widget.minutesUntil": "pēc {minutes} min",
-  "settings.data": "Dati",
   "settings.analytics": "Anonīma lietošanas statistika",
   "settings.analyticsHint":
     "Palīdz saprast, kuras funkcijas tiek izmantotas. Bez sīkfailiem un personas datiem.",
@@ -512,9 +511,8 @@ export const lv = {
   "settings.iphoneInstall": "Pievienot sākuma ekrānam",
   "settings.iphoneInstallHint": "Instalēt Stundio kā lietotni savā iPhone",
 
-  "settings.group.tabs": "Cilnes",
-  "settings.group.schedule": "Saraksts",
   "settings.group.appearance": "Izskats un valoda",
+  "settings.advanced": "Papildu iestatījumi",
   "settings.identityHint": "Kura saraksts rādās sākumā, nedēļā un logrīkā.",
   "settings.subgroupHint": "Paslēpj otras pusgrupas stundas no dienas un nedēļas.",
   "settings.buildingHint": "Rādīt tikai vienas ēkas sarakstu vai abu kopā.",
@@ -523,7 +521,6 @@ export const lv = {
   "settings.customizationHint": "Priekšmetu krāsas, akcents, kartīšu stils un noapaļojums.",
   "settings.shareLanguageHint": "Kādā valodā parakstīts nedēļas attēls un ziņa, ar ko dalies.",
   "settings.shareLangFollowApp": "Kā lietotnē",
-  "settings.calendar": "Kalendārs",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Atver iPhone, iPad vai Mac kalendārā.",

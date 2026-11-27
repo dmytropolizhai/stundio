@@ -380,7 +380,6 @@ export const et: Dict = {
   "widget.noData": "Värskendamiseks ava Stundio",
   "widget.minutesLeft": "{minutes} min jäänud",
   "widget.minutesUntil": "{minutes} min pärast",
-  "settings.data": "Andmed",
   "settings.analytics": "Anonüümne kasutusanalüütika",
   "settings.analyticsHint":
     "Aitab mõista, milliseid funktsioone kasutatakse. Ilma küpsiste ja isikuandmeteta.",
@@ -504,9 +503,8 @@ export const et: Dict = {
   "settings.iphoneInstall": "Lisa avakuvale",
   "settings.iphoneInstallHint": "Paigalda Stundio oma iPhone'i rakendusena",
 
-  "settings.group.tabs": "Vahekaardid",
-  "settings.group.schedule": "Tunniplaan",
   "settings.group.appearance": "Välimus ja keel",
+  "settings.advanced": "Rohkem seadeid",
   "settings.identityHint": "Kelle tunniplaani avaleht, nädal ja vidin näitavad.",
   "settings.subgroupHint": "Peidab teise alamrühma tunnid päeva- ja nädalavaatest.",
   "settings.buildingHint": "Näita ainult ühe hoone või mõlema hoone tunniplaani.",
@@ -516,7 +514,6 @@ export const et: Dict = {
   "settings.customizationHint": "Õppeainete värvid, aktsent, kaardistiil ja nurkade ümarus.",
   "settings.shareLanguageHint": "Jagatava nädalapildi ja sõnumi keel.",
   "settings.shareLangFollowApp": "Sama mis rakendusel",
-  "settings.calendar": "Kalender",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Avaneb iPhone'i, iPadi või Maci kalendris.",

@@ -385,7 +385,6 @@ export const sv: Dict = {
   "widget.noData": "Öppna Stundio för att uppdatera",
   "widget.minutesLeft": "{minutes} min kvar",
   "widget.minutesUntil": "om {minutes} min",
-  "settings.data": "Data",
   "settings.analytics": "Anonym användningsstatistik",
   "settings.analyticsHint":
     "Hjälper till att förstå vilka funktioner som används. Inga cookies, inga personuppgifter.",
@@ -511,9 +510,8 @@ export const sv: Dict = {
   "settings.iphoneInstall": "Lägg till på hemskärmen",
   "settings.iphoneInstallHint": "Installera Stundio som en app på din iPhone",
 
-  "settings.group.tabs": "Flikar",
-  "settings.group.schedule": "Schema",
   "settings.group.appearance": "Utseende och språk",
+  "settings.advanced": "Fler inställningar",
   "settings.identityHint": "Vems schema som visas på Hem, Vecka och i widgeten.",
   "settings.subgroupHint": "Döljer den andra undergruppens lektioner från dagen och veckan.",
   "settings.buildingHint": "Visa schemat för endast en byggnad, eller för båda.",
@@ -522,7 +520,6 @@ export const sv: Dict = {
   "settings.customizationHint": "Ämnesfärger, accent, kortstil och hörnradie.",
   "settings.shareLanguageHint": "Språket på veckobilden och meddelandet du delar.",
   "settings.shareLangFollowApp": "Samma som appen",
-  "settings.calendar": "Kalender",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Öppnas i kalendern på iPhone, iPad eller Mac.",

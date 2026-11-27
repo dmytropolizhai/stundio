@@ -13,7 +13,8 @@ vi.mock("@/lib/calendar", async (importOriginal) => {
 });
 
 import { StoreContext } from "@/store";
-import { CalendarSection } from "../screens/settings-view/calendar-section.tsx";
+import { CalendarRows } from "../screens/settings-view/calendar-section.tsx";
+import { Section } from "../screens/settings-view/settings-section.tsx";
 import { useCalendarExport } from "../calendar/useCalendarExport.ts";
 import { bootHarness, clickAndSettle, type Harness } from "./harness.tsx";
 
@@ -26,11 +27,13 @@ const pick = async (name: RegExp | string) => {
 const renderSection = (h: Harness) =>
   render(
     <StoreContext.Provider value={h.store}>
-      <CalendarSection />
+      <Section title="Kopīgošana">
+        <CalendarRows />
+      </Section>
     </StoreContext.Provider>,
   );
 
-describe("CalendarSection", () => {
+describe("CalendarRows", () => {
   beforeEach(() => {
     route.mockReset();
     vi.useFakeTimers({ toFake: ["Date"], now: new Date("2026-09-09T08:00:00Z") });

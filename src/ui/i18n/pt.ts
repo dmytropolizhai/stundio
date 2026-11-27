@@ -388,7 +388,6 @@ export const pt: Dict = {
   "widget.noData": "Abre o Stundio para atualizar",
   "widget.minutesLeft": "faltam {minutes} min",
   "widget.minutesUntil": "em {minutes} min",
-  "settings.data": "Dados",
   "settings.analytics": "Estatísticas de utilização anónimas",
   "settings.analyticsHint":
     "Ajuda a perceber que funcionalidades são usadas. Sem cookies, sem dados pessoais.",
@@ -515,9 +514,8 @@ export const pt: Dict = {
   "settings.iphoneInstall": "Adicionar ao Ecrã Principal",
   "settings.iphoneInstallHint": "Instala o Stundio como uma app no teu iPhone",
 
-  "settings.group.tabs": "Separadores",
-  "settings.group.schedule": "Horário",
   "settings.group.appearance": "Aspeto e idioma",
+  "settings.advanced": "Mais definições",
   "settings.identityHint": "De quem é o horário mostrado no Início, Semana e widget.",
   "settings.subgroupHint": "Oculta as aulas do outro subgrupo no dia e na semana.",
   "settings.buildingHint": "Mostrar o horário de apenas um edifício ou de ambos.",
@@ -528,7 +526,6 @@ export const pt: Dict = {
     "Cores das disciplinas, destaque, estilo dos cartões e arredondamento dos cantos.",
   "settings.shareLanguageHint": "O idioma da imagem da semana e da mensagem que partilhas.",
   "settings.shareLangFollowApp": "Igual ao da app",
-  "settings.calendar": "Calendário",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Abre no calendário do iPhone, iPad ou Mac.",

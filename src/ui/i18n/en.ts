@@ -378,7 +378,6 @@ export const en: Dict = {
   "widget.noData": "Open Stundio to refresh",
   "widget.minutesLeft": "{minutes} min left",
   "widget.minutesUntil": "in {minutes} min",
-  "settings.data": "Data",
   "settings.analytics": "Anonymous usage analytics",
   "settings.analyticsHint":
     "Helps understand which features get used. No cookies, no personal data.",
@@ -503,9 +502,8 @@ export const en: Dict = {
   "settings.iphoneInstall": "Add to Home Screen",
   "settings.iphoneInstallHint": "Install Stundio as an app on your iPhone",
 
-  "settings.group.tabs": "Tabs",
-  "settings.group.schedule": "Schedule",
   "settings.group.appearance": "Appearance & language",
+  "settings.advanced": "More settings",
   "settings.identityHint": "Whose timetable Home, Week and the widget show.",
   "settings.subgroupHint": "Hides the other subgroup's lessons from the day and the week.",
   "settings.buildingHint": "Show the timetable of one building only, or of both.",
@@ -515,7 +513,6 @@ export const en: Dict = {
   "settings.customizationHint": "Subject colours, accent, card style and corner rounding.",
   "settings.shareLanguageHint": "The language of the week image and message you share.",
   "settings.shareLangFollowApp": "Same as app",
-  "settings.calendar": "Calendar",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Opens in the iPhone, iPad or Mac calendar.",

@@ -393,7 +393,6 @@ export const fr: Dict = {
   "widget.noData": "Ouvrir Stundio pour actualiser",
   "widget.minutesLeft": "{minutes} min restantes",
   "widget.minutesUntil": "dans {minutes} min",
-  "settings.data": "Données",
   "settings.analytics": "Statistiques d'utilisation anonymes",
   "settings.analyticsHint":
     "Aide à comprendre quelles fonctionnalités sont utilisées. Sans cookies ni données personnelles.",
@@ -522,9 +521,8 @@ export const fr: Dict = {
   "settings.iphoneInstall": "Sur l'écran d'accueil",
   "settings.iphoneInstallHint": "Installer Stundio comme une application sur votre iPhone",
 
-  "settings.group.tabs": "Onglets",
-  "settings.group.schedule": "Emploi du temps",
   "settings.group.appearance": "Apparence et langue",
+  "settings.advanced": "Autres réglages",
   "settings.identityHint":
     "Indique de qui l'emploi du temps s'affiche dans Accueil, Semaine et le widget.",
   "settings.subgroupHint": "Masque les cours de l'autre sous-groupe dans le jour et la semaine.",
@@ -536,7 +534,6 @@ export const fr: Dict = {
     "Couleurs des matières, accentuation, style des cartes et arrondi des coins.",
   "settings.shareLanguageHint": "La langue de l'image de la semaine et du message partagés.",
   "settings.shareLangFollowApp": "Identique à l'application",
-  "settings.calendar": "Calendrier",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "S'ouvre dans le calendrier de l'iPhone, iPad ou Mac.",

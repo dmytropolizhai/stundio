@@ -9,17 +9,15 @@ import { FeedbackSheet } from "@/ui/components/FeedbackSheet.tsx";
 import { useT } from "@/ui/i18n";
 import { PERSONA_PROFILES, useIdentity, useIdentityLabel } from "@/ui/persona";
 import { AUTHOR_URL, REPO_URL, SITE_URL, type FeedbackType } from "@/ui/feedback.ts";
-import { ProfileCard } from "./profile-card.tsx";
+import { WatchingCard } from "./watching-card.tsx";
+import { StatusStrip } from "./status-strip.tsx";
 import { AppearanceSection } from "./appearance-section.tsx";
-import { CalendarSection } from "./calendar-section.tsx";
-import { ShareSection } from "./share-section.tsx";
-import { ScheduleSection } from "./schedule-section.tsx";
+import { TakeAwaySection } from "./take-away-section.tsx";
 import { NotificationsSection } from "./notifications-section.tsx";
-import { DataSection } from "./data-section.tsx";
 import { AboutSection } from "./about-section.tsx";
+import { MoreSection } from "./more-section.tsx";
 import { DangerSection } from "./danger-section.tsx";
 import { CommuteSection } from "./commute-section.tsx";
-import { TabsSection } from "./tabs-section.tsx";
 
 type SettingsViewProps = {
   onPickClass: () => void;
@@ -30,15 +28,17 @@ type SettingsViewProps = {
 };
 
 /**
- * Settings — the DS UI kit's "Me" screen.
+ * Settings, ordered by why a student opens it rather than by how the code is organised:
+ *
+ * 1. What am I looking at — the identity plus the subgroup and building filters, switched in place.
+ * 2. Is the app in a good state — data freshness and the one fix that matters (blocked alerts).
+ * 3. Notifications, 4. Appearance (theme thumbnails, language, what the screens show),
+ * 5. Taking the timetable out (calendar, class announcement), 6. The app itself,
+ * then one folded "More" for what is set once a term, and the reset on its own.
  *
  * Every control writes straight through the store to the cache, so a change survives a cold
- * start without a save button.
- *
- * One row shape throughout (`SettingsRow`): an icon tile to scan by, a one-sentence description,
- * the current value on the right, and a switch or a chevron. Closed sets (theme, language,
- * building, subgroup, reminder time) open a `ChoiceSheet` that repeats the row's description.
- * Groups run from what changes most often (the schedule) to what changes least (about, reset).
+ * start without a save button. One row shape throughout (`SettingsRow`); closed sets longer than
+ * three (language, reminder time) open a `ChoiceSheet`.
  */
 export const SettingsView = ({
   onPickClass,
@@ -63,8 +63,6 @@ export const SettingsView = ({
   });
 
   const { persona } = useIdentity();
-  const subgroup = useAppStore((s) => s.settings.subgroup);
-  const building = useAppStore((s) => s.settings.building);
   const mapEnabled = useAppStore((s) => s.settings.transitMapEnabled);
   const setMapEnabled = useSettingSetter("transitMapEnabled");
   const hasTransit = PERSONA_PROFILES[persona].nav.personal.includes("transit");
@@ -79,15 +77,6 @@ export const SettingsView = ({
       selectedClass === null ? [] : listSubgroups(Object.values(timetables), selectedClass.id),
     [timetables, selectedClass],
   );
-
-  const facts = [
-    ...(PERSONA_PROFILES[persona].hasSubgroups && subgroups.length > 1
-      ? [`${t("settings.subgroup")}: ${subgroup ?? t("settings.subgroupAll")}`]
-      : []),
-    ...(buildings.length > 1
-      ? [`${t("settings.building")}: ${building ?? t("settings.buildingAuto")}`]
-      : []),
-  ];
 
   return (
     <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -107,36 +96,30 @@ export const SettingsView = ({
           }
         />
 
-        <ProfileCard
+        <WatchingCard
           persona={persona}
-          label={identityLabel}
-          facts={facts}
+          label={identityLabel ?? null}
+          buildings={buildings}
+          subgroups={subgroups}
           onChangeIdentity={() => setIdentitySheetOpen(true)}
         />
 
-        <ScheduleSection buildings={buildings} subgroups={subgroups} />
-
-        <TabsSection />
-
-        {hasTransit && <CommuteSection />}
+        <StatusStrip />
 
         <NotificationsSection onShowIphoneInstall={onShowIphoneInstall} />
 
         <AppearanceSection onOpenCustomization={() => setCustomizing(true)} />
 
-        <ShareSection
-          onShowTeacherAnnouncement={onShowTeacherAnnouncement}
-          onShowIphoneInstall={onShowIphoneInstall}
-        />
+        {hasTransit && <CommuteSection />}
 
-        <CalendarSection />
-
-        <DataSection />
+        <TakeAwaySection onShowTeacherAnnouncement={onShowTeacherAnnouncement} />
 
         <AboutSection
           onShowWhatsNew={onShowWhatsNew}
           onOpenFeedback={(type) => setFeedbackState({ open: true, type })}
         />
+
+        <MoreSection />
 
         <DangerSection />
 

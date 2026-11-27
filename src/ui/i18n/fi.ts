@@ -383,7 +383,6 @@ export const fi: Dict = {
   "widget.noData": "Avaa Stundio päivittääksesi",
   "widget.minutesLeft": "{minutes} min jäljellä",
   "widget.minutesUntil": "{minutes} min kuluttua",
-  "settings.data": "Tiedot",
   "settings.analytics": "Anonyymi käyttöanalytiikka",
   "settings.analyticsHint":
     "Auttaa ymmärtämään, mitä ominaisuuksia käytetään. Ei evästeitä, ei henkilötietoja.",
@@ -507,9 +506,8 @@ export const fi: Dict = {
   "settings.iphoneInstall": "Lisää Koti-valikkoon",
   "settings.iphoneInstallHint": "Asenna Stundio sovelluksena iPhonellesi",
 
-  "settings.group.tabs": "Välilehdet",
-  "settings.group.schedule": "Lukujärjestys",
   "settings.group.appearance": "Ulkoasu ja kieli",
+  "settings.advanced": "Lisäasetukset",
   "settings.identityHint": "Kenen lukujärjestys näkyy Koti- ja Viikko-näkymässä sekä widgetissä.",
   "settings.subgroupHint": "Piilottaa toisen alaryhmän tunnit päivä- ja viikkonäkymästä.",
   "settings.buildingHint": "Näytä vain yhden rakennuksen tai molempien lukujärjestys.",
@@ -519,7 +517,6 @@ export const fi: Dict = {
   "settings.customizationHint": "Aineiden värit, korostus, korttityyli ja kulmien pyöristys.",
   "settings.shareLanguageHint": "Jaettavan viikkokuvan ja viestin kieli.",
   "settings.shareLangFollowApp": "Sama kuin sovellus",
-  "settings.calendar": "Kalenteri",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Avautuu iPhonen, iPadin tai Macin kalenterissa.",

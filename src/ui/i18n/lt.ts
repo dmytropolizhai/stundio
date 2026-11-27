@@ -385,7 +385,6 @@ export const lt: Dict = {
   "widget.noData": "Atidarykite „Stundio“, kad atnaujintumėte",
   "widget.minutesLeft": "liko {minutes} min.",
   "widget.minutesUntil": "po {minutes} min.",
-  "settings.data": "Duomenys",
   "settings.analytics": "Anoniminė naudojimo statistika",
   "settings.analyticsHint":
     "Padeda suprasti, kurios funkcijos naudojamos. Be slapukų ir asmens duomenų.",
@@ -510,9 +509,8 @@ export const lt: Dict = {
   "settings.iphoneInstall": "Pridėti prie pradžios ekrano",
   "settings.iphoneInstallHint": "Įdiekite „Stundio“ kaip programėlę savo „iPhone“ telefone",
 
-  "settings.group.tabs": "Kortelės",
-  "settings.group.schedule": "Tvarkaraštis",
   "settings.group.appearance": "Išvaizda ir kalba",
+  "settings.advanced": "Daugiau nustatymų",
   "settings.identityHint": "Kieno tvarkaraštį rodo pradžios ekranas, savaitė ir valdiklis.",
   "settings.subgroupHint": "Paslepia kito pogrupio pamokas dienos ir savaitės vaizde.",
   "settings.buildingHint": "Rodyti tik vieno pastato arba abiejų pastatų tvarkaraštį.",
@@ -522,7 +520,6 @@ export const lt: Dict = {
   "settings.customizationHint": "Dalykų spalvos, akcentas, kortelių stilius ir kampų apvalumas.",
   "settings.shareLanguageHint": "Bendrinamo savaitės paveikslėlio ir žinutės kalba.",
   "settings.shareLangFollowApp": "Tokia pati kaip programėlės",
-  "settings.calendar": "Kalendorius",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Atidaroma „iPhone“, „iPad“ arba „Mac“ kalendoriuje.",

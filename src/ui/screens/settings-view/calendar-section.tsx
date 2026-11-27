@@ -10,7 +10,7 @@ import type { CalendarTarget } from "@/lib/calendar";
 import { useAppStore, useSettingSetter } from "@/store";
 import { useCalendarExport, type CalendarExportStatus } from "@/ui/calendar/useCalendarExport.ts";
 import { useT, type MessageKey } from "@/ui/i18n";
-import { Row, Section } from "./settings-section.tsx";
+import { Row } from "./settings-section.tsx";
 import { SettingsRow, StatusDot, Tile } from "./settings-row.tsx";
 import { SheetDescription, SheetTitle } from "./settings-sheet.tsx";
 
@@ -58,7 +58,8 @@ const messageKey = (status: CalendarExportStatus, changesOnly: boolean): Message
   }
 };
 
-export const CalendarSection = () => {
+/** The calendar export rows and their sheet; `TakeAwaySection` puts them in their group. */
+export const CalendarRows = () => {
   const t = useT();
   const changesOnly = useAppStore((s) => s.settings.calendarChangesOnly);
   const setChangesOnly = useSettingSetter("calendarChangesOnly");
@@ -89,7 +90,7 @@ export const CalendarSection = () => {
     );
 
   return (
-    <Section title={t("settings.calendar")}>
+    <>
       <SettingsRow
         icon="list-filter"
         label={t("settings.calendarChangesOnly")}
@@ -163,6 +164,6 @@ export const CalendarSection = () => {
           ))}
         </div>
       </BottomSheet>
-    </Section>
+    </>
   );
 };

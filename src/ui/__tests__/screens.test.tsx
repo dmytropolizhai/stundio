@@ -762,6 +762,11 @@ describe("SettingsView", () => {
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
     expect(harness.store.getState().settings.mergeConsecutiveLessons).toBe(false);
+    // Set once a term, so it lives behind the folded "More" row.
+    expect(screen.queryByRole("switch", { name: "Apvienot vienādas stundas" })).toBeNull();
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Papildu iestatījumi" }));
+    });
     await clickAndSettle(() => {
       fireEvent.click(screen.getByRole("switch", { name: "Apvienot vienādas stundas" }));
     });
@@ -813,16 +818,16 @@ describe("SettingsView", () => {
     const harness = await bootHarness();
     wrap(harness, <SettingsView onPickClass={vi.fn()} onShowWhatsNew={vi.fn()} />);
 
-    // The fixture list carries both buildings, so the row is present, showing "auto".
-    const row = screen.getByRole("button", { name: "Ēka Automātiski" });
+    // The fixture list carries both buildings, so the filter is on the card, set to "auto".
+    expect(screen.getByRole("button", { name: "Automātiski" }).getAttribute("aria-pressed")).toBe(
+      "true",
+    );
 
     await clickAndSettle(() => {
-      fireEvent.click(row);
-    });
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("radio", { name: "TIC" }));
+      fireEvent.click(screen.getByRole("button", { name: "TIC" }));
     });
     expect(harness.store.getState().settings.building).toBe("TIC");
+    expect(screen.getByRole("button", { name: "TIC" }).getAttribute("aria-pressed")).toBe("true");
   });
 
   it("refreshes on demand", async () => {

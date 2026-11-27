@@ -556,6 +556,15 @@ text, one per screen.
 - **Label:** an eyebrow above the field. **Select:** the same pill, bold body, 18px muted chevron, a native `<select>` so Android opens the OS picker.
 - **Switch:** 54×32 track, 22px thumb; off is a sunken fill with a 1.5px strong-border ring, on is the **lamp** with a `lamp-ink` thumb (one of the lamp's two sanctioned uses).
 
+### Settings screen
+
+Settings is ordered by why a student opens it, not by how the code is organised, top to bottom:
+
+1. **What I am looking at:** one card with the identity (class or teacher, a tap changes it) and, only when they exist, the **subgroup** and **building** filters as chips set in place — "both"/"auto" first, the chosen chip a solid inverse fill. A teacher has no subgroup chips; one building needs no switch.
+2. **Status strip:** a single calm line (a status dot, "Updated 10:32", the refresh button). It grows a `caution` line with its fix **only** when alerts are blocked — the one coloured thing on the screen is always the thing to act on; offline stays muted, never red.
+3. **Notifications**, 4. **Appearance** (theme thumbnails, language, subject colours, show time, weather, optional tabs), 5. **Sharing** (calendar export, the class announcement), 6. **About the app**, then one folded **More settings** row that opens in place for what is set once a term (merging lessons, where a moved lesson shows, share-card language, analytics), and the reset in a card of its own.
+- A row's description is shown only where the label alone would mislead; elsewhere it is kept for assistive tech (`sr-only`) and costs no height.
+
 ### Settings group
 
 The Settings screen is a column of **groups** (the design system's SettingsGroup): a sentence-case title in Title type (semibold, ink, no all-caps eyebrow), 12px above a 22px card that holds rows.

@@ -7,7 +7,7 @@ import { HomeView } from "../screens/home-view";
 import { WeekView } from "../screens/week-view";
 import { ClassBadge } from "../components/ClassBadge.tsx";
 import { LessonRow } from "../components/LessonRow.tsx";
-import { ScheduleSection } from "../screens/settings-view/schedule-section.tsx";
+import { WatchingCard } from "../screens/settings-view/watching-card.tsx";
 import { bootHarness, clickAndSettle, FIXTURE_DATE, type Harness } from "./harness.tsx";
 
 const wrap = (harness: Harness, node: React.ReactNode) =>
@@ -245,13 +245,22 @@ describe("Teacher Day and Week Views", () => {
     expect(screen.queryByText("Pusgrupa")).toBeNull();
   });
 
-  it("hides the subgroup row in ScheduleSection when persona is teacher", async () => {
+  it("hides the subgroup filter in WatchingCard when persona is teacher", async () => {
     const harness = await bootHarness();
     await clickAndSettle(() => {
       void harness.store.getState().updateSettings({ persona: "teacher" });
     });
 
-    wrap(harness, <ScheduleSection buildings={[]} subgroups={["1", "2"]} />);
+    wrap(
+      harness,
+      <WatchingCard
+        persona="teacher"
+        label="Bērziņš"
+        buildings={[]}
+        subgroups={["1", "2"]}
+        onChangeIdentity={vi.fn()}
+      />,
+    );
 
     expect(screen.queryByText("Pusgrupa")).toBeNull();
   });

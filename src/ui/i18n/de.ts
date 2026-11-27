@@ -391,7 +391,6 @@ export const de: Dict = {
   "widget.noData": "Zum Aktualisieren Stundio öffnen",
   "widget.minutesLeft": "noch {minutes} Min.",
   "widget.minutesUntil": "in {minutes} Min.",
-  "settings.data": "Daten",
   "settings.analytics": "Anonyme Nutzungsanalyse",
   "settings.analyticsHint":
     "Hilft zu verstehen, welche Funktionen genutzt werden. Keine Cookies, keine persönlichen Daten.",
@@ -517,9 +516,8 @@ export const de: Dict = {
   "settings.iphoneInstall": "Zum Home-Bildschirm",
   "settings.iphoneInstallHint": "Stundio als App auf deinem iPhone installieren",
 
-  "settings.group.tabs": "Tabs",
-  "settings.group.schedule": "Stundenplan",
   "settings.group.appearance": "Darstellung & Sprache",
+  "settings.advanced": "Weitere Einstellungen",
   "settings.identityHint": "Wessen Stundenplan Start, Woche und Widget anzeigen.",
   "settings.subgroupHint": "Blendet die Stunden der anderen Untergruppe in Tag und Woche aus.",
   "settings.buildingHint": "Stundenplan nur eines Gebäudes oder beider anzeigen.",
@@ -529,7 +527,6 @@ export const de: Dict = {
   "settings.customizationHint": "Fachfarben, Akzent, Kartenstil und Eckenrundung.",
   "settings.shareLanguageHint": "Die Sprache des geteilten Wochenbildes und der Nachricht.",
   "settings.shareLangFollowApp": "Wie die App",
-  "settings.calendar": "Kalender",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Öffnet im iPhone-, iPad- oder Mac-Kalender.",

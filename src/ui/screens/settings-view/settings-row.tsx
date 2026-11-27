@@ -42,6 +42,11 @@ type BaseProps = {
   icon: IconName;
   label: string;
   description?: string | undefined;
+  /**
+   * The description is still read by assistive tech (it is the row's `aria-describedby`) but takes
+   * no room: for a row whose label already says everything a student needs.
+   */
+  quiet?: boolean;
   /** The current state, shown before the trailing control: "10 min", "LV", a status dot. */
   value?: ReactNode;
   tone?: RowTone;
@@ -76,7 +81,7 @@ const PRESSABLE =
   "cursor-pointer transition-colors duration-(--dur-fast) ease-(--ease-standard) active:bg-sunken";
 
 export const SettingsRow = (props: SettingsRowProps) => {
-  const { icon, label, description, value, tone = "default" } = props;
+  const { icon, label, description, value, quiet = false, tone = "default" } = props;
   const id = useId();
   const labelId = `${id}-label`;
   const valueId = `${id}-value`;
@@ -108,7 +113,10 @@ export const SettingsRow = (props: SettingsRowProps) => {
           )}
         </span>
         {description !== undefined && (
-          <span id={descriptionId} className="mt-0.5 font-text text-caption text-muted">
+          <span
+            id={descriptionId}
+            className={cn("font-text text-caption text-muted", quiet ? "sr-only" : "mt-0.5")}
+          >
             {description}
           </span>
         )}

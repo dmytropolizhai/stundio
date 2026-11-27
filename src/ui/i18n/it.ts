@@ -389,7 +389,6 @@ export const it: Dict = {
   "widget.noData": "Apri Stundio per aggiornare",
   "widget.minutesLeft": "{minutes} min rimasti",
   "widget.minutesUntil": "tra {minutes} min",
-  "settings.data": "Dati",
   "settings.analytics": "Statistiche d'uso anonime",
   "settings.analyticsHint":
     "Aiuta a capire quali funzioni vengono usate. Nessun cookie, nessun dato personale.",
@@ -518,9 +517,8 @@ export const it: Dict = {
   "settings.iphoneInstall": "Aggiungi a Home",
   "settings.iphoneInstallHint": "Installa Stundio come app sul tuo iPhone",
 
-  "settings.group.tabs": "Schede",
-  "settings.group.schedule": "Orario",
   "settings.group.appearance": "Aspetto e lingua",
+  "settings.advanced": "Altre impostazioni",
   "settings.identityHint": "Di chi è l'orario mostrato in Home, Settimana e nel widget.",
   "settings.subgroupHint":
     "Nasconde le lezioni dell'altro sottogruppo dal giorno e dalla settimana.",
@@ -533,7 +531,6 @@ export const it: Dict = {
   "settings.shareLanguageHint":
     "La lingua dell'immagine settimanale e del messaggio che condividi.",
   "settings.shareLangFollowApp": "Come l'app",
-  "settings.calendar": "Calendario",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Si apre nel calendario di iPhone, iPad o Mac.",

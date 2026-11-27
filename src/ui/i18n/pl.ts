@@ -385,7 +385,6 @@ export const pl: Dict = {
   "widget.noData": "Otwórz Stundio, aby odświeżyć",
   "widget.minutesLeft": "zostało {minutes} min",
   "widget.minutesUntil": "za {minutes} min",
-  "settings.data": "Dane",
   "settings.analytics": "Anonimowa analityka użycia",
   "settings.analyticsHint":
     "Pomaga zrozumieć, które funkcje są używane. Bez plików cookie i danych osobowych.",
@@ -511,9 +510,8 @@ export const pl: Dict = {
   "settings.iphoneInstall": "Dodaj do ekranu początkowego",
   "settings.iphoneInstallHint": "Zainstaluj Stundio jako aplikację na iPhonie",
 
-  "settings.group.tabs": "Karty",
-  "settings.group.schedule": "Plan lekcji",
   "settings.group.appearance": "Wygląd i język",
+  "settings.advanced": "Więcej ustawień",
   "settings.identityHint": "Czyj plan wyświetlają ekran Start, Tydzień i widżet.",
   "settings.subgroupHint": "Ukrywa lekcje drugiej podgrupy z widoku dnia i tygodnia.",
   "settings.buildingHint": "Pokaż plan tylko jednego budynku lub obu.",
@@ -523,7 +521,6 @@ export const pl: Dict = {
   "settings.customizationHint": "Kolory przedmiotów, akcent, styl kart i zaokrąglenie rogów.",
   "settings.shareLanguageHint": "Język udostępnianego obrazu tygodnia i wiadomości.",
   "settings.shareLangFollowApp": "Taki jak w aplikacji",
-  "settings.calendar": "Kalendarz",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Otwiera w kalendarzu na iPhonie, iPadzie lub Macu.",

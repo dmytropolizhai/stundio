@@ -386,7 +386,6 @@ export const hu: Dict = {
   "widget.noData": "Nyisd meg a Stundio-t a frissítéshez",
   "widget.minutesLeft": "{minutes} perc van hátra",
   "widget.minutesUntil": "{minutes} perc múlva",
-  "settings.data": "Adatok",
   "settings.analytics": "Névtelen használati statisztika",
   "settings.analyticsHint":
     "Segít megérteni, mely funkciókat használják. Nincsenek sütik, nincsenek személyes adatok.",
@@ -512,9 +511,8 @@ export const hu: Dict = {
   "settings.iphoneInstall": "Hozzáadás a Főképernyőhöz",
   "settings.iphoneInstallHint": "Stundio telepítése alkalmazásként iPhone-ra",
 
-  "settings.group.tabs": "Lapok",
-  "settings.group.schedule": "Órarend",
   "settings.group.appearance": "Megjelenés és nyelv",
+  "settings.advanced": "További beállítások",
   "settings.identityHint": "Kinek az órarendjét mutatja a Kezdőlap, a Hét és a widget.",
   "settings.subgroupHint": "Elrejti a másik csoport óráit a napi és heti nézetből.",
   "settings.buildingHint": "Csak egy épület vagy mindkettő órarendjének megjelenítése.",
@@ -524,7 +522,6 @@ export const hu: Dict = {
   "settings.customizationHint": "Tantárgyszínek, kiemelőszín, kártyastílus és sarokkerekítés.",
   "settings.shareLanguageHint": "A megosztott heti kép és üzenet nyelve.",
   "settings.shareLangFollowApp": "Megegyezik az alkalmazással",
-  "settings.calendar": "Naptár",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Megnyílik iPhone, iPad vagy Mac naptárában.",

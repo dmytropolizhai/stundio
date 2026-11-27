@@ -384,7 +384,6 @@ export const ua: Dict = {
   "widget.noData": "Відкрий Stundio, щоб оновити",
   "widget.minutesLeft": "ще {minutes} хв",
   "widget.minutesUntil": "через {minutes} хв",
-  "settings.data": "Дані",
   "settings.analytics": "Анонімна аналітика використання",
   "settings.analyticsHint":
     "Допомагає зрозуміти, які функції використовуються. Без файлів cookie та персональних даних.",
@@ -509,9 +508,8 @@ export const ua: Dict = {
   "settings.iphoneInstall": "Додати на початковий екран",
   "settings.iphoneInstallHint": "Встановити Stundio як застосунок на iPhone",
 
-  "settings.group.tabs": "Вкладки",
-  "settings.group.schedule": "Розклад",
   "settings.group.appearance": "Вигляд і мова",
+  "settings.advanced": "Додатково",
   "settings.identityHint": "Чий розклад показувати на головній, у тижні та у віджеті.",
   "settings.subgroupHint": "Приховує уроки іншої підгрупи з дня та тижня.",
   "settings.buildingHint": "Показувати розклад лише одного корпусу або обох одразу.",
@@ -521,7 +519,6 @@ export const ua: Dict = {
   "settings.shareLanguageHint":
     "Якою мовою підписані картинка тижня та повідомлення, якими ви ділитеся.",
   "settings.shareLangFollowApp": "Як у застосунку",
-  "settings.calendar": "Календар",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Відкриється в календарі iPhone, iPad або Mac.",

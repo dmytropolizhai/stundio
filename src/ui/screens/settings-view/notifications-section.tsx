@@ -5,7 +5,6 @@ import { currentPlatform, hasAppNotifications } from "@/lib/platform";
 import {
   ensureExactAlarmPermission,
   ensureNotificationPermission,
-  openNotificationSettings,
 } from "@/notifications/localNotifications";
 import { isWebPushSupported, subscribeWebPush, unsubscribeWebPush } from "@/notifications/webPush";
 import { useAppStore, useSettingSetter } from "@/store";
@@ -101,26 +100,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
           description={t("settings.desktopNotificationsFailedHint")}
         />
       )}
-      {notifyPermissionDenied && (
-        <SettingsRow
-          icon="triangle-alert"
-          tone="alert"
-          label={t("settings.notifyPermissionDeniedTitle")}
-          description={t("settings.notifyPermissionDenied")}
-          trailing={
-            native ? (
-              <Button
-                size="sm"
-                onClick={() => {
-                  void openNotificationSettings();
-                }}
-              >
-                {t("settings.notifyOpenSettings")}
-              </Button>
-            ) : undefined
-          }
-        />
-      )}
+      {/* A blocked permission is reported (and fixed) in the status strip at the top of Settings. */}
 
       {native ? (
         <SettingsRow
@@ -187,6 +167,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
           icon="calendar-days"
           label={t("settings.notifyNewTimetable")}
           description={t("settings.notifyNewTimetableHint")}
+          quiet
           checked={settings.notifyNewTimetable}
           onCheckedChange={(checked) => {
             if (checked) void ensureNotificationPermission();
@@ -199,6 +180,7 @@ export const NotificationsSection = ({ onShowIphoneInstall }: NotificationsSecti
           icon="download"
           label={t("settings.notifyAppUpdates")}
           description={t("settings.notifyAppUpdatesHint")}
+          quiet
           checked={settings.notifyAppUpdates}
           onCheckedChange={(checked) => {
             if (checked) void ensureNotificationPermission();

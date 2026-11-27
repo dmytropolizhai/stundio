@@ -382,7 +382,6 @@ export const da: Dict = {
   "widget.noData": "Åbn Stundio for at opdatere",
   "widget.minutesLeft": "{minutes} min tilbage",
   "widget.minutesUntil": "om {minutes} min",
-  "settings.data": "Data",
   "settings.analytics": "Anonym brugsstatistik",
   "settings.analyticsHint":
     "Hjælper med at forstå, hvilke funktioner der bruges. Ingen cookies, ingen persondata.",
@@ -507,9 +506,8 @@ export const da: Dict = {
   "settings.iphoneInstall": "Føj til hjemmeskærm",
   "settings.iphoneInstallHint": "Installer Stundio som en app på din iPhone",
 
-  "settings.group.tabs": "Faner",
-  "settings.group.schedule": "Skema",
   "settings.group.appearance": "Udseende og sprog",
+  "settings.advanced": "Flere indstillinger",
   "settings.identityHint": "Hvis skema Hjem, Uge og widgetten viser.",
   "settings.subgroupHint": "Skjuler den anden undergruppes timer fra dagen og ugen.",
   "settings.buildingHint": "Vis skemaet for kun én bygning eller for begge.",
@@ -519,7 +517,6 @@ export const da: Dict = {
   "settings.customizationHint": "Fagfarver, accent, kortstil og afrunding af hjørner.",
   "settings.shareLanguageHint": "Sproget på det ugebillede og den besked, du deler.",
   "settings.shareLangFollowApp": "Samme som appen",
-  "settings.calendar": "Kalender",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Åbner i kalenderen på iPhone, iPad eller Mac.",

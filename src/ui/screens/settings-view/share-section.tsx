@@ -1,23 +1,14 @@
 import { useState } from "react";
 import { useAppStore, useSettingSetter } from "@/store";
 import { LANGS, LANG_NAMES, useT } from "@/ui/i18n";
-import { isIosDevice, isStandalonePwa } from "@/ui/lib/platform.ts";
-import { Section } from "./settings-section.tsx";
 import { SettingsRow } from "./settings-row.tsx";
 import { ChoiceSheet } from "./settings-sheet.tsx";
 
 /** The share-language option that follows the app's own language instead of a fixed one. */
 const FOLLOW_APP = "app";
 
-type ShareSectionProps = {
-  onShowTeacherAnnouncement?: (() => void) | undefined;
-  onShowIphoneInstall?: (() => void) | undefined;
-};
-
-export const ShareSection = ({
-  onShowTeacherAnnouncement,
-  onShowIphoneInstall,
-}: ShareSectionProps) => {
+/** Which language the shareable week card is written in; a rarely changed choice, so it lives under "More". */
+export const ShareLanguageRow = () => {
   const t = useT();
   const settings = useAppStore((s) => s.settings);
   const setShareLang = useAppStore((s) => s.setShareLang);
@@ -25,7 +16,7 @@ export const ShareSection = ({
   const [languageOpen, setLanguageOpen] = useState(false);
 
   return (
-    <Section title={t("settings.share")}>
+    <>
       <SettingsRow
         icon="image"
         label={t("settings.shareLanguage")}
@@ -37,23 +28,6 @@ export const ShareSection = ({
         }
         onClick={() => setLanguageOpen(true)}
       />
-      {onShowTeacherAnnouncement !== undefined && (
-        <SettingsRow
-          icon="megaphone"
-          label={t("settings.teacherShare")}
-          description={t("settings.teacherShareHint")}
-          onClick={onShowTeacherAnnouncement}
-        />
-      )}
-      {onShowIphoneInstall !== undefined && isIosDevice() && !isStandalonePwa() && (
-        <SettingsRow
-          icon="smartphone"
-          label={t("settings.iphoneInstall")}
-          description={t("settings.iphoneInstallHint")}
-          onClick={onShowIphoneInstall}
-        />
-      )}
-
       <ChoiceSheet
         open={languageOpen}
         onClose={() => setLanguageOpen(false)}
@@ -73,6 +47,19 @@ export const ShareSection = ({
           void setShareLang(value);
         }}
       />
-    </Section>
+    </>
+  );
+};
+
+/** The announcement a teacher can post for their class; absent for a student. */
+export const TeacherShareRow = ({ onClick }: { onClick: () => void }) => {
+  const t = useT();
+  return (
+    <SettingsRow
+      icon="megaphone"
+      label={t("settings.teacherShare")}
+      description={t("settings.teacherShareHint")}
+      onClick={onClick}
+    />
   );
 };

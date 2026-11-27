@@ -180,16 +180,20 @@ describe("Settings rows", () => {
   it("describes a row and repeats the description when its sheet opens", async () => {
     const harness = await bootHarness();
     renderSettings(harness);
-    const hint = "Rādīt tikai vienas ēkas sarakstu vai abu kopā.";
+    const hint = "Lietotnes valoda. Priekšmeti un izmaiņas paliek latviski, kā EduPage.";
 
+    // The row's own description is kept for assistive tech but takes no room on screen.
     expect(screen.getAllByText(hint)).toHaveLength(1);
+    expect(screen.getByText(hint).className).toContain("sr-only");
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: /^Ēka/ }));
+      fireEvent.click(screen.getByRole("button", { name: /^Valoda/ }));
     });
     const sheet = screen.getByRole("dialog");
     expect(within(sheet).getByText(hint)).toBeDefined();
     expect(
-      within(sheet).getByRole("radio", { name: "Automātiski" }).getAttribute("aria-checked"),
+      within(sheet)
+        .getByRole("radio", { name: /Latviešu/ })
+        .getAttribute("aria-checked"),
     ).toBe("true");
   });
 
@@ -197,7 +201,7 @@ describe("Settings rows", () => {
     const harness = await bootHarness();
     renderSettings(harness);
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: /^Ēka/ }));
+      fireEvent.click(screen.getByRole("button", { name: /^Valoda/ }));
     });
     const radios = within(screen.getByRole("dialog")).getAllByRole("radio");
     expect(radios.map((radio) => radio.tabIndex)).toEqual(radios.map((_, i) => (i === 0 ? 0 : -1)));
@@ -210,7 +214,7 @@ describe("Settings rows", () => {
     fireEvent.keyDown(radios.at(-1)!, { key: "ArrowDown" });
     expect(document.activeElement).toBe(radios[0]);
     // Moving focus is not a pick: the sheet stays open on the same value.
-    expect(harness.store.getState().settings.building).toBeNull();
+    expect(harness.store.getState().settings.lang).toBe("lv");
   });
 
   it("disables the sync row while a sync is running", async () => {
@@ -233,27 +237,26 @@ describe("Settings rows", () => {
     expect(document.getElementById(describedBy ?? "")?.textContent).toMatch(/\S/);
   });
 
-  it("picks a subgroup for a divided class from its sheet", async () => {
+  it("switches a divided class's subgroup in place, on the card", async () => {
     const probe = await bootHarness();
     const harness = await bootHarness({ selectedClassId: classIdOf(probe.store, "DT3-2") });
     renderSettings(harness);
 
+    // No sheet: the choices are chips, "both" first, and the chosen one is pressed.
+    const group = screen.getByRole("group", { name: "Pusgrupa" });
+    expect(within(group).getByRole("button", { name: "Abas" }).getAttribute("aria-pressed")).toBe(
+      "true",
+    );
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: /^Pusgrupa/ }));
-    });
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("radio", { name: "Pusgrupa 2" }));
+      fireEvent.click(within(group).getByRole("button", { name: "Pusgrupa 2" }));
     });
     expect(harness.store.getState().settings.subgroup).toBe("2");
-    // The profile card repeats it as a chip, and speaks it in its own name.
-    expect(screen.getByText("Pusgrupa: 2")).toBeDefined();
-    expect(screen.getByRole("button", { name: /DT3-2\. Pusgrupa: 2\./ })).toBeDefined();
+    expect(
+      within(group).getByRole("button", { name: "Pusgrupa 2" }).getAttribute("aria-pressed"),
+    ).toBe("true");
 
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("button", { name: /^Pusgrupa/ }));
-    });
-    await clickAndSettle(() => {
-      fireEvent.click(screen.getByRole("radio", { name: "Abas" }));
+      fireEvent.click(within(group).getByRole("button", { name: "Abas" }));
     });
     expect(harness.store.getState().settings.subgroup).toBeNull();
   });
@@ -263,6 +266,10 @@ describe("Settings rows", () => {
     renderSettings(harness);
     const row = () => screen.getByRole("button", { name: /^Kopīgotā attēla valoda/ });
 
+    // A rarely changed choice: it sits behind the folded "More" row.
+    await clickAndSettle(() => {
+      fireEvent.click(screen.getByRole("button", { name: "Papildu iestatījumi" }));
+    });
     await clickAndSettle(() => {
       fireEvent.click(row());
     });

@@ -384,7 +384,6 @@ export const ru: Dict = {
   "widget.noData": "Открой Stundio, чтобы обновить",
   "widget.minutesLeft": "ещё {minutes} мин",
   "widget.minutesUntil": "через {minutes} мин",
-  "settings.data": "Данные",
   "settings.analytics": "Анонимная статистика использования",
   "settings.analyticsHint":
     "Помогает понять, какие функции используются. Без файлов cookie и личных данных.",
@@ -508,9 +507,8 @@ export const ru: Dict = {
   "settings.iphoneInstall": "Добавить на экран «Домой»",
   "settings.iphoneInstallHint": "Установить Stundio как приложение на iPhone",
 
-  "settings.group.tabs": "Вкладки",
-  "settings.group.schedule": "Расписание",
   "settings.group.appearance": "Внешний вид и язык",
+  "settings.advanced": "Дополнительно",
   "settings.identityHint": "Чьё расписание показывать на главной, в неделе и в виджете.",
   "settings.subgroupHint": "Скрывает уроки другой подгруппы из дня и недели.",
   "settings.buildingHint": "Показывать расписание только одного корпуса или обоих сразу.",
@@ -521,7 +519,6 @@ export const ru: Dict = {
   "settings.shareLanguageHint":
     "На каком языке подписаны картинка недели и сообщение, которыми вы делитесь.",
   "settings.shareLangFollowApp": "Как в приложении",
-  "settings.calendar": "Календарь",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Откроется в календаре iPhone, iPad или Mac.",

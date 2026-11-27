@@ -382,7 +382,6 @@ export const cs: Dict = {
   "widget.noData": "Otevřete Stundio pro obnovení",
   "widget.minutesLeft": "zbývá {minutes} min",
   "widget.minutesUntil": "za {minutes} min",
-  "settings.data": "Data",
   "settings.analytics": "Anonymní statistiky používání",
   "settings.analyticsHint":
     "Pomáhá pochopit, které funkce se používají. Žádné cookies, žádná osobní data.",
@@ -507,9 +506,8 @@ export const cs: Dict = {
   "settings.iphoneInstall": "Přidat na plochu",
   "settings.iphoneInstallHint": "Nainstalovat Stundio jako aplikaci na iPhone",
 
-  "settings.group.tabs": "Karty",
-  "settings.group.schedule": "Rozvrh",
   "settings.group.appearance": "Vzhled a jazyk",
+  "settings.advanced": "Další nastavení",
   "settings.identityHint": "Čí rozvrh zobrazují Domů, Týden a widget.",
   "settings.subgroupHint": "Skryje hodiny druhé skupiny ze dne i týdne.",
   "settings.buildingHint": "Zobrazit rozvrh jen jedné budovy, nebo obou.",
@@ -519,7 +517,6 @@ export const cs: Dict = {
   "settings.customizationHint": "Barvy předmětů, doplňková barva, styl karet a zaoblení rohů.",
   "settings.shareLanguageHint": "Jazyk obrázku týdne a zprávy, kterou sdílíte.",
   "settings.shareLangFollowApp": "Stejný jako aplikace",
-  "settings.calendar": "Kalendář",
   "settings.calendarGoogle": "Google Calendar",
   "settings.calendarApple": "Apple Calendar",
   "settings.calendarAppleHint": "Otevře se v kalendáři na iPhonu, iPadu nebo Macu.",
