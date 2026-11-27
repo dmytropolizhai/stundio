@@ -198,6 +198,8 @@ export const lt: Dict = {
   "day.updatePrompt.dismiss": "Vėliau",
   "day.updatePrompt.handoff":
     "Atsisiuntimas baigtas. Patvirtinkite diegimą „Android“ lange arba bakstelėkite „Atnaujinti“, kad bandytumėte dar kartą.",
+  "day.updatePrompt.protectNote":
+    "„Google Play Protect“ gali parodyti „Ši programa gali būti žalinga“. Tai įprasta programoms, įdiegtoms ne iš „Play“: palieskite Daugiau informacijos → Vis tiek įdiegti.",
   "day.changesBadge": "Pakeitimų: {n}",
 
   "changes.title": "Pakeitimai",

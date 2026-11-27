@@ -197,6 +197,8 @@ export const cs: Dict = {
   "day.updatePrompt.dismiss": "Později",
   "day.updatePrompt.handoff":
     "Stahování dokončeno. Potvrďte instalaci v okně Androidu nebo klepněte na Aktualizovat pro opakování.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect může zobrazit „Tato aplikace může být škodlivá“. U aplikací instalovaných mimo Play je to očekávané: klepněte na Další podrobnosti → Přesto nainstalovat.",
   "day.changesBadge": "Změny: {n}",
 
   "changes.title": "Změny",

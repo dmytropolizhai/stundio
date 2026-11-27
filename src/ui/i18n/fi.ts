@@ -196,6 +196,8 @@ export const fi: Dict = {
   "day.updatePrompt.dismiss": "Myöhemmin",
   "day.updatePrompt.handoff":
     "Lataus valmis. Vahvista asennus Android-ikkunassa tai napauta Päivitä yrittääksesi uudelleen.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect voi näyttää viestin ”Tämä sovellus voi olla haitallinen”. Se on odotettua Playn ulkopuolelta asennetuille sovelluksille: napauta Lisätietoja → Asenna silti.",
   "day.changesBadge": "{n} muutosta",
 
   "changes.title": "Muutokset",

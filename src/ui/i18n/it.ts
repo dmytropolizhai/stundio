@@ -199,6 +199,8 @@ export const it: Dict = {
   "day.updatePrompt.dismiss": "Più tardi",
   "day.updatePrompt.handoff":
     "Download completato. Conferma l'installazione nella finestra di Android o tocca Aggiorna per riprovare.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect potrebbe mostrare «Questa app potrebbe essere dannosa». È normale per le app installate fuori da Play: tocca Maggiori dettagli → Installa comunque.",
   "day.changesBadge": "{n} variazioni",
 
   "changes.title": "Variazioni",

@@ -198,6 +198,8 @@ export const pt: Dict = {
   "day.updatePrompt.dismiss": "Mais tarde",
   "day.updatePrompt.handoff":
     "Transferência concluída. Confirma a instalação na janela do Android ou toca em Atualizar para tentar novamente.",
+  "day.updatePrompt.protectNote":
+    "O Google Play Protect pode mostrar «Esta app pode ser prejudicial». É normal em apps instaladas fora do Play: toque em Mais detalhes → Instalar mesmo assim.",
   "day.changesBadge": "{n} alterações",
 
   "changes.title": "Alterações",

@@ -195,6 +195,8 @@ export const et: Dict = {
   "day.updatePrompt.dismiss": "Hiljem",
   "day.updatePrompt.handoff":
     "Allalaadimine on lõppenud. Kinnita paigaldamine Androidi aknas või puuduta uuesti proovimiseks Uuenda.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect võib näidata teadet „See rakendus võib olla kahjulik“. Väljaspool Playd installitud rakenduste puhul on see ootuspärane: puuduta Rohkem üksikasju → Installi siiski.",
   "day.changesBadge": "{n} muudatust",
 
   "changes.title": "Muudatused",

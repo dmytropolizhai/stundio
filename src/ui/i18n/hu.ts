@@ -198,6 +198,8 @@ export const hu: Dict = {
   "day.updatePrompt.dismiss": "Később",
   "day.updatePrompt.handoff":
     "A letöltés kész. Erősítsd meg a telepítést az Android ablakban, vagy koppints a Frissítésre az újrapróbálkozáshoz.",
+  "day.updatePrompt.protectNote":
+    "A Google Play Protect megjelenítheti a „Ez az alkalmazás káros lehet” üzenetet. A Play-en kívül telepített alkalmazásoknál ez várható: koppints a További részletek → Telepítés mindenképp lehetőségre.",
   "day.changesBadge": "{n} változás",
 
   "changes.title": "Változások",

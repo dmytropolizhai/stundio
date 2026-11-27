@@ -197,6 +197,8 @@ export const nl: Dict = {
   "day.updatePrompt.dismiss": "Later",
   "day.updatePrompt.handoff":
     "Download voltooid. Bevestig de installatie in het Android-venster of tik op Updaten om het opnieuw te proberen.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect kan „Deze app kan schadelijk zijn” tonen. Dat is normaal voor apps die buiten Play zijn geïnstalleerd: tik op Meer details → Toch installeren.",
   "day.changesBadge": "{n} wijzigingen",
 
   "changes.title": "Wijzigingen",

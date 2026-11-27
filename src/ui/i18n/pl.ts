@@ -197,6 +197,8 @@ export const pl: Dict = {
   "day.updatePrompt.dismiss": "Później",
   "day.updatePrompt.handoff":
     "Pobieranie zakończone. Potwierdź instalację w oknie Androida lub dotknij Aktualizuj, aby spróbować ponownie.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect może wyświetlić komunikat „Ta aplikacja może być szkodliwa”. W przypadku aplikacji instalowanych spoza Play to normalne: dotknij Więcej szczegółów → Zainstaluj mimo to.",
   "day.changesBadge": "Zmiany: {n}",
 
   "changes.title": "Zmiany",

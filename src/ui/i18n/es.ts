@@ -199,6 +199,8 @@ export const es: Dict = {
   "day.updatePrompt.dismiss": "Más tarde",
   "day.updatePrompt.handoff":
     "Descarga completada. Confirma la instalación en la ventana de Android o pulsa Actualizar para intentarlo de nuevo.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect puede mostrar «Esta aplicación podría ser dañina». Es normal en apps instaladas fuera de Play: toca Más detalles → Instalar de todos modos.",
   "day.changesBadge": "{n} cambios",
 
   "changes.title": "Cambios",

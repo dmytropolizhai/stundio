@@ -197,6 +197,8 @@ export const sv: Dict = {
   "day.updatePrompt.dismiss": "Senare",
   "day.updatePrompt.handoff":
     "Nedladdningen är klar. Bekräfta installationen i Android-fönstret eller tryck på Uppdatera för att försöka igen.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect kan visa ”Den här appen kan vara skadlig”. Det är väntat för appar som installeras utanför Play: tryck på Mer information → Installera ändå.",
   "day.changesBadge": "{n} ändringar",
 
   "changes.title": "Ändringar",

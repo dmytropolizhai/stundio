@@ -200,6 +200,8 @@ export const de: Dict = {
   "day.updatePrompt.dismiss": "Später",
   "day.updatePrompt.handoff":
     "Download abgeschlossen. Bestätige die Installation im Android-Fenster oder tippe auf Aktualisieren, um es erneut zu versuchen.",
+  "day.updatePrompt.protectNote":
+    "Google Play Protect zeigt möglicherweise „Diese App könnte schädlich sein“ an. Das ist bei Apps, die außerhalb von Play installiert werden, normal: Tippe auf Weitere Details → Trotzdem installieren.",
   "day.changesBadge": "{n} Änderungen",
 
   "changes.title": "Änderungen",
