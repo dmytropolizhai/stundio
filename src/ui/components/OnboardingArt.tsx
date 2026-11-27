@@ -230,17 +230,12 @@ export const NotificationArt = () => {
   const reduceMotion = useReducedMotion() ?? false;
 
   return (
-    <div aria-hidden="true" className="relative w-full max-w-[340px] pb-3">
-      {/* Recessed trailing card edge giving subtle lock-screen stack depth. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-4 bottom-0 opacity-55">
-        <div className="u-schedule-glass-chip h-8 rounded-b-xl" />
-      </div>
-
+    <div aria-hidden="true" className="w-full max-w-[340px]">
       <m.div
         initial={{ opacity: 0, y: reduceMotion ? 0 : -14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reduceMotion ? 0.001 : 0.34, ease: [0.2, 0.8, 0.2, 1] }}
-        className="u-schedule-glass relative z-10 flex w-full gap-3.5 rounded-xl p-4 text-left"
+        className="u-schedule-glass flex w-full gap-3.5 rounded-xl p-4 text-left"
       >
         <img src="/favicon.png" alt="" className="size-10 shrink-0 rounded-sm shadow-card" />
 
