@@ -42,6 +42,8 @@ export const da: Dict = {
 
   "teacher.search": "Søg lærer…",
   "teacher.none": "Ingen lærer fundet",
+  "teacher.loading": "Indlæser lærerlisten…",
+  "teacher.filter.all": "Alle",
   "teacher.formClass": "Klasselærer",
   "teacher.cover": "Vikar",
   "teacher.coverFor": "Vikar for: {name}",

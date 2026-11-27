@@ -43,6 +43,8 @@ export const pt: Dict = {
 
   "teacher.search": "Pesquisar professor…",
   "teacher.none": "Nenhum professor encontrado",
+  "teacher.loading": "A carregar lista de professores…",
+  "teacher.filter.all": "Todos",
   "teacher.formClass": "Diretor de turma",
   "teacher.cover": "Substituição",
   "teacher.coverFor": "A substituir: {name}",

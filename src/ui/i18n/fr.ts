@@ -44,6 +44,8 @@ export const fr: Dict = {
 
   "teacher.search": "Rechercher un enseignant…",
   "teacher.none": "Aucun enseignant trouvé",
+  "teacher.loading": "Chargement de la liste des enseignants…",
+  "teacher.filter.all": "Tous",
   "teacher.formClass": "Professeur principal",
   "teacher.cover": "Remplacement",
   "teacher.coverFor": "Remplace : {name}",

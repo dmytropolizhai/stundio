@@ -10,19 +10,30 @@ const wrap = (harness: Harness, node: React.ReactNode) =>
   render(<StoreContext.Provider value={harness.store}>{node}</StoreContext.Provider>);
 
 describe("TeacherPicker", () => {
-  it("lists cached teachers and filters as the user types", async () => {
+  it("lists cached teachers in A–Z slabs and filters with diacritic-tolerant search", async () => {
     const harness = await bootHarness();
     wrap(harness, <TeacherPicker />);
 
     // In regulartt_1175.json there are 116 teaching staff
     expect(screen.getAllByRole("button").length).toBeGreaterThan(50);
 
-    fireEvent.change(screen.getByLabelText("Meklēt skolotāju…"), {
+    const search = screen.getByLabelText("Meklēt skolotāju…");
+    fireEvent.change(search, {
       target: { value: "Alksne" },
     });
 
     expect(screen.getByText("Alksne Santa")).toBeDefined();
     expect(screen.queryByText("Geislers Edgars")).toBeNull();
+
+    // Clear search button restores the full list
+    fireEvent.click(screen.getByLabelText("Notīrīt meklēšanu"));
+    expect(screen.getByText("Geislers Edgars")).toBeDefined();
+
+    // Diacritic-folded and reversed word-order search matches Latvian surnames
+    fireEvent.change(search, {
+      target: { value: "nora argale" },
+    });
+    expect(screen.getByText("Ārgale Nora")).toBeDefined();
   });
 
   it("shows empty state when no teachers match query", async () => {
@@ -36,35 +47,55 @@ describe("TeacherPicker", () => {
     expect(screen.getByText("Nav atrasts neviens skolotājs")).toBeDefined();
   });
 
-  it("marks form teachers with a badge", async () => {
+  it("filters by form teachers and resets with All pill", async () => {
     const harness = await bootHarness();
     wrap(harness, <TeacherPicker />);
 
-    fireEvent.change(screen.getByLabelText("Meklēt skolotāju…"), {
-      target: { value: "Alksne" },
-    });
+    const formFilter = screen.getByRole("button", { name: "Klases audzinātājs" });
+    fireEvent.click(formFilter);
 
-    // Alksne Santa is a form teacher (audzinātāja)
-    expect(screen.getByText("Klases audzinātājs")).toBeDefined();
+    // Alksne Santa is a form teacher (audzinātāja); Geislers Edgars is not
+    expect(screen.getByText("Alksne Santa")).toBeDefined();
+    expect(screen.queryByText("Geislers Edgars")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Visi" }));
+    expect(screen.getByText("Geislers Edgars")).toBeDefined();
   });
 
-  it("selects a teacher, sets persona to teacher, and fires onPicked", async () => {
+  it("draft-selects a teacher, then commits persona, teacher id, and onPicked on Continue", async () => {
     const harness = await bootHarness();
     const onPicked = vi.fn();
     wrap(harness, <TeacherPicker onPicked={onPicked} />);
+
+    const continueBefore = screen.getByRole("button", { name: "Turpināt" });
+    expect((continueBefore as HTMLButtonElement).disabled).toBe(true);
 
     fireEvent.change(screen.getByLabelText("Meklēt skolotāju…"), {
       target: { value: "Geislers" },
     });
 
+    fireEvent.click(screen.getByText("Geislers Edgars"));
+
+    // Selecting a tile drafts it without committing until Continue is pressed
+    expect(onPicked).not.toHaveBeenCalled();
+
     await clickAndSettle(() => {
-      fireEvent.click(screen.getByText("Geislers Edgars"));
+      fireEvent.click(screen.getByRole("button", { name: "Turpināt · Geislers Edgars" }));
     });
 
-    expect(onPicked).toHaveBeenCalled();
+    expect(onPicked).toHaveBeenCalledTimes(1);
     const settings = harness.store.getState().settings;
     expect(settings.persona).toBe("teacher");
     expect(settings.selectedTeacherId).toBe("-23");
+  });
+
+  it("renders switch mode header with back button and invokes onBack", async () => {
+    const harness = await bootHarness();
+    const onBack = vi.fn();
+    wrap(harness, <TeacherPicker mode="switch" onBack={onBack} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Atpakaļ" }));
+    expect(onBack).toHaveBeenCalledTimes(1);
   });
 });
 

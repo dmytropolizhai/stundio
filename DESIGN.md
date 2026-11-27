@@ -596,14 +596,16 @@ Home has two blocks, the top always about *today*, the bottom a day browser.
 - **Live row:** the active lesson lifts onto its subject's deep tone field with a 3px bottom progress filament, matching the featured SubjectCard, glance and NowDock.
 - **Wide:** the glance banner and `HomeSide` (changes column) appear; tomorrow's preview shows once the day is over. Swipe/arrow paging moves the bottom block only.
 
-### Class Selector & Subgroup Picker
+### Class Selector, Teacher Picker & Subgroup Picker
 
 Shared by onboarding (anchored by `mark.svg`) and the in-app switcher (glass Back button), over `bg-app`
-with a soft top lamp wash. A `.u-schedule-glass-chip` search capsule sits above Year and Building filter
-pills derived from the cached timetable; active pills are inverse. Favorites and department-grouped
-`.u-schedule-glass` slabs hold a 2-column (3 on tablet/desktop) matrix of class tiles; selecting one is a
-full inverse swap. A bottom-skirt `Continue · <class>` button commits or steps into the glass
-`SubgroupPicker`.
+with a soft top lamp wash. A sticky `.u-schedule-glass-chip` search capsule sits above dynamic quick-filter
+pills derived from the cached timetable (Year and Building for classes; Form teacher and Building for
+teachers); active pills are inverse. `ClassSelector` groups Favorites and departments in `.u-schedule-glass`
+slabs with a 2-column (3 on tablet/desktop) matrix of class tiles; `TeacherPicker` mirrors the same grammar
+with A–Z alphabetical slabs and a 1-column (2 on tablet/desktop) list of full-width teacher rows carrying
+building metadata and a form-teacher badge. Selecting a tile is a full inverse swap, and a bottom-skirt
+`Continue · <selection>` button commits (or steps into the glass `SubgroupPicker` for split classes).
 
 ### Week Calendar (2D Liquid-Glass Time Canvas)
 

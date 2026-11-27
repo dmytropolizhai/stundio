@@ -48,6 +48,8 @@ export const lv = {
 
   "teacher.search": "Meklēt skolotāju…",
   "teacher.none": "Nav atrasts neviens skolotājs",
+  "teacher.loading": "Ielādē skolotāju sarakstu…",
+  "teacher.filter.all": "Visi",
   "teacher.formClass": "Klases audzinātājs",
   "teacher.cover": "Aizvietošana",
   "teacher.coverFor": "Aizvieto: {name}",

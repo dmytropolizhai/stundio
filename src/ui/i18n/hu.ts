@@ -43,6 +43,8 @@ export const hu: Dict = {
 
   "teacher.search": "Tanár keresése…",
   "teacher.none": "Nem található tanár",
+  "teacher.loading": "Tanárok listájának betöltése…",
+  "teacher.filter.all": "Összes",
   "teacher.formClass": "Osztályfőnök",
   "teacher.cover": "Helyettesítés",
   "teacher.coverFor": "Helyettesített: {name}",

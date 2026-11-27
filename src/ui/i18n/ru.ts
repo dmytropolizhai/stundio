@@ -42,6 +42,8 @@ export const ru: Dict = {
 
   "teacher.search": "Поиск преподавателя…",
   "teacher.none": "Преподаватель не найден",
+  "teacher.loading": "Загрузка списка преподавателей…",
+  "teacher.filter.all": "Все",
   "teacher.formClass": "Классный руководитель",
   "teacher.cover": "Замена",
   "teacher.coverFor": "Заменяет: {name}",

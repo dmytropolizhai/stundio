@@ -42,6 +42,8 @@ export const nl: Dict = {
 
   "teacher.search": "Docent zoeken…",
   "teacher.none": "Geen docent gevonden",
+  "teacher.loading": "Docentenlijst laden…",
+  "teacher.filter.all": "Alle",
   "teacher.formClass": "Mentor",
   "teacher.cover": "Vervanging",
   "teacher.coverFor": "Vervangt: {name}",

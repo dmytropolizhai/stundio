@@ -42,6 +42,8 @@ export const en: Dict = {
 
   "teacher.search": "Search teacher…",
   "teacher.none": "No teacher found",
+  "teacher.loading": "Loading teacher list…",
+  "teacher.filter.all": "All",
   "teacher.formClass": "Form teacher",
   "teacher.cover": "Cover",
   "teacher.coverFor": "Covering: {name}",

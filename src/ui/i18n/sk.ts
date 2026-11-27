@@ -42,6 +42,8 @@ export const sk: Dict = {
 
   "teacher.search": "Hľadať učiteľa…",
   "teacher.none": "Žiadny učiteľ sa nenašiel",
+  "teacher.loading": "Načítava sa zoznam učiteľov…",
+  "teacher.filter.all": "Všetci",
   "teacher.formClass": "Triedny učiteľ",
   "teacher.cover": "Suplovanie",
   "teacher.coverFor": "Supluje za: {name}",

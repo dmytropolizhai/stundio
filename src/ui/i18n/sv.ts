@@ -42,6 +42,8 @@ export const sv: Dict = {
 
   "teacher.search": "Sök lärare…",
   "teacher.none": "Ingen lärare hittades",
+  "teacher.loading": "Laddar lärarlistan…",
+  "teacher.filter.all": "Alla",
   "teacher.formClass": "Klassföreståndare",
   "teacher.cover": "Vikariat",
   "teacher.coverFor": "Vikarierar för: {name}",

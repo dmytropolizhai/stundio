@@ -42,6 +42,8 @@ export const et: Dict = {
 
   "teacher.search": "Otsi õpetajat…",
   "teacher.none": "Õpetajat ei leitud",
+  "teacher.loading": "Õpetajate loendi laadimine…",
+  "teacher.filter.all": "Kõik",
   "teacher.formClass": "Klassijuhataja",
   "teacher.cover": "Asendus",
   "teacher.coverFor": "Asendab: {name}",

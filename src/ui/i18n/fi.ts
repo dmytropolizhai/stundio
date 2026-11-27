@@ -42,6 +42,8 @@ export const fi: Dict = {
 
   "teacher.search": "Hae opettajaa…",
   "teacher.none": "Opettajaa ei löytynyt",
+  "teacher.loading": "Ladataan opettajaluetteloa…",
+  "teacher.filter.all": "Kaikki",
   "teacher.formClass": "Luokanvalvoja",
   "teacher.cover": "Sijaisuus",
   "teacher.coverFor": "Sijaisena: {name}",

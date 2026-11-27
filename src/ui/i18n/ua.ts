@@ -42,6 +42,8 @@ export const ua: Dict = {
 
   "teacher.search": "Пошук викладача…",
   "teacher.none": "Викладача не знайдено",
+  "teacher.loading": "Завантаження списку викладачів…",
+  "teacher.filter.all": "Усі",
   "teacher.formClass": "Класний керівник",
   "teacher.cover": "Заміна",
   "teacher.coverFor": "Замінює: {name}",

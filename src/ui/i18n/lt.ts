@@ -43,6 +43,8 @@ export const lt: Dict = {
 
   "teacher.search": "Ieškoti mokytojo…",
   "teacher.none": "Mokytojas nerastas",
+  "teacher.loading": "Įkeliamas mokytojų sąrašas…",
+  "teacher.filter.all": "Visi",
   "teacher.formClass": "Klasės auklėtojas",
   "teacher.cover": "Pavadavimas",
   "teacher.coverFor": "Pavaduoja: {name}",

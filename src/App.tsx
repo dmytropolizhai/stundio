@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
 import { AppStoreProvider, useAppStore, useSettingSetter } from "@/store";
-import { Button, TopBar, TooltipProvider } from "@/ds";
+import { Button, TooltipProvider } from "@/ds";
 import { dayGlance } from "@/lib/schedule";
 import type { ResolvedLesson } from "@/lib/edupage";
 import { TabBar, type Tab } from "./ui/components/TabBar.tsx";
@@ -99,7 +99,6 @@ const BootFailed = ({ onReady }: { onReady: () => void }) => (
  * already been through the tour, so it opens straight on the new role's picker.
  */
 const Onboarding = () => {
-  const t = useT();
   const persona = useAppStore((s) => s.settings.persona);
   // Someone who already picked a class or a teacher is not new: they got here by switching
   // role in Settings to one with no selection yet, so skip the tour and open that role's list.
@@ -156,17 +155,12 @@ const Onboarding = () => {
   if (step === "teacherPicker") {
     return (
       <div className="flex h-full flex-col">
-        <div className="bg-card px-gutter pt-[calc(--spacing(8)+var(--app-inset-top))] pb-7 text-brand">
-          <h1 className="mt-5 font-display text-hero tracking-hero">
-            {t("onboarding.teacher.title")}
-          </h1>
-          <p className="mt-3 font-text text-body-lg text-muted">
-            {t("onboarding.teacher.subtitle")}
-          </p>
-        </div>
-        <div className="flex min-h-0 flex-1 flex-col pt-5">
-          <TeacherPicker />
-        </div>
+        <TeacherPicker
+          mode="onboarding"
+          onBack={() => {
+            setStep("persona");
+          }}
+        />
       </div>
     );
   }
@@ -289,15 +283,11 @@ const Shell = () => {
   if (picking === "teacher") {
     return (
       <div className="flex h-full flex-col">
-        <div className="mx-auto w-full max-w-screen px-gutter pt-(--app-inset-top)">
-          <TopBar
-            title={t("onboarding.teacher.title")}
-            onBack={() => {
-              setPicking(null);
-            }}
-          />
-        </div>
         <TeacherPicker
+          mode="switch"
+          onBack={() => {
+            setPicking(null);
+          }}
           onPicked={() => {
             setPicking(null);
           }}

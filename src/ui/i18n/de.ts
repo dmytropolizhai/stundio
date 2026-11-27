@@ -44,6 +44,8 @@ export const de: Dict = {
 
   "teacher.search": "Lehrkraft suchen…",
   "teacher.none": "Keine Lehrkraft gefunden",
+  "teacher.loading": "Lehrkräfteliste wird geladen…",
+  "teacher.filter.all": "Alle",
   "teacher.formClass": "Klassenleitung",
   "teacher.cover": "Vertretung",
   "teacher.coverFor": "Vertretung für: {name}",

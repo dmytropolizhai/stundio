@@ -42,6 +42,8 @@ export const cs: Dict = {
 
   "teacher.search": "Hledat učitele…",
   "teacher.none": "Žádný učitel nenalezen",
+  "teacher.loading": "Načítání seznamu učitelů…",
+  "teacher.filter.all": "Všichni",
   "teacher.formClass": "Třídní učitel",
   "teacher.cover": "Suplování",
   "teacher.coverFor": "Supluje za: {name}",
